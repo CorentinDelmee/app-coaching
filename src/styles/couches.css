@@ -1,0 +1,11 @@
+/* Couches plein écran communes (série ouverte, roue, vidéo, chronos, fin…) : posées au-dessus d'un écran, ouvertes par les
+   transitions de src/anim. Le .voile est un div vide rempli par les transitions (clone de l'élément touché). */
+.voile { position: absolute; inset: 0; z-index: 100; pointer-events: none; overflow: hidden; }
+.voile > * { pointer-events: none; }
+
+.couche { position: absolute; inset: 0; background: var(--fond); overflow: hidden; overflow: clip; }
+.couche-contenu { position: absolute; inset: 0; padding: var(--haut) var(--pad) var(--bas); display: flex; flex-direction: column; }
+.couche-haut { display: flex; align-items: center; justify-content: space-between; min-height: 56px; }
+.couche-haut .lab { font-size: 14px; font-weight: 600; color: var(--texte-doux); text-align: right; line-height: 1.2; }
+.couche-titre { font-family: var(--font-titre); font-weight: 400; font-size: 27px; letter-spacing: -.045em; line-height: 1.05; margin-top: 8px; }
+.couche-sous { font-size: 15px; color: var(--texte-doux); margin-top: 6px; }

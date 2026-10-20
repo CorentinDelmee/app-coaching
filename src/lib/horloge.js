@@ -14,3 +14,6 @@ if (typeof location !== 'undefined') {
   const v = Number(new URLSearchParams(location.search).get('vitesse'))
   if (v > 0 && v <= 100) horloge.regler(v)
 }
+
+// Pour les tests navigateur (mode développement seulement) : window.__horloge.regler(30) accélère le temps en cours de route.
+if (import.meta.env?.DEV && typeof window !== 'undefined') window.__horloge = horloge
