@@ -1,0 +1,739 @@
+{
+  "format": "cdc-coaching/1",
+  "exporteLe": "2026-10-20T00:00:00.000Z",
+  "exercices": [
+    {
+      "id": "ex-squat",
+      "nom": "Squat",
+      "description": "Pieds largeur d'épaules, descendre les hanches en arrière et en bas, dos droit, puis remonter en poussant dans les talons.",
+      "lienVideo": null,
+      "categories": [
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-squat-gobelet",
+      "nom": "Squat gobelet",
+      "description": "Squat en tenant une charge contre la poitrine, coudes serrés, buste droit.",
+      "lienVideo": null,
+      "categories": [
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-squat-bulgare",
+      "nom": "Squat bulgare",
+      "description": "Pied arrière surélevé, descendre à la verticale sur la jambe avant, genou aligné avec le pied.",
+      "lienVideo": null,
+      "categories": [
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-fentes-avant",
+      "nom": "Fentes avant",
+      "description": "Grand pas en avant, descendre le genou arrière vers le sol, puis revenir en poussant.",
+      "lienVideo": null,
+      "categories": [
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-fentes-marchees",
+      "nom": "Fentes marchées",
+      "description": "Enchaîner les fentes en avançant d'un pas à chaque répétition.",
+      "lienVideo": null,
+      "categories": [
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-fentes-arriere",
+      "nom": "Fentes arrière",
+      "description": "Reculer d'un pas et descendre le genou arrière vers le sol ; plus doux pour les genoux.",
+      "lienVideo": null,
+      "categories": [
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-presse-a-cuisses",
+      "nom": "Presse à cuisses",
+      "description": "Pousser le plateau sans verrouiller les genoux, dos plaqué contre le dossier.",
+      "lienVideo": null,
+      "categories": [
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-souleve-de-terre-jambes-tendues",
+      "nom": "Soulevé de terre jambes tendues",
+      "description": "Pencher le buste en gardant le dos plat et les jambes presque tendues ; sentir l'arrière des cuisses.",
+      "lienVideo": null,
+      "categories": [
+        "jambes",
+        "tirage"
+      ]
+    },
+    {
+      "id": "ex-souleve-de-terre",
+      "nom": "Soulevé de terre",
+      "description": "Barre au sol, dos neutre, pousser le sol avec les jambes puis étendre les hanches.",
+      "lienVideo": null,
+      "categories": [
+        "jambes",
+        "tirage"
+      ]
+    },
+    {
+      "id": "ex-hip-thrust",
+      "nom": "Hip thrust",
+      "description": "Haut du dos sur un banc, pousser les hanches vers le haut en serrant les fessiers.",
+      "lienVideo": null,
+      "categories": [
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-pont-fessier",
+      "nom": "Pont fessier",
+      "description": "Allongé, pieds au sol, monter le bassin en contractant les fessiers.",
+      "lienVideo": null,
+      "categories": [
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-montees-sur-banc",
+      "nom": "Montées sur banc",
+      "description": "Monter un pied sur un banc, pousser avec la jambe d'appui, redescendre en contrôle.",
+      "lienVideo": null,
+      "categories": [
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-leg-curl",
+      "nom": "Leg curl",
+      "description": "Fléchir les genoux contre la résistance pour travailler l'arrière des cuisses.",
+      "lienVideo": null,
+      "categories": [
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-leg-extension",
+      "nom": "Leg extension",
+      "description": "Tendre les genoux contre la résistance pour travailler l'avant des cuisses.",
+      "lienVideo": null,
+      "categories": [
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-mollets-debout",
+      "nom": "Mollets debout",
+      "description": "Monter sur la pointe des pieds, marquer une pause en haut, redescendre lentement.",
+      "lienVideo": null,
+      "categories": [
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-squat-saute",
+      "nom": "Squat sauté",
+      "description": "Squat suivi d'un saut explosif, réception souple.",
+      "lienVideo": null,
+      "categories": [
+        "jambes",
+        "cardio"
+      ]
+    },
+    {
+      "id": "ex-chaise-murale",
+      "nom": "Chaise murale",
+      "description": "Dos contre le mur, cuisses parallèles au sol, tenir la position.",
+      "lienVideo": null,
+      "categories": [
+        "jambes",
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-pompes",
+      "nom": "Pompes",
+      "description": "Mains sous les épaules, corps gainé, poitrine vers le sol puis pousser.",
+      "lienVideo": null,
+      "categories": [
+        "poussee"
+      ]
+    },
+    {
+      "id": "ex-pompes-sur-les-genoux",
+      "nom": "Pompes sur les genoux",
+      "description": "Version facilitée des pompes, genoux au sol, corps aligné.",
+      "lienVideo": null,
+      "categories": [
+        "poussee"
+      ]
+    },
+    {
+      "id": "ex-pompes-declinees",
+      "nom": "Pompes déclinées",
+      "description": "Pieds surélevés, accent sur le haut de la poitrine et les épaules.",
+      "lienVideo": null,
+      "categories": [
+        "poussee"
+      ]
+    },
+    {
+      "id": "ex-developpe-couche",
+      "nom": "Développé couché",
+      "description": "Allongé sur le banc, descendre la barre à la poitrine puis pousser.",
+      "lienVideo": null,
+      "categories": [
+        "poussee"
+      ]
+    },
+    {
+      "id": "ex-developpe-incline-halteres",
+      "nom": "Développé incliné haltères",
+      "description": "Banc incliné, pousser les haltères au-dessus de la poitrine.",
+      "lienVideo": null,
+      "categories": [
+        "poussee"
+      ]
+    },
+    {
+      "id": "ex-developpe-epaules",
+      "nom": "Développé épaules",
+      "description": "Debout ou assis, pousser les charges au-dessus de la tête sans cambrer.",
+      "lienVideo": null,
+      "categories": [
+        "poussee"
+      ]
+    },
+    {
+      "id": "ex-elevations-laterales",
+      "nom": "Élévations latérales",
+      "description": "Bras légèrement fléchis, monter les haltères sur les côtés jusqu'aux épaules.",
+      "lienVideo": null,
+      "categories": [
+        "poussee"
+      ]
+    },
+    {
+      "id": "ex-ecartes-poitrine",
+      "nom": "Écartés poitrine",
+      "description": "Ouvrir et refermer les bras en arc de cercle, coudes souples.",
+      "lienVideo": null,
+      "categories": [
+        "poussee"
+      ]
+    },
+    {
+      "id": "ex-dips-sur-banc",
+      "nom": "Dips sur banc",
+      "description": "Mains sur un banc derrière soi, fléchir les coudes puis pousser.",
+      "lienVideo": null,
+      "categories": [
+        "poussee"
+      ]
+    },
+    {
+      "id": "ex-dips-aux-barres",
+      "nom": "Dips aux barres",
+      "description": "Descendre en contrôle entre deux barres parallèles, puis remonter.",
+      "lienVideo": null,
+      "categories": [
+        "poussee"
+      ]
+    },
+    {
+      "id": "ex-extension-triceps",
+      "nom": "Extension triceps",
+      "description": "Tendre les bras contre la résistance en gardant les coudes fixes.",
+      "lienVideo": null,
+      "categories": [
+        "poussee"
+      ]
+    },
+    {
+      "id": "ex-pompes-diamant",
+      "nom": "Pompes diamant",
+      "description": "Mains rapprochées sous la poitrine pour cibler les triceps.",
+      "lienVideo": null,
+      "categories": [
+        "poussee"
+      ]
+    },
+    {
+      "id": "ex-tractions",
+      "nom": "Tractions",
+      "description": "Suspendu à la barre, monter le menton au-dessus en tirant les coudes vers les côtes.",
+      "lienVideo": null,
+      "categories": [
+        "tirage"
+      ]
+    },
+    {
+      "id": "ex-tractions-assistees",
+      "nom": "Tractions assistées",
+      "description": "Traction avec un élastique ou une machine qui allège la charge.",
+      "lienVideo": null,
+      "categories": [
+        "tirage"
+      ]
+    },
+    {
+      "id": "ex-rowing-barre",
+      "nom": "Rowing barre",
+      "description": "Buste penché, dos plat, tirer la barre vers le ventre.",
+      "lienVideo": null,
+      "categories": [
+        "tirage"
+      ]
+    },
+    {
+      "id": "ex-rowing-haltere-un-bras",
+      "nom": "Rowing haltère un bras",
+      "description": "Un genou et une main sur le banc, tirer l'haltère vers la hanche.",
+      "lienVideo": null,
+      "categories": [
+        "tirage"
+      ]
+    },
+    {
+      "id": "ex-rowing-elastique",
+      "nom": "Rowing élastique",
+      "description": "Tirer l'élastique vers soi en serrant les omoplates.",
+      "lienVideo": null,
+      "categories": [
+        "tirage"
+      ]
+    },
+    {
+      "id": "ex-tirage-vertical",
+      "nom": "Tirage vertical",
+      "description": "Tirer la barre à la poitrine en gardant le buste stable.",
+      "lienVideo": null,
+      "categories": [
+        "tirage"
+      ]
+    },
+    {
+      "id": "ex-tirage-horizontal",
+      "nom": "Tirage horizontal",
+      "description": "Assis, tirer la poignée vers le ventre en serrant le dos.",
+      "lienVideo": null,
+      "categories": [
+        "tirage"
+      ]
+    },
+    {
+      "id": "ex-face-pull",
+      "nom": "Face pull",
+      "description": "Tirer la corde vers le visage, coudes hauts, pour l'arrière des épaules.",
+      "lienVideo": null,
+      "categories": [
+        "tirage",
+        "mobilite"
+      ]
+    },
+    {
+      "id": "ex-curl-biceps-halteres",
+      "nom": "Curl biceps haltères",
+      "description": "Fléchir les coudes sans balancer le buste.",
+      "lienVideo": null,
+      "categories": [
+        "tirage"
+      ]
+    },
+    {
+      "id": "ex-curl-marteau",
+      "nom": "Curl marteau",
+      "description": "Curl avec les paumes face à face pour l'avant-bras.",
+      "lienVideo": null,
+      "categories": [
+        "tirage"
+      ]
+    },
+    {
+      "id": "ex-tirage-poitrine-inverse",
+      "nom": "Tirage poitrine inversé",
+      "description": "Sous une barre basse, corps gainé, tirer la poitrine vers la barre.",
+      "lienVideo": null,
+      "categories": [
+        "tirage"
+      ]
+    },
+    {
+      "id": "ex-oiseau-halteres",
+      "nom": "Oiseau haltères",
+      "description": "Buste penché, ouvrir les bras sur les côtés pour l'arrière des épaules.",
+      "lienVideo": null,
+      "categories": [
+        "tirage"
+      ]
+    },
+    {
+      "id": "ex-superman",
+      "nom": "Superman",
+      "description": "À plat ventre, lever bras et jambes ensemble, serrer le bas du dos.",
+      "lienVideo": null,
+      "categories": [
+        "tirage",
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-planche",
+      "nom": "Planche",
+      "description": "Sur les avant-bras, corps aligné de la tête aux talons, ventre serré.",
+      "lienVideo": null,
+      "categories": [
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-planche-laterale",
+      "nom": "Planche latérale",
+      "description": "Sur un avant-bras, hanches hautes, corps aligné sur le côté.",
+      "lienVideo": null,
+      "categories": [
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-gainage-dynamique",
+      "nom": "Gainage dynamique",
+      "description": "Passer de la planche sur les avant-bras à la planche sur les mains, sans balancer.",
+      "lienVideo": null,
+      "categories": [
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-dead-bug",
+      "nom": "Dead bug",
+      "description": "Sur le dos, bras et jambes opposés s'étendent lentement, bas du dos plaqué.",
+      "lienVideo": null,
+      "categories": [
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-bird-dog",
+      "nom": "Bird dog",
+      "description": "À quatre pattes, tendre le bras et la jambe opposés, bassin stable.",
+      "lienVideo": null,
+      "categories": [
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-releve-de-jambes",
+      "nom": "Relevé de jambes",
+      "description": "Allongé, lever les jambes tendues puis les redescendre sans toucher le sol.",
+      "lienVideo": null,
+      "categories": [
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-crunch",
+      "nom": "Crunch",
+      "description": "Enrouler le haut du dos vers le bassin, mains légères derrière la tête.",
+      "lienVideo": null,
+      "categories": [
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-russian-twist",
+      "nom": "Russian twist",
+      "description": "Assis, buste incliné, tourner le tronc d'un côté à l'autre.",
+      "lienVideo": null,
+      "categories": [
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-mountain-climbers",
+      "nom": "Mountain climbers",
+      "description": "En planche, ramener les genoux vers la poitrine en alternance.",
+      "lienVideo": null,
+      "categories": [
+        "gainage",
+        "cardio"
+      ]
+    },
+    {
+      "id": "ex-roue-abdominale",
+      "nom": "Roue abdominale",
+      "description": "À genoux, rouler vers l'avant en gardant le dos plat puis revenir.",
+      "lienVideo": null,
+      "categories": [
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-pallof-press",
+      "nom": "Pallof press",
+      "description": "Résister à la rotation en tendant un élastique devant soi.",
+      "lienVideo": null,
+      "categories": [
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-gainage-ours",
+      "nom": "Gainage ours",
+      "description": "À quatre pattes, genoux décollés de quelques centimètres, tenir.",
+      "lienVideo": null,
+      "categories": [
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-hollow-body",
+      "nom": "Hollow body",
+      "description": "Sur le dos, bras et jambes tendus, bas du dos plaqué, tenir en « banane ».",
+      "lienVideo": null,
+      "categories": [
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-levee-de-genoux-suspendu",
+      "nom": "Levée de genoux suspendu",
+      "description": "Suspendu, monter les genoux vers la poitrine sans élan.",
+      "lienVideo": null,
+      "categories": [
+        "gainage"
+      ]
+    },
+    {
+      "id": "ex-corde-a-sauter",
+      "nom": "Corde à sauter",
+      "description": "Sauts légers sur l'avant-pied, poignets qui tournent la corde.",
+      "lienVideo": null,
+      "categories": [
+        "cardio"
+      ]
+    },
+    {
+      "id": "ex-jumping-jacks",
+      "nom": "Jumping jacks",
+      "description": "Sauter en écartant jambes et bras, puis revenir.",
+      "lienVideo": null,
+      "categories": [
+        "cardio"
+      ]
+    },
+    {
+      "id": "ex-burpees",
+      "nom": "Burpees",
+      "description": "Pompe au sol, ramener les pieds, sauter les bras en l'air.",
+      "lienVideo": null,
+      "categories": [
+        "cardio"
+      ]
+    },
+    {
+      "id": "ex-skipping",
+      "nom": "Skipping",
+      "description": "Course sur place, genoux hauts, bras actifs.",
+      "lienVideo": null,
+      "categories": [
+        "cardio"
+      ]
+    },
+    {
+      "id": "ex-talons-fesses",
+      "nom": "Talons-fesses",
+      "description": "Course sur place en ramenant les talons vers les fessiers.",
+      "lienVideo": null,
+      "categories": [
+        "cardio"
+      ]
+    },
+    {
+      "id": "ex-course",
+      "nom": "Course",
+      "description": "Course à allure régulière, dehors ou sur tapis.",
+      "lienVideo": null,
+      "categories": [
+        "cardio"
+      ]
+    },
+    {
+      "id": "ex-rameur",
+      "nom": "Rameur",
+      "description": "Pousser avec les jambes, puis tirer avec le dos et les bras ; revenir en sens inverse.",
+      "lienVideo": null,
+      "categories": [
+        "cardio"
+      ]
+    },
+    {
+      "id": "ex-velo",
+      "nom": "Vélo",
+      "description": "Pédalage à intensité réglée par la résistance et le rythme.",
+      "lienVideo": null,
+      "categories": [
+        "cardio"
+      ]
+    },
+    {
+      "id": "ex-corde-ondulatoire",
+      "nom": "Corde ondulatoire",
+      "description": "Onduler deux cordes lourdes en alternance ou ensemble.",
+      "lienVideo": null,
+      "categories": [
+        "cardio"
+      ]
+    },
+    {
+      "id": "ex-kettlebell-swing",
+      "nom": "Kettlebell swing",
+      "description": "Projeter la kettlebell avec les hanches jusqu'à hauteur de poitrine.",
+      "lienVideo": null,
+      "categories": [
+        "cardio",
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-box-jump",
+      "nom": "Box jump",
+      "description": "Sauter sur une boîte, réception souple, redescendre en marchant.",
+      "lienVideo": null,
+      "categories": [
+        "cardio",
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-shadow-boxing",
+      "nom": "Shadow boxing",
+      "description": "Enchaîner des coups de poing dans le vide, garde haute, appuis mobiles.",
+      "lienVideo": null,
+      "categories": [
+        "cardio"
+      ]
+    },
+    {
+      "id": "ex-thruster",
+      "nom": "Thruster",
+      "description": "Squat avec charge puis développé au-dessus de la tête en un seul mouvement.",
+      "lienVideo": null,
+      "categories": [
+        "cardio",
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-wall-ball",
+      "nom": "Wall ball",
+      "description": "Squat puis lancer un ballon lesté contre un mur en hauteur.",
+      "lienVideo": null,
+      "categories": [
+        "cardio",
+        "jambes"
+      ]
+    },
+    {
+      "id": "ex-etirement-des-flechisseurs-de-hanche",
+      "nom": "Étirement des fléchisseurs de hanche",
+      "description": "Fente basse, bassin rentré, sentir l'avant de la hanche.",
+      "lienVideo": null,
+      "categories": [
+        "mobilite"
+      ]
+    },
+    {
+      "id": "ex-etirement-des-ischio-jambiers",
+      "nom": "Étirement des ischio-jambiers",
+      "description": "Jambe tendue devant, pencher le buste dos plat.",
+      "lienVideo": null,
+      "categories": [
+        "mobilite"
+      ]
+    },
+    {
+      "id": "ex-cat-cow",
+      "nom": "Cat-cow",
+      "description": "À quatre pattes, alterner dos creux et dos rond avec la respiration.",
+      "lienVideo": null,
+      "categories": [
+        "mobilite"
+      ]
+    },
+    {
+      "id": "ex-rotation-thoracique",
+      "nom": "Rotation thoracique",
+      "description": "À quatre pattes, une main derrière la tête, ouvrir le coude vers le plafond.",
+      "lienVideo": null,
+      "categories": [
+        "mobilite"
+      ]
+    },
+    {
+      "id": "ex-pigeon",
+      "nom": "Pigeon",
+      "description": "Jambe pliée devant, l'autre tendue derrière, relâcher le bassin vers le sol.",
+      "lienVideo": null,
+      "categories": [
+        "mobilite"
+      ]
+    },
+    {
+      "id": "ex-position-du-squat-profond",
+      "nom": "Position du squat profond",
+      "description": "Tenir le fond du squat, coudes qui poussent les genoux vers l'extérieur.",
+      "lienVideo": null,
+      "categories": [
+        "mobilite"
+      ]
+    },
+    {
+      "id": "ex-cercles-d-epaules",
+      "nom": "Cercles d'épaules",
+      "description": "Grands cercles lents avec les bras pour échauffer les épaules.",
+      "lienVideo": null,
+      "categories": [
+        "mobilite"
+      ]
+    },
+    {
+      "id": "ex-posture-de-l-enfant",
+      "nom": "Posture de l'enfant",
+      "description": "À genoux, fesses sur les talons, bras tendus devant, respirer.",
+      "lienVideo": null,
+      "categories": [
+        "mobilite"
+      ]
+    },
+    {
+      "id": "ex-chien-tete-en-bas",
+      "nom": "Chien tête en bas",
+      "description": "Hanches hautes, talons vers le sol, dos long.",
+      "lienVideo": null,
+      "categories": [
+        "mobilite"
+      ]
+    },
+    {
+      "id": "ex-mobilite-de-cheville-au-mur",
+      "nom": "Mobilité de cheville au mur",
+      "description": "Pied face à un mur, pousser le genou vers le mur sans décoller le talon.",
+      "lienVideo": null,
+      "categories": [
+        "mobilite"
+      ]
+    }
+  ],
+  "workouts": [],
+  "programmes": []
+}
