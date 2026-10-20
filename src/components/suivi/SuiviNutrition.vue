@@ -55,7 +55,7 @@ const sem = (h) => `7 derniers jours : ${h.semaine.filter((j) => j.fait).length}
           <button class="hab-case" type="button" role="checkbox" :aria-checked="h.fait" :aria-label="h.nom" @click="cocher(h, $event)">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" style="stroke-dasharray: 1" d="M5 12.5l4.5 4.5L19 7.5" /></svg>
           </button>
-          <span class="hab-nom">{{ h.nom }}<small v-if="h.serie >= 2">{{ h.serie }} jours d'affilée</small></span>
+          <span class="hab-nom" @click="$event.currentTarget.previousElementSibling.click()">{{ h.nom }}<small v-if="h.serie >= 2">{{ h.serie }} jours d'affilée</small></span>
           <span class="hab-sem" role="img" :aria-label="sem(h)"><i v-for="j in h.semaine" :key="j.jour" :class="{ on: j.fait }"></i></span>
         </li>
       </ul>

@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import data from '../../data/index.js'
 import { etat, nomClient, rafraichir, uuid, messageErreur } from '../store.js'
-import { dupliquerProgramme } from '../logique.js'
+import { dateFr, dupliquerProgramme } from '../logique.js'
 import { jourLocal, lundiDe } from '../../domain/dates.js'
 import { maintenant } from '../store.js'
 
@@ -29,8 +29,7 @@ async function dupliquer() {
   if (!cible) { erreur.value = 'Choisis le client qui reçoit le programme.'; return }
   try {
     const workouts = await data.workouts.lister()
-    const copie = dupliquerProgramme(programme, workouts, cible, uuid, debut)
-    copie.programme.nom = `${programme.nom} (copie)`
+    const copie = dupliquerProgramme(programme, workouts, cible, uuid, debut, { ancien: nomClient(programme.clientId), nouveau: nomClient(cible) })
     for (const w of copie.workouts) await data.workouts.creer(w)
     await data.programmes.creer(copie.programme)
     duplication.value = null
@@ -77,7 +76,7 @@ const libelleMode = (p) => (p.mode === 'repete' ? `Répété · ${p.workouts.len
       <div v-for="p in programmes" :key="p.id" class="c-item">
         <RouterLink :to="`/coach/programmes/${p.id}`" style="flex: 1; color: inherit; text-decoration: none">
           <strong>{{ p.nom }}</strong>
-          <div class="c-doux">{{ libelleMode(p) }} · début {{ p.debut }}</div>
+          <div class="c-doux">{{ libelleMode(p) }} · début {{ dateFr(p.debut) }}</div>
         </RouterLink>
         <span class="c-pastille">{{ nomClient(p.clientId) }}</span>
         <button class="c-btn c-mini" @click="ouvrirDuplication(p)">Dupliquer</button>

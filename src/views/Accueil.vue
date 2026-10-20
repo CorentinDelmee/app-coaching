@@ -68,7 +68,7 @@ function entree() {
     { y: 0, opacity: 1, duration: 0.8, stagger: 0.04, ease: 'expo.out', delay: 0.7, clearProps: 'transform,opacity' })
   animerAnneau(anneauEl.value, 0, fraction.value, { duree: 1.6, delay: 0.7 })
   compter(compteurSemaine.value, 0, s.value.semaine.faits, { duree: 1.2, delay: 0.7 })
-  gsap.fromTo('.pastille', { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, delay: 1.1, ease: 'back.out(2.4)', clearProps: 'transform,opacity' })
+  if (racine.value.querySelector('.pastille')) gsap.fromTo('.pastille', { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, delay: 1.1, ease: 'back.out(2.4)', clearProps: 'transform,opacity' })
   gsap.fromTo('.segs i', { scaleY: 0 }, { scaleY: 1, duration: 0.6, stagger: 0.07, delay: 1, ease: 'back.out(2)', clearProps: 'transform' })
   // vie discrète : la pastille respire, la flèche invite à toucher
   const pastille = racine.value.querySelector('.pastille')

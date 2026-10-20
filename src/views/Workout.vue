@@ -72,7 +72,7 @@ function demarrer() {
   const aller = () => {
     marquerLancement()
     partir()
-    router.push({ name: 'seance', params: { workoutId: route.params.workoutId }, query: { ...(nouvelle ? { nouvelle: 1 } : {}), retour: route.fullPath } })
+    router.push({ name: 'seance', params: { workoutId: route.params.workoutId }, query: { ...(nouvelle ? { nouvelle: 1 } : {}), retour: route.path, ...(route.query.retour ? { depuis: route.query.retour } : {}) } })
   }
   ouvrirCercle(lancement.value, btn.value, { onFini: aller })
 }

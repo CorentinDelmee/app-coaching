@@ -534,7 +534,7 @@ const surTouche = (e) => { if (e.key === 'Escape') demanderQuitter() }
 function sortir() {
   sortieAutorisee = true
   libererWakeLock()
-  fermerPage(racine.value, null, { onFini: () => router.replace(route.query.retour || '/') })
+  fermerPage(racine.value, null, { onFini: () => router.replace(route.query.depuis ? { path: route.query.retour, query: { retour: route.query.depuis } } : route.query.retour || '/') })
 }
 function abandonner() {
   effacerSeanceEnCours()

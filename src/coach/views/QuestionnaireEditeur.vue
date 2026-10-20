@@ -98,7 +98,7 @@ async function enregistrer() {
         <button class="c-btn c-mini" :disabled="i === q.questions.length - 1" aria-label="Descendre la question" @click="bouger(i, 1)">↓</button>
         <button class="c-btn c-mini c-danger" @click="retirer(i)">Supprimer</button>
       </div>
-      <label>Question<input :value="qu.libelle" placeholder="Comment as-tu dormi ?" @input="majLibelle(qu, i, $event.target.value)" /></label>
+      <label>Question<input :value="qu.libelle" placeholder="Comment avez-vous dormi ?" @input="majLibelle(qu, i, $event.target.value)" /></label>
 
       <div v-if="qu.type === 'curseur'" class="c-ligne c-bas" style="margin-top: 10px">
         <label class="c-moyen">Libellé du 0<input v-model="qu.etiquettes[0]" placeholder="Très mal" /></label>

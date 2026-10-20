@@ -103,7 +103,7 @@ describe('aperçu du workout', () => {
   })
   it('sans consigne : null (pas de bloc vide)', () => {
     expect(a.consigne).toBe(null)
-    expect(apercuWorkout({ workout: demo.workouts.find((w) => w.id === 'w-fabien-1'), exercices: demo.exercices }).consigne).toMatch(/Échauffe-toi/)
+    expect(apercuWorkout({ workout: demo.workouts.find((w) => w.id === 'w-fabien-1'), exercices: demo.exercices }).consigne).toMatch(/Échauffez-vous/)
   })
   it('circuits : format et durée', () => {
     const w3 = apercuWorkout({ workout: demo.workouts.find((w) => w.id === 'w-fabien-3'), exercices: demo.exercices })

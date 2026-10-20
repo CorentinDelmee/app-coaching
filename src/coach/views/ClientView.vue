@@ -9,7 +9,7 @@ import { etatSemaine } from '../../domain/programme.js'
 import { libelleSeance, payeCeMois } from '../../domain/coaching.js'
 import { maintenant, rafraichir, uuid, etat, marquerVue, messageErreur } from '../store.js'
 import { HABITUDES_DEFAUT, parserHabitudes } from '../../domain/suivi.js'
-import { chargesRealisees, pointsPoids, lienWhatsAppIdentifiants, messageIdentifiants } from '../logique.js'
+import { chargesRealisees, dateFr, pointsPoids, lienWhatsAppIdentifiants, messageIdentifiants } from '../logique.js'
 import CalendrierMois from '../components/CalendrierMois.vue'
 import SvgCourbe from '../components/SvgCourbe.vue'
 
@@ -154,6 +154,7 @@ async function copier(texte, quoi) {
   try { await navigator.clipboard.writeText(texte); copie.value = quoi } catch { copie.value = 'Copie impossible : sélectionne le texte' }
   setTimeout(() => { copie.value = '' }, 2000)
 }
+const confirmerArchivage = ref(false)
 async function archiver() {
   await data.profils.archiver(props.id)
   await rafraichir()
@@ -191,7 +192,7 @@ async function archiver() {
     <section v-if="onglet === 'apercu'">
       <div class="c-grille" style="margin-bottom: 16px">
         <div class="c-carte"><h3>Cette semaine</h3><strong style="font: 400 26px var(--font-titre)">{{ faitesCetteSemaine }}</strong> <span class="c-doux">séance{{ faitesCetteSemaine > 1 ? 's' : '' }} faite{{ faitesCetteSemaine > 1 ? 's' : '' }}</span></div>
-        <div class="c-carte"><h3>Dernière séance</h3>{{ derniereSeance ? `${nomWorkout(derniereSeance.workoutId)} · ${derniereSeance.date}` : 'Aucune pour l\'instant' }}</div>
+        <div class="c-carte"><h3>Dernière séance</h3>{{ derniereSeance ? `${nomWorkout(derniereSeance.workoutId)} · ${dateFr(derniereSeance.date)}` : 'Aucune pour l\'instant' }}</div>
         <div class="c-carte"><h3>Programme</h3>{{ d.programmes[0] ? d.programmes[0].nom : 'Aucun programme' }}
           <RouterLink v-if="d.programmes[0]" :to="`/coach/programmes/${d.programmes[0].id}`" class="c-petit" style="display: block">Ouvrir</RouterLink>
         </div>
@@ -205,7 +206,7 @@ async function archiver() {
       <div v-if="faitesTriees.length" class="c-liste" style="margin-bottom: 20px">
         <div v-for="r in faitesTriees" :key="r.id" class="c-item" style="flex-wrap: wrap">
           <strong style="flex: 1; min-width: 160px">{{ nomWorkout(r.workoutId) }}</strong>
-          <span class="c-doux">{{ r.date }} · {{ duree(r.dureeSec) }} · volume {{ Math.round(r.volume) }} kg</span>
+          <span class="c-doux">{{ dateFr(r.date) }} · {{ duree(r.dureeSec) }} · volume {{ Math.round(r.volume) }} kg</span>
           <p v-if="r.commentaire" style="flex-basis: 100%; margin: 0" class="c-petit">« {{ r.commentaire }} »</p>
         </div>
       </div>
@@ -216,7 +217,7 @@ async function archiver() {
         <div v-for="c in charges" :key="c.exerciceId" class="c-carte">
           <h3 style="text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--texte)">{{ c.nom }}</h3>
           <table class="c-table">
-            <tr v-for="h in c.historique.slice(0, 5)" :key="h.date"><td class="c-doux">{{ h.date }}</td><td><strong>{{ h.poids }} kg</strong><span v-if="h.reps !== null"> × {{ h.reps }}</span></td><td class="c-doux">{{ h.series }} séries</td></tr>
+            <tr v-for="h in c.historique.slice(0, 5)" :key="h.date"><td class="c-doux">{{ dateFr(h.date) }}</td><td><strong>{{ h.poids }} kg</strong><span v-if="h.reps !== null"> × {{ h.reps }}</span></td><td class="c-doux">{{ h.series }} séries</td></tr>
           </table>
         </div>
       </div>
@@ -227,7 +228,7 @@ async function archiver() {
     <section v-else-if="onglet === 'reponses'">
       <div v-if="reponsesTriees.length" class="c-liste">
         <details v-for="r in reponsesTriees" :key="r.id" class="c-item" style="display: block">
-          <summary style="cursor: pointer"><strong>{{ questionnaireDe(r.questionnaireId)?.nom || 'Questionnaire' }}</strong> <span class="c-doux">{{ r.date }}</span></summary>
+          <summary style="cursor: pointer"><strong>{{ questionnaireDe(r.questionnaireId)?.nom || 'Questionnaire' }}</strong> <span class="c-doux">{{ dateFr(r.date) }}</span></summary>
           <table class="c-table" style="margin-top: 8px">
             <tr v-for="l in lignesReponse(r)" :key="l.libelle"><td class="c-doux">{{ l.libelle }}</td><td>{{ l.valeur }}</td></tr>
           </table>
@@ -276,7 +277,7 @@ async function archiver() {
         </form>
         <div v-if="d.mots.length" class="c-liste" style="margin-top: 12px">
           <div v-for="m in [...d.mots].sort((a, b) => b.date.localeCompare(a.date))" :key="m.id" class="c-item">
-            <div style="flex: 1">{{ m.texte }}<div class="c-doux c-petit">{{ m.date }}</div></div>
+            <div style="flex: 1">{{ m.texte }}<div class="c-doux c-petit">{{ dateFr(m.date) }}</div></div>
             <button class="c-btn c-mini c-danger" @click="supprimerMot(m)">Retirer</button>
           </div>
         </div>
@@ -310,7 +311,12 @@ async function archiver() {
           <button class="c-btn c-principal" type="submit">Enregistrer</button>
           <button class="c-btn" type="button" @click="genererNouveauCode">Nouveau code</button>
           <span class="c-espace" />
-          <button class="c-btn c-danger" type="button" @click="archiver">Archiver ce client</button>
+          <template v-if="confirmerArchivage">
+            <span class="c-petit">Archiver {{ profil.nom }} ?</span>
+            <button class="c-btn c-danger" type="button" @click="archiver">Oui, archiver</button>
+            <button class="c-btn" type="button" @click="confirmerArchivage = false">Annuler</button>
+          </template>
+          <button v-else class="c-btn c-danger" type="button" @click="confirmerArchivage = true">Archiver ce client</button>
         </div>
         <div v-if="nouveauCode" class="c-carte" role="status" style="margin-top: 14px; border-color: var(--accent)">
           <p class="c-doux c-petit" style="margin-top: 0">Nouveau code généré : il ne sera plus affiché ensuite, transmets-le maintenant.</p>

@@ -115,7 +115,7 @@ async function restaurer(p) {
     <p v-else class="c-vide">Aucun client pour l'instant. Crée le premier avec « Nouveau client ».</p>
 
     <div v-if="archives.length" style="margin-top: 20px">
-      <button class="c-btn c-mini" @click="voirArchives = !voirArchives">{{ voirArchives ? 'Masquer' : 'Voir' }} les {{ archives.length }} archivés</button>
+      <button class="c-btn c-mini" @click="voirArchives = !voirArchives">{{ voirArchives ? 'Masquer' : 'Voir' }} {{ archives.length > 1 ? `les ${archives.length} clients archivés` : 'le client archivé' }}</button>
       <div v-if="voirArchives" class="c-liste" style="margin-top: 10px">
         <div v-for="p in archives" :key="p.id" class="c-item">
           <div style="flex: 1"><strong>{{ p.nom }}</strong> <span class="c-doux">{{ p.identifiant }}</span></div>

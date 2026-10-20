@@ -32,7 +32,9 @@ const router = createRouter({
     { path: '/demo/temps', redirect: '/seance/w-fabien-1' },
     { path: '/demo/circuits', redirect: '/seance/w-fabien-circuits' },
     { path: '/demo/finishers', redirect: '/seance/w-fabien-3' },
-    routeCoach
+    routeCoach,
+    // Adresse inconnue : page 404 (après toutes les autres routes)
+    { path: '/:pathMatch(.*)*', name: 'introuvable', component: () => import('../views/NonTrouvee.vue') }
   ]
 })
 

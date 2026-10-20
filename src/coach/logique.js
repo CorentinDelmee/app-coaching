@@ -2,7 +2,7 @@
 import { CHAMPS } from '../domain/modele.js'
 import { paramsComplets } from '../engine/circuits.js'
 import { lienWhatsApp } from '../domain/coaching.js'
-import { ajouterJours, lundiDe } from '../domain/dates.js'
+import { ajouterJours, jourSemaine, lundiDe } from '../domain/dates.js'
 
 export const CATEGORIES = {
   jambes: 'Jambes', poussee: 'Poussée', tirage: 'Tirage', gainage: 'Gainage', cardio: 'Cardio', mobilite: 'Mobilité'
@@ -16,10 +16,20 @@ export const copie = (x) => JSON.parse(JSON.stringify(x))
 
 const slug = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
+const MOIS_COURTS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
+const JOURS_ABREGES = ['lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.', 'dim.']
+/** '2026-09-28' -> « lun. 28 sept. » (et l'année si elle diffère de `anneeRef`, ex. « lun. 28 sept. 2025 »). */
+export function dateFr(jour, anneeRef) {
+  if (!jour) return ''
+  const [a, m, j] = jour.split('-').map(Number)
+  const base = `${JOURS_ABREGES[jourSemaine(jour)]} ${j} ${MOIS_COURTS[m - 1]}`
+  return anneeRef && a !== anneeRef ? `${base} ${a}` : base
+}
+
 // --- Messages à transmettre au client -------------------------------------------------------------
 export function messageIdentifiants({ nom, identifiant, code, url }) {
   const prenom = nom.trim().split(/\s+/)[0]
-  return `Bonjour ${prenom}, voici ton accès à l'application de coaching :\n${url}\nIdentifiant : ${identifiant}\nCode : ${code}\nTu pourras changer ce code dans ton profil.`
+  return `Bonjour ${prenom}, voici votre accès à l'application de coaching :\n${url}\nIdentifiant : ${identifiant}\nCode : ${code}\nVous pourrez changer ce code dans votre profil.`
 }
 export const lienWhatsAppIdentifiants = (infos, numero = '') => lienWhatsApp(numero, messageIdentifiants(infos))
 
@@ -141,21 +151,27 @@ export function dupliquerWorkout(w, clientId, uuid, nom) {
   return { ...c, id: uuid(), clientId: clientId ?? null, nom: nom ?? c.nom }
 }
 
+/** Remplace le nom de l'ancien client par celui du nouveau dans un titre (rien ne doit fuiter chez le destinataire). */
+export const renommerPourClient = (titre, ancienNom, nouveauNom) =>
+  ancienNom && nouveauNom && titre.includes(ancienNom) ? titre.split(ancienNom).join(nouveauNom) : titre
+
 /**
  * Copie un programme + toutes ses séances pour un autre client.
+ * `noms` { ancien, nouveau } : noms des clients, pour renommer le programme (« Programme <nouveau> ») et les séances.
  * @returns {{programme, workouts}} à créer (séances d'abord).
  */
-export function dupliquerProgramme(programme, workoutsSource, clientId, uuid, debut) {
+export function dupliquerProgramme(programme, workoutsSource, clientId, uuid, debut, noms = {}) {
   const copies = new Map()
   const copier = (wid) => {
     if (copies.has(wid)) return copies.get(wid).id
     const source = workoutsSource.find((w) => w.id === wid)
     if (!source) return null
-    const c = dupliquerWorkout(source, clientId, uuid)
+    const c = dupliquerWorkout(source, clientId, uuid, renommerPourClient(source.nom, noms.ancien, noms.nouveau))
     copies.set(wid, c)
     return c.id
   }
   const nouveau = { ...copie(programme), id: uuid(), clientId, debut: debut || programme.debut }
+  if (noms.nouveau) nouveau.nom = `Programme ${noms.nouveau}`
   if (programme.mode === 'repete') nouveau.workouts = programme.workouts.map(copier).filter(Boolean)
   else nouveau.semaines = programme.semaines.map((s) => s.map(copier).filter(Boolean))
   if (programme.joursFixes) {

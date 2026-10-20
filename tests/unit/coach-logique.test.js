@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   messageIdentifiants, lienWhatsAppIdentifiants, basculerChamp, fixerNbSeries, nouveauBloc, nouvelleSerie, clePerso, deplacer,
   dupliquerWorkout, dupliquerProgramme, retirerWorkoutDuProgramme, nouvelleQuestion, cleDepuisLibelle, construireCourbe,
-  chargesRealisees, pointsPoids, grilleMois, nouvelItemExercice, synchroniserExercicesCircuit
+  chargesRealisees, pointsPoids, grilleMois, nouvelItemExercice, synchroniserExercicesCircuit, renommerPourClient, dateFr
 } from '../../src/coach/logique.js'
 import { validerWorkout, validerQuestionnaire } from '../../src/domain/modele.js'
 
@@ -88,6 +88,18 @@ describe('duplication', () => {
     const { programme, workouts } = dupliquerProgramme(p, [w1, w2], 'c2', uuid)
     expect(workouts).toHaveLength(2)
     expect(programme.semaines[0][0]).toBe(programme.semaines[1][0])
+  })
+  it('le nom de l ancien client ne fuit pas chez le destinataire', () => {
+    const p = { id: 'p', clientId: 'c1', nom: 'Programme Fabien Vincent', mode: 'repete', debut: '2026-10-19', workouts: ['w1'] }
+    const src = [{ id: 'w1', clientId: 'c1', nom: 'Séance Fabien Vincent — Haut', blocs: [] }]
+    const { programme, workouts } = dupliquerProgramme(p, src, 'c2', uuid, undefined, { ancien: 'Fabien Vincent', nouveau: 'Léa Martin' })
+    expect(programme.nom).toBe('Programme Léa Martin')
+    expect(workouts[0].nom).toBe('Séance Léa Martin — Haut')
+    expect(renommerPourClient('Full body', 'Fabien Vincent', 'Léa Martin')).toBe('Full body')
+  })
+  it('dates en français', () => {
+    expect(dateFr('2026-09-28')).toBe('lun. 28 sept.')
+    expect(dateFr('2025-01-05', 2026)).toBe('dim. 5 janv. 2025')
   })
   it('retirer une séance du programme nettoie les jours fixés', () => {
     const p = { mode: 'repete', workouts: ['a', 'b'], joursFixes: { a: 1, b: 2 } }

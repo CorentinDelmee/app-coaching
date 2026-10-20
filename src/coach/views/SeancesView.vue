@@ -4,7 +4,7 @@ import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import data from '../../data/index.js'
 import { etat, nomClient, rafraichir, uuid, messageErreur } from '../store.js'
-import { dupliquerWorkout, resumeWorkout } from '../logique.js'
+import { dupliquerWorkout, renommerPourClient, resumeWorkout } from '../logique.js'
 
 const workouts = ref([])
 const exercices = ref([])
@@ -30,7 +30,9 @@ async function dupliquer() {
   erreur.value = ''
   const { workout, cible } = duplication.value
   try {
-    await data.workouts.creer(dupliquerWorkout(workout, cible || null, uuid, `${workout.nom} (copie)`))
+    // Vers un client : le nom de l'ancien client est remplacé ; vers un modèle : on marque « (copie) ».
+    const nom = cible ? renommerPourClient(workout.nom, workout.clientId ? nomClient(workout.clientId) : '', nomClient(cible)) : `${workout.nom} (copie)`
+    await data.workouts.creer(dupliquerWorkout(workout, cible || null, uuid, nom))
     duplication.value = null
     await charger()
   } catch (e) {

@@ -1,7 +1,10 @@
 <script setup>
 // Cadre du tableau de bord coach : navigation latérale (ordinateur) / barre horizontale (téléphone).
 import { onMounted } from 'vue'
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+import data from '../data/index.js'
+import { effacerSeanceEnCours } from '../lib/seanceEnCours.js'
+import { sauterFermeture } from '../anim/passage.js'
 import { etat, rafraichir } from './store.js'
 import './coach.css'
 
@@ -16,6 +19,15 @@ const LIENS = [
 ]
 
 onMounted(rafraichir)
+
+// Même sortie que le Profil client : session fermée, séance sauvegardée effacée.
+const router = useRouter()
+async function deconnecter() {
+  await data.deconnecter()
+  effacerSeanceEnCours()
+  sauterFermeture()
+  router.replace('/bienvenue')
+}
 </script>
 
 <template>
@@ -28,6 +40,7 @@ onMounted(rafraichir)
           <span v-if="l.badge && etat.alertes.length" class="c-badge" :aria-label="`${etat.alertes.length} alertes`">{{ etat.alertes.length }}</span>
         </RouterLink>
       </nav>
+      <button class="c-btn c-deco" type="button" @click="deconnecter">Se déconnecter</button>
     </aside>
     <main class="c-main">
       <RouterView v-slot="{ Component, route }">

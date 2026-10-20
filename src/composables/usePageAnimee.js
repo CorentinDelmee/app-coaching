@@ -15,6 +15,7 @@ export function usePageAnimee(retourDefaut) {
 
   /** À appeler quand le contenu est prêt (après nextTick). Renvoie la timeline, ou null si l'entrée est sautée. */
   function ouvrir(opts = {}) {
+    if (!couche.value) return null // page sans contenu (ex. workout introuvable) : rien à animer
     const m = prendreSource()
     // retour depuis une page qui vient de se refermer dans sa carte : on montre la page telle quelle (renvoie null)
     if (consommerRetour()) { couche.value.hidden = false; return null }

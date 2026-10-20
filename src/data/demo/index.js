@@ -45,7 +45,7 @@ function workoutsFabien(c) {
     bloc('w1-b2', 'Fentes arrière', 3, { poids: 12, reps: 10 }, { repos: 90 }),
     bloc('w1-b3', 'Hip thrust', 3, { poids: 50, reps: 12 }, { repos: 90 }),
     bloc('w1-b4', 'Planche', 3, { tempsTravail: 30 }, { repos: 45 })
-  ], 'Échauffe-toi 5 minutes avant de commencer. Qualité des mouvements avant la charge.')
+  ], 'Échauffez-vous 5 minutes avant de commencer. Qualité des mouvements avant la charge.')
   const w2 = workout('w-fabien-2', c, 'Workout 2 — Haut du corps', [
     bloc('w2-b1', 'Développé couché', 4, { poids: 50, reps: 8 }, { repos: 120 }),
     bloc('w2-b2', 'Rowing haltère un bras', 3, { poids: 20, reps: 10 }),

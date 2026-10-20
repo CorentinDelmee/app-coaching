@@ -169,3 +169,10 @@ a.c-item:hover, button.c-item:hover { background: var(--surface-2); }
 
 /* Liens simples (sans classe) : accent plutôt que bleu navigateur */
 :where(.coach) a { color: var(--accent); }
+
+/* Déconnexion : en bas de la barre latérale (à droite de la barre sur téléphone) */
+.c-deco { margin-top: auto; }
+@media (max-width: 860px) { .c-deco { margin-top: 0; white-space: nowrap; flex: none; } }
+
+/* Téléphone : les lignes de liste passent à la ligne au lieu de rogner leurs boutons */
+@media (max-width: 860px) { .c-item { flex-wrap: wrap; } .c-item > a:first-child { flex: 1 1 100% !important; } }
