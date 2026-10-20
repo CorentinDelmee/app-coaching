@@ -12,3 +12,4 @@ Voir `TABLEAU-DE-BORD.html` : mise en route Supabase + Netlify (`MISE-EN-ROUTE.m
 ## Points fragiles connus
 - Jamais testé contre un vrai Supabase (adaptateur, Edge Functions, schéma) ni sur un vrai téléphone (fluidité clip-path Android moyen, vibrations iOS, invite d'installation).
 - Exercices de démo sans lien vidéo.
+- Mineurs non corrigés : à 390 px l'onglet actif coach est coupé ; après avoir quitté une séance, le geste retour demande 2 appuis (retombe d'abord sur le workout).
