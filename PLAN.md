@@ -32,7 +32,7 @@ Tests navigateur : playwright-cli (ou Chrome headless piloté par CDP en secours
 **Dépendances** : squelette (fait). **Parallélisable** avec la création des maquettes (déjà en cours).
 
 ### Tâches
-- [ ] **1.1 Modèle** (`src/domain/modele.js`, JSDoc) : `Profil` (rôle `coach|client`, identifiant, nom, tarif €,
+- [x] **1.1 Modèle** (`src/domain/modele.js`, JSDoc) : `Profil` (rôle `coach|client`, identifiant, nom, tarif €,
   lieu par défaut `domicile|salle`, modules nutrition `{habitudes, photosRepas, calories}`, archivé, préférences
   son/vibration/unité, consentement daté), `Exercice` (nom, description, lienVideo, catégories), `Workout`
   (blocs : `exercice` | `superset` | `circuit{format, params}` ; chaque exercice a ses séries et ses **champs**
@@ -44,16 +44,16 @@ Tests navigateur : playwright-cli (ou Chrome headless piloté par CDP en secours
   `EntreeNutrition`, `AlerteVue`.
   - *Acceptation* : un test valide les données factices contre le modèle (fonction `valider*` par entité :
     champ manquant → message d'erreur lisible nommant l'entité et le champ).
-- [ ] **1.2 Interface de données** (`src/data/index.js`) : choisit l'adaptateur — Supabase si `VITE_SUPABASE_URL`
+- [x] **1.2 Interface de données** (`src/data/index.js`) : choisit l'adaptateur — Supabase si `VITE_SUPABASE_URL`
   et `VITE_SUPABASE_ANON_KEY` sont présentes, sinon local. Expose `mode` (`'local'|'supabase'`) et des méthodes
   par entité (lister / lire / créer / modifier / archiver) + session (`connecter`, `deconnecter`, `utilisateurCourant`, `changerCode`).
   - *Acceptation* : sans `.env`, `mode === 'local'` ; une suite de **tests de contrat** (mêmes tests pour tout adaptateur)
     passe sur l'adaptateur local.
-- [ ] **1.3 Adaptateur local** (`src/data/adapters/local.js`) : `localStorage` (clé versionnée `cdc-coaching/1`),
+- [x] **1.3 Adaptateur local** (`src/data/adapters/local.js`) : `localStorage` (clé versionnée `cdc-coaching/1`),
   initialisé avec les données factices au premier lancement ; bouton « réinitialiser la démo » prévu côté API.
   Stockage plein → erreur typée `STOCKAGE_PLEIN` (l'UI affichera « Stockage plein sur cet appareil — non enregistré »).
   - *Acceptation* : tests de contrat verts ; données persistées entre deux instanciations ; quota simulé → `STOCKAGE_PLEIN`.
-- [ ] **1.4 Données factices** (`src/data/demo/`) : coach Corentin ; **Fabien Vincent** (`fabien.vincent`, domicile 35 €,
+- [x] **1.4 Données factices** (`src/data/demo/`) : coach Corentin ; **Fabien Vincent** (`fabien.vincent`, domicile 35 €,
   programme répété **3 workouts/semaine** commencé il y a 3 semaines, historique réaliste, séances de coaching passées et
   1 à venir, check-ins des derniers jours dont une douleur à 7 → alerte) ; 2 autres clients (une en salle à 50 €, mode
   `parSemaine` 4 semaines ; un sans séance prévue et sans check-in depuis 4 jours → alerte) ; **80 exercices FR courants**
@@ -63,18 +63,18 @@ Tests navigateur : playwright-cli (ou Chrome headless piloté par CDP en secours
   Dates factices **relatives à aujourd'hui** (générées au premier lancement) pour que la démo reste vivante.
   - *Acceptation* : test : 80 exercices aux noms uniques, Fabien a 3 workouts/semaine, chaque format de circuit est présent,
     les deux questionnaires couvrent les 7 types (curseur, choix unique, multiple, émojis, nombre+unité, texte, photo).
-- [ ] **1.5 Adaptateur Supabase** (`src/data/adapters/supabase.js`) : mêmes méthodes, inactif sans `.env`. Connexion client
+- [x] **1.5 Adaptateur Supabase** (`src/data/adapters/supabase.js`) : mêmes méthodes, inactif sans `.env`. Connexion client
   = identifiant converti en e-mail technique `identifiant@clients.cdc-coaching.invalid` + code comme mot de passe.
   Création de client par le coach via un 2e client Supabase **sans persistance de session** (`signUp`) puis insertion du profil.
   - *Acceptation* : aucun import de Supabase n'est exécuté en mode local (test) ; l'adaptateur expose exactement les mêmes
     méthodes que le local (test de comparaison des clés) ; aucune clé dans le code.
-- [ ] **1.6 `supabase/schema.sql`** : tables du modèle, `profiles.role`, **RLS activée sur toutes les tables** :
+- [x] **1.6 `supabase/schema.sql`** : tables du modèle, `profiles.role`, **RLS activée sur toutes les tables** :
   un client ne lit/écrit que les lignes où `client_id = auth.uid()` (et ne lit pas les autres profils) ; le coach lit/écrit
   les lignes de ses clients ; bibliothèque d'exercices lisible par tous les connectés, modifiable par le coach seul ;
   le client ne peut pas modifier son tarif, son rôle ni ses modules. Bucket Storage privé pour les photos, mêmes règles.
   - *Acceptation* : le fichier s'exécute sans erreur dans l'ordre (vérifiable par lecture : `create table` avant `policy`) ;
     chaque table a `enable row level security` et au moins une policy (test Vitest qui parse le fichier et le vérifie).
-- [ ] **1.7 Moteur de séance** (`src/engine/seance.js`) — réducteur pur `(etat, action, now) → etat` :
+- [x] **1.7 Moteur de séance** (`src/engine/seance.js`) — réducteur pur `(etat, action, now) → etat` :
   démarrer (pré-remplissage depuis le template client, sinon valeurs prescrites), modifier une valeur (refusée si champ non
   modifiable), valider la série → repos automatique (durée prescrite), `+15 s`, passer le repos, lancer une série en temps de
   travail → fin = signal `son` + enchaînement du repos, série suivante / exercice suivant (signal `avancerAuto` après validation
@@ -82,7 +82,7 @@ Tests navigateur : playwright-cli (ou Chrome headless piloté par CDP en secours
   terminer → résumé (durée totale, volume = Σ poids × reps, séries faites, **records** = meilleure charge par exercice battue).
   - *Acceptation* : tests avec horloge simulée : repos de 90 s à t+89 s affiche 1 s, à t+90 s terminé ; `+15 s` prolonge ;
     reprise d'un état sérialisé à t+40 s donne le même affichage ; exercice sans valeur prescrite ni historique → champs vides.
-- [ ] **1.8 Moteur de circuits** (`src/engine/circuits.js`) — `etatChrono(format, params, evenements, now)` :
+- [x] **1.8 Moteur de circuits** (`src/engine/circuits.js`) — `etatChrono(format, params, evenements, now)` :
   préparation 10 s **jamais comptée** dans le temps final ; **AMRAP** (décompte, `+1 tour`, tours, reps en plus à la fin) ;
   **EMOM** (minute x/total, décompte de la minute, exercice de la minute) ; **For Time** (chrono montant, `Terminé`, cap → fin
   « cap ») ; **Time cap** (chrono montant jusqu'au cap, le cap affiché reste fixe) ; **Death by** (minute N = N reps, `Échec` →
@@ -91,27 +91,27 @@ Tests navigateur : playwright-cli (ou Chrome headless piloté par CDP en secours
   - *Acceptation* : un test par format et par cas limite : For Time terminé à 4:32 après 10 s de préparation → résultat 4:32 ;
     For Time cap 12:00 atteint → résultat « cap 12:00 » ; Death by échec en minute 7 → « 6 minutes » ; Tabata à t = 10 + 25 s →
     tour 1/8 phase repos reste 5 s ; EMOM 10 min à t = 10 + 61 s → minute 2/10 reste 59 s ; pause/reprise ne fait pas dériver.
-- [ ] **1.9 Enregistrement de la séance** (`src/domain/realisations.js`) : valider une séance → crée la `Realisation`, met à jour le
+- [x] **1.9 Enregistrement de la séance** (`src/domain/realisations.js`) : valider une séance → crée la `Realisation`, met à jour le
   `TemplateClient` (seules les valeurs réellement saisies), place le workout au jour réalisé dans le programme, crée une alerte
   si commentaire. Séance faite hors connexion → file d'attente locale rejouée plus tard (pure : `fusionnerFile`).
   - *Acceptation* : après validation de Workout 1 à 60 kg, la séance suivante de Workout 1 démarre pré-remplie à 60 kg ;
     rejouer deux fois la même file n'enregistre qu'une réalisation (identifiant unique).
-- [ ] **1.10 Calendrier et programme** (`src/domain/programme.js`) : semaine courante du programme, workouts de la semaine
+- [x] **1.10 Calendrier et programme** (`src/domain/programme.js`) : semaine courante du programme, workouts de la semaine
   (mode répété / par semaine), placés vs « À faire cette semaine », x/N, jours fixés, semaine bouclée, historique des semaines.
   Au-delà de la dernière semaine d'un programme `parSemaine` → état `termine`.
   - *Acceptation* : tests : 2 workouts faits sur 3 → « 2/3 », 3/3 → `semaineBouclee: true` ; programme 4 semaines en semaine 5 → `termine`.
-- [ ] **1.11 Calculs coaching** (`src/domain/coaching.js`) : prochaine séance (statut `prevue`, à venir), **rang dans le mois**
+- [x] **1.11 Calculs coaching** (`src/domain/coaching.js`) : prochaine séance (statut `prevue`, à venir), **rang dans le mois**
   (séances non annulées du mois calendaire, triées par date/heure), nb séances semaine/mois, **payé ce mois** = Σ tarifs des séances
   `faite` du mois (annulées et prévues exclues), délai avant séance (`moinsDe24h`), messages WhatsApp pré-remplis (lien `wa.me` encodé).
   - *Acceptation* : 3 séances non annulées en octobre (dont une annulée en plus) → la 3e affiche rang 3 ; 2 faites à 35 € → 70 € ;
     séance dans 23 h → `moinsDe24h: true` ; aucune séance prévue → `null`.
-- [ ] **1.12 Alertes coach** (`src/domain/alertes.js`) : pas de check-in quotidien depuis **3 jours** (ou jamais, si client créé il y a
+- [x] **1.12 Alertes coach** (`src/domain/alertes.js`) : pas de check-in quotidien depuis **3 jours** (ou jamais, si client créé il y a
   plus de 3 jours), **douleur > 6** (check-in ou carte du corps, 7 derniers jours), **séance commentée** ; une alerte marquée vue ne revient pas.
   - *Acceptation* : tests : dernier check-in il y a 3 jours → alerte, il y a 2 jours → non ; douleur 6 → non, 7 → oui ; client archivé → aucune alerte.
-- [ ] **1.13 Identifiants** (`src/domain/identifiants.js`) : `prenom.nom` sans accents ni espaces, suffixe `-2` si déjà pris ;
+- [x] **1.13 Identifiants** (`src/domain/identifiants.js`) : `prenom.nom` sans accents ni espaces, suffixe `-2` si déjà pris ;
   code de **6 caractères lisibles** (sans 0/O/1/I/L), aléatoire via `crypto.getRandomValues`.
   - *Acceptation* : « Fabien Vincent » → `fabien.vincent`, « Élodie D'Arc » → `elodie.darc` ; 1000 codes générés : longueur 6, alphabet respecté.
-- [ ] **1.14 Import / export JSON** (`src/domain/echange.js` + `docs/FORMAT-JSON.md`) : `{ "format": "cdc-coaching/1", "exporteLe", "exercices", "workouts", "programmes" }`
+- [x] **1.14 Import / export JSON** (`src/domain/echange.js` + `docs/FORMAT-JSON.md`) : `{ "format": "cdc-coaching/1", "exporteLe", "exercices", "workouts", "programmes" }`
   (+ export « mes données » côté client). Import : validation complète avant écriture, rapport « 12 exercices ajoutés, 3 mis à jour, 1 rejeté (raison) ».
   - *Acceptation* : export puis import = données identiques (test aller-retour) ; format absent ou `cdc-coaching/2` → refus avec message
     « Format non reconnu (attendu cdc-coaching/1) » ; document de format avec un exemple complet.

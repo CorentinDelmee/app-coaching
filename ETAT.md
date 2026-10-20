@@ -5,7 +5,7 @@
 - **Référence** : CAHIER-DES-CHARGES.md
 
 ## Lot suivant
-**Lot 1 — Données, modèle et moteur** (design-indépendant, peut démarrer tout de suite).
+**Lot 2 — Séance en cours** (dès que `design/RECOMMANDATION.md` existe). Lot 1 FAIT : voir `src/engine/seance.js`, `src/engine/circuits.js`, `src/data/index.js` (`data`), `src/domain/*`, 201 tests verts.
 
 ## Prochaines étapes
 1. `developpeur` : lot 1 (tâches 1.1 à 1.14), puis `testeur`.
