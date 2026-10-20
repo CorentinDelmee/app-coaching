@@ -114,3 +114,20 @@ Aucun.
 4. M7 avant de coder les photos ; M8 avant le premier vrai client.
 
 Décision pour Corentin : garder les inscriptions publiques (plus simple ; CAPTCHA à gérer) ou faire créer les clients par Edge Function (plus sûr, environ un lot de travail). Recommandation : Edge Function.
+
+## Statut des corrections (2026-10-20)
+
+| Point | Statut | Détail |
+|---|---|---|
+| I1 client archivé | Corrigé | `est_actif()` dans toutes les policies client et storage (`schema.sql`) ; test unitaire. À rejouer dans le test d'isolation §11.A (archiver un client, vérifier qu'il ne lit plus rien). |
+| I2 énumération par signUp | Corrigé | Clients créés par l'Edge Function `creer-client` ; inscriptions publiques à désactiver (MISE-EN-ROUTE §3.2) ; message de connexion toujours générique. Reste : désactiver le réglage chez Supabase et déployer la fonction. |
+| I3 force du code | Corrigé côté app | Code généré sur 8 caractères, minimum 8 au changement, fonctions serveur alignées ; MISE-EN-ROUTE : longueur mini 8, limitation des tentatives, phrase de passe coach 16+. Reste : CAPTCHA/MFA non codés (dépendent du plan gratuit) ; changement de code imposé au premier accès non fait. |
+| I4 en-têtes | Corrigé | `public/_headers` ; build vérifiée (un seul script externe, pas d'eval) ; non testé sur Netlify réel : vérifier sur securityheaders.com après la mise en ligne. |
+| M1 fonctions SQL | Corrigé | revoke/grant, `search_path` fixé, trigger libre pour l'éditeur SQL. |
+| M2 liens vidéo | Corrigé | `videoDe` n'accepte que http(s). |
+| M3, M4 | Rien à faire | — |
+| M5 journal de la fonction | Reste | Non traité. |
+| M6 données locales | Corrigé | File vidée à la déconnexion, avertissement si séances non envoyées. |
+| M7 photos | Reste | Consignes notées dans PLAN.md (lot 7), à appliquer au codage. |
+| M8 RGPD | Reste | Voir `docs/RGPD-CHECKLIST.md`. |
+| Mode local en production | Corrigé | Écran « Configuration manquante » sauf `VITE_MODE_DEMO=1`. |

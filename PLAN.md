@@ -188,6 +188,7 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 ## Lot 7 — Questionnaires `[DESIGN]` — parallélisable
 **Dépendances** : lot 5.
 - [ ] Liste (quotidien / hebdo / ponctuel, à faire vs faits) ; une question par écran avec transitions ; 7 types de question ; photo compressée (≤ 1280 px).
+- [ ] **Consignes sécurité photos (audit M7)** : bucket `photos` avec `file_size_limit` (2 Mo) et `allowed_mime_types` (jpeg/png/webp) ; redimensionner via `canvas` avant envoi (retire l'EXIF/GPS) ; nom aléatoire `<uid>/<uuid>.jpg` ; affichage par URL signée courte (`createSignedUrl` 60-300 s), jamais `getPublicUrl` ; supprimer aussi les photos dans « Supprimer mes données » (`supprimerMesDonneesSante`) ; ne jamais mettre de photo dans la file locale.
 - [ ] Fin = petite célébration ; réponse douleur > 6 → alerte coach (1.12). Questionnaire déjà rempli aujourd'hui → « Déjà fait aujourd'hui ».
 - *Acceptation* : la pastille du dashboard baisse après envoi ; quitter au milieu puis revenir reprend à la question en cours ; stockage plein → message, pas de perte silencieuse.
 

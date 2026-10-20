@@ -4,6 +4,9 @@
 - **Phase** : lot 1 VALIDÉ ; lot 2 (séance en cours) FAIT, à tester par le testeur ; maquette M1 « Atelier » appliquée en provisoire (design/RECOMMANDATION.md).
 - **Référence** : CAHIER-DES-CHARGES.md
 
+## Corrections de l'audit de sécurité — FAITES (2026-10-20)
+Voir `docs/AUDIT-SECURITE.md` (section Statut). À faire par Corentin : désactiver les inscriptions publiques, déployer `creer-client` et `reinitialiser-code`, relancer `schema.sql` sur un projet neuf. Build de test : `VITE_MODE_DEMO=1 npm run build`.
+
 ## Lot 2 — FAIT (à valider par le testeur)
 Séance complète portée en Vue avec les animations de la maquette M1 : `src/views/Seance.vue` (orchestration), `src/components/seance/*`
 (exercice, série ouverte, roue, chronos de série et de circuit, tiroir, bandeau, fin), `src/anim/` (transitions GSAP), `src/domain/seanceUi.js`
