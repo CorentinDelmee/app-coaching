@@ -105,10 +105,10 @@
     {
       "id": "10",
       "titre": "Tableau de bord coach",
-      "statut": "en_cours",
-      "avancement": 90,
+      "statut": "fait",
+      "avancement": 100,
       "qui": "developpeur",
-      "note": "Fusionné ; test indépendant en cours"
+      "note": "Testé + corrigé"
     },
     {
       "id": "11",
@@ -120,27 +120,44 @@
     {
       "id": "12",
       "titre": "MISE-EN-ROUTE.md (Supabase, Netlify)",
-      "statut": "a_faire",
-      "avancement": 0,
-      "qui": "developpeur"
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "developpeur",
+      "note": "MISE-EN-ROUTE.md (12 étapes), import des 80 exercices, fonction de réinitialisation de code"
     }
   ],
   "taches_humaines": [
     {
-      "titre": "Créer le compte Supabase gratuit (région UE) et coller les clés dans .env",
+      "titre": "Mise en route Supabase (UE) : projet, schema.sql, authentification, compte coach, .env, test local",
       "qui": "Corentin",
       "echeance": "",
-      "duree": "20 min",
+      "duree": "1 h",
       "statut": "a_faire",
-      "comment": "Procédure pas à pas dans MISE-EN-ROUTE.md (livrée en fin de projet)."
+      "comment": "MISE-EN-ROUTE.md étapes 1 à 8."
     },
     {
-      "titre": "Déployer sur Netlify (sous-domaine netlify.app)",
+      "titre": "Mise en ligne Netlify Drop + installation sur ton téléphone",
       "qui": "Corentin",
       "echeance": "",
-      "duree": "10 min",
+      "duree": "25 min",
       "statut": "a_faire",
-      "comment": "Après Supabase. Voir MISE-EN-ROUTE.md."
+      "comment": "MISE-EN-ROUTE.md étapes 9-10. Action publique : à faire par toi."
+    },
+    {
+      "titre": "Déployer la fonction de réinitialisation de code (npx supabase)",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "25 min",
+      "statut": "a_faire",
+      "comment": "MISE-EN-ROUTE.md étape 11."
+    },
+    {
+      "titre": "Recette en ligne avec 2 comptes (isolation, hors connexion) AVANT tout vrai client",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "40 min",
+      "statut": "a_faire",
+      "comment": "MISE-EN-ROUTE.md étape 12. Aucun vrai client avant cette recette et les tâches RGPD."
     },
     {
       "titre": "RGPD : compléter la page Confidentialité (SIRET, adresse, e-mail, région Supabase)",
@@ -326,6 +343,10 @@
     {
       "texte": "Comparer les maquettes",
       "href": "design/index.html"
+    },
+    {
+      "texte": "Mise en route",
+      "href": "MISE-EN-ROUTE.md"
     }
   ]
 }
