@@ -25,5 +25,9 @@ export function videoDe(exercice) {
   const lien = exercice?.lienVideo
   if (!lien) return { type: 'aucune' }
   const id = idYoutube(lien)
-  return id ? { type: 'youtube', id, embed: urlIntegration(id), lien } : { type: 'lien', lien }
+  if (id) return { type: 'youtube', id, embed: urlIntegration(id), lien }
+  // Autre lien : seulement http(s). Un « javascript: » ou « data: » (import piégé) n'est jamais proposé (audit M2).
+  let url
+  try { url = new URL(String(lien).trim()) } catch { return { type: 'aucune' } }
+  return url.protocol === 'https:' || url.protocol === 'http:' ? { type: 'lien', lien: url.href } : { type: 'aucune' }
 }

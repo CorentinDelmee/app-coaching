@@ -24,6 +24,8 @@ describe('liens vidéo', () => {
   it('intégrée en youtube-nocookie, sinon ouverte, sinon rien', () => {
     expect(videoDe({ lienVideo: 'https://youtu.be/dQw4w9WgXcQ' })).toMatchObject({ type: 'youtube', embed: expect.stringContaining('youtube-nocookie.com/embed/dQw4w9WgXcQ') })
     expect(videoDe({ lienVideo: 'https://vimeo.com/1' })).toEqual({ type: 'lien', lien: 'https://vimeo.com/1' })
+    for (const lien of ['javascript:alert(1)', 'data:text/html,<b>x</b>', 'ftp://x.fr/a', 'pas un lien'])
+      expect(videoDe({ lienVideo: lien })).toEqual({ type: 'aucune' })
     expect(videoDe({})).toEqual({ type: 'aucune' })
     expect(videoDe(undefined)).toEqual({ type: 'aucune' })
   })
