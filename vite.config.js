@@ -16,8 +16,8 @@ export default defineConfig({
         lang: 'fr',
         start_url: '/',
         display: 'standalone',
-        background_color: '#1f2023',
-        theme_color: '#1f2023',
+        background_color: '#25221F',
+        theme_color: '#25221F',
         icons: [{ src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml' }]
       },
       workbox: {

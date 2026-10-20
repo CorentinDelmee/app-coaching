@@ -193,13 +193,23 @@ describe('enchaînement des exercices', () => {
     const e = go(demarrer(), { type: 'validerSerie', exIdx: 0, serieIdx: 0 }, 100)
     expect(e.avancerAuto).toBe(null)
   })
-  it('le tick effectue l\'avance à l\'heure', () => {
-    let e = toutValider(demarrer(), 0, 100)
-    expect(go(e, { type: 'tick' }, 103).courant).toBe(0)
-    e = go(e, { type: 'tick' }, 104)
+  it('le tick effectue l\'avance 3 s après la fin du repos (pas pendant)', () => {
+    let e = toutValider(demarrer(), 0, 100) // dernière série à 101, repos de 90 s jusqu'à 191
+    expect(go(e, { type: 'tick' }, 150).courant).toBe(0) // le repos tourne : pas d'avance
+    e = go(e, { type: 'tick' }, 191) // fin du repos : le compte à rebours de 3 s repart
+    expect(e.evenements.map((x) => x.type)).toEqual(['repos-fini', 'avance-auto-prevue'])
+    expect(e.avancerAuto.finLe).toBe(T0 + s(191) + DELAI_AVANCE_AUTO)
+    expect(go(e, { type: 'tick' }, 193).courant).toBe(0)
+    e = go(e, { type: 'tick' }, 194)
     expect(e.courant).toBe(1)
     expect(e.evenements).toContainEqual({ type: 'avance', vers: 1 })
     expect(e.avancerAuto).toBe(null)
+  })
+  it('« Passer » le repos relance aussi les 3 s d\'avance auto', () => {
+    let e = toutValider(demarrer(), 0, 100)
+    e = go(e, { type: 'passerRepos' }, 120)
+    expect(e.avancerAuto.finLe).toBe(T0 + s(120) + DELAI_AVANCE_AUTO)
+    expect(go(e, { type: 'tick' }, 123).courant).toBe(1)
   })
   it('« Rester » annule l\'avance', () => {
     let e = go(toutValider(demarrer(), 0, 100), { type: 'rester' }, 102)

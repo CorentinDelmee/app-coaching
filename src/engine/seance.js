@@ -225,6 +225,13 @@ function lancerSerie(e, { exIdx, serieIdx }, now) {
   e.evenements.push({ type: 'travail-demarre', duree })
 }
 
+// Fin du repos (écoulé ou passé) alors qu'un exercice vient de se terminer : les 3 s d'avance auto repartent d'ici.
+function armerAvance(e, now) {
+  if (!e.avancerAuto) return
+  e.avancerAuto.finLe = now + DELAI_AVANCE_AUTO
+  e.evenements.push({ type: 'avance-auto-prevue', vers: e.avancerAuto.vers, finLe: e.avancerAuto.finLe })
+}
+
 function tick(e, _action, now) {
   if (e.terminee) return
   if (e.travail && now >= e.travail.finLe) {
@@ -235,8 +242,10 @@ function tick(e, _action, now) {
   if (e.repos && now >= e.repos.finLe) {
     e.evenements.push({ type: 'repos-fini', exIdx: e.repos.exIdx, serieIdx: e.repos.serieIdx, son: true, vibration: true })
     e.repos = null
+    armerAvance(e, now)
   }
-  if (e.avancerAuto && now >= e.avancerAuto.finLe) {
+  // L'avance automatique attend la fin du repos : le bandeau « Exercice suivant dans 3 s » apparaît après le repos.
+  if (e.avancerAuto && !e.repos && now >= e.avancerAuto.finLe) {
     e.courant = e.avancerAuto.vers
     e.evenements.push({ type: 'avance', vers: e.courant })
     e.avancerAuto = null
@@ -289,7 +298,7 @@ const FONCTIONS = {
     e.repos.finLe += s * 1000
     e.repos.duree += s
   },
-  passerRepos: (e) => { e.repos = null },
+  passerRepos: (e, _a, now) => { e.repos = null; armerAvance(e, now) },
   rester: (e) => { e.avancerAuto = null },
   allerA: (e, { exIdx }) => {
     if (!e.exercices[exIdx]) return refuser(e, 'exercice-inconnu')

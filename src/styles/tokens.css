@@ -1,10 +1,88 @@
-/* Design tokens provisoires : remplacés par ceux du DESIGN.md de la maquette retenue (lot 2). */
-:root {
-  --couleur-fond: #1f2023;
-  --couleur-texte: #f2f2f0;
-  --couleur-accent: #c8f169;
-  --police-texte: system-ui, sans-serif;
-  --espace-4: 1rem;
+/* Design tokens — direction M1 « Atelier » (design/DESIGN.md). SEUL fichier où les couleurs sont écrites en dur.
+   Les composants n'utilisent que des variables : on peut aligner ces valeurs avec le site sans toucher au reste.
+   Ambiance : attribut data-ambiance sur <html> (sombre par défaut, clair, aplat). Accent : --couleur. */
+
+/* Polices auto-hébergées (latin, variables) : précachées par le service worker, donc disponibles hors connexion. */
+@font-face {
+  font-family: 'Unbounded'; font-style: normal; font-weight: 200 900; font-display: swap;
+  src: url('../assets/fonts/unbounded-latin-wght-normal.woff2') format('woff2-variations');
 }
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--couleur-fond); color: var(--couleur-texte); font-family: var(--police-texte); }
+@font-face {
+  font-family: 'Onest'; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url('../assets/fonts/onest-latin-wght-normal.woff2') format('woff2-variations');
+}
+
+:root {
+  --couleur: #E5486A;             /* accent : framboise (lagon #2FB8B0, citron #D8E04A, sauge #9DC08B, lilas #A99BEA, corail #F28C86) */
+  --encre: #1F1B18;               /* texte posé sur l'accent */
+  --creme: #F6F0E6;
+  --font-titre: 'Unbounded', 'Arial Black', system-ui, sans-serif;
+  --font-texte: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-chiffres: 'Unbounded', system-ui, sans-serif;
+  --font-chrono: 'Onest', system-ui, sans-serif;   /* chiffres tabulaires fiables */
+  --r-carte: 26px;
+  --r-btn: 22px;
+  --pad: 16px;
+  --gap: 12px;
+  --haut: calc(env(safe-area-inset-top, 0px) + 24px);
+  --bas: max(env(safe-area-inset-bottom, 0px), 16px);
+  --ease: cubic-bezier(.23, 1, .32, 1);
+  --scrim: rgba(0, 0, 0, .5);
+  --ombre-feuille: 0 -20px 60px rgba(0, 0, 0, .35);
+  --ombre-tiroir: -20px 0 60px rgba(0, 0, 0, .3);
+}
+
+/* Ambiance 1 : sombre (anthracite chaud) */
+:root, [data-ambiance="sombre"] {
+  --fond: #25221F;
+  --surface: #302C28;
+  --surface-2: #3B3631;
+  --texte: #F3EDE4;
+  --texte-doux: rgba(243, 237, 228, .62);
+  --filet: rgba(243, 237, 228, .12);
+  --accent: var(--couleur);
+  --accent-texte: var(--encre);
+  --accent-lisible: var(--couleur);
+  --on-accent-doux: rgba(31, 27, 24, .66);
+  --bien: #8FD3A0;
+  --ph-prep-bg: #3B3631; --ph-prep-fg: #F3EDE4;
+  --ph-travail-bg: var(--couleur); --ph-travail-fg: #1F1B18;
+  --ph-repos-bg: #2A3F6B; --ph-repos-fg: #E8EEFA;
+  --ombre: 0 18px 50px rgba(0, 0, 0, .35);
+}
+/* Ambiance 2 : clair (crème / papier) */
+[data-ambiance="clair"] {
+  --fond: #F4EEE3;
+  --surface: #FBF8F2;
+  --surface-2: #E9E0D1;
+  --texte: #26211D;
+  --texte-doux: rgba(38, 33, 29, .62);
+  --filet: rgba(38, 33, 29, .13);
+  --accent: var(--couleur);
+  --accent-texte: var(--encre);
+  --accent-lisible: color-mix(in srgb, var(--couleur) 62%, #1F1B18);
+  --on-accent-doux: rgba(31, 27, 24, .66);
+  --bien: #2F7D4A;
+  --ph-prep-bg: #E4DACB; --ph-prep-fg: #26211D;
+  --ph-travail-bg: var(--couleur); --ph-travail-fg: #1F1B18;
+  --ph-repos-bg: #CFE0F2; --ph-repos-fg: #1F2A44;
+  --ombre: 0 18px 50px rgba(60, 40, 20, .18);
+}
+/* Ambiance 3 : aplat (le fond EST la couleur d'accent, texte encre) */
+[data-ambiance="aplat"] {
+  --fond: var(--couleur);
+  --surface: color-mix(in srgb, var(--couleur) 86%, #1F1B18);
+  --surface-2: color-mix(in srgb, var(--couleur) 72%, #1F1B18);
+  --texte: #1F1B18;
+  --texte-doux: rgba(31, 27, 24, .68);
+  --filet: rgba(31, 27, 24, .2);
+  --accent: #1F1B18;
+  --accent-texte: #F6F0E6;
+  --accent-lisible: #1F1B18;
+  --on-accent-doux: rgba(246, 240, 230, .7);
+  --bien: #1F1B18;
+  --ph-prep-bg: color-mix(in srgb, var(--couleur) 80%, #fff); --ph-prep-fg: #1F1B18;
+  --ph-travail-bg: #1F1B18; --ph-travail-fg: #F6F0E6;
+  --ph-repos-bg: color-mix(in srgb, var(--couleur) 45%, #fff); --ph-repos-fg: #1F1B18;
+  --ombre: 0 18px 50px rgba(0, 0, 0, .25);
+}

@@ -1,0 +1,35 @@
+/* Base commune : remise à zéro légère, typographie, boutons de la maison. Aucune couleur en dur (voir tokens.css). */
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--fond); color: var(--texte); font-family: var(--font-texte); }
+body { -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; touch-action: manipulation; }
+[hidden] { display: none !important; }
+ol, ul { list-style: none; }
+a { color: inherit; }
+b { font-weight: 600; }
+:focus-visible { outline: 3px solid var(--accent-lisible); outline-offset: 3px; }
+
+.titre-page { font-family: var(--font-titre); font-weight: 400; font-size: 34px; line-height: 1.05; letter-spacing: -.03em; }
+.sur-titre { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--texte-doux); font-weight: 500; }
+.chiffre { font-family: var(--font-chiffres); font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
+
+.rond {
+  width: 52px; height: 52px; border-radius: 50%; display: inline-grid; place-items: center;
+  background: var(--surface); color: var(--texte); flex: none; transition: transform .14s var(--ease);
+}
+.rond:active { transform: scale(.94); }
+.rond svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.gros {
+  display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 68px;
+  border-radius: var(--r-btn); background: var(--accent); color: var(--accent-texte);
+  font-family: var(--font-titre); font-weight: 500; font-size: 16px; letter-spacing: -.005em; padding: 0 22px;
+  transition: transform .14s var(--ease);
+}
+.gros:active { transform: scale(.97); }
+.gros.doux { background: var(--surface); color: var(--texte); }
+.gros.contour { background: transparent; color: var(--texte); box-shadow: inset 0 0 0 2px var(--filet); }
+.gros:disabled { opacity: .4; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rond, .gros { transition: none; }
+}
