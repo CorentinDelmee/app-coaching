@@ -48,6 +48,18 @@ describe('parcours coach (adaptateur local)', () => {
     await expect(data.connecter(identifiant, code)).rejects.toThrow()
   })
 
+  it('nouveau code : l\'ancien ne marche plus, le nouveau oui ; réservé au coach', async () => {
+    const data = await coach(neuf())
+    const { identifiant, code, profil } = await data.creerClient({ nom: 'Ana Roux' })
+    const nouveau = await data.reinitialiserCode(profil.id)
+    expect(nouveau.identifiant).toBe(identifiant)
+    expect(nouveau.code).not.toBe(code)
+    await data.deconnecter()
+    await expect(data.connecter(identifiant, code)).rejects.toThrow()
+    expect((await data.connecter(identifiant, nouveau.code)).role).toBe('client')
+    await expect(data.reinitialiserCode(profil.id)).rejects.toThrow('Réservé au coach')
+  })
+
   it('séance de coaching : le tarif est figé à la création', async () => {
     const data = await coach(neuf())
     const { profil } = await data.creerClient({ nom: 'Jo Test', tarif: 40 })

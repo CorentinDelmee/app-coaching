@@ -8,7 +8,7 @@ import { jourLocal, ajouterJours, lundiDe } from '../../domain/dates.js'
 import { etatSemaine } from '../../domain/programme.js'
 import { libelleSeance, payeCeMois } from '../../domain/coaching.js'
 import { maintenant, rafraichir, uuid, etat, marquerVue, messageErreur } from '../store.js'
-import { chargesRealisees, pointsPoids } from '../logique.js'
+import { chargesRealisees, pointsPoids, lienWhatsAppIdentifiants, messageIdentifiants } from '../logique.js'
 import CalendrierMois from '../components/CalendrierMois.vue'
 import SvgCourbe from '../components/SvgCourbe.vue'
 
@@ -137,6 +137,20 @@ async function enregistrerReglages() {
     info.value = 'Réglages enregistrés.'
     await charger()
   } catch (e) { erreur.value = messageErreur(e) }
+}
+// Nouveau code : affiché une seule fois, à transmettre tout de suite.
+const nouveauCode = ref(null)
+const copie = ref('')
+async function genererNouveauCode() {
+  erreur.value = ''
+  try {
+    const { identifiant, code } = await data.reinitialiserCode(props.id)
+    nouveauCode.value = { nom: profil.value.nom, identifiant, code, url: window.location.origin }
+  } catch (e) { erreur.value = messageErreur(e) }
+}
+async function copier(texte, quoi) {
+  try { await navigator.clipboard.writeText(texte); copie.value = quoi } catch { copie.value = 'Copie impossible : sélectionne le texte' }
+  setTimeout(() => { copie.value = '' }, 2000)
 }
 async function archiver() {
   await data.profils.archiver(props.id)
@@ -286,8 +300,22 @@ async function archiver() {
         <p v-if="info" class="c-info" role="status">{{ info }}</p>
         <div class="c-ligne">
           <button class="c-btn c-principal" type="submit">Enregistrer</button>
+          <button class="c-btn" type="button" @click="genererNouveauCode">Nouveau code</button>
           <span class="c-espace" />
           <button class="c-btn c-danger" type="button" @click="archiver">Archiver ce client</button>
+        </div>
+        <div v-if="nouveauCode" class="c-carte" role="status" style="margin-top: 14px; border-color: var(--accent)">
+          <p class="c-doux c-petit" style="margin-top: 0">Nouveau code généré : il ne sera plus affiché ensuite, transmets-le maintenant.</p>
+          <div class="c-ligne" style="margin-bottom: 10px">
+            <div><span class="c-doux c-petit">Identifiant</span><div class="c-secret">{{ nouveauCode.identifiant }}</div></div>
+            <div><span class="c-doux c-petit">Code</span><div class="c-secret">{{ nouveauCode.code }}</div></div>
+          </div>
+          <div class="c-ligne">
+            <button class="c-btn" type="button" @click="copier(messageIdentifiants(nouveauCode), 'Message copié')">Copier le message</button>
+            <a class="c-btn c-principal" :href="lienWhatsAppIdentifiants(nouveauCode)" target="_blank" rel="noopener">Envoyer par WhatsApp</a>
+            <button class="c-btn" type="button" @click="nouveauCode = null">Terminé</button>
+            <span v-if="copie" class="c-ok c-petit">{{ copie }}</span>
+          </div>
         </div>
         <p class="c-doux c-petit" style="margin-bottom: 0">Un client archivé ne peut plus se connecter ; ses données sont conservées.</p>
       </form>
