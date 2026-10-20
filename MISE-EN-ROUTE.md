@@ -211,7 +211,7 @@ Déjà branché : `reinitialiserCode` et `creerCompte` (dans `src/data/adapters/
 
 | Symptôme | Cause probable | Action |
 |---|---|---|
-| L'app affiche les comptes de démo `DEMO2024` / `COACH2026` | `.env` absent ou build fait sans `.env` | Remplis `.env`, relance `npm.cmd run build`, refais le Drop |
+| L'app affiche « Configuration manquante » (ou, en local, les comptes de démo `DEMO2024` / `COACH2026`) | `.env` absent ou build fait sans `.env` (un build de production sans Supabase est refusé exprès, sauf `VITE_MODE_DEMO=1`) | Remplis `.env`, relance `npm.cmd run build`, refais le Drop |
 | « Identifiant ou code incorrect » pour tout le monde | URL/clé fausse, ou compte sans profil | Vérifie `.env` ; **Authentication → Users** (existe ?) et **Table Editor → profiles** (ligne présente ?) |
 | Création d'un client en erreur « Function not found » / « Failed to send a request » | `creer-client` non déployée | `npx.cmd supabase functions deploy creer-client` (les inscriptions publiques restent désactivées) |
 | Client créé mais ne peut pas se connecter, « Email not confirmed » | Confirmation e-mail encore active | Désactive **Confirm email** (étape 3.1) ; `creer-client` confirme déjà les nouveaux comptes ; pour un compte créé à la main : Users → ⋯ → **Confirm user** si proposé |

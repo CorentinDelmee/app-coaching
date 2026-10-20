@@ -435,3 +435,13 @@ describe('supabase/schema.sql', () => {
     }
   })
 })
+
+describe('garde-fou de configuration', () => {
+  it('production en mode local refusée, sauf VITE_MODE_DEMO=1', async () => {
+    const { configManquante } = await import('../../src/lib/configuration.js')
+    expect(configManquante({ PROD: true }, 'local')).toBe(true)
+    expect(configManquante({ PROD: true, VITE_MODE_DEMO: '1' }, 'local')).toBe(false)
+    expect(configManquante({ PROD: true }, 'supabase')).toBe(false)
+    expect(configManquante({ PROD: false }, 'local')).toBe(false)
+  })
+})

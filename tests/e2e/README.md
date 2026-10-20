@@ -41,4 +41,4 @@ La session de démo automatique n'existe plus : les scripts des lots 2 à 6 ouvr
 | Script | Ce qu'il vérifie |
 |---|---|
 | `lot9-connexion-profil.js` | Accueil public, instructions d'installation, erreur de connexion, consentement (cases décochées), piège de focus du menu, Profil (unité, code, retrait du consentement, export), déconnexion, connexion coach |
-| `lot9-hors-connexion.js` | À lancer sur `npm run build` + `npm run preview` (port 5182) : service worker actif, manifeste et icônes, dashboard et séance en mode avion, pastille « Hors connexion » |
+| `lot9-hors-connexion.js` | À lancer sur `VITE_MODE_DEMO=1 npm run build` (la démo est refusée en production sans cette variable) + `npm run preview` (port 5182) : service worker actif, manifeste et icônes, dashboard et séance en mode avion, pastille « Hors connexion » |
