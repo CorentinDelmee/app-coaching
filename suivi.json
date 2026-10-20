@@ -1,0 +1,174 @@
+{
+  "titre": "Corentin Delmée Coaching — application (PWA)",
+  "phase": "Mode absent — recherche d'inspiration et maquettes en cours",
+  "objectif": "Remplacer **My PT Hub (52 €/mois)** par ma propre app de coaching, **0 €/mois**, mobile d'abord, très animée.",
+  "date_cible": "2026-10-20",
+  "mis_a_jour": "2026-10-20",
+  "lots": [
+    {
+      "id": "0",
+      "titre": "Cadrage : cahier des charges, dépôt, suivi",
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "REX"
+    },
+    {
+      "id": "D",
+      "titre": "Recherche d'inspiration + 4-5 maquettes de l'app client",
+      "statut": "en_cours",
+      "avancement": 5,
+      "qui": "frontend-senior + designers"
+    },
+    {
+      "id": "P",
+      "titre": "Plan et squelette technique",
+      "statut": "en_cours",
+      "avancement": 10,
+      "qui": "chef-de-projet"
+    },
+    {
+      "id": "R",
+      "titre": "Checklist RGPD, consentement, page confidentialité",
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "juriste-admin",
+      "note": "docs/RGPD-CHECKLIST.md (13 tâches humaines, 15 points dans l app) — rien n est déclaré conforme"
+    }
+  ],
+  "taches_humaines": [
+    {
+      "titre": "Créer le compte Supabase gratuit (région UE) et coller les clés dans .env",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "20 min",
+      "statut": "a_faire",
+      "comment": "Procédure pas à pas dans MISE-EN-ROUTE.md (livrée en fin de projet)."
+    },
+    {
+      "titre": "Déployer sur Netlify (sous-domaine netlify.app)",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "10 min",
+      "statut": "a_faire",
+      "comment": "Après Supabase. Voir MISE-EN-ROUTE.md."
+    },
+    {
+      "titre": "RGPD : compléter la page Confidentialité (SIRET, adresse, e-mail, région Supabase)",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "30 min",
+      "statut": "a_faire",
+      "comment": "docs/page-confidentialite.md, chercher [À COMPLÉTER]."
+    },
+    {
+      "titre": "RGPD : archiver les DPA Supabase et Netlify, remplir le registre des traitements (modèle CNIL), procédure violation de données",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "2 h 15",
+      "statut": "a_faire",
+      "comment": "Détail dans docs/RGPD-CHECKLIST.md."
+    },
+    {
+      "titre": "Sécurité : activer la double authentification (Supabase, Netlify, e-mail, GitHub)",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "20 min",
+      "statut": "a_faire"
+    },
+    {
+      "titre": "Faire relire par un juriste (question HDS : rééducation, clients envoyés par un soignant)",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "1-2 h",
+      "statut": "a_faire",
+      "comment": "Coût à demander. Analyse prudente : HDS a priori non applicable, à faire confirmer."
+    },
+    {
+      "titre": "Vérifier l assurance RC pro et planifier un export mensuel des données",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "35 min",
+      "statut": "a_faire",
+      "comment": "Le plan gratuit Supabase ne garantit pas de sauvegarde."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "categorie": "RGPD",
+      "question": "Combien de temps garder les données de santé après la fin du coaching ?",
+      "contexte": "Douleurs, poids, nutrition. Il faut une durée annoncée dans la page Confidentialité.",
+      "options": [
+        {
+          "nom": "3 mois",
+          "resume": "Supprimées 3 mois après la fin du coaching"
+        },
+        {
+          "nom": "1 an",
+          "resume": "Utile si le client revient"
+        },
+        {
+          "nom": "Sur demande",
+          "resume": "Gardées jusqu à demande du client (déconseillé)"
+        }
+      ],
+      "recommandation": "3 mois",
+      "pourquoi": "Durée courte et proportionnée, proposée par le juriste.",
+      "si_pas_de_reponse": "3 mois écrit dans la page Confidentialité.",
+      "echeance": "",
+      "statut": "tranchee",
+      "reponse": "3 mois",
+      "provisoire": true
+    },
+    {
+      "id": "D2",
+      "categorie": "RGPD",
+      "question": "Accepter des clients mineurs dans l app ?",
+      "contexte": "Les mineurs demandent un consentement parental pour les données de santé.",
+      "options": [
+        {
+          "nom": "Majeurs seulement",
+          "resume": "Case « j ai 18 ans ou plus » au consentement"
+        },
+        {
+          "nom": "Mineurs avec accord parental",
+          "resume": "Écran et texte supplémentaires"
+        }
+      ],
+      "recommandation": "Majeurs seulement",
+      "pourquoi": "Plus simple pour la V1.",
+      "si_pas_de_reponse": "V1 réservée aux majeurs.",
+      "echeance": "",
+      "statut": "tranchee",
+      "reponse": "Majeurs seulement",
+      "provisoire": true
+    }
+  ],
+  "avancees": [
+    {
+      "date": "2026-10-20",
+      "texte": "Cahier des charges écrit à partir de ton brief (CAHIER-DES-CHARGES.md)."
+    },
+    {
+      "date": "2026-10-20",
+      "texte": "Liste RGPD, texte de consentement et brouillon de page Confidentialité prêts (docs/)."
+    }
+  ],
+  "prochaines_etapes": [
+    "Maquettes comparables et une recommandée",
+    "Moteur de données et de séance testé",
+    "Construction de l'app client"
+  ],
+  "risques": [
+    {
+      "niveau": "moyen",
+      "texte": "Volume très important pour une seule journée : priorité à la séance en cours et aux animations, fonctions secondaires réduites si besoin."
+    }
+  ],
+  "liens": [
+    {
+      "texte": "Cahier des charges",
+      "href": "CAHIER-DES-CHARGES.md"
+    }
+  ]
+}
