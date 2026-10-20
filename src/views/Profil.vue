@@ -80,6 +80,15 @@ function donner(e) {
   router.push({ name: 'consentement', query: { retour: '/profil' } })
 }
 
+// --- Supprimer mes données de santé : confirmation en deux temps ---
+const confirmerSuppression = ref(false)
+async function supprimerSante() {
+  const n = await data.supprimerMesDonneesSante()
+  confirmerSuppression.value = false
+  const total = Object.values(n).reduce((a, b) => a + b, 0)
+  message.value = total ? `Vos données de santé ont été supprimées (${total} éléments).` : 'Aucune donnée de santé à supprimer.'
+}
+
 // --- Export de mes données (RGPD) : fichier JSON téléchargé ---
 async function exporter() {
   const contenu = await data.exporterMesDonnees()
@@ -166,6 +175,12 @@ async function deconnecter() {
             <button v-else class="petit-btn plein" type="button" @click="donner">{{ consentement ? 'Donner mon consentement' : 'Répondre' }}</button>
             <button class="petit-btn" type="button" @click="exporter">Exporter mes données (JSON)</button>
             <RouterLink class="petit-btn" to="/confidentialite?retour=/profil">Confidentialité</RouterLink>
+            <button v-if="!confirmerSuppression" class="petit-btn danger" type="button" @click="confirmerSuppression = true">Supprimer mes données de santé</button>
+          </div>
+          <div v-if="confirmerSuppression" class="pf-confirme" role="alertdialog" aria-label="Confirmer la suppression">
+            <p><b>Supprimer définitivement</b> vos douleurs, mesures, nutrition et réponses aux questionnaires ? Cette action ne peut pas être annulée. Vos séances et votre programme sont conservés.</p>
+            <button class="gros" type="button" @click="supprimerSante">Oui, tout supprimer</button>
+            <button class="gros doux" type="button" @click="confirmerSuppression = false">Non, garder</button>
           </div>
         </div>
 

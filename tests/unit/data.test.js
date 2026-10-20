@@ -52,6 +52,25 @@ function contrat(nom, fabrique) {
       await expect(d.exercices.creer({ categories: [] })).rejects.toMatchObject({ code: 'VALIDATION', message: expect.stringContaining('« nom »') })
     })
 
+    it('supprimerMesDonneesSante : efface mes douleurs, mesures, nutrition et réponses, rien d autre ni chez les autres', async () => {
+      const d = neuf()
+      const fabien = await d.connecter('fabien.vincent', 'DEMO24')
+      const avant = {}
+      for (const e of ['douleurs', 'mesures', 'nutrition', 'reponses']) avant[e] = (await d[e].lister({ clientId: fabien.id })).length
+      expect(Object.values(avant).every((n) => n > 0)).toBe(true)
+      const seances = (await d.seancesCoaching.lister({ clientId: fabien.id })).length
+      const realisations = (await d.realisations.lister({ clientId: fabien.id })).length
+      expect(await d.supprimerMesDonneesSante()).toEqual(avant)
+      for (const e of ['douleurs', 'mesures', 'nutrition', 'reponses']) expect(await d[e].lister({ clientId: fabien.id })).toEqual([])
+      expect((await d.seancesCoaching.lister({ clientId: fabien.id })).length).toBe(seances)
+      expect((await d.realisations.lister({ clientId: fabien.id })).length).toBe(realisations)
+      await d.deconnecter()
+      const lea = await d.connecter('lea.martin', 'DEMO24')
+      expect((await d.reponses.lister({ clientId: lea.id })).length).toBeGreaterThan(0)
+      await d.deconnecter()
+      await expect(d.supprimerMesDonneesSante()).rejects.toMatchObject({ code: 'NON_CONNECTE' })
+    })
+
     it('modifier : fusionne et valide ; id inconnu -> INTROUVABLE', async () => {
       const d = neuf()
       const m = await d.exercices.modifier('ex-squat', { lienVideo: 'https://youtu.be/abc' })

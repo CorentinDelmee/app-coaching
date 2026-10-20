@@ -1,9 +1,28 @@
 async page => {
+  // Session démo : ouvre le compte (et enregistre le consentement) comme après /connexion, sans repasser par l'écran (voir README).
+  const seed = async (compte) => {
+    await page.goto('http://localhost:5182/bienvenue');
+    // les données de démo ne se créent qu'au premier accès avec une session : on en pose une bidon puis on recharge
+    if (await page.evaluate(() => !localStorage.getItem('cdc-coaching/1'))) {
+      await page.evaluate(() => localStorage.setItem('cdc-coaching/1:session', 'amorce'));
+      await page.reload();
+    }
+    await page.evaluate((c) => {
+      const s = JSON.parse(localStorage.getItem('cdc-coaching/1'));
+      const p = s.profils.find((x) => x.identifiant === c);
+      p.consentementLe = Date.now();
+      p.preferences = { ...p.preferences, consentement: { version: '2026-10-v1', sante: true } };
+      localStorage.setItem('cdc-coaching/1', JSON.stringify(s));
+      localStorage.setItem('cdc-coaching/1:session', p.id);
+    }, compte);
+  };
+  await seed('fabien.vincent');
   const SP = 'captures/';
   const out = [];
   const txt = (s) => page.evaluate((s) => document.querySelector(s)?.textContent?.trim(), s);
   await page.goto('http://localhost:5182/');
   await page.evaluate(() => { localStorage.clear(); });
+  await seed('fabien.vincent');
   await page.goto('http://localhost:5182/seance/w-fabien-1?nouvelle=1&vitesse=40');
   await page.waitForTimeout(1800);
   // série 1 du squat : poids +5 kg (10 crans de 0,5)

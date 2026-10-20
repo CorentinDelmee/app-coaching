@@ -76,6 +76,9 @@ export function creerAdapterLocal({ storage = globalThis.localStorage || stockag
         else etat[entite].push(structuredClone(obj))
       })
     },
+    async supprimer(entite, id) {
+      sauver((etat) => { etat[entite] = etat[entite].filter((x) => x.id !== id) })
+    },
     async connecter(identifiant, code) {
       const compte = charger().comptes[identifiant]
       const profil = compte && compte.code === code ? charger().profils.find((p) => p.id === compte.id) : null

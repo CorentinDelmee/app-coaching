@@ -6,6 +6,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { data } from '../data/index.js'
 import { patchConsentement, TEXTE_CONSENTEMENT as T } from '../domain/consentement.js'
 import { horloge } from '../lib/horloge.js'
+import { coches, reinitialiserCoches } from '../lib/consentementBrouillon.js'
 import { utilisateurCourant } from '../lib/session.js'
 import { installerRessort } from '../anim/transitions.js'
 import { sauterFermeture } from '../anim/passage.js'
@@ -15,7 +16,6 @@ const route = useRoute()
 const router = useRouter()
 const { racine, couche, ouvrir } = usePageAnimee('/profil')
 const user = ref(null)
-const coches = ref([false, false])
 const erreur = ref('')
 const occupe = ref(false)
 const tout = computed(() => coches.value.every(Boolean))
@@ -32,6 +32,7 @@ async function enregistrer(sante) {
   occupe.value = true
   try {
     await data.profils.modifier(user.value.id, patchConsentement(user.value, sante, horloge.now()))
+    reinitialiserCoches()
     sauterFermeture()
     router.replace(route.query.retour || '/')
   } catch (e) {

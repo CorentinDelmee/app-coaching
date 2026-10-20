@@ -170,6 +170,19 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
     return exporterMesDonnees(donnees, now())
   }
 
+  /** « Supprimer mes données de santé » (RGPD) : douleurs, mesures, nutrition et réponses aux questionnaires du client connecté. */
+  api.supprimerMesDonneesSante = async () => {
+    const user = await backend.utilisateurCourant()
+    if (!user) throw new ErreurData('NON_CONNECTE', 'Connexion requise')
+    const supprimes = {}
+    for (const entite of ['douleurs', 'mesures', 'nutrition', 'reponses']) {
+      const lignes = (await backend.tout(entite)).filter((o) => clientDe(entite, o) === user.id)
+      for (const l of lignes) await backend.supprimer(entite, l.id)
+      supprimes[entite] = lignes.length
+    }
+    return supprimes
+  }
+
   api.reinitialiserDemo = () => backend.reinitialiserDemo()
   return api
 }

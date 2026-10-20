@@ -35,7 +35,7 @@ Chaque script renvoie une ligne de constats (`||` entre les étapes) et enregist
 (Attention : une séance < 24 h et le clic « Continuer sur WhatsApp » ouvrent un onglet : remplacer `window.open` avant, sinon l'onglet d'origine passe en arrière-plan et les animations s'arrêtent.)
 
 ## Lot 9 (connexion, profil, PWA)
-La session de démo automatique n'existe plus : les scripts des lots 2 à 6 doivent d'abord ouvrir une session, par exemple
+La session de démo automatique n'existe plus : les scripts des lots 2 à 6 ouvrent maintenant eux-mêmes une session (fonction `seed('fabien.vincent')` en tête de script : ouvre le compte et enregistre le consentement dans le localStorage). Principe :
 `localStorage.setItem('cdc-coaching/1:session', 'client-fabien-vincent')` puis enregistrer le consentement dans le profil
 (`consentementLe` + `preferences.consentement = { version: '2026-10-v1', sante: true }` dans `cdc-coaching/1`), ou passer par `/connexion`.
 | Script | Ce qu'il vérifie |

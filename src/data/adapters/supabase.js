@@ -74,6 +74,10 @@ export function creerAdapterSupabase({ url, anonKey, storage = globalThis.localS
         await requete(table.upsert(versLigne(entite, obj)))
       }
     },
+    async supprimer(entite, id) {
+      const c = await sb()
+      await requete(c.from(ENTITES[entite].table).delete().eq('id', id))
+    },
     async connecter(identifiant, code) {
       const c = await sb()
       const { data, error } = await c.auth.signInWithPassword({ email: emailTechnique(identifiant), password: code })
@@ -115,9 +119,19 @@ export function creerAdapterSupabase({ url, anonKey, storage = globalThis.localS
       if (error || !data.user) throw echec(error || new Error('Création du compte impossible'))
       return data.user.id
     },
-    // Changer le mot de passe d'un autre compte exige la clé « service » : à faire dans une Edge Function (lot 12), jamais dans le navigateur.
-    async reinitialiserCode() {
-      throw new ErreurData('NON_SUPPORTE', "Le nouveau code n'est pas encore disponible avec Supabase (Edge Function à prévoir)")
+    // Changer le mot de passe d'un autre compte exige la clé « service » : l'Edge Function `reinitialiser-code` (supabase/functions)
+    // vérifie que l'appelant est le coach, puis change le mot de passe. La clé service ne quitte jamais le serveur.
+    async reinitialiserCode(identifiant, code) {
+      const c = await sb()
+      const { data, error } = await c.functions.invoke('reinitialiser-code', { body: { identifiant, code } })
+      if (error) {
+        // l'erreur « HTTP » de la fonction porte son message dans le corps de la réponse
+        let message = ''
+        try { message = (await error.context?.json?.())?.erreur || '' } catch { /* corps illisible */ }
+        if (/fetch|network|Failed to send/i.test(error.message || '')) throw new ErreurData('RESEAU', 'Pas de réseau')
+        throw new ErreurData('ECHEC', message || "Le nouveau code n'a pas pu être enregistré")
+      }
+      if (data?.erreur) throw new ErreurData('ECHEC', data.erreur)
     },
     async reinitialiserDemo() {
       throw new ErreurData('NON_SUPPORTE', 'La démo ne se réinitialise qu\'en mode local')
