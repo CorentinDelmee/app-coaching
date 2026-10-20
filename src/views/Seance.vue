@@ -227,6 +227,12 @@ function pulseRow(exIdx, k) {
 // ---------------------------------------------------------------------------------------------
 // Boutons principaux : valider / lancer / suivant / terminer
 // ---------------------------------------------------------------------------------------------
+// Un double toucher sur « Valider la série » ne doit pas valider la suivante pendant que le chrono s'ouvre :
+// pendant une ouverture de couche, les boutons de la séance sont ignorés.
+let verrouJusqua = 0
+const bloquer = (ms = 700) => { verrouJusqua = performance.now() + ms }
+const verrouille = () => performance.now() < verrouJusqua
+
 const srcChrono = ref(null) // bouton d'où naît le cercle du chrono
 const stades = reactive({}) // circuits : 'expl' | 'exos' (par index)
 const stadeDe = (i) => stades[i] || 'expl'
@@ -240,6 +246,7 @@ function libelleDe(i) {
 }
 
 function actionPrincipale(i, el) {
+  if (verrouille()) return
   const it = items.value[i]
   if (it.type === 'circuit') {
     if (it.faite) return suiteOuFin(i, el)
@@ -263,6 +270,7 @@ function passerCircuit(i) {
 }
 
 function validerSerie(exIdx, serieIdx, src) {
+  bloquer()
   srcChrono.value = src
   envoyer({ type: 'validerSerie', exIdx, serieIdx })
   // Superset : on enchaîne sur l'exercice suivant du passage (et on revient au premier après le repos du passage complet).
@@ -273,6 +281,7 @@ function validerSerie(exIdx, serieIdx, src) {
   }
 }
 function lancerTemps(exIdx, serieIdx, src) {
+  bloquer()
   srcChrono.value = src
   preparation.value = { exIdx, serieIdx, finLe: horloge.now() + 3000 }
 }
@@ -374,11 +383,13 @@ const roueOuverte = ref(null)  // { cle, idx, k, src, config, ancienne }
 const roueRef = ref(null)
 
 function ouvrirSerie(idx, k, src) {
-  if (aGlisse || serieOuverte.value || simpleMonte.value || circuitMonte.value) return
+  if (verrouille() || aGlisse || serieOuverte.value || simpleMonte.value || circuitMonte.value) return
+  bloquer()
   serieOuverte.value = { idx, k, src }
 }
 function ouvrirRoue(cle, src) {
-  if (roueOuverte.value) return
+  if (roueOuverte.value || verrouille()) return
+  bloquer()
   const { idx, k } = serieOuverte.value
   const valeur = items.value[idx].series[k].valeurs[cle]
   roueOuverte.value = { cle, idx, k, src, config: configRoue(cle, valeur, unite.value), ancienne: valeur }
@@ -436,6 +447,7 @@ const mouvementsChrono = computed(() => {
 
 function lancerCircuit(i, src) {
   const it = items.value[i]
+  bloquer()
   srcChrono.value = src
   circuit.value = { itemId: it.id, evenements: [evenement('demarrer', horloge.now())] }
   circuitMonte.value = true
@@ -537,6 +549,7 @@ const enregistrement = ref(false)
 const erreurFin = ref('')
 
 function terminerSeance(src) {
+  bloquer(900)
   feuilleQuitter.value = false
   srcFin.value = src
   if (!etat.value.terminee) envoyer({ type: 'terminer' })
@@ -674,7 +687,7 @@ defineExpose({ envoyer })
       />
 
       <FinSeance
-        v-if="finOuverte && etat.resume" :resume="etat.resume" :nom-workout="etat.workoutNom" :nb-exercices="nbItems" :records="recordsFin"
+        v-if="finOuverte && etat.resume" :resume="etat.resume" :nom-workout="etat.workoutNom" :nb-exercices="resume.exercicesFaits" :records="recordsFin"
         :unite="unite" :src="srcFin" :en-cours="enregistrement" :erreur="erreurFin" @valider="validerSeance"
       />
 

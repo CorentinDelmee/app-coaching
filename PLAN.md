@@ -125,27 +125,27 @@ Tests navigateur : playwright-cli (ou Chrome headless piloté par CDP en secours
 **Dépendances** : lot 1 + maquette retenue. Lire `design/RECOMMANDATION.md` et le `DESIGN.md` de la maquette retenue.
 
 ### Tâches
-- [ ] **2.1 Fondations UI** : tokens CSS du `DESIGN.md` dans `src/styles/tokens.css` (couleurs, typo, espacements, rayons, durées,
+- [x] **2.1 Fondations UI** : tokens CSS du `DESIGN.md` dans `src/styles/tokens.css` (couleurs, typo, espacements, rayons, durées,
   courbes) ; **polices auto-hébergées** (`src/assets/fonts/`, woff2, précachées) ; utilitaires GSAP (`src/anim/`) et transitions de
   route ; en mode local, session de démo Fabien automatique tant que la connexion (lot 9) n'existe pas. Route `/seance/:workoutId`.
   - *Acceptation* : en mode avion après un premier chargement, les polices s'affichent (pas de police système de secours) ; aucune couleur
     en dur hors `tokens.css` (grep).
-- [ ] **2.2 Exercice plein écran** : nom, vidéo (YouTube intégré `youtube-nocookie`, ou bouton « Ouvrir la vidéo »), séries, consignes.
+- [x] **2.2 Exercice plein écran** : nom, vidéo (YouTube intégré `youtube-nocookie`, ou bouton « Ouvrir la vidéo »), séries, consignes.
   Pas de lien → « Vidéo bientôt disponible » discret ; hors connexion → « Vidéo indisponible hors connexion ».
-- [ ] **2.3 Slide horizontal** : swipe manuel entre exercices ; après la dernière série validée → bandeau « Exercice suivant dans 3 s — Rester »
+- [x] **2.3 Slide horizontal** : swipe manuel entre exercices ; après la dernière série validée → bandeau « Exercice suivant dans 3 s — Rester »
   puis slide automatique ; indicateur de progression (exercice x/N).
-- [ ] **2.4 Série → détail** (élément partagé) : toucher une série l'agrandit avec ses champs ; champ non modifiable affiché verrouillé
+- [x] **2.4 Série → détail** (élément partagé) : toucher une série l'agrandit avec ses champs ; champ non modifiable affiché verrouillé
   (« fixé par le coach »).
-- [ ] **2.5 Grand sélecteur** : roue verticale avec inertie et crans (pas selon le champ : 0,5 kg / 1 rep / 5 s), gros chiffre + unité
+- [x] **2.5 Grand sélecteur** : roue verticale avec inertie et crans (pas selon le champ : 0,5 kg / 1 rep / 5 s), gros chiffre + unité
   (kg ou lb selon préférence), « Valider » → retour animé ; bornes (pas de valeur négative).
-- [ ] **2.6 Repos automatique** : anneau + décompte, `+15 s`, « Passer » ; son + vibration à la fin ; séries en temps de travail :
+- [x] **2.6 Repos automatique** : anneau + décompte, `+15 s`, « Passer » ; son + vibration à la fin ; séries en temps de travail :
   « Lancer la série » → chrono de travail → son → repos.
-- [ ] **2.7 Tiroir overview** : bouton latéral, liste de la séance avec séries faites cochées ; toucher un exercice y va.
-- [ ] **2.8 Circuits** : écran d'explication (« AMRAP — objectif : faire le plus de tours possible en 12 min »), overview du circuit avec
+- [x] **2.7 Tiroir overview** : bouton latéral, liste de la séance avec séries faites cochées ; toucher un exercice y va.
+- [x] **2.8 Circuits** : écran d'explication (« AMRAP — objectif : faire le plus de tours possible en 12 min »), overview du circuit avec
   vidéos, préparation 10 s, chrono plein écran par format (comportements CDC §4.5 via le moteur 1.8), saisie de fin (reps en plus, etc.).
-- [ ] **2.9 Fin de séance** : « Bravo, séance terminée » animé (durée, volume, séries, records — « Aucun record cette fois » si aucun),
+- [x] **2.9 Fin de séance** : « Bravo, séance terminée » animé (durée, volume, séries, records — « Aucun record cette fois » si aucun),
   commentaire facultatif, « Valider ma séance » → enregistrement (1.9) → retour.
-- [ ] **2.10 Robustesse** : Wake Lock (réacquis au retour sur l'onglet), vibration si dispo, sons Web Audio (débloqués au premier toucher),
+- [x] **2.10 Robustesse** : Wake Lock (réacquis au retour sur l'onglet), vibration si dispo, sons Web Audio (débloqués au premier toucher),
   état sauvegardé à chaque action ; rouvrir l'app → « Reprendre votre séance en cours ? Reprendre / Abandonner ».
 
 **Critères d'acceptation (test navigateur 390×844, temps accéléré)** : une séance de Fabien jouée de bout en bout (séries, repos, un

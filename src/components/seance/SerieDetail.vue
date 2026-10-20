@@ -25,6 +25,7 @@ const serie = computed(() => props.item.series[props.serieIdx])
 // Champs numériques réglables à la roue ; les autres (texte, case…) ne s'affichent pas en tuile.
 const tuiles = computed(() => props.item.champs.filter((c) => estChampNombre(c.cle)))
 const uniteDe = (cle) => (cle === 'poids' ? props.unite : CHAMPS[cle]?.unite || '')
+const modifiable = computed(() => tuiles.value.some((c) => c.modifiableParClient))
 const verbe = computed(() => (props.courante ? (props.auTemps ? 'Lancer la série' : 'Valider la série') : 'Enregistrer'))
 
 onMounted(() => ouvrirRect(racine.value, props.src, { rayon: 22 }))
@@ -45,7 +46,7 @@ defineExpose({ fermer, racine })
         <span class="lab">Série {{ serieIdx + 1 }} sur {{ item.series.length }}<br>{{ exercice.nom }}</span>
       </div>
       <h3 class="couche-titre" data-c>{{ exercice.nom }}</h3>
-      <p class="couche-sous" data-c>Touchez une valeur pour la modifier.</p>
+      <p class="couche-sous" data-c>{{ modifiable ? 'Touchez une valeur pour la modifier.' : 'Cette série est fixée par votre coach.' }}</p>
       <div class="champs" :data-n="tuiles.length" data-c>
         <template v-for="c in tuiles" :key="c.cle">
           <div v-if="!c.modifiableParClient" class="champ verrou" :data-champ="c.cle">

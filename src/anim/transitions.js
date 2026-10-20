@@ -109,10 +109,11 @@ export function ouvrirCercle(couche, src, opts = {}) {
     { clipPath: cercle(R, c.x, c.y), duration: opts.duree || T.cercleOuvre, ease: E.cercle, onComplete: fin })
   return couche._tl
 }
+// `vers` : élément (le cercle se referme sur son centre), point { x, y }, ou rien (retour au point d'ouverture).
 export function fermerCercle(couche, vers, opts = {}) {
   nettoyer(couche)
   const racine = racineDe(couche)
-  const c = vers && vers.isConnected ? centreDe(vers, racine) : couche._centre || { x: racine.offsetWidth / 2, y: racine.offsetHeight - 90 }
+  const c = vers && vers.x !== undefined ? vers : vers && vers.isConnected ? centreDe(vers, racine) : couche._centre || { x: racine.offsetWidth / 2, y: racine.offsetHeight - 90 }
   const R = rayonMax(c.x, c.y, racine)
   const fin = () => { couche.hidden = true; gsap.set(couche, { clearProps: 'clipPath,opacity' }); if (opts.onFini) opts.onFini() }
   if (rm()) { couche._tl = gsap.to(couche, { opacity: 0, duration: 0.18, onComplete: fin }); return couche._tl }

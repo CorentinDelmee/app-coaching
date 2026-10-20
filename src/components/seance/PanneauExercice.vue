@@ -79,7 +79,8 @@ const etat = (k, s) => (s.faite ? 'fait' : k === courante.value ? 'courant' : 'a
 .lien-video { color: var(--texte); font-weight: 600; font-size: 14.5px; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px 0 10px; border-radius: 22px; background: var(--surface); }
 .lien-video svg { width: 15px; height: 15px; fill: currentColor; stroke: none; }
 .video-absente { font-size: 13.5px; opacity: .8; }
-.rangs { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; min-height: 0; overflow: hidden; }
+.rangs { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; overscroll-behavior: contain; }
+.rangs::-webkit-scrollbar { display: none; }
 .rang { position: relative; flex: 1 1 0; max-height: 76px; min-height: 58px; display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 4px; padding: 0 16px 0 10px; background: var(--surface); border-radius: 22px; text-align: left; width: 100%; transition: transform .16s var(--ease); }
 .rang:active { transform: scale(.98); }
 .rg-n { font-family: var(--font-chiffres); font-size: 15px; width: 36px; height: 36px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; letter-spacing: -.03em; }
@@ -107,6 +108,12 @@ const etat = (k, s) => (s.faite ? 'fait' : k === courante.value ? 'courant' : 'a
 .rangs[data-n="4"] .rg-v { font-size: 30px; }
 .p-action { flex: none; padding: 14px 0 var(--bas); }
 .p-action .gros { min-height: 72px; font-size: 17px; }
-@media (max-height: 700px) { .p-note { -webkit-line-clamp: 2; line-clamp: 2; } .p-nom { font-size: 27px; margin-bottom: 8px; } }
+@media (max-height: 700px) {
+  .p-note { -webkit-line-clamp: 2; line-clamp: 2; margin-top: 8px; }
+  .p-nom { font-size: 27px; margin-bottom: 8px; }
+  .rangs { margin-top: 8px; gap: 6px; }
+  .rang { min-height: 50px; }
+  .rangs[data-n="4"] .rg-v { font-size: 26px; }
+}
 @media (prefers-reduced-motion: reduce) { .rang { transition: none; } }
 </style>

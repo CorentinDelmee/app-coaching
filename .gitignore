@@ -6,3 +6,4 @@ dist/
 *.log
 .playwright-cli/
 design/**/*.webm
+captures/

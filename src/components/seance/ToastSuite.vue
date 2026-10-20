@@ -1,6 +1,6 @@
 <script setup>
 // Bandeau « Exercice suivant dans 3 s — Rester ». La barre se vide pendant le compte à rebours du moteur (échéance absolue).
-import { computed } from 'vue'
+import { computed, toRef } from 'vue'
 import { gsap } from 'gsap'
 import { mouvementReduit } from '../../anim/transitions.js'
 import { DELAI_AVANCE_AUTO } from '../../engine/seance.js'
@@ -11,7 +11,7 @@ const props = defineProps({
   nom: { type: String, default: '' },
   finLe: { type: Number, default: 0 }
 })
-const maintenant = useMaintenant()
+const maintenant = useMaintenant(toRef(props, 'visible'))
 const emit = defineEmits(['rester'])
 
 const restant = computed(() => Math.max(0, props.finLe - maintenant.value))

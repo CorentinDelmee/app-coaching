@@ -143,8 +143,8 @@ defineExpose({ annuler })
 .roue-w { position: relative; flex: 1; min-height: 0; margin: 6px 0 14px; }
 .roue {
   position: absolute; inset: 0; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none; touch-action: pan-y; overscroll-behavior: contain; cursor: grab;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22%, #000 78%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 22%, #000 78%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 22%, black 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, black 22%, black 78%, transparent 100%);
 }
 .roue::-webkit-scrollbar { display: none; }
 .roue.glisse { scroll-snap-type: none; cursor: grabbing; }
