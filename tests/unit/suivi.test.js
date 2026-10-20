@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { echelleNice, construireCourbe, dateCourte, pasRond } from '../../src/domain/graphique.js'
 import {
   seriesDisponibles, pointsSerie, filtrerPeriode, resumeSerie, nomsHabitudes, semaineHabitude, serieHabitude, pointsCalories,
-  repasDuJour, repasPrecedents, modulesActifs, aUnModule, idHabitude, libelleSerie
+  repasDuJour, repasPrecedents, modulesActifs, aUnModule, idHabitude, libelleSerie, parserHabitudes, HABITUDES_DEFAUT
 } from '../../src/domain/suivi.js'
 import { ZONES, zonesDeVue, cheminForme, historiqueZone, derniereNote, intensiteCarte, zonesActives, libelleZone, teinteIntensite } from '../../src/domain/corps.js'
 import { configNombre } from '../../src/domain/questionnaireUi.js'
@@ -134,5 +134,18 @@ describe('roue des nombres du suivi', () => {
     const c = configNombre({ cle: 'kcal', min: 0, max: 6000, pas: 50, unite: 'kcal', defaut: 2000 }, 1850)
     expect(c.valeurDe(c.index)).toBe(1850)
     expect(configNombre({ cle: 'kcal', min: 0, max: 6000, pas: 50, defaut: 2000 }, null).valeurDe(40)).toBe(2000)
+  })
+})
+
+describe('habitudes personnalisées par le coach', () => {
+  it('parserHabitudes : lignes propres, sans doublon, plafonnées', () => {
+    expect(parserHabitudes("  Marcher 8000 pas \n\nmarcher 8000 pas\nDormir 8 h\r\n")).toEqual(['Marcher 8000 pas', 'Dormir 8 h'])
+    expect(parserHabitudes(Array.from({ length: 20 }, (_, i) => `h${i}`).join('\n'))).toHaveLength(12)
+    expect(parserHabitudes(undefined)).toEqual([])
+  })
+  it('la liste du coach remplace les habitudes par défaut', () => {
+    expect(nomsHabitudes([], ['Marcher 8000 pas'])).toEqual(['Marcher 8000 pas'])
+    expect(nomsHabitudes([], [])).toEqual(HABITUDES_DEFAUT)
+    expect(idHabitude('c', AUJ, 'Café crème')).toBe('nut-c-2026-10-20-h-cafe-creme')
   })
 })

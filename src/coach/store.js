@@ -3,7 +3,7 @@ import { reactive } from 'vue'
 import data from '../data/index.js'
 import { toutesLesAlertes } from '../domain/alertes.js'
 
-export const COMPTE_COACH_LOCAL = { identifiant: 'corentin', code: 'COACH7' }
+export const COMPTE_COACH_LOCAL = { identifiant: 'corentin', code: 'COACH2026' }
 
 export const etat = reactive({ alertes: [], clients: [], erreur: '' })
 

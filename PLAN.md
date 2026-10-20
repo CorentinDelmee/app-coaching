@@ -188,6 +188,7 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 ## Lot 7 — Questionnaires `[DESIGN]` — parallélisable
 **Dépendances** : lot 5.
 - [x] Liste (quotidien / hebdo / ponctuel, à faire vs faits) ; une question par écran avec transitions ; 7 types de question ; photo compressée (≤ 1280 px).
+- [x] **Consignes sécurité photos (audit M7)** : bucket `photos` avec `file_size_limit` (2 Mo) et `allowed_mime_types` (jpeg/png/webp) ; redimensionner via `canvas` avant envoi (retire l'EXIF/GPS) ; nom aléatoire `<uid>/<uuid>.jpg` ; affichage par URL signée courte (`createSignedUrl` 60-300 s), jamais `getPublicUrl` ; supprimer aussi les photos dans « Supprimer mes données » (`supprimerMesDonneesSante`) ; ne jamais mettre de photo dans la file locale.
 - [x] Fin = petite célébration ; réponse douleur > 6 → alerte coach (1.12). Questionnaire déjà rempli aujourd'hui → « Déjà fait aujourd'hui ».
 - *Acceptation* : la pastille du dashboard baisse après envoi ; quitter au milieu puis revenir reprend à la question en cours ; stockage plein → message, pas de perte silencieuse.
 
@@ -200,12 +201,12 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 
 ## Lot 9 — Profil, connexion, accueil/installation, PWA hors connexion `[DESIGN]`
 **Dépendances** : lots 2 à 8 (remplace la session de démo automatique).
-- [ ] Accueil public `/bienvenue` : présentation, « Installer l'application » (`beforeinstallprompt` ; iOS → instructions « Partager → Sur l'écran
+- [x] Accueil public `/bienvenue` : présentation, « Installer l'application » (`beforeinstallprompt` ; iOS → instructions « Partager → Sur l'écran
   d'accueil » ; déjà installée → bouton masqué), « Se connecter ».
-- [ ] Connexion identifiant + code, session persistante ; mode local → comptes de démo (fabien.vincent, coach) affichés ; erreur → « Identifiant ou code incorrect ».
-- [ ] **Consentement explicite** au premier lancement (données de santé) ; refus → pas d'accès aux rubriques santé, explication ; page Confidentialité.
-- [ ] Profil : infos, changer son code (6 caractères min, confirmation), préférences son/vibration/unité, consentement, export de mes données (JSON), déconnexion.
-- [ ] PWA : manifeste + icônes (192/512/maskable), précache complet, séance faisable en mode avion, file d'attente synchronisée au retour du réseau
+- [x] Connexion identifiant + code, session persistante ; mode local → comptes de démo (fabien.vincent, coach) affichés ; erreur → « Identifiant ou code incorrect ».
+- [x] **Consentement explicite** au premier lancement (données de santé) ; refus → pas d'accès aux rubriques santé, explication ; page Confidentialité.
+- [x] Profil : infos, changer son code (6 caractères min, confirmation), préférences son/vibration/unité, consentement, export de mes données (JSON), déconnexion.
+- [x] PWA : manifeste + icônes (192/512/maskable), précache complet, séance faisable en mode avion, file d'attente synchronisée au retour du réseau
   avec indicateur « Hors connexion — enregistré sur l'appareil ».
 - *Acceptation* : Lighthouse PWA installable ; en mode avion après une visite, ouvrir l'app → dashboard + séance jouable + validée, puis synchronisée au retour réseau.
 

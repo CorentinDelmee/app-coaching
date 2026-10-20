@@ -3,6 +3,7 @@ import { etatSemaine, numeroSemaine } from './programme.js'
 import { apercuWorkout, titreWorkout } from './workoutUi.js'
 import { formaterHeure, prochaineSeance } from './coaching.js'
 import { questionnairesDus } from './questionnairesDus.js'
+import { accesSante } from './consentement.js'
 import { jourLocal } from './dates.js'
 import { jourLong, JOURS_COURTS, MOIS_NOMS } from './calendrierUi.js'
 import { minutesDe } from './seanceUi.js'
@@ -67,6 +68,7 @@ export function syntheseAccueil({ user, programme, workouts, exercices, template
     prenom, jour: majuscule(jourLong(aujourdhui)), hero,
     semaine: actif ? { faits: etat.faits, total: etat.total } : { faits: 0, total: 0 },
     coaching, programme: prog,
-    questionnaires: questionnairesDus({ questionnaires, reponses, clientId: user.id, aujourdhui }).length
+    sante: accesSante(user),
+    questionnaires: accesSante(user) ? questionnairesDus({ questionnaires, reponses, clientId: user.id, aujourdhui }).length : 0
   }
 }

@@ -14,11 +14,13 @@ const props = defineProps({
   entrees: { type: Array, required: true },
   aujourdhui: { type: String, required: true },
   occupe: { type: String, default: '' },       // repas en cours de traitement (photo)
-  erreur: { type: String, default: '' }
+  erreur: { type: String, default: '' },
+  liste: { type: Array, default: () => [] },   // habitudes définies par le coach (vide = liste par défaut)
+  urls: { type: Object, default: () => ({}) }  // photo enregistrée -> adresse affichable (URL signée en mode Supabase)
 })
 const emit = defineEmits(['habitude', 'photo', 'calories'])
 
-const habitudes = computed(() => nomsHabitudes(props.entrees).map((nom) => ({
+const habitudes = computed(() => nomsHabitudes(props.entrees, props.liste).map((nom) => ({
   nom, fait: habitudeFaite(props.entrees, nom, props.aujourdhui), serie: serieHabitude(props.entrees, nom, props.aujourdhui),
   semaine: semaineHabitude(props.entrees, nom, props.aujourdhui)
 })))
@@ -64,7 +66,7 @@ const sem = (h) => `7 derniers jours : ${h.semaine.filter((j) => j.fait).length}
       <div class="nu-repas">
         <label v-for="r in repasAuj" :key="r.nom" class="repas" :class="{ pris: !!r.entree, occupe: occupe === r.nom }">
           <input type="file" accept="image/*" capture="environment" :aria-label="`${r.entree ? 'Remplacer la photo du' : 'Photographier le'} ${r.nom.toLowerCase()}`" @change="photo(r.nom, $event)">
-          <img v-if="r.entree" :src="r.entree.valeur.photo" :alt="`${r.nom} d'aujourd'hui`" width="160" height="160">
+          <img v-if="r.entree" :src="urls[r.entree.valeur.photo] || r.entree.valeur.photo" :alt="`${r.nom} d'aujourd'hui`" width="160" height="160">
           <span class="repas-nom">{{ occupe === r.nom ? 'Enregistrement…' : r.nom }}</span>
           <svg v-if="!r.entree" class="repas-plus" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
         </label>
@@ -72,7 +74,7 @@ const sem = (h) => `7 derniers jours : ${h.semaine.filter((j) => j.fait).length}
       <p v-if="erreur" class="nu-erreur" role="alert">{{ erreur }}</p>
       <div v-if="precedents.length" class="nu-precedents" aria-label="Photos des jours précédents">
         <figure v-for="e in precedents" :key="e.id">
-          <img :src="e.valeur.photo" :alt="`${e.valeur.repas}, ${dateCourte(e.date)}`" loading="lazy" width="72" height="72">
+          <img :src="urls[e.valeur.photo] || e.valeur.photo" :alt="`${e.valeur.repas}, ${dateCourte(e.date)}`" loading="lazy" width="72" height="72">
           <figcaption>{{ dateCourte(e.date) }}</figcaption>
         </figure>
       </div>

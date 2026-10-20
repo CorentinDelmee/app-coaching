@@ -47,16 +47,33 @@ export function resumeSerie(points) {
 }
 
 // --- Nutrition ----------------------------------------------------------------------------------------------------
-// Habitudes proposées tant que le coach ne les personnalise pas (voir DECISIONS.md) ; les habitudes déjà cochées s'y ajoutent.
+// Habitudes proposées tant que le coach n'a pas défini la liste du client (profil.modules.listeHabitudes).
 export const HABITUDES_DEFAUT = ["Boire 2 L d'eau", '5 fruits et légumes', 'Protéines à chaque repas', 'Dormir 7 h']
 export const REPAS = ['Petit-déjeuner', 'Déjeuner', 'Collation', 'Dîner']
+export const MAX_HABITUDES = 12
 
-const slug = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+const slug = (t) => t.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 export const idHabitude = (clientId, jour, nom) => `nut-${clientId}-${jour}-h-${slug(nom)}`
 export const idRepas = (clientId, jour, repas) => `nut-${clientId}-${jour}-r-${slug(repas)}`
 export const idCalories = (clientId, jour) => `nut-${clientId}-${jour}-kcal`
 
-export function nomsHabitudes(entrees) {
+/** Liste éditable du coach (une habitude par ligne) -> tableau propre : sans vides ni doublons, 60 caractères et 12 habitudes au plus. */
+export function parserHabitudes(texte) {
+  const vues = new Set()
+  const liste = []
+  for (const brut of String(texte || '').split(/\r?\n/)) {
+    const nom = brut.trim().slice(0, 60)
+    if (nom && !vues.has(nom.toLowerCase())) { vues.add(nom.toLowerCase()); liste.push(nom) }
+  }
+  return liste.slice(0, MAX_HABITUDES)
+}
+
+/**
+ * Habitudes affichées. Liste du coach définie -> exactement celle-ci. Sinon : les habitudes par défaut
+ * plus celles déjà cochées (anciennes données).
+ */
+export function nomsHabitudes(entrees, listeCoach) {
+  if (Array.isArray(listeCoach) && listeCoach.length) return [...listeCoach]
   const noms = [...HABITUDES_DEFAUT]
   for (const e of entrees) if (e.type === 'habitude' && e.valeur?.nom && !noms.includes(e.valeur.nom)) noms.push(e.valeur.nom)
   return noms

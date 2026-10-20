@@ -1,10 +1,16 @@
 async page => {
+  const entrer = async (reset, id) => {
+    await page.goto('http://localhost:5182/');
+    await page.evaluate(([reset, id]) => { if (reset) localStorage.clear(); localStorage.setItem('cdc-coaching/1:session', id); }, [reset, id]);
+    await page.reload(); await page.waitForTimeout(700);
+    // le client a déjà accepté les données de santé (sinon la garde renvoie vers /consentement)
+    await page.evaluate((id) => { const d = JSON.parse(localStorage.getItem('cdc-coaching/1')); const p = d.profils.find((x) => x.id === id); p.consentementLe = Date.now(); p.preferences = { ...p.preferences, consentement: { version: '2026-10-v1', sante: true } }; localStorage.setItem('cdc-coaching/1', JSON.stringify(d)); }, id);
+  };
   const SP = 'captures/';
   const log = []; const errs = [];
   page.on('pageerror', e => errs.push(String(e)));
   page.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
-  await page.goto('http://localhost:5182/');
-  await page.evaluate(() => { localStorage.clear(); localStorage.setItem('cdc-coaching/1:session', 'client-thomas-bernard'); });
+  await entrer(true, 'client-thomas-bernard');
   await page.addInitScript(() => { window.__vib = []; navigator.vibrate = (p) => { window.__vib.push(p); return true; }; });
   await page.goto('http://localhost:5182/questionnaires/q-checkin-quotidien');
   await page.waitForTimeout(2300);

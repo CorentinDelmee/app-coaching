@@ -8,6 +8,7 @@ import { jourLocal, ajouterJours, lundiDe } from '../../domain/dates.js'
 import { etatSemaine } from '../../domain/programme.js'
 import { libelleSeance, payeCeMois } from '../../domain/coaching.js'
 import { maintenant, rafraichir, uuid, etat, marquerVue, messageErreur } from '../store.js'
+import { HABITUDES_DEFAUT, parserHabitudes } from '../../domain/suivi.js'
 import { chargesRealisees, pointsPoids, lienWhatsAppIdentifiants, messageIdentifiants } from '../logique.js'
 import CalendrierMois from '../components/CalendrierMois.vue'
 import SvgCourbe from '../components/SvgCourbe.vue'
@@ -40,6 +41,7 @@ async function charger() {
   reglages.tarif = profil.value.tarif
   reglages.lieuDefaut = profil.value.lieuDefaut
   reglages.modules = { habitudes: false, photosRepas: false, calories: false, ...profil.value.modules }
+  reglages.habitudesTexte = (profil.value.modules?.listeHabitudes || []).join('\n')
   nouvelle.tarif = profil.value.tarif
   nouvelle.lieu = profil.value.lieuDefaut
   await rafraichir()
@@ -128,12 +130,12 @@ async function supprimerMot(m) {
 }
 
 // --- Réglages -------------------------------------------------------------------------------------------------------------------
-const reglages = reactive({ nom: '', tarif: 0, lieuDefaut: 'domicile', modules: { habitudes: false, photosRepas: false, calories: false } })
+const reglages = reactive({ nom: '', tarif: 0, lieuDefaut: 'domicile', modules: { habitudes: false, photosRepas: false, calories: false }, habitudesTexte: '' })
 async function enregistrerReglages() {
   erreur.value = ''
   info.value = ''
   try {
-    await data.profils.modifier(props.id, { nom: reglages.nom.trim(), tarif: Number(reglages.tarif) || 0, lieuDefaut: reglages.lieuDefaut, modules: { ...reglages.modules } })
+    await data.profils.modifier(props.id, { nom: reglages.nom.trim(), tarif: Number(reglages.tarif) || 0, lieuDefaut: reglages.lieuDefaut, modules: { ...reglages.modules, listeHabitudes: parserHabitudes(reglages.habitudesTexte) } })
     info.value = 'Réglages enregistrés.'
     await charger()
   } catch (e) { erreur.value = messageErreur(e) }
@@ -296,6 +298,12 @@ async function archiver() {
           <label class="c-case"><input v-model="reglages.modules.photosRepas" type="checkbox" />Photos de repas</label>
           <label class="c-case"><input v-model="reglages.modules.calories" type="checkbox" />Calories</label>
         </div>
+        <!-- Liste des habitudes à cocher : une par ligne ; vide = habitudes proposées par défaut -->
+        <label v-if="reglages.modules.habitudes" style="display: block; margin-bottom: 12px">
+          Habitudes du client (une par ligne, 12 maximum)
+          <textarea v-model="reglages.habitudesTexte" rows="5" :placeholder="HABITUDES_DEFAUT.join('\n')" style="width: 100%"></textarea>
+          <span class="c-doux c-petit">Laisse vide pour garder les habitudes par défaut. Retirer une habitude la masque ; son historique est conservé.</span>
+        </label>
         <p v-if="erreur" class="c-erreur" role="alert">{{ erreur }}</p>
         <p v-if="info" class="c-info" role="status">{{ info }}</p>
         <div class="c-ligne">

@@ -8,6 +8,7 @@ vi.mock('@supabase/supabase-js', () => {
   return { createClient: () => ({}) }
 })
 
+import { creerApi } from '../../src/data/commun.js'
 import { creerData } from '../../src/data/index.js'
 import { creerAdapterLocal, stockageMemoire, CLE_STOCKAGE } from '../../src/data/adapters/local.js'
 import { creerAdapterSupabase } from '../../src/data/adapters/supabase.js'
@@ -52,6 +53,25 @@ function contrat(nom, fabrique) {
       await expect(d.exercices.creer({ categories: [] })).rejects.toMatchObject({ code: 'VALIDATION', message: expect.stringContaining('« nom »') })
     })
 
+    it('supprimerMesDonneesSante : efface mes douleurs, mesures, nutrition et réponses, rien d autre ni chez les autres', async () => {
+      const d = neuf()
+      const fabien = await d.connecter('fabien.vincent', 'DEMO2024')
+      const avant = {}
+      for (const e of ['douleurs', 'mesures', 'nutrition', 'reponses']) avant[e] = (await d[e].lister({ clientId: fabien.id })).length
+      expect(Object.values(avant).every((n) => n > 0)).toBe(true)
+      const seances = (await d.seancesCoaching.lister({ clientId: fabien.id })).length
+      const realisations = (await d.realisations.lister({ clientId: fabien.id })).length
+      expect(await d.supprimerMesDonneesSante()).toEqual(avant)
+      for (const e of ['douleurs', 'mesures', 'nutrition', 'reponses']) expect(await d[e].lister({ clientId: fabien.id })).toEqual([])
+      expect((await d.seancesCoaching.lister({ clientId: fabien.id })).length).toBe(seances)
+      expect((await d.realisations.lister({ clientId: fabien.id })).length).toBe(realisations)
+      await d.deconnecter()
+      const lea = await d.connecter('lea.martin', 'DEMO2024')
+      expect((await d.reponses.lister({ clientId: lea.id })).length).toBeGreaterThan(0)
+      await d.deconnecter()
+      await expect(d.supprimerMesDonneesSante()).rejects.toMatchObject({ code: 'NON_CONNECTE' })
+    })
+
     it('modifier : fusionne et valide ; id inconnu -> INTROUVABLE', async () => {
       const d = neuf()
       const m = await d.exercices.modifier('ex-squat', { lienVideo: 'https://youtu.be/abc' })
@@ -73,27 +93,27 @@ function contrat(nom, fabrique) {
       const d = neuf()
       expect(await d.utilisateurCourant()).toBe(null)
       await expect(d.connecter('fabien.vincent', 'FAUX00')).rejects.toMatchObject({ code: 'IDENTIFIANTS', message: 'Identifiant ou code incorrect' })
-      const p = await d.connecter('Fabien.Vincent', 'DEMO24')
+      const p = await d.connecter('Fabien.Vincent', 'DEMO2024')
       expect(p.identifiant).toBe('fabien.vincent')
       expect((await d.utilisateurCourant()).id).toBe(p.id)
       await d.deconnecter()
       expect(await d.utilisateurCourant()).toBe(null)
     })
 
-    it('changerCode : 6 caractères minimum, ancien code vérifié, nouvelle connexion', async () => {
+    it('changerCode : 8 caractères minimum, ancien code vérifié, nouvelle connexion', async () => {
       const d = neuf()
-      await d.connecter('fabien.vincent', 'DEMO24')
-      await expect(d.changerCode('DEMO24', 'abc')).rejects.toMatchObject({ code: 'CODE_TROP_COURT' })
-      await expect(d.changerCode('MAUVAIS', 'NOUVEAU')).rejects.toMatchObject({ code: 'IDENTIFIANTS' })
-      await d.changerCode('DEMO24', 'NOUVEAU')
+      await d.connecter('fabien.vincent', 'DEMO2024')
+      await expect(d.changerCode('DEMO2024', 'abc')).rejects.toMatchObject({ code: 'CODE_TROP_COURT' })
+      await expect(d.changerCode('MAUVAIS', 'NOUVEAU24')).rejects.toMatchObject({ code: 'IDENTIFIANTS' })
+      await d.changerCode('DEMO2024', 'NOUVEAU24')
       await d.deconnecter()
-      await expect(d.connecter('fabien.vincent', 'DEMO24')).rejects.toMatchObject({ code: 'IDENTIFIANTS' })
-      expect((await d.connecter('fabien.vincent', 'NOUVEAU')).nom).toBe('Fabien Vincent')
+      await expect(d.connecter('fabien.vincent', 'DEMO2024')).rejects.toMatchObject({ code: 'IDENTIFIANTS' })
+      expect((await d.connecter('fabien.vincent', 'NOUVEAU24')).nom).toBe('Fabien Vincent')
     })
 
     it('un client connecté ne voit que ses données (miroir de la RLS)', async () => {
       const d = neuf()
-      const p = await d.connecter('fabien.vincent', 'DEMO24')
+      const p = await d.connecter('fabien.vincent', 'DEMO2024')
       const profils = await d.profils.lister()
       expect(profils.map((x) => x.id)).toEqual([p.id])
       expect((await d.realisations.lister()).every((r) => r.clientId === p.id)).toBe(true)
@@ -101,28 +121,43 @@ function contrat(nom, fabrique) {
       expect((await d.exercices.lister()).length).toBe(80) // bibliothèque lisible par tous
       expect((await d.questionnaires.lister()).length).toBe(2) // questionnaires par défaut
       const lea = (await (async () => { await d.deconnecter(); return d.profils.lister({ identifiant: 'lea.martin' }) })())[0]
-      await d.connecter('fabien.vincent', 'DEMO24')
+      await d.connecter('fabien.vincent', 'DEMO2024')
       expect(await d.profils.lire(lea.id)).toBe(null)
       expect(await d.templates.lire(lea.id)).toBe(null)
     })
 
     it('le coach voit tout', async () => {
       const d = neuf()
-      await d.connecter('corentin', 'COACH7')
+      await d.connecter('corentin', 'COACH2026')
       expect((await d.profils.lister()).length).toBe(4)
     })
 
     it('creerClient : identifiant unique + code lisible, connexion possible', async () => {
       const d = neuf()
-      await d.connecter('corentin', 'COACH7')
+      await d.connecter('corentin', 'COACH2026')
       const a = await d.creerClient({ nom: 'Élodie D\'Arc', tarif: 40, lieuDefaut: 'salle' })
       expect(a.identifiant).toBe('elodie.darc')
-      expect(a.code).toMatch(/^[A-HJKMNP-Z2-9]{6}$/)
+      expect(a.code).toMatch(/^[A-HJKMNP-Z2-9]{8}$/)
       expect(a.profil).toMatchObject({ role: 'client', tarif: 40, lieuDefaut: 'salle', archive: false })
       const b = await d.creerClient({ nom: 'Élodie D\'Arc' })
       expect(b.identifiant).toBe('elodie.darc-2')
       await d.deconnecter()
       expect((await d.connecter('elodie.darc', a.code)).id).toBe(a.profil.id)
+    })
+
+    it('creerClient avec un backend dont le compte crée aussi le profil (Edge Function Supabase)', async () => {
+      const profils = new Map([['coach', { id: 'coach', role: 'coach', identifiant: 'corentin', nom: 'C', archive: false, creeLe: 1 }]])
+      let recu = null
+      const backend = {
+        mode: 'test', profilCreeParCompte: true,
+        tout: async () => [...profils.values()], un: async (e, id) => profils.get(id) ?? null,
+        utilisateurCourant: async () => profils.get('coach'),
+        async creerCompte(identifiant, code, profil) { recu = { identifiant, code, profil }; profils.set('nouveau', { ...profil, id: 'nouveau', archive: false }); return 'nouveau' }
+      }
+      const r = await creerApi(backend).creerClient({ nom: 'Léa Roux', tarif: 30 })
+      expect(recu.code).toHaveLength(8)
+      expect(recu.profil).toMatchObject({ role: 'client', identifiant: 'lea.roux', nom: 'Léa Roux', tarif: 30 })
+      expect(r.profil.id).toBe('nouveau') // pas de deuxième écriture : le profil vient du backend
     })
 
     it('enregistrerSeance : idempotent, met à jour le template', async () => {
@@ -160,7 +195,7 @@ function contrat(nom, fabrique) {
 
     it('exporterMesDonnees : seulement les données du client', async () => {
       const d = neuf()
-      await d.connecter('fabien.vincent', 'DEMO24')
+      await d.connecter('fabien.vincent', 'DEMO2024')
       const doc = await d.exporterMesDonnees()
       expect(doc).toMatchObject({ format: 'cdc-coaching/1', type: 'donnees-client' })
       expect(doc.profil.identifiant).toBe('fabien.vincent')
@@ -200,7 +235,7 @@ describe('adaptateur local', () => {
     sdk.charge = false
     const d = creerData({}, { storage: stockageMemoire(), now: () => NOW })
     await d.exercices.lister()
-    await d.connecter('corentin', 'COACH7')
+    await d.connecter('corentin', 'COACH2026')
     expect(sdk.charge).toBe(false)
   })
 
@@ -208,7 +243,7 @@ describe('adaptateur local', () => {
     const storage = stockageMemoire()
     const a = creerAdapterLocal({ storage, now: () => NOW })
     await a.exercices.creer({ id: 'ex-perso', nom: 'Perso', categories: [] })
-    await a.connecter('fabien.vincent', 'DEMO24')
+    await a.connecter('fabien.vincent', 'DEMO2024')
     const b = creerAdapterLocal({ storage, now: () => NOW + 1e9 })
     expect((await b.exercices.lire('ex-perso')).nom).toBe('Perso')
     expect((await b.utilisateurCourant()).identifiant).toBe('fabien.vincent') // session persistante
@@ -239,7 +274,7 @@ describe('adaptateur local', () => {
   it('réinitialiser la démo restaure les données et déconnecte', async () => {
     const d = creerAdapterLocal({ storage: stockageMemoire(), now: () => NOW })
     await d.exercices.archiver('ex-squat')
-    await d.connecter('fabien.vincent', 'DEMO24')
+    await d.connecter('fabien.vincent', 'DEMO2024')
     await d.reinitialiserDemo()
     expect((await d.exercices.lister()).length).toBe(80)
     expect(await d.utilisateurCourant()).toBe(null)
@@ -300,6 +335,16 @@ describe("file d'attente hors connexion", () => {
   }
   const realisation = { id: 'r1', clientId: 'c1', workoutId: 'w', date: '2026-10-20', semaine: '2026-10-19', valeurs: {}, dureeSec: 60, volume: 0, termineLe: NOW }
 
+  it('la déconnexion vide la file hors connexion (M6)', async () => {
+    const b = backendCoupe()
+    b.deconnecter = async () => {}
+    const d = creerApi(b)
+    await d.enregistrerSeanceOuFile(realisation)
+    expect(await d.tailleFile()).toBe(1)
+    await d.deconnecter()
+    expect(await d.tailleFile()).toBe(0)
+  })
+
   it('sans réseau la séance est mise en file ; rejouée deux fois, une seule réalisation', async () => {
     const b = backendCoupe()
     const d = creerApi(b)
@@ -355,7 +400,7 @@ describe('supabase/schema.sql', () => {
   })
 
   it('un client ne lit que ses lignes et ne peut changer ni son rôle ni son tarif ni ses modules', () => {
-    expect(sql).toMatch(/create policy profiles_lecture on profiles[\s\S]*?id = auth\.uid\(\) or is_coach\(\)/)
+    expect(sql).toMatch(/create policy profiles_lecture on profiles[\s\S]*?\(id = auth\.uid\(\)\) or is_coach\(\)/)
     expect(sql).toMatch(/new\.role := old\.role/)
     expect(sql).toMatch(/new\.tarif := old\.tarif/)
     expect(sql).toMatch(/new\.modules := old\.modules/)
@@ -365,6 +410,16 @@ describe('supabase/schema.sql', () => {
       for (const [, nom, table, commande, corps] of policies.filter((p) => p[2] === t && p[3] !== 'select')) {
         expect(corps, `${table} ${nom} (${commande})`).toMatch(/is_coach\(\)/)
       }
+    }
+  })
+
+  it('I1 : un client archivé perd l accès (toute policy client teste est_actif)', () => {
+    expect(sql).toMatch(/create function est_actif\(\)[\s\S]*?security definer set search_path = public, pg_temp[\s\S]*?not archive/)
+    expect(sql.indexOf('create function est_actif')).toBeLessThan(sql.indexOf('create policy'))
+    expect(sql).toMatch(/revoke execute on function est_actif\(\) from public, anon/)
+    const policies = [...sql.matchAll(/create policy (\w+) on ([\w.]+) for (\w+) to authenticated([^;]*);/g)]
+    for (const [, nom, , , corps] of policies.filter((p) => /auth\.uid\(\)/.test(p[4]) && !/profiles_lecture/.test(p[1]))) {
+      expect(corps, nom).toMatch(/est_actif\(\)/)
     }
   })
 
@@ -378,5 +433,15 @@ describe('supabase/schema.sql', () => {
       const bloc = sql.slice(sql.indexOf(`create table ${t} `), sql.indexOf(');', sql.indexOf(`create table ${t} `)))
       expect(bloc, t).toMatch(/client_id/)
     }
+  })
+})
+
+describe('garde-fou de configuration', () => {
+  it('production en mode local refusée, sauf VITE_MODE_DEMO=1', async () => {
+    const { configManquante } = await import('../../src/lib/configuration.js')
+    expect(configManquante({ PROD: true }, 'local')).toBe(true)
+    expect(configManquante({ PROD: true, VITE_MODE_DEMO: '1' }, 'local')).toBe(false)
+    expect(configManquante({ PROD: true }, 'supabase')).toBe(false)
+    expect(configManquante({ PROD: false }, 'local')).toBe(false)
   })
 })

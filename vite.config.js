@@ -8,21 +8,32 @@ export default defineConfig({
   plugins: [
     vue(),
     VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg'],
+      // « prompt » : la mise à jour n'est appliquée qu'à une navigation hors séance (voir src/lib/pwa.js), jamais en pleine séance.
+      registerType: 'prompt',
+      includeAssets: ['favicon.svg', 'icone.svg', 'icons/apple-touch-icon.png'],
       manifest: {
         name: 'Corentin Delmée Coaching',
         short_name: 'CD Coaching',
         lang: 'fr',
+        id: '/',
         start_url: '/',
+        scope: '/',
         display: 'standalone',
+        orientation: 'portrait',
+        categories: ['health', 'fitness', 'sports'],
         background_color: '#25221F',
         theme_color: '#25221F',
-        icons: [{ src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml' }]
+        icons: [
+          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: 'icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: 'icone.svg', sizes: 'any', type: 'image/svg+xml' }
+        ]
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
-        navigateFallback: '/index.html'
+        navigateFallback: '/index.html',
+        cleanupOutdatedCaches: true
       }
     })
   ],

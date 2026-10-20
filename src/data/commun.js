@@ -2,12 +2,13 @@
 //
 // Un « backend » fournit :
 //   mode, tout(entite), un(entite, id), ecrire(entite, obj)            -> lecture / écriture brutes (async)
-//   connecter, deconnecter, utilisateurCourant, changerCode, creerCompte -> session
+//   connecter, deconnecter, utilisateurCourant, changerCode, creerCompte(identifiant, code, profil) -> session
+//   (profilCreeParCompte = true si creerCompte crée aussi la ligne de profil, comme l'Edge Function Supabase)
 //   reinitialiserDemo(), file { lire(), ecrire(liste) }                  -> démo et file d'attente hors connexion
 // Tout le reste (validation, archivage, import/export, enregistrement de séance…) est ici, donc testé une seule fois.
 import { ENTITES, NOMS_ENTITES, clientDe } from './entites.js'
 import { ErreurData } from './erreurs.js'
-import { identifiantUnique, genererCode } from '../domain/identifiants.js'
+import { identifiantUnique, genererCode, LONGUEUR_CODE_MIN } from '../domain/identifiants.js'
 import { appliquerRealisation } from '../domain/realisations.js'
 import { validerRealisation } from '../domain/modele.js'
 import { exporter, exporterMesDonnees, preparerImport } from '../domain/echange.js'
@@ -62,10 +63,14 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
 
   // --- Session ---------------------------------------------------------------------------------
   api.connecter = (identifiant, code) => backend.connecter(identifiant.trim().toLowerCase(), code)
-  api.deconnecter = () => backend.deconnecter()
+  // À la déconnexion, la file hors connexion (séances non envoyées) est vidée : pas de données de santé qui restent sur un appareil partagé (audit M6).
+  // L'interface prévient avant, tant que tailleFile() > 0.
+  api.deconnecter = async () => {
+    try { await backend.deconnecter() } finally { await backend.file.ecrire([]) }
+  }
   api.utilisateurCourant = () => backend.utilisateurCourant()
   api.changerCode = async (ancienCode, nouveauCode) => {
-    if (typeof nouveauCode !== 'string' || nouveauCode.length < 6) throw new ErreurData('CODE_TROP_COURT', 'Le code doit faire 6 caractères au minimum')
+    if (typeof nouveauCode !== 'string' || nouveauCode.length < LONGUEUR_CODE_MIN) throw new ErreurData('CODE_TROP_COURT', `Le code doit faire ${LONGUEUR_CODE_MIN} caractères au minimum`)
     return backend.changerCode(ancienCode, nouveauCode)
   }
 
@@ -74,11 +79,11 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
     const existants = (await backend.tout('profils')).map((p) => p.identifiant)
     const identifiant = identifiantUnique(nom, existants)
     const code = genererCode()
-    const id = await backend.creerCompte(identifiant, code)
-    const profil = await api.profils.creer({
-      id, role: 'client', identifiant, nom, tarif, lieuDefaut, modules,
-      preferences: { son: true, vibration: true, unite: 'kg' }, consentementLe: null
-    })
+    const donnees = { role: 'client', identifiant, nom, tarif, lieuDefaut, modules, preferences: { son: true, vibration: true, unite: 'kg' }, consentementLe: null }
+    verifier('profils', { ...donnees, id: 'a-creer', archive: false, creeLe: now() }) // refuse un nom/tarif invalide avant de créer un compte
+    const id = await backend.creerCompte(identifiant, code, { ...donnees, creeLe: now() })
+    // Supabase : l'Edge Function a déjà créé le profil avec le compte ; sinon (local) on l'écrit ici.
+    const profil = backend.profilCreeParCompte ? await backend.un('profils', id) : await api.profils.creer({ ...donnees, id })
     return { profil, identifiant, code }
   }
 
@@ -168,6 +173,46 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
     donnees.programmes = (await backend.tout('programmes')).filter((o) => o.clientId === user.id)
     donnees.workouts = (await backend.tout('workouts')).filter((o) => o.clientId === user.id)
     return exporterMesDonnees(donnees, now())
+  }
+
+  // --- Photos (questionnaires, repas) ------------------------------------------------------------------------------
+  // Mode démo (backend sans `photos`) : la photo reste en data URL dans la ligne. Supabase : envoi dans le bucket privé `photos`
+  // au chemin `<client_id>/<uuid>.jpg`, la ligne ne garde que la référence « photo:<chemin> » ; affichage par URL signée courte.
+  const REF_PHOTO = 'photo:'
+  const cheminDe = (ref) => (typeof ref === 'string' && ref.startsWith(REF_PHOTO) ? ref.slice(REF_PHOTO.length) : null)
+  api.photos = {
+    /** data URL (image déjà réduite côté client) -> valeur à enregistrer dans la ligne. */
+    async enregistrer(clientId, dataUrl) {
+      if (!backend.photos) return dataUrl
+      const blob = await (await fetch(dataUrl)).blob()
+      const chemin = `${clientId}/${uuid()}.jpg`
+      await backend.photos.envoyer(chemin, blob)
+      return REF_PHOTO + chemin
+    },
+    /** Valeur enregistrée -> adresse affichable (URL signée de 5 min, ou la data URL telle quelle). */
+    async url(ref) {
+      const chemin = cheminDe(ref)
+      return chemin && backend.photos ? backend.photos.url(chemin) : ref
+    },
+    /** Toutes les références de photos d'un ensemble de lignes (réponses : valeurs ; nutrition : valeur.photo). */
+    references(lignes) {
+      return lignes.flatMap((l) => [...Object.values(l.valeurs || {}), l.valeur?.photo]).filter((v) => cheminDe(v))
+    }
+  }
+
+  /** « Supprimer mes données de santé » (RGPD) : douleurs, mesures, nutrition et réponses aux questionnaires du client connecté. */
+  api.supprimerMesDonneesSante = async () => {
+    const user = await backend.utilisateurCourant()
+    if (!user) throw new ErreurData('NON_CONNECTE', 'Connexion requise')
+    const supprimes = {}
+    for (const entite of ['douleurs', 'mesures', 'nutrition', 'reponses']) {
+      const lignes = (await backend.tout(entite)).filter((o) => clientDe(entite, o) === user.id)
+      // les fichiers des photos partent avec les lignes
+      if (backend.photos) await backend.photos.supprimer(api.photos.references(lignes).map(cheminDe))
+      for (const l of lignes) await backend.supprimer(entite, l.id)
+      supprimes[entite] = lignes.length
+    }
+    return supprimes
   }
 
   api.reinitialiserDemo = () => backend.reinitialiserDemo()

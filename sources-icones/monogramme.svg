@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#25221F"/>
+  <!-- Monogramme « CD » tracé à la main (pas de police : rendu identique partout) -->
+  <g class="mono" fill="none" stroke-width="46" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M233 190 A98 98 0 1 0 233 322" stroke="#F3EDE4"/>
+    <path d="M292 158 H322 A98 98 0 0 1 322 354 H292 Z" stroke="#E5486A"/>
+  </g>
+</svg>

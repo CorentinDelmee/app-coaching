@@ -30,7 +30,9 @@ export const estPerso = (cle) => cle.startsWith('perso:')
 export const libelleChamp = (champ) => (estPerso(champ.cle) ? champ.libelle || champ.cle.slice(6) : CHAMPS[champ.cle]?.label || champ.cle)
 
 /** Valeur par défaut d'un champ dans une nouvelle série. */
+const DEFAUTS_CHAMPS = { reps: 10, tempsTravail: 30, dureeTotale: 600, rpe: 7 }
 export function valeurParDefaut(cle) {
+  if (cle in DEFAUTS_CHAMPS) return DEFAUTS_CHAMPS[cle]
   const spec = CHAMPS[cle]
   if (!spec) return ''
   if (spec.type === 'nombre') return spec.min ?? 0

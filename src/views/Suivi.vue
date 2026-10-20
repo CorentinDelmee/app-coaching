@@ -34,6 +34,7 @@ const user = ref(null)
 const mesures = shallowRef([])
 const douleurs = shallowRef([])
 const nutrition = shallowRef([])
+const urlsPhotos = shallowRef({}) // référence de photo -> URL affichable
 const aujourdhui = jourLocal(horloge.now())
 
 const roue = shallowRef(null)      // { config, src, valide(valeur) }
@@ -70,6 +71,9 @@ async function recharger() {
   mesures.value = m
   douleurs.value = d
   nutrition.value = n
+  // photos de repas : en mode Supabase, adresses signées de courte durée (jamais d'URL publique)
+  const refs = [...new Set(n.map((e) => e.valeur?.photo).filter(Boolean))]
+  urlsPhotos.value = Object.fromEntries(await Promise.all(refs.map(async (r) => [r, await data.photos.url(r).catch(() => '')])))
 }
 
 /** Message bref en bas de l'écran (erreur d'écriture : rien n'est perdu en silence). */
@@ -145,7 +149,8 @@ async function ajouterPhoto({ repas, fichier }) {
   repasOccupe.value = repas
   erreurRepas.value = ''
   try {
-    const photo = await compresserPhoto(fichier, { max: 900, qualite: 0.7 }) // plus petite que les photos de questionnaire : c'est un journal, pas un album
+    const reduite = await compresserPhoto(fichier, { max: 900, qualite: 0.7 }) // plus petite que les photos de questionnaire : c'est un journal, pas un album
+    const photo = await data.photos.enregistrer(user.value.id, reduite)
     await enregistrer('nutrition', { id: idRepas(user.value.id, aujourdhui, repas), clientId: user.value.id, date: aujourdhui, type: 'repas', valeur: { repas, photo } },
       (e) => e.type === 'repas' && e.date === aujourdhui && e.valeur?.repas === repas)
     await recharger()
@@ -211,7 +216,7 @@ function roueValidee(i) {
         <section v-if="aUnModule(user)" class="bloc-suivi" data-c aria-labelledby="sv-nut">
           <h2 id="sv-nut">Nutrition</h2>
           <SuiviNutrition
-            :modules="modulesActifs(user)" :entrees="nutrition" :aujourdhui="aujourdhui" :occupe="repasOccupe" :erreur="erreurRepas"
+            :modules="modulesActifs(user)" :entrees="nutrition" :aujourdhui="aujourdhui" :occupe="repasOccupe" :erreur="erreurRepas" :liste="user.modules?.listeHabitudes || []" :urls="urlsPhotos"
             @habitude="basculerHabitude" @photo="ajouterPhoto" @calories="noterCalories"
           />
         </section>

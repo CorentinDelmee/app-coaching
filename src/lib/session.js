@@ -1,11 +1,5 @@
-// Session de l'utilisateur. Tant que l'écran de connexion n'existe pas (lot 9), en mode local on ouvre
-// automatiquement la session de démo de Fabien Vincent. Avec Supabase : la session réelle, ou null.
-import { data, mode } from '../data/index.js'
+// Session de l'utilisateur. La connexion se fait sur /connexion (en mode local : comptes de démo) ; le routeur (router/garde.js)
+// renvoie vers /bienvenue tant qu'il n'y a pas de session, donc les écrans reçoivent toujours un utilisateur.
+import { data } from '../data/index.js'
 
-export const COMPTE_DEMO = { identifiant: 'fabien.vincent', code: 'DEMO24' }
-
-export async function utilisateurCourant() {
-  let user = await data.utilisateurCourant()
-  if (!user && mode === 'local') user = await data.connecter(COMPTE_DEMO.identifiant, COMPTE_DEMO.code)
-  return user
-}
+export const utilisateurCourant = () => data.utilisateurCourant()

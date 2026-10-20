@@ -1,13 +1,17 @@
 <script setup>
 // Rubrique pas encore livrée (Questionnaires, Suivi, Profil) : un écran « bientôt » propre, avec ses formes qui flottent.
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { accesSante } from '../domain/consentement.js'
+import { utilisateurCourant } from '../lib/session.js'
 import { gsap } from 'gsap'
 import Icone from '../components/Icone.vue'
 import { installerRessort, mouvementReduit } from '../anim/transitions.js'
 import { usePageAnimee } from '../composables/usePageAnimee.js'
 
 const route = useRoute()
+const router = useRouter()
+const refus = ref(false) // données de santé refusées : Questionnaires et Suivi expliquent pourquoi ils sont fermés
 const { racine, couche, ouvrir, retour } = usePageAnimee('/')
 const formes = ref(null)
 
@@ -21,6 +25,8 @@ const rub = computed(() => RUBRIQUES[route.params.rubrique] || { titre: 'Cette p
 let flottants = []
 onMounted(async () => {
   installerRessort()
+  const user = await utilisateurCourant()
+  refus.value = ['questionnaires', 'suivi'].includes(route.params.rubrique) && !accesSante(user)
   await nextTick()
   const tl = ouvrir()
   if (!tl || mouvementReduit()) return
@@ -43,8 +49,15 @@ onBeforeUnmount(() => flottants.forEach((t) => t.kill()))
           <div ref="formes" class="formes" data-c aria-hidden="true">
             <i class="f1"></i><i class="f2"></i><i class="f3"></i>
           </div>
-          <h1 class="grand" data-c>{{ rub.titre }}<br>bientôt.</h1>
-          <p data-c>{{ rub.texte }}</p>
+          <template v-if="refus">
+            <h1 class="grand" data-c>Santé<br>désactivée.</h1>
+            <p data-c>Vous avez choisi de ne pas partager vos données de santé : {{ rub.titre }} n'est donc pas disponible. Vous pouvez changer d'avis à tout moment dans votre profil.</p>
+            <button class="gros doux" type="button" data-c style="margin-top: 20px" @click="router.push('/profil')">Ouvrir mon profil</button>
+          </template>
+          <template v-else>
+            <h1 class="grand" data-c>{{ rub.titre }}<br>bientôt.</h1>
+            <p data-c>{{ rub.texte }}</p>
+          </template>
         </div>
       </div>
     </section>

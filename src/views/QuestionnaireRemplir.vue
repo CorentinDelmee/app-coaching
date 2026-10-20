@@ -9,7 +9,7 @@ import { gsap } from 'gsap'
 import Icone from '../components/Icone.vue'
 import CurseurDix from '../components/CurseurDix.vue'
 import RoueValeur from '../components/seance/RoueValeur.vue'
-import { data } from '../data/index.js'
+import { data, mode } from '../data/index.js'
 import { jourLocal } from '../domain/dates.js'
 import {
   LIBELLES_EMOJIS, configNombre, douleurAlertante, idReponse, mesureDepuisReponse, peutContinuer, reponseDeLaPeriode,
@@ -55,6 +55,7 @@ const barreEl = ref(null)
 const finEl = ref(null)
 const repriseEl = ref(null)
 let minuteur = 0
+const refsPhotos = new Map() // photo déjà envoyée -> référence : un nouvel essai ne renvoie pas le fichier
 
 const total = computed(() => questionnaire.value?.questions.length || 0)
 const q = computed(() => questionnaire.value?.questions[index.value])
@@ -128,7 +129,11 @@ onBeforeUnmount(() => {
 
 // Brouillon : sauvegardé à chaque changement (hors fin).
 watch([index, valeurs], () => {
-  if (charge.value && !fin.value) sauverBrouillon(user.value.id, questionnaire.value.id, aujourdhui, { index: index.value, valeurs: { ...valeurs } })
+  if (!charge.value || fin.value) return
+  // hors mode démo, une photo n'est jamais gardée dans le navigateur : elle part directement dans le stockage privé à l'envoi
+  const brouillon = { ...valeurs }
+  if (mode !== 'local') for (const c of questionnaire.value.questions) if (c.type === 'photo') delete brouillon[c.cle]
+  sauverBrouillon(user.value.id, questionnaire.value.id, aujourdhui, { index: index.value, valeurs: brouillon })
 }, { deep: true })
 watch(index, (i) => gsap.to(barreEl.value, { scaleX: (i + 1) / total.value, duration: mouvementReduit() ? 0.2 : 0.9, ease: 'back.out(1.6)', overwrite: 'auto' }))
 
@@ -217,6 +222,13 @@ async function envoyer() {
   const vals = valeursAEnregistrer(questionnaire.value, valeurs)
   const rep = { id: idReponse(user.value.id, questionnaire.value.id, aujourdhui), clientId: user.value.id, questionnaireId: questionnaire.value.id, frequence: questionnaire.value.frequence, date: aujourdhui, valeurs: vals }
   try {
+    // photos : envoyées dans le stockage privé (Supabase) ; en démo elles restent en data URL (data.photos s'en charge)
+    for (const c of questionnaire.value.questions) {
+      if (c.type === 'photo' && typeof vals[c.cle] === 'string' && vals[c.cle].startsWith('data:')) {
+        if (!refsPhotos.has(vals[c.cle])) refsPhotos.set(vals[c.cle], await data.photos.enregistrer(user.value.id, vals[c.cle]))
+        vals[c.cle] = refsPhotos.get(vals[c.cle])
+      }
+    }
     try { await data.reponses.creer(rep) } catch (e) { if (e.code === 'EXISTE') await data.reponses.modifier(rep.id, rep); else throw e }
     const m = mesureDepuisReponse(questionnaire.value, vals)
     if (m) await enregistrerMesure(data, user.value.id, aujourdhui, m)

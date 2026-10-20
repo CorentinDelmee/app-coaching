@@ -14,10 +14,10 @@ describe('identifiants', () => {
     expect(identifiantUnique('Fabien Vincent', ['fabien.vincent', 'fabien.vincent-2'])).toBe('fabien.vincent-3')
     expect(identifiantUnique('Fabien Vincent', ['autre'])).toBe('fabien.vincent')
   })
-  it('1000 codes : 6 caractères lisibles (sans 0 O 1 I L)', () => {
+  it('1000 codes : 8 caractères lisibles (sans 0 O 1 I L)', () => {
     for (let i = 0; i < 1000; i++) {
       const c = genererCode()
-      expect(c).toHaveLength(6)
+      expect(c).toHaveLength(8)
       for (const ch of c) expect(ALPHABET_CODE.includes(ch)).toBe(true)
       expect(c).not.toMatch(/[0O1IL]/)
     }

@@ -42,3 +42,13 @@ Chaque script renvoie une ligne de constats (`||` entre les étapes) et enregist
 | `lot8-suivi-lea-complet.js` | Suivi de Léa (tous les modules) : 2e mesure de poids, carte du corps (zone, intensité > 6, courbe de la zone, dos), habitude, photo de repas, calories |
 | `lot78-mouvement-reduit-modules.js` | Mouvement réduit : aucun élément décalé / invisible ; Thomas (aucun module) : pas de rubrique Nutrition |
 (Mêmes commandes que ci-dessus, port 5182 ; les scripts remettent le stockage à zéro eux-mêmes.)
+## Lot 9 (connexion, profil, PWA)
+La session de démo automatique n'existe plus : les scripts des lots 2 à 6 ouvrent maintenant eux-mêmes une session (fonction `seed('fabien.vincent')` en tête de script : ouvre le compte et enregistre le consentement dans le localStorage). Principe :
+`localStorage.setItem('cdc-coaching/1:session', 'client-fabien-vincent')` puis enregistrer le consentement dans le profil
+(`consentementLe` + `preferences.consentement = { version: '2026-10-v1', sante: true }` dans `cdc-coaching/1`), ou passer par `/connexion`.
+| Script | Ce qu'il vérifie |
+|---|---|
+| `lot9-connexion-profil.js` | Accueil public, instructions d'installation, erreur de connexion, consentement (cases décochées), piège de focus du menu, Profil (unité, code, retrait du consentement, export), déconnexion, connexion coach |
+| `lot9-hors-connexion.js` | À lancer sur `VITE_MODE_DEMO=1 npm run build` (la démo est refusée en production sans cette variable) + `npm run preview` (port 5182) : service worker actif, manifeste et icônes, dashboard et séance en mode avion, pastille « Hors connexion » |
+| `lot78-sante-refusee-habitudes-coach.js` | Santé refusée : Suivi / Questionnaires -> « Santé désactivée » ; le coach définit la liste d'habitudes, le client la voit |
+(Les scripts lots 7-8 posent eux-mêmes le consentement santé du client de démo.)
