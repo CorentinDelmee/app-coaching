@@ -96,6 +96,10 @@ export function creerAdapterLocal({ storage = globalThis.localStorage || stockag
       if (charger().comptes[p.identifiant]?.code !== ancien) throw new ErreurData('IDENTIFIANTS', MESSAGES.IDENTIFIANTS)
       sauver((etat) => { etat.comptes[p.identifiant].code = nouveau })
     },
+    async reinitialiserCode(identifiant, code) {
+      if (!charger().comptes[identifiant]) throw new ErreurData('INTROUVABLE', 'Compte introuvable')
+      sauver((etat) => { etat.comptes[identifiant].code = code })
+    },
     async creerCompte(identifiant, code) {
       const id = (uuid || (() => globalThis.crypto.randomUUID()))()
       sauver((etat) => { etat.comptes[identifiant] = { id, code } })

@@ -211,11 +211,11 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 
 ## Lot 10 — Tableau de bord coach `[DESIGN]` (une seule direction, propre et efficace, ordinateur d'abord)
 **Dépendances** : lot 1 + lot 9 (connexion coach). Les pages coach peuvent démarrer en parallèle des lots 6-8 (worktree séparé).
-- [ ] Clients : créer (identifiant + code générés, boutons copier / partager / WhatsApp pré-rempli), réglages (tarif, lieu, modules nutrition), archiver.
-- [ ] Bibliothèque d'exercices (recherche, catégories, lien vidéo) ; constructeur de séances par blocs (exercice / superset / circuit + format) et champs par exercice
+- [x] Clients : créer (identifiant + code générés, boutons copier / partager / WhatsApp pré-rempli), réglages (tarif, lieu, modules nutrition), archiver.
+- [x] Bibliothèque d'exercices (recherche, catégories, lien vidéo) ; constructeur de séances par blocs (exercice / superset / circuit + format) et champs par exercice
   (modifiable par le client oui/non, champs personnalisés) ; programmes multi-semaines (répété / par semaine, jours fixés) ; dupliquer un modèle vers un autre client.
-- [ ] Constructeur de questionnaires ; saisie des séances de coaching (date, heure, lieu, statut, tarif pré-rempli) ; mot du coach.
-- [ ] Vue client : calendrier, séances faites, charges réalisées, réponses, courbes ; **alertes** (liste, « marquer vu ») ; import / export JSON avec rapport.
+- [x] Constructeur de questionnaires ; saisie des séances de coaching (date, heure, lieu, statut, tarif pré-rempli) ; mot du coach.
+- [x] Vue client : calendrier, séances faites, charges réalisées, réponses, courbes ; **alertes** (liste, « marquer vu ») ; import / export JSON avec rapport.
 - *Acceptation* : un client créé par le coach peut se connecter avec l'identifiant/le code affichés (mode local) et voit le programme assigné ; un client ne
   peut pas ouvrir `/coach` (redirigé vers son dashboard).
 

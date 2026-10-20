@@ -82,6 +82,17 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
     return { profil, identifiant, code }
   }
 
+  /** Le coach donne un nouveau code à un client (ancien code perdu). Renvoie { identifiant, code } à transmettre. */
+  api.reinitialiserCode = async (clientId) => {
+    const user = await backend.utilisateurCourant()
+    if (user?.role !== 'coach') throw new ErreurData('NON_AUTORISE', 'Réservé au coach')
+    const profil = await backend.un('profils', clientId)
+    if (!profil || profil.role !== 'client') throw new ErreurData('INTROUVABLE', 'Client introuvable')
+    const code = genererCode()
+    await backend.reinitialiserCode(profil.identifiant, code)
+    return { identifiant: profil.identifiant, code }
+  }
+
   // --- Séances faites ----------------------------------------------------------------------------
   /** Enregistre une réalisation + met à jour le template. Idempotent (même id = une seule réalisation). */
   api.enregistrerSeance = async (realisation) => {

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Accueil from '../views/Accueil.vue'
+import { routeCoach } from '../coach/routes.js'
 
 // Les routes de l'app sont ajoutées lot par lot (voir PLAN.md).
 export default createRouter({
@@ -12,6 +13,7 @@ export default createRouter({
     { path: '/demo/seance', redirect: '/seance/w-fabien-2' },
     { path: '/demo/temps', redirect: '/seance/w-fabien-1' },
     { path: '/demo/circuits', redirect: '/seance/w-fabien-circuits' },
-    { path: '/demo/finishers', redirect: '/seance/w-fabien-3' }
+    { path: '/demo/finishers', redirect: '/seance/w-fabien-3' },
+    routeCoach
   ]
 })

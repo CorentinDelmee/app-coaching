@@ -115,6 +115,10 @@ export function creerAdapterSupabase({ url, anonKey, storage = globalThis.localS
       if (error || !data.user) throw echec(error || new Error('Création du compte impossible'))
       return data.user.id
     },
+    // Changer le mot de passe d'un autre compte exige la clé « service » : à faire dans une Edge Function (lot 12), jamais dans le navigateur.
+    async reinitialiserCode() {
+      throw new ErreurData('NON_SUPPORTE', "Le nouveau code n'est pas encore disponible avec Supabase (Edge Function à prévoir)")
+    },
     async reinitialiserDemo() {
       throw new ErreurData('NON_SUPPORTE', 'La démo ne se réinitialise qu\'en mode local')
     },
