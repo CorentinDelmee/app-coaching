@@ -11,6 +11,9 @@ export const libelleCategorie = (c) => CATEGORIES[c] || c
 
 export const JOURS_COURTS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 
+/** Copie profonde de données JSON (marche aussi sur les objets réactifs Vue, ce que structuredClone refuse). */
+export const copie = (x) => JSON.parse(JSON.stringify(x))
+
 const slug = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
 // --- Messages à transmettre au client -------------------------------------------------------------
@@ -86,11 +89,11 @@ export function nouveauBloc(type, uuid, exerciceId = '') {
 export function deplacer(liste, i, delta) {
   const j = i + delta
   if (j < 0 || j >= liste.length) return liste
-  const copie = [...liste]
-  const tmp = copie[i]
-  copie[i] = copie[j]
-  copie[j] = tmp
-  return copie
+  const nouvelle = [...liste]
+  const tmp = nouvelle[i]
+  nouvelle[i] = nouvelle[j]
+  nouvelle[j] = tmp
+  return nouvelle
 }
 
 /** Paramètres éditables d'un format de circuit (valeurs en secondes, minutes ou nombre). */
@@ -132,8 +135,8 @@ export function resumeWorkout(w, nomExercice) {
 // --- Duplication d'un modèle vers un autre client --------------------------------------------------------
 /** Copie une séance pour `clientId` (nouvel id ; les blocs gardent leurs ids, locaux à la séance). */
 export function dupliquerWorkout(w, clientId, uuid, nom) {
-  const copie = structuredClone(w)
-  return { ...copie, id: uuid(), clientId: clientId ?? null, nom: nom ?? copie.nom }
+  const c = copie(w)
+  return { ...c, id: uuid(), clientId: clientId ?? null, nom: nom ?? c.nom }
 }
 
 /**
@@ -146,11 +149,11 @@ export function dupliquerProgramme(programme, workoutsSource, clientId, uuid, de
     if (copies.has(wid)) return copies.get(wid).id
     const source = workoutsSource.find((w) => w.id === wid)
     if (!source) return null
-    const copie = dupliquerWorkout(source, clientId, uuid)
-    copies.set(wid, copie)
-    return copie.id
+    const c = dupliquerWorkout(source, clientId, uuid)
+    copies.set(wid, c)
+    return c.id
   }
-  const nouveau = { ...structuredClone(programme), id: uuid(), clientId, debut: debut || programme.debut }
+  const nouveau = { ...copie(programme), id: uuid(), clientId, debut: debut || programme.debut }
   if (programme.mode === 'repete') nouveau.workouts = programme.workouts.map(copier).filter(Boolean)
   else nouveau.semaines = programme.semaines.map((s) => s.map(copier).filter(Boolean))
   if (programme.joursFixes) {
@@ -161,7 +164,7 @@ export function dupliquerProgramme(programme, workoutsSource, clientId, uuid, de
 
 /** Un workout supprimé du programme disparaît aussi des jours fixés. */
 export function retirerWorkoutDuProgramme(programme, workoutId, semaine) {
-  const p = structuredClone(programme)
+  const p = copie(programme)
   if (p.mode === 'repete') p.workouts = p.workouts.filter((id) => id !== workoutId)
   else p.semaines[semaine] = p.semaines[semaine].filter((id) => id !== workoutId)
   const encore = p.mode === 'repete' ? p.workouts : p.semaines.flat()
