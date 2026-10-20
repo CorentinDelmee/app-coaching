@@ -85,7 +85,7 @@
       "id": "7",
       "titre": "Questionnaires",
       "statut": "en_cours",
-      "avancement": 5,
+      "avancement": 80,
       "qui": "developpeur"
     },
     {
@@ -115,9 +115,9 @@
       "id": "11",
       "titre": "Tests mobiles, audit sécurité, revue des animations",
       "statut": "en_cours",
-      "avancement": 15,
+      "avancement": 45,
       "qui": "testeur + auditeur-securite + frontend-senior",
-      "note": "Audit sécurité en cours"
+      "note": "Audit sécurité fait et corrigé (aucun critique) ; reste test mobile final + revue animations"
     },
     {
       "id": "12",
@@ -146,12 +146,12 @@
       "comment": "MISE-EN-ROUTE.md étapes 9-10. Action publique : à faire par toi."
     },
     {
-      "titre": "Déployer la fonction de réinitialisation de code (npx supabase)",
+      "titre": "Déployer les 2 fonctions serveur (création de client, nouveau code) et désactiver les inscriptions publiques",
       "qui": "Corentin",
       "echeance": "",
       "duree": "25 min",
       "statut": "a_faire",
-      "comment": "MISE-EN-ROUTE.md étape 11."
+      "comment": "MISE-EN-ROUTE.md. Indispensable avant de créer un vrai client."
     },
     {
       "titre": "Recette en ligne avec 2 comptes (isolation, hors connexion) AVANT tout vrai client",
@@ -328,6 +328,10 @@
     {
       "date": "2026-10-20",
       "texte": "Connexion, consentement RGPD, profil, page d installation et fonctionnement hors connexion prêts."
+    },
+    {
+      "date": "2026-10-20",
+      "texte": "Audit sécurité : aucun problème critique ; les 4 points importants sont corrigés (comptes créés côté serveur, clients archivés bloqués, codes à 8 caractères, en-têtes de sécurité)."
     }
   ],
   "prochaines_etapes": [
