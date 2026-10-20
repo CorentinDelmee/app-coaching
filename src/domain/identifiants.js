@@ -1,4 +1,4 @@
-// Identifiants (prenom.nom) et codes de connexion (6 caractères lisibles).
+// Identifiants (prenom.nom) et codes de connexion (8 caractères lisibles).
 
 const retirerAccents = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '')
 const nettoyer = (s) => retirerAccents(s).toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -24,8 +24,12 @@ export function identifiantUnique(nomComplet, existants) {
 // Sans 0, O, 1, I, L (confusions à la lecture).
 export const ALPHABET_CODE = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
 
-/** Code aléatoire de 6 caractères (crypto.getRandomValues, sans biais de modulo). */
-export function genererCode(longueur = 6, crypto = globalThis.crypto) {
+/** Longueur du code généré et minimum accepté quand un client choisit son code (audit I3). */
+export const LONGUEUR_CODE = 8
+export const LONGUEUR_CODE_MIN = 8
+
+/** Code aléatoire de 8 caractères (crypto.getRandomValues, sans biais de modulo) : environ 39 bits. */
+export function genererCode(longueur = LONGUEUR_CODE, crypto = globalThis.crypto) {
   const limite = 256 - (256 % ALPHABET_CODE.length)
   let code = ''
   while (code.length < longueur) {
@@ -42,7 +46,7 @@ export const emailTechnique = (identifiant) => `${identifiant}@clients.cdc-coach
 
 /** Contrôle d'un nouveau code saisi deux fois : renvoie le message d'erreur à afficher, ou null si tout va bien. */
 export function validerNouveauCode(nouveau, confirmation) {
-  if (typeof nouveau !== 'string' || nouveau.length < 6) return 'Le nouveau code doit faire 6 caractères au minimum.'
+  if (typeof nouveau !== 'string' || nouveau.length < LONGUEUR_CODE_MIN) return `Le nouveau code doit faire ${LONGUEUR_CODE_MIN} caractères au minimum.`
   if (nouveau !== confirmation) return 'La confirmation ne correspond pas au nouveau code.'
   return null
 }

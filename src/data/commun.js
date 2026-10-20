@@ -2,12 +2,13 @@
 //
 // Un « backend » fournit :
 //   mode, tout(entite), un(entite, id), ecrire(entite, obj)            -> lecture / écriture brutes (async)
-//   connecter, deconnecter, utilisateurCourant, changerCode, creerCompte -> session
+//   connecter, deconnecter, utilisateurCourant, changerCode, creerCompte(identifiant, code, profil) -> session
+//   (profilCreeParCompte = true si creerCompte crée aussi la ligne de profil, comme l'Edge Function Supabase)
 //   reinitialiserDemo(), file { lire(), ecrire(liste) }                  -> démo et file d'attente hors connexion
 // Tout le reste (validation, archivage, import/export, enregistrement de séance…) est ici, donc testé une seule fois.
 import { ENTITES, NOMS_ENTITES, clientDe } from './entites.js'
 import { ErreurData } from './erreurs.js'
-import { identifiantUnique, genererCode } from '../domain/identifiants.js'
+import { identifiantUnique, genererCode, LONGUEUR_CODE_MIN } from '../domain/identifiants.js'
 import { appliquerRealisation } from '../domain/realisations.js'
 import { validerRealisation } from '../domain/modele.js'
 import { exporter, exporterMesDonnees, preparerImport } from '../domain/echange.js'
@@ -65,7 +66,7 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
   api.deconnecter = () => backend.deconnecter()
   api.utilisateurCourant = () => backend.utilisateurCourant()
   api.changerCode = async (ancienCode, nouveauCode) => {
-    if (typeof nouveauCode !== 'string' || nouveauCode.length < 6) throw new ErreurData('CODE_TROP_COURT', 'Le code doit faire 6 caractères au minimum')
+    if (typeof nouveauCode !== 'string' || nouveauCode.length < LONGUEUR_CODE_MIN) throw new ErreurData('CODE_TROP_COURT', `Le code doit faire ${LONGUEUR_CODE_MIN} caractères au minimum`)
     return backend.changerCode(ancienCode, nouveauCode)
   }
 
@@ -74,11 +75,11 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
     const existants = (await backend.tout('profils')).map((p) => p.identifiant)
     const identifiant = identifiantUnique(nom, existants)
     const code = genererCode()
-    const id = await backend.creerCompte(identifiant, code)
-    const profil = await api.profils.creer({
-      id, role: 'client', identifiant, nom, tarif, lieuDefaut, modules,
-      preferences: { son: true, vibration: true, unite: 'kg' }, consentementLe: null
-    })
+    const donnees = { role: 'client', identifiant, nom, tarif, lieuDefaut, modules, preferences: { son: true, vibration: true, unite: 'kg' }, consentementLe: null }
+    verifier('profils', { ...donnees, id: 'a-creer', archive: false, creeLe: now() }) // refuse un nom/tarif invalide avant de créer un compte
+    const id = await backend.creerCompte(identifiant, code, { ...donnees, creeLe: now() })
+    // Supabase : l'Edge Function a déjà créé le profil avec le compte ; sinon (local) on l'écrit ici.
+    const profil = backend.profilCreeParCompte ? await backend.un('profils', id) : await api.profils.creer({ ...donnees, id })
     return { profil, identifiant, code }
   }
 

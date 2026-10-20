@@ -133,10 +133,10 @@ describe('garde de navigation', () => {
 })
 
 describe('outils du lot 9', () => {
-  it('nouveau code : 6 caractères et confirmation', () => {
-    expect(validerNouveauCode('abc', 'abc')).toMatch(/6 caractères/)
-    expect(validerNouveauCode('abcdef', 'abcdeg')).toMatch(/confirmation/)
-    expect(validerNouveauCode('abcdef', 'abcdef')).toBe(null)
+  it('nouveau code : 8 caractères et confirmation', () => {
+    expect(validerNouveauCode('abc', 'abc')).toMatch(/8 caractères/)
+    expect(validerNouveauCode('abcdefgh', 'abcdefgi')).toMatch(/confirmation/)
+    expect(validerNouveauCode('abcdefgh', 'abcdefgh')).toBe(null)
   })
   it('détection iOS (iPhone, iPad, iPadOS en mode Mac)', () => {
     expect(estIOS('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)')).toBe(true)

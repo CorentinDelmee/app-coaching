@@ -8,10 +8,10 @@ export { EXERCICES } from './exercices.js'
 export { QUESTIONNAIRES } from './questionnaires.js'
 
 export const COMPTES_DEMO = [
-  { identifiant: 'corentin', code: 'COACH7', role: 'coach' },
-  { identifiant: 'fabien.vincent', code: 'DEMO24', role: 'client' },
-  { identifiant: 'lea.martin', code: 'DEMO24', role: 'client' },
-  { identifiant: 'thomas.bernard', code: 'DEMO24', role: 'client' }
+  { identifiant: 'corentin', code: 'COACH2026', role: 'coach' },
+  { identifiant: 'fabien.vincent', code: 'DEMO2024', role: 'client' },
+  { identifiant: 'lea.martin', code: 'DEMO2024', role: 'client' },
+  { identifiant: 'thomas.bernard', code: 'DEMO2024', role: 'client' }
 ]
 
 const JOUR_MS = 86400000

@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
   const identifiant = typeof corps.identifiant === 'string' ? corps.identifiant.trim().toLowerCase() : ''
   const code = typeof corps.code === 'string' ? corps.code : ''
   if (!identifiant) return reponse({ erreur: 'Identifiant manquant' }, 400)
-  if (code.length < 6 || code.length > 72) return reponse({ erreur: 'Le code doit faire entre 6 et 72 caractères' }, 400)
+  if (code.length < 8 || code.length > 72) return reponse({ erreur: 'Le code doit faire entre 8 et 72 caractères' }, 400)
 
   // 4. La cible doit être un client (jamais le coach).
   const { data: cible } = await admin.from('profiles').select('id, role').eq('identifiant', identifiant).maybeSingle()

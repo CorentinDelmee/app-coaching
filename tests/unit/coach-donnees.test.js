@@ -10,7 +10,7 @@ const uuid = () => `t-${++n}`
 const neuf = () => creerAdapterLocal({ storage: stockageMemoire(), now: () => NOW })
 
 async function coach(data) {
-  await data.connecter('corentin', 'COACH7')
+  await data.connecter('corentin', 'COACH2026')
   return data
 }
 

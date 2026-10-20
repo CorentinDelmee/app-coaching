@@ -52,7 +52,7 @@ async page => {
   await page.waitForTimeout(400);
   log.push('unité: ' + await page.evaluate(() => JSON.parse(localStorage.getItem('cdc-coaching/1')).profils.find(p => p.identifiant === 'fabien.vincent').preferences.unite));
   await page.click('text=Changer mon code');
-  await page.fill('input[autocomplete=current-password]', 'DEMO24');
+  await page.fill('input[autocomplete=current-password]', 'DEMO2024');
   await page.fill('input[autocomplete=new-password] >> nth=0', 'abc');
   await page.fill('input[autocomplete=new-password] >> nth=1', 'abc');
   await page.click('text=Enregistrer');

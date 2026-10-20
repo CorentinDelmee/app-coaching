@@ -159,7 +159,7 @@ async function deconnecter() {
           <button v-if="!formCode" class="petit-btn" type="button" @click="formCode = true; codeChange = false">Changer mon code</button>
           <form v-else class="cx-form" novalidate @submit.prevent="changerCode">
             <label class="champ"><span>Code actuel</span><input v-model="ancien" type="password" autocomplete="current-password" /></label>
-            <label class="champ"><span>Nouveau code (6 caractères minimum)</span><input v-model="nouveau" type="password" autocomplete="new-password" /></label>
+            <label class="champ"><span>Nouveau code (8 caractères minimum)</span><input v-model="nouveau" type="password" autocomplete="new-password" /></label>
             <label class="champ"><span>Confirmer le nouveau code</span><input v-model="confirmation" type="password" autocomplete="new-password" /></label>
             <p v-if="erreurCode" class="cx-erreur" role="alert">{{ erreurCode }}</p>
             <button class="gros" type="submit">Enregistrer</button>

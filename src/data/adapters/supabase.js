@@ -7,6 +7,14 @@ import { ENTITES, clientDe } from '../entites.js'
 import { ErreurData, MESSAGES } from '../erreurs.js'
 import { emailTechnique } from '../../domain/identifiants.js'
 
+// Erreur renvoyée par une Edge Function : le message utile est dans le corps de la réponse HTTP.
+async function erreurFonction(error, parDefaut) {
+  if (/fetch|network|Failed to send/i.test(error.message || '')) return new ErreurData('RESEAU', 'Pas de réseau')
+  let message = ''
+  try { message = (await error.context?.json?.())?.erreur || '' } catch { /* corps illisible */ }
+  return new ErreurData('ECHEC', message || parDefaut)
+}
+
 const CLE_FILE = 'cdc-coaching/1:file'
 
 // Profils : vraies colonnes (le client ne peut pas modifier tarif/rôle/modules, voir le trigger SQL).
@@ -111,26 +119,22 @@ export function creerAdapterSupabase({ url, anonKey, storage = globalThis.localS
       const { error } = await c.auth.updateUser({ password: nouveau })
       if (error) throw echec(error)
     },
-    // 2e client SANS persistance de session : le coach reste connecté pendant la création du compte client.
-    async creerCompte(identifiant, code) {
-      const { createClient } = await import('@supabase/supabase-js')
-      const temporaire = createClient(url, anonKey, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } })
-      const { data, error } = await temporaire.auth.signUp({ email: emailTechnique(identifiant), password: code })
-      if (error || !data.user) throw echec(error || new Error('Création du compte impossible'))
-      return data.user.id
+    // Les inscriptions publiques de Supabase sont désactivées : le compte ET le profil sont créés par l'Edge Function
+    // `creer-client` (supabase/functions), qui vérifie que l'appelant est le coach. La clé service ne quitte jamais le serveur.
+    profilCreeParCompte: true,
+    async creerCompte(identifiant, code, profil) {
+      const c = await sb()
+      const { data, error } = await c.functions.invoke('creer-client', { body: { identifiant, code, profil } })
+      if (error) throw await erreurFonction(error, "Le compte n'a pas pu être créé")
+      if (data?.erreur || !data?.id) throw new ErreurData('ECHEC', data?.erreur || "Le compte n'a pas pu être créé")
+      return data.id
     },
     // Changer le mot de passe d'un autre compte exige la clé « service » : l'Edge Function `reinitialiser-code` (supabase/functions)
     // vérifie que l'appelant est le coach, puis change le mot de passe. La clé service ne quitte jamais le serveur.
     async reinitialiserCode(identifiant, code) {
       const c = await sb()
       const { data, error } = await c.functions.invoke('reinitialiser-code', { body: { identifiant, code } })
-      if (error) {
-        // l'erreur « HTTP » de la fonction porte son message dans le corps de la réponse
-        let message = ''
-        try { message = (await error.context?.json?.())?.erreur || '' } catch { /* corps illisible */ }
-        if (/fetch|network|Failed to send/i.test(error.message || '')) throw new ErreurData('RESEAU', 'Pas de réseau')
-        throw new ErreurData('ECHEC', message || "Le nouveau code n'a pas pu être enregistré")
-      }
+      if (error) throw await erreurFonction(error, "Le nouveau code n'a pas pu être enregistré")
       if (data?.erreur) throw new ErreurData('ECHEC', data.erreur)
     },
     async reinitialiserDemo() {
