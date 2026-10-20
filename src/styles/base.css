@@ -1,8 +1,17 @@
 /* Base commune : remise à zéro légère, typographie, boutons de la maison. Aucune couleur en dur (voir tokens.css). */
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; background: var(--fond); color: var(--texte); font-family: var(--font-texte); }
-body { -webkit-font-smoothing: antialiased; }
+/* App plein écran : pas de « tirer pour rafraîchir » qui recharge en pleine séance, pas de gonflement du texte en paysage */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior: none; }
+body { -webkit-font-smoothing: antialiased; overscroll-behavior: none; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; touch-action: manipulation; }
+/* Un appui long sur un bouton (séance, chrono) ne sélectionne pas son texte et n'ouvre pas le menu du système */
+button, [role="button"], label.case { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+
+/* Retour d'appui commun : tout ce qui se touche s'enfonce un peu. Spécificité nulle (:where) : les composants qui ont
+   leur propre :active (cartes, lignes, chronos…) ou une position en transform (pastille de repos) gardent la leur. */
+:where(button, a.gros, [role="button"], label.case) { transition: transform .14s var(--ease); }
+:where(button, a.gros, [role="button"], label.case):where(:active:not(:disabled)) { transform: scale(.97); }
 [hidden] { display: none !important; }
 ol, ul { list-style: none; }
 a { color: inherit; }
@@ -31,5 +40,5 @@ b { font-weight: 600; }
 .gros:disabled { opacity: .4; }
 
 @media (prefers-reduced-motion: reduce) {
-  .rond, .gros { transition: none; }
+  .rond, .gros, :where(button, a.gros, [role="button"], label.case) { transition: none; }
 }

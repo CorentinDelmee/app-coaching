@@ -173,7 +173,7 @@ export function installerRessort() {
   if (ressortInstalle || typeof document === 'undefined') return
   ressortInstalle = true
   document.addEventListener('pointerup', (e) => {
-    const b = e.target.closest && e.target.closest('.gros, .rond, .btn-ressort')
+    const b = e.target.closest && e.target.closest('.gros, .rond, .btn-gros, .rang-btn button, .btn-menu, .btn-ressort')
     if (!b || rm() || b.dataset.sansRessort) return
     gsap.fromTo(b, { scale: 0.955 }, { scale: 1, duration: 0.6, ease: 'back.out(2.6)', overwrite: 'auto', clearProps: 'transform' })
   }, true)

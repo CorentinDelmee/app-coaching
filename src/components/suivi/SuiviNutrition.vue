@@ -99,7 +99,7 @@ const sem = (h) => `7 derniers jours : ${h.semaine.filter((j) => j.fait).length}
 
 .hab { display: flex; align-items: center; gap: 14px; min-height: 64px; border-top: 1px solid var(--filet); }
 .hab:first-child { border-top: 0; }
-.hab-case { width: 48px; height: 48px; border-radius: 16px; flex: none; display: grid; place-items: center; background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--filet); transition: background-color .2s; }
+.hab-case { width: 48px; height: 48px; border-radius: 16px; flex: none; display: grid; place-items: center; background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--filet); transition: background-color .2s, transform .14s var(--ease); }
 .hab-case svg { width: 24px; height: 24px; stroke: var(--accent-texte); fill: none; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
 .hab.fait .hab-case { background: var(--accent); box-shadow: none; }
 .hab.fait .hab-case svg { opacity: 1; }

@@ -3,7 +3,7 @@
 
 /* ---------- Menu ---------- */
 .menu-cadre { position: fixed; inset: 0; margin: 0 auto; max-width: 520px; z-index: 150; pointer-events: none; }
-.btn-menu { position: absolute; z-index: 210; top: var(--haut); right: var(--pad); width: 56px; height: 56px; border-radius: 50%; background: var(--surface); color: var(--texte); display: grid; place-items: center; pointer-events: auto; transition: background-color .3s var(--ease); }
+.btn-menu { position: absolute; z-index: 210; top: var(--haut); right: var(--pad); width: 56px; height: 56px; border-radius: 50%; background: var(--surface); color: var(--texte); display: grid; place-items: center; pointer-events: auto; transition: background-color .3s var(--ease), transform .14s var(--ease); }
 .btn-menu i { grid-area: 1/1; width: 22px; height: 2.5px; border-radius: 2px; background: currentColor; }
 .btn-menu i:first-child { transform: translateY(-4.5px); }
 .btn-menu i:last-child { transform: translateY(4.5px); }

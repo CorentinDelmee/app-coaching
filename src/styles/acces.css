@@ -45,9 +45,9 @@
 .case { display: flex; gap: 14px; align-items: flex-start; padding: 16px; border-radius: 20px; background: var(--surface); font-size: 16px; line-height: 1.4; cursor: pointer; }
 .case input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .case .boite { width: 30px; height: 30px; flex: none; border-radius: 10px; box-shadow: inset 0 0 0 2.5px var(--texte-doux); display: grid; place-items: center; transition: background-color .2s var(--ease), transform .3s var(--ease); }
-.case .boite::after { content: ''; width: 14px; height: 8px; border: solid var(--accent-texte); border-width: 0 0 3.5px 3.5px; transform: rotate(-45deg) scale(0); margin-top: -3px; transition: transform .3s var(--ease); }
+.case .boite::after { content: ''; width: 14px; height: 8px; border: solid var(--accent-texte); border-width: 0 0 3.5px 3.5px; transform: rotate(-45deg) scale(.5); opacity: 0; margin-top: -3px; transition: transform .3s var(--ease), opacity .15s var(--ease); }
 .case input:checked + .boite { background: var(--accent); box-shadow: none; }
-.case input:checked + .boite::after { transform: rotate(-45deg) scale(1); }
+.case input:checked + .boite::after { transform: rotate(-45deg) scale(1); opacity: 1; }
 .case input:focus-visible + .boite { outline: 3px solid var(--accent-lisible); outline-offset: 3px; }
 .cs-actions { display: flex; flex-direction: column; gap: 10px; }
 .cs-actions .stat-leg { text-align: center; margin: 4px 8px 0; }
@@ -62,7 +62,7 @@
 .pf-infos dd { font-weight: 600; text-align: right; }
 .pf-ligne { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; border-top: 1px solid var(--filet); font-size: 17px; font-weight: 500; }
 .sur-titre + .pf-ligne { border-top: 0; margin-top: 4px; }
-.interrupteur { position: relative; width: 62px; height: 36px; border-radius: 18px; background: var(--surface-2); flex: none; transition: background-color .25s var(--ease); }
+.interrupteur { position: relative; width: 62px; height: 36px; border-radius: 18px; background: var(--surface-2); flex: none; transition: background-color .25s var(--ease), transform .14s var(--ease); }
 .interrupteur i { position: absolute; left: 4px; top: 4px; width: 28px; height: 28px; border-radius: 50%; background: var(--texte); transition: transform .35s var(--ease); }
 .interrupteur[aria-checked="true"] { background: var(--accent); }
 .interrupteur[aria-checked="true"] i { transform: translateX(26px); background: var(--accent-texte); }

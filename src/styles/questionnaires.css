@@ -26,7 +26,7 @@
 
 /* émojis */
 .emojis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-.emoji { aspect-ratio: 1 / 1.35; border-radius: 22px; background: var(--surface); font-size: 38px; display: grid; place-items: center; transition: background-color .2s; }
+.emoji { aspect-ratio: 1 / 1.35; border-radius: 22px; background: var(--surface); font-size: 38px; display: grid; place-items: center; transition: background-color .2s, transform .14s var(--ease); }
 .emoji span { display: block; filter: saturate(.8); }
 .emoji[aria-pressed="true"] { background: var(--accent); }
 .emoji[aria-pressed="true"] span { filter: none; }

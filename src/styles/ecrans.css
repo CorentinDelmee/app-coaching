@@ -66,7 +66,7 @@
 
 /* ---------- Page Programme ---------- */
 .bascule { position: relative; display: grid; grid-template-columns: 1fr 1fr; background: var(--surface); border-radius: 22px; padding: 5px; margin-bottom: 16px; }
-.bascule button { position: relative; z-index: 1; min-height: 50px; font-weight: 600; font-size: 16px; border-radius: 18px; transition: color .25s var(--ease); }
+.bascule button { position: relative; z-index: 1; min-height: 50px; font-weight: 600; font-size: 16px; border-radius: 18px; transition: color .25s var(--ease), transform .14s var(--ease); }
 .bascule .curseur { position: absolute; z-index: 0; top: 5px; bottom: 5px; left: 5px; width: calc(50% - 5px); border-radius: 18px; background: var(--accent); }
 .bascule button[aria-pressed="true"] { color: var(--accent-texte); }
 .vues { position: relative; }
@@ -110,7 +110,7 @@
 .ligne-w.en-avant .wn { background: color-mix(in srgb, var(--accent-texte) 16%, transparent); }
 .ligne-w.en-avant small { color: var(--on-accent-doux); }
 .ligne-w.en-avant .fl { background: var(--accent-texte); color: var(--accent); }
-.ligne-w.fait .wn { background: color-mix(in srgb, var(--accent-lisible) 24%, var(--surface)); color: var(--bien); }
+.ligne-w.fait .wn { background: var(--accent); color: var(--accent-texte); }
 .ligne-w.fait .etat { font-family: var(--font-chiffres); }
 .ligne-w.hist { min-height: 68px; }
 .ligne-w.hist.choisie { box-shadow: inset 0 0 0 2px var(--accent-lisible); }
