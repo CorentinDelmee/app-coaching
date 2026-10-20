@@ -98,7 +98,7 @@ describe('export / import JSON cdc-coaching/1', () => {
 })
 
 describe('docs/FORMAT-JSON.md', () => {
-  const md = readFileSync('docs/FORMAT-JSON.md', 'utf8')
+  const md = readFileSync('docs/FORMAT-JSON.md', 'utf8').replace(/\r\n/g, '\n') // insensible aux fins de ligne
   const bloc = md.match(/```json\n([\s\S]*?)```/)
 
   it('contient un exemple complet', () => {
