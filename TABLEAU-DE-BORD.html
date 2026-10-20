@@ -1,0 +1,109 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Tableau de bord — Corentin Delmée Coaching — application (PWA)</title><style>
+:root{--fond:#f6f3ee;--carte:#fffdf9;--encre:#1f1d1a;--doux:#6b645b;--trait:#e4ddd2;--accent:#c2410c;--accent-l:#fde8dc;
+--ok:#15803d;--ok-l:#dcfce7;--cours:#1d4ed8;--cours-l:#dbeafe;--todo:#57534e;--todo-l:#f0ece6;--bloque:#b91c1c;--bloque-l:#fee2e2;--attente:#a16207;--attente-l:#fef3c7}
+*{box-sizing:border-box}body{margin:0;background:var(--fond);color:var(--encre);font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.page{max-width:1080px;margin:0 auto;padding:28px 16px 64px}
+header.tete{display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:24px}header.tete>div{flex:1 1 380px}
+.surtitre{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(28px,5vw,40px);line-height:1.1;margin:4px 0 6px}
+h2{font-family:Georgia,serif;font-size:22px;margin:0 0 14px}
+.sous{color:var(--doux);margin:0}
+.grille{display:grid;gap:16px}.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.carte{background:var(--carte);border:1px solid var(--trait);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+section{margin-top:22px}
+.kpi .val{font-size:30px;font-weight:700;font-family:Georgia,serif}.kpi .lbl{color:var(--doux);font-size:14px}
+.anneau-fond{fill:none;stroke:var(--trait);stroke-width:12}.anneau-val{fill:none;stroke:var(--accent);stroke-width:12;stroke-linecap:round}
+.anneau-pct{font:700 26px Georgia,serif;fill:var(--encre)}.anneau-lbl{font-size:10px;fill:var(--doux);text-transform:uppercase;letter-spacing:.06em}
+table{width:100%;border-collapse:collapse;font-size:15px}th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--doux);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--trait)}
+td{padding:10px;border-bottom:1px solid var(--trait);vertical-align:top}tr:last-child td{border-bottom:0}
+.barre{height:8px;background:var(--todo-l);border-radius:99px;overflow:hidden;min-width:80px}.barre>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.badge.ok{background:var(--ok-l);color:var(--ok)}.badge.cours{background:var(--cours-l);color:var(--cours)}.badge.todo{background:var(--todo-l);color:var(--todo)}
+.badge.bloque{background:var(--bloque-l);color:var(--bloque)}.badge.attente{background:var(--attente-l);color:var(--attente)}
+.qui{font-size:12px;color:var(--doux)}.muted{color:var(--doux)}.petit{font-size:14px}
+.liste{list-style:none;margin:0;padding:0}.liste li{padding:10px 0;border-bottom:1px solid var(--trait);display:flex;gap:12px;align-items:flex-start}.liste li:last-child{border:0}
+.puce{flex:0 0 auto;width:10px;height:10px;border-radius:50%;margin-top:8px;background:var(--accent)}
+.haut{color:var(--bloque);font-weight:700}.moyen{color:var(--attente);font-weight:700}.bas{color:var(--ok);font-weight:700}
+.alerte{background:var(--accent-l);border:1px solid #f6c3a7;border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.btn{display:inline-block;background:var(--encre);color:#fff;text-decoration:none;border:0;border-radius:10px;padding:10px 16px;font-weight:600;font-size:15px;cursor:pointer}
+.btn.clair{background:#fff;color:var(--encre);border:1px solid var(--trait)}
+.decision{margin-top:16px}.decision h3{font-family:Georgia,serif;font-size:20px;margin:6px 0 8px}
+.options{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:12px 0}
+.option{display:block;border:1.5px solid var(--trait);border-radius:12px;padding:12px 14px;cursor:pointer;background:#fff;position:relative}
+.option input{position:absolute;opacity:0}.option:has(input:checked){border-color:var(--accent);background:var(--accent-l)}
+.option .nom{font-weight:700}.reco{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-left:6px}
+textarea{width:100%;min-height:60px;border:1px solid var(--trait);border-radius:10px;padding:10px;font:inherit;background:#fff}
+.defaut{font-size:14px;color:var(--doux);background:var(--todo-l);border-radius:10px;padding:8px 12px}
+.flottant{position:sticky;bottom:12px;margin-top:20px;display:flex;justify-content:center}
+.timeline{display:flex;gap:6px;align-items:flex-end;height:70px;margin-top:8px}.timeline span{flex:1;background:var(--accent);border-radius:6px 6px 0 0;opacity:.85}
+footer{margin-top:36px;color:var(--doux);font-size:13px;text-align:center}
+code{background:var(--todo-l);padding:1px 5px;border-radius:5px;font-size:.9em}
+a{color:var(--accent)}
+@media print{body{background:#fff}.carte{box-shadow:none;break-inside:avoid}.flottant,.btn{display:none}}
+@media (max-width:640px){td,th{padding:8px 6px}.masquer-mobile{display:none}}
+</style></head>
+<body><div class="page">
+<header class="tete"><div><div class="surtitre">Tableau de bord · app-coaching</div><h1>Corentin Delmée Coaching — application (PWA)</h1>
+<p class="sous">V1 construite et testée en local — à toi : mise en route Supabase/Netlify · Remplacer <strong>My PT Hub (52 €/mois)</strong> par ma propre app de coaching, <strong>0 €/mois</strong>, mobile d&#39;abord, très animée.</p><p class="sous petit">Mis à jour le 20 oct. 2026</p></div>
+<svg class="anneau" width="132" height="132" viewBox="0 0 120 120" role="img" aria-label="100 % avancement">
+    <circle cx="60" cy="60" r="52" class="anneau-fond"/>
+    <circle cx="60" cy="60" r="52" class="anneau-val" stroke-dasharray="326.7" stroke-dashoffset="0.0" transform="rotate(-90 60 60)"/>
+    <text x="60" y="58" text-anchor="middle" class="anneau-pct">100%</text>
+    <text x="60" y="77" text-anchor="middle" class="anneau-lbl">avancement</text></svg></header>
+
+<section class="grille g4">
+  <div class="carte kpi"><div class="val">16/16</div><div class="lbl">lots terminés</div></div>
+  <div class="carte kpi"><div class="val">10</div><div class="lbl">actions humaines à faire</div></div>
+  <div class="carte kpi"><div class="val">0</div><div class="lbl">décisions en attente</div></div>
+  <div class="carte kpi"><div class="val">J-0</div><div class="lbl">objectif : 20 oct. 2026</div></div>
+</section>
+
+<section class="carte"><h2>Avancement par lot</h2>
+<table><thead><tr><th>Lot</th><th>Statut</th><th>Avancement</th><th class="masquer-mobile">Qui</th></tr></thead><tbody>
+<tr><td><strong>0</strong> · Cadrage : cahier des charges, dépôt, suivi</td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">REX</td></tr><tr><td><strong>D</strong> · Recherche d&#39;inspiration + 4-5 maquettes de l&#39;app client<div class="qui">design/index.html — 5 maquettes cliquables, captures + vidéos ; M1 recommandée</div></td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">frontend-senior + designers</td></tr><tr><td><strong>P</strong> · Plan et squelette technique<div class="qui">PLAN.md : 12 lots</div></td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">chef-de-projet</td></tr><tr><td><strong>R</strong> · Checklist RGPD, consentement, page confidentialité<div class="qui">docs/RGPD-CHECKLIST.md (13 tâches humaines, 15 points dans l app) — rien n est déclaré conforme</div></td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">juriste-admin</td></tr><tr><td><strong>1</strong> · Données, modèle, moteur de séance et de circuits<div class="qui">201 tests verts, validé par le testeur (8 formats de circuit, pré-remplissage, droits SQL)</div></td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">developpeur + testeur</td></tr><tr><td><strong>2</strong> · Séance en cours (cœur de l app)<div class="qui">Testé en navigateur mobile (tous les formats de circuit, reprise, hors connexion) ; corrections faites</div></td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">developpeur</td></tr><tr><td><strong>3</strong> · Page Workout (overview)</td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">developpeur</td></tr><tr><td><strong>4</strong> · Programme / calendrier</td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">developpeur</td></tr><tr><td><strong>5</strong> · Dashboard + menu animé<div class="qui">Dashboard sans défilement, menu 6 rubriques</div></td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">developpeur</td></tr><tr><td><strong>6</strong> · Page Coaching</td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">developpeur</td></tr><tr><td><strong>7</strong> · Questionnaires</td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">developpeur</td></tr><tr><td><strong>8</strong> · Suivi : graphiques, carte du corps, nutrition<div class="qui">Courbes animées, carte du corps face/dos, nutrition selon modules</div></td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">developpeur</td></tr><tr><td><strong>9</strong> · Profil, connexion, accueil/installation, PWA hors connexion<div class="qui">Connexion, consentement, profil (export + suppression des données de santé), page d installation, hors connexion testé en mode avion</div></td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">developpeur</td></tr><tr><td><strong>10</strong> · Tableau de bord coach<div class="qui">Testé + corrigé</div></td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">developpeur</td></tr><tr><td><strong>11</strong> · Tests mobiles, audit sécurité, revue des animations<div class="qui">Test mobile complet + contre-test VALIDÉS ; revue des animations 8,5/10 avec corrections ; audit sécurité corrigé</div></td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">testeur + auditeur-securite + frontend-senior</td></tr><tr><td><strong>12</strong> · MISE-EN-ROUTE.md (Supabase, Netlify)<div class="qui">MISE-EN-ROUTE.md (12 étapes), import des 80 exercices, fonction de réinitialisation de code</div></td>
+<td><span class="badge ok">Fait</span></td><td><div class="barre" title="100 %"><i style="width:100%"></i></div><div class="qui">100 %</div></td><td class="masquer-mobile qui">developpeur</td></tr>
+</tbody></table></section>
+
+<section class="grille g2">
+<div class="carte"><h2>À faire par des humains</h2>
+<p class="petit muted">Corentin : <strong>10</strong></p>
+<table><tbody><tr><td><strong>Mise en route Supabase (UE) : projet, schema.sql, authentification, compte coach, .env, test local</strong><div class="qui">MISE-EN-ROUTE.md étapes 1 à 8.</div><div class="qui">Corentin · 1 h</div></td>
+<td style="white-space:nowrap" class="qui"></td></tr><tr><td><strong>Mise en ligne Netlify Drop + installation sur ton téléphone</strong><div class="qui">MISE-EN-ROUTE.md étapes 9-10. Action publique : à faire par toi.</div><div class="qui">Corentin · 25 min</div></td>
+<td style="white-space:nowrap" class="qui"></td></tr><tr><td><strong>Déployer les 2 fonctions serveur (création de client, nouveau code) et désactiver les inscriptions publiques</strong><div class="qui">MISE-EN-ROUTE.md. Indispensable avant de créer un vrai client.</div><div class="qui">Corentin · 25 min</div></td>
+<td style="white-space:nowrap" class="qui"></td></tr><tr><td><strong>Recette en ligne avec 2 comptes (isolation, hors connexion) AVANT tout vrai client</strong><div class="qui">MISE-EN-ROUTE.md étape 12. Aucun vrai client avant cette recette et les tâches RGPD.</div><div class="qui">Corentin · 40 min</div></td>
+<td style="white-space:nowrap" class="qui"></td></tr><tr><td><strong>RGPD : compléter la page Confidentialité (SIRET, adresse, e-mail, région Supabase)</strong><div class="qui">docs/page-confidentialite.md, chercher [À COMPLÉTER].</div><div class="qui">Corentin · 30 min</div></td>
+<td style="white-space:nowrap" class="qui"></td></tr><tr><td><strong>RGPD : archiver les DPA Supabase et Netlify, remplir le registre des traitements (modèle CNIL), procédure violation de données</strong><div class="qui">Détail dans docs/RGPD-CHECKLIST.md.</div><div class="qui">Corentin · 2 h 15</div></td>
+<td style="white-space:nowrap" class="qui"></td></tr><tr><td><strong>Sécurité : activer la double authentification (Supabase, Netlify, e-mail, GitHub)</strong><div class="qui">Corentin · 20 min</div></td>
+<td style="white-space:nowrap" class="qui"></td></tr><tr><td><strong>Faire relire par un juriste (question HDS : rééducation, clients envoyés par un soignant)</strong><div class="qui">Coût à demander. Analyse prudente : HDS a priori non applicable, à faire confirmer.</div><div class="qui">Corentin · 1-2 h</div></td>
+<td style="white-space:nowrap" class="qui"></td></tr><tr><td><strong>Vérifier l assurance RC pro et planifier un export mensuel des données</strong><div class="qui">Le plan gratuit Supabase ne garantit pas de sauvegarde.</div><div class="qui">Corentin · 35 min</div></td>
+<td style="white-space:nowrap" class="qui"></td></tr><tr><td><strong>Ajouter ton numéro WhatsApp dans .env (VITE_COACH_WHATSAPP=336…, sans +)</strong><div class="qui">REX n a pas le droit d écrire dans les fichiers .env. Sans numéro, les boutons WhatsApp ouvrent WhatsApp sans destinataire.</div><div class="qui">Corentin · 2 min</div></td>
+<td style="white-space:nowrap" class="qui"></td></tr></tbody></table></div>
+
+<div class="carte"><h2>Dernières avancées</h2><ul class="liste">
+<li><span class="puce"></span><div><div>Test mobile complet de toute l app validé (connexion, séance, questionnaires, suivi, coach, hors connexion) ; revue des animations 8,5/10 avec finitions (confettis de fin, retour dans la carte « Cette semaine »).</div><div class="qui">20 oct. 2026</div></div></li><li><span class="puce"></span><div><div>Questionnaires (une question par écran, 7 types) et Suivi (courbes, carte du corps, nutrition) prêts ; toute l app est réunie : 332 tests verts.</div><div class="qui">20 oct. 2026</div></div></li><li><span class="puce"></span><div><div>Audit sécurité : aucun problème critique ; les 4 points importants sont corrigés (comptes créés côté serveur, clients archivés bloqués, codes à 8 caractères, en-têtes de sécurité).</div><div class="qui">20 oct. 2026</div></div></li><li><span class="puce"></span><div><div>Connexion, consentement RGPD, profil, page d installation et fonctionnement hors connexion prêts.</div><div class="qui">20 oct. 2026</div></div></li><li><span class="puce"></span><div><div>Écran d accueil client animé, menu 6 rubriques, page Workout, calendrier du programme et page Coaching (WhatsApp, payé ce mois) construits.</div><div class="qui">20 oct. 2026</div></div></li><li><span class="puce"></span><div><div>Tableau de bord coach construit : clients, exercices, constructeur de séances, programmes, questionnaires, alertes, import/export.</div><div class="qui">20 oct. 2026</div></div></li><li><span class="puce"></span><div><div>Séance en cours construite avec les animations M1 : exercice plein écran, roue de valeur, repos auto, 8 formats de circuit, écran de fin, reprise après fermeture.</div><div class="qui">20 oct. 2026</div></div></li><li><span class="puce"></span><div><div>5 maquettes de l app client, chacune avec sa propre identité, comparables dans design/index.html ; M1 « Atelier » retenue en provisoire.</div><div class="qui">20 oct. 2026</div></div></li>
+</ul></div></section>
+
+<section class="grille g2">
+<div class="carte"><h2>Prochaines étapes (REX)</h2><ul class="liste">
+<li><span class="puce"></span><div>Ouvrir l app (lancer.cmd) et trancher les décisions provisoires (DECISIONS.html), surtout le choix de maquette</div></li><li><span class="puce"></span><div>Mise en route Supabase puis Netlify (MISE-EN-ROUTE.md)</div></li><li><span class="puce"></span><div>Essai sur ton téléphone (fluidité, sons, vibrations, installation)</div></li><li><span class="puce"></span><div>Ajouter les liens vidéo YouTube des exercices depuis l espace coach</div></li></ul></div>
+<div class="carte"><h2>Risques et points d'attention</h2><ul class="liste">
+<li><span class="moyen">●</span><div>Jamais testé contre un vrai Supabase : la recette à 2 comptes (MISE-EN-ROUTE) est indispensable avant tout vrai client.</div></li><li><span class="moyen">●</span><div>Fluidité des grandes transitions non mesurée sur un Android d entrée de gamme.</div></li><li><span class="bas">●</span><div>Textes juridiques à compléter et à faire relire (HDS).</div></li></ul></div>
+</section>
+<section class="carte"><h2>Liens utiles</h2><ul class="liste"><li><span class="puce"></span><div><a href="CAHIER-DES-CHARGES.md" target="_blank" rel="noopener">Cahier des charges</a></div></li><li><span class="puce"></span><div><a href="design/index.html" target="_blank" rel="noopener">Comparer les maquettes</a></div></li><li><span class="puce"></span><div><a href="MISE-EN-ROUTE.md" target="_blank" rel="noopener">Mise en route</a></div></li><li><span class="puce"></span><div><a href="design/app-finale/parcours.webm" target="_blank" rel="noopener">Vidéo du parcours final</a></div></li></ul></section>
+<footer>Généré par REX · 20/10/2026 16:28:40 · Pour un PDF : Imprimer → Enregistrer au format PDF</footer></div></body></html>
