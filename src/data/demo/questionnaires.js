@@ -21,7 +21,7 @@ export const QUESTIONNAIRE_HEBDO = {
     { cle: 'objectifs', libelle: 'Qu\'est-ce qui s\'est bien passé ?', type: 'choixMultiple', choix: ['Séances faites', 'Alimentation', 'Sommeil', 'Motivation', 'Récupération'] },
     { cle: 'difficulte', libelle: 'Séances de la semaine', type: 'choixUnique', choix: ['Trop faciles', 'Bien dosées', 'Trop dures'] },
     { cle: 'bilan', libelle: 'Votre bilan en quelques mots', type: 'texte', optionnel: true },
-    { cle: 'photo', libelle: 'Une photo de votre semaine (facultatif)', type: 'photo', optionnel: true }
+    { cle: 'photo', libelle: 'Une photo de votre semaine', type: 'photo', optionnel: true }
   ]
 }
 

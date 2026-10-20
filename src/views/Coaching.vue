@@ -21,7 +21,7 @@ import { usePageAnimee } from '../composables/usePageAnimee.js'
 
 const { racine, couche, ouvrir, retour } = usePageAnimee('/')
 
-const MOT_PAR_DEFAUT = 'Belle semaine à toi ! Je suis là si tu as la moindre question, écris-moi quand tu veux.'
+const MOT_PAR_DEFAUT = 'Belle semaine à vous ! Je suis là si vous avez la moindre question, écrivez-moi quand vous voulez.'
 
 const erreur = ref('')
 const charge = ref(false)
