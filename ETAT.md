@@ -28,5 +28,13 @@ et `circuitsUi.js` (libellés purs, testés), `src/lib/` (horloge, sons, Wake Lo
 - Tests : `npx vitest run` (282 verts) ; `tests/e2e/lot5-*`.
 - Reste : essai téléphone réel ; menu : pas de piège de focus ; Questionnaires (lot 7), Suivi, Profil.
 
+## Lot 9 — FAIT (à valider par le testeur)
+- Routes publiques `/bienvenue` (présentation, Installer, Se connecter), `/connexion` (comptes de démo en mode local seulement), `/confidentialite` (rend `docs/page-confidentialite.md`), `/consentement` (textes dans `src/domain/consentement.js`, 2 cases décochées, refus = sans données de santé), `/profil` (infos, code, son/vibration/unité, consentement, export JSON, déconnexion).
+- Garde de navigation `src/router/garde.js` : non connecté -> `/bienvenue` ; client hors `/coach` ; coach -> `/coach` ; consentement d'abord. La session de démo automatique est supprimée (`src/lib/session.js`).
+- PWA : manifeste + icônes générées (`npm run icones`, source `sources-icones/monogramme.svg`), précache complet (testé en mode avion : dashboard + séance), mise à jour du service worker mise en attente et appliquée hors séance (`src/lib/pwa.js`), pastille « Hors connexion » et synchronisation de la file au retour du réseau (`src/lib/synchro.js`, `HorsConnexion.vue`).
+- Menu : piège de focus (Tab/Maj+Tab restent dans le menu).
+- POUR LA FUSION des lots 7-8 : utiliser `accesSante(user)` (`src/domain/consentement.js`) pour fermer Questionnaires/Suivi en cas de refus (le tableau de bord et le menu le font déjà) ; remplacer `/bientot/questionnaires` et `/bientot/suivi` dans `MenuApp.vue` (RUBRIQUES) et `Accueil.vue` (carte Questionnaires) par les vraies routes.
+- Reste : tests Lighthouse non lancés ; essai installation sur vrai téléphone (Android invite / iOS Partager) ; textes juridiques à compléter (`[À COMPLÉTER]` visibles dans Confidentialité) ; suppression des données de santé depuis Profil non faite (retrait du consentement seulement).
+
 ## Lot suivant
-**Lots 7 (Questionnaires), 8 et suivants** selon PLAN.md.
+**Fusion des lots 7-8**, puis revue d'ensemble.

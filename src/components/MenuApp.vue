@@ -6,6 +6,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { data } from '../data/index.js'
 import { questionnairesDus } from '../domain/questionnairesDus.js'
+import { accesSante } from '../domain/consentement.js'
 import { jourLocal } from '../domain/dates.js'
 import { horloge } from '../lib/horloge.js'
 import { utilisateurCourant } from '../lib/session.js'
@@ -23,16 +24,17 @@ const RUBRIQUES = [
   { id: 'coaching', n: '03', t: 'Coaching', chemin: '/coaching' },
   { id: 'questionnaires', n: '04', t: 'Questionnaires', chemin: '/bientot/questionnaires' },
   { id: 'suivi', n: '05', t: 'Suivi', chemin: '/bientot/suivi' },
-  { id: 'profil', n: '06', t: 'Profil', chemin: '/bientot/profil' }
+  { id: 'profil', n: '06', t: 'Profil', chemin: '/profil' }
 ]
 
 // Pas de menu en séance, sur la page Workout (le bouton Démarrer y est roi) ni dans l'espace coach.
-const visible = computed(() => !['seance', 'workout'].includes(route.name) && !/^\/coach(\/|$)/.test(route.path))
+const visible = computed(() => !['seance', 'workout'].includes(route.name) && !route.meta.sansMenu && !/^\/coach(\/|$)/.test(route.path))
 const courante = computed(() => {
   const n = route.name
   if (n === 'accueil') return 'accueil'
   if (n === 'programme' || n === 'workout') return 'programme'
   if (n === 'coaching') return 'coaching'
+  if (n === 'profil') return 'profil'
   if (n === 'bientot') return route.params.rubrique
   return ''
 })
@@ -51,7 +53,7 @@ async function rafraichir() {
     const user = await utilisateurCourant()
     if (!user) return
     const [q, r, p] = await Promise.all([data.questionnaires.lister(), data.reponses.lister({ clientId: user.id }), data.programmes.lister({ clientId: user.id })])
-    aRemplir.value = questionnairesDus({ questionnaires: q, reponses: r, clientId: user.id, aujourdhui: jourLocal(horloge.now()) }).length
+    aRemplir.value = !accesSante(user) ? 0 : questionnairesDus({ questionnaires: q, reponses: r, clientId: user.id, aujourdhui: jourLocal(horloge.now()) }).length
     pied.value = [user.nom, p[0]?.nom].filter(Boolean).join(' · ')
   } catch { /* le menu fonctionne sans la pastille */ }
 }
@@ -104,14 +106,24 @@ async function aller(r) {
       { clipPath: `inset(0px 0px ${H}px 0px round 0px 0px 44px 44px)`, duration: 0.7, ease: 'expo.inOut', immediateRender: false }, 0.22)
 }
 
+// Menu ouvert : Échap ferme ; Tab reste dans le menu (bouton + rubriques), jamais derrière lui.
 function surTouche(e) {
-  if (e.key === 'Escape' && ouvert.value) { e.preventDefault(); fermer() }
+  if (!ouvert.value) return
+  if (e.key === 'Escape') { e.preventDefault(); fermer(); return }
+  if (e.key !== 'Tab') return
+  const cycle = [btn.value, ...menu.value.querySelectorAll('.m-item')]
+  const i = cycle.indexOf(document.activeElement)
+  const cible = e.shiftKey ? cycle[i <= 0 ? cycle.length - 1 : i - 1] : cycle[i < 0 || i === cycle.length - 1 ? 0 : i + 1]
+  e.preventDefault()
+  cible.focus()
 }
-onMounted(() => {
+// le bouton apparaît (avec un petit ressort) chaque fois que le menu devient disponible : après connexion, en sortant de la séance…
+function apparition() {
   rafraichir()
-  window.addEventListener('keydown', surTouche)
-  if (btn.value && !rm()) gsap.fromTo(btn.value, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, delay: 0.5, ease: 'back.out(2)', clearProps: 'transform,opacity' })
-})
+  nextTick(() => { if (btn.value && !rm()) gsap.fromTo(btn.value, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, delay: 0.5, ease: 'back.out(2)', clearProps: 'transform,opacity' }) })
+}
+onMounted(() => { window.addEventListener('keydown', surTouche); if (visible.value) apparition() })
+watch(visible, (v) => { if (v) apparition() })
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', surTouche)
   if (menu.value) nettoyer(menu.value)
@@ -119,7 +131,7 @@ onBeforeUnmount(() => {
 })
 // changement de page par un autre moyen (lien, retour du téléphone) : le menu se referme sans animation
 watch(() => route.fullPath, () => {
-  if (ouvert.value && !occupe.value) { ouvert.value = false; nettoyer(menu.value); menu.value.hidden = true; burger(false, 0.2) }
+  if (ouvert.value && !occupe.value && menu.value) { ouvert.value = false; nettoyer(menu.value); menu.value.hidden = true; burger(false, 0.2) }
 })
 </script>
 

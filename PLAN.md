@@ -200,12 +200,12 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 
 ## Lot 9 — Profil, connexion, accueil/installation, PWA hors connexion `[DESIGN]`
 **Dépendances** : lots 2 à 8 (remplace la session de démo automatique).
-- [ ] Accueil public `/bienvenue` : présentation, « Installer l'application » (`beforeinstallprompt` ; iOS → instructions « Partager → Sur l'écran
+- [x] Accueil public `/bienvenue` : présentation, « Installer l'application » (`beforeinstallprompt` ; iOS → instructions « Partager → Sur l'écran
   d'accueil » ; déjà installée → bouton masqué), « Se connecter ».
-- [ ] Connexion identifiant + code, session persistante ; mode local → comptes de démo (fabien.vincent, coach) affichés ; erreur → « Identifiant ou code incorrect ».
-- [ ] **Consentement explicite** au premier lancement (données de santé) ; refus → pas d'accès aux rubriques santé, explication ; page Confidentialité.
-- [ ] Profil : infos, changer son code (6 caractères min, confirmation), préférences son/vibration/unité, consentement, export de mes données (JSON), déconnexion.
-- [ ] PWA : manifeste + icônes (192/512/maskable), précache complet, séance faisable en mode avion, file d'attente synchronisée au retour du réseau
+- [x] Connexion identifiant + code, session persistante ; mode local → comptes de démo (fabien.vincent, coach) affichés ; erreur → « Identifiant ou code incorrect ».
+- [x] **Consentement explicite** au premier lancement (données de santé) ; refus → pas d'accès aux rubriques santé, explication ; page Confidentialité.
+- [x] Profil : infos, changer son code (6 caractères min, confirmation), préférences son/vibration/unité, consentement, export de mes données (JSON), déconnexion.
+- [x] PWA : manifeste + icônes (192/512/maskable), précache complet, séance faisable en mode avion, file d'attente synchronisée au retour du réseau
   avec indicateur « Hors connexion — enregistré sur l'appareil ».
 - *Acceptation* : Lighthouse PWA installable ; en mode avion après une visite, ouvrir l'app → dashboard + séance jouable + validée, puis synchronisée au retour réseau.
 

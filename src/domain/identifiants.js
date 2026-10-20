@@ -39,3 +39,10 @@ export function genererCode(longueur = 6, crypto = globalThis.crypto) {
 
 /** E-mail technique utilisé par Supabase Auth. */
 export const emailTechnique = (identifiant) => `${identifiant}@clients.cdc-coaching.invalid`
+
+/** Contrôle d'un nouveau code saisi deux fois : renvoie le message d'erreur à afficher, ou null si tout va bien. */
+export function validerNouveauCode(nouveau, confirmation) {
+  if (typeof nouveau !== 'string' || nouveau.length < 6) return 'Le nouveau code doit faire 6 caractères au minimum.'
+  if (nouveau !== confirmation) return 'La confirmation ne correspond pas au nouveau code.'
+  return null
+}

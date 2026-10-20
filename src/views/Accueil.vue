@@ -183,14 +183,14 @@ const versHero = (e) => {
           <button class="carte quest" type="button" aria-label="Questionnaires" @click="ouvrir('/bientot/questionnaires', $event)">
             <span v-if="s.questionnaires" class="pastille" :aria-label="`${s.questionnaires} à remplir`">{{ s.questionnaires }}</span>
             <div class="q-t">Questionnaires</div>
-            <div class="q-s">{{ s.questionnaires ? 'À remplir · 2 min' : 'Tout est à jour' }}</div>
+            <div class="q-s">{{ !s.sante ? 'Données de santé désactivées' : s.questionnaires ? 'À remplir · 2 min' : 'Tout est à jour' }}</div>
           </button>
         </div>
       </div>
 
       <!-- Accès développement (mode local seulement) : discret -->
       <nav v-if="dev" class="acces-dev" aria-label="Accès développement">
-        <RouterLink to="/demo/seance">Séance démo</RouterLink><RouterLink to="/demo/circuits">Circuits</RouterLink><RouterLink to="/coach">Espace coach</RouterLink>
+        <RouterLink to="/demo/seance">Séance démo</RouterLink><RouterLink to="/demo/circuits">Circuits</RouterLink><RouterLink to="/profil">Profil</RouterLink>
       </nav>
     </div>
   </main>
