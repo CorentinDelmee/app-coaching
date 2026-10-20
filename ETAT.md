@@ -1,7 +1,7 @@
 # ÉTAT — app-coaching
 
 - **Mode** : absent (Corentin parti jusqu'au soir du 2026-10-20) — décisions appliquées en provisoire, listées dans `suivi.json` et `A-VALIDER.md`.
-- **Phase** : plan prêt (PLAN.md, 12 lots) ; squelette en place (build + Vitest verts) ; maquettes en cours (design/).
+- **Phase** : lot 1 (données + moteur) VALIDÉ ; maquettes en cours (design/) ; prochain : lot 2 séance en cours dès la maquette recommandée.
 - **Référence** : CAHIER-DES-CHARGES.md
 
 ## Lot suivant

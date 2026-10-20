@@ -22,9 +22,10 @@
     {
       "id": "P",
       "titre": "Plan et squelette technique",
-      "statut": "en_cours",
-      "avancement": 10,
-      "qui": "chef-de-projet"
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "chef-de-projet",
+      "note": "PLAN.md : 12 lots"
     },
     {
       "id": "R",
@@ -33,6 +34,14 @@
       "avancement": 100,
       "qui": "juriste-admin",
       "note": "docs/RGPD-CHECKLIST.md (13 tâches humaines, 15 points dans l app) — rien n est déclaré conforme"
+    },
+    {
+      "id": "1",
+      "titre": "Données, modèle, moteur de séance et de circuits",
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "developpeur + testeur",
+      "note": "201 tests verts, validé par le testeur (8 formats de circuit, pré-remplissage, droits SQL)"
     }
   ],
   "taches_humaines": [
@@ -152,6 +161,10 @@
     {
       "date": "2026-10-20",
       "texte": "Liste RGPD, texte de consentement et brouillon de page Confidentialité prêts (docs/)."
+    },
+    {
+      "date": "2026-10-20",
+      "texte": "Moteur de séance et de circuits (AMRAP, EMOM, For Time, Tabata…) prêt et vérifié : 201 tests verts."
     }
   ],
   "prochaines_etapes": [
