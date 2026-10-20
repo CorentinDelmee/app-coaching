@@ -84,16 +84,17 @@
     {
       "id": "7",
       "titre": "Questionnaires",
-      "statut": "en_cours",
-      "avancement": 80,
+      "statut": "fait",
+      "avancement": 100,
       "qui": "developpeur"
     },
     {
       "id": "8",
       "titre": "Suivi : graphiques, carte du corps, nutrition",
-      "statut": "en_cours",
-      "avancement": 5,
-      "qui": "developpeur"
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "developpeur",
+      "note": "Courbes animées, carte du corps face/dos, nutrition selon modules"
     },
     {
       "id": "9",
@@ -115,9 +116,9 @@
       "id": "11",
       "titre": "Tests mobiles, audit sécurité, revue des animations",
       "statut": "en_cours",
-      "avancement": 45,
+      "avancement": 60,
       "qui": "testeur + auditeur-securite + frontend-senior",
-      "note": "Audit sécurité fait et corrigé (aucun critique) ; reste test mobile final + revue animations"
+      "note": "Audit fait ; test mobile complet + revue des animations en cours"
     },
     {
       "id": "12",
@@ -332,6 +333,10 @@
     {
       "date": "2026-10-20",
       "texte": "Audit sécurité : aucun problème critique ; les 4 points importants sont corrigés (comptes créés côté serveur, clients archivés bloqués, codes à 8 caractères, en-têtes de sécurité)."
+    },
+    {
+      "date": "2026-10-20",
+      "texte": "Questionnaires (une question par écran, 7 types) et Suivi (courbes, carte du corps, nutrition) prêts ; toute l app est réunie : 332 tests verts."
     }
   ],
   "prochaines_etapes": [
