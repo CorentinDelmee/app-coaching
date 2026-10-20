@@ -10,6 +10,7 @@ export function regler(preferences = {}) {
 
 export function deverrouiller() {
   try {
+    if (!ctx && navigator.userActivation && !navigator.userActivation.isActive) return // pas de geste : le navigateur refuserait
     if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)()
     if (ctx.state === 'suspended') ctx.resume()
   } catch { /* pas de son : tant pis */ }

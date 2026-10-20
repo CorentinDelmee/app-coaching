@@ -620,7 +620,7 @@ defineExpose({ envoyer })
 </script>
 
 <template>
-  <main ref="racine" class="seance" data-racine @pointerdown.capture="deverrouiller">
+  <main ref="racine" class="seance" data-racine @pointerdown.capture="deverrouiller" @click.capture="deverrouiller" @touchend.capture="deverrouiller">
     <div v-if="erreur" class="vide">
       <p>{{ erreur }}</p>
       <button class="gros" type="button" @click="router.replace('/')">Retour</button>

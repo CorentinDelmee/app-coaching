@@ -37,7 +37,7 @@ const mouvements = computed(() => {
 })
 
 // Glissement entre les trois temps (même geste que le passage d'un exercice à l'autre).
-const avant = (el) => { gsap.set(el, { opacity: 0, x: 70 }) }
+const avant = (el) => { gsap.set(el, mouvementReduit() ? { opacity: 0 } : { opacity: 0, x: 70 }) } // mouvement réduit : fondu seul, aucun décalage
 function entre(el, fini) {
   if (mouvementReduit()) { gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.2, onComplete: fini }); return }
   gsap.to(el, { x: 0, opacity: 1, duration: 0.8, ease: 'expo.out', delay: 0.1, clearProps: 'transform,opacity', onComplete: fini })
