@@ -1,6 +1,6 @@
 {
   "titre": "Corentin Delmée Coaching — application (PWA)",
-  "phase": "Mode absent — construction de l app client (M1 provisoire)",
+  "phase": "V1 construite et testée en local — à toi : mise en route Supabase/Netlify",
   "objectif": "Remplacer **My PT Hub (52 €/mois)** par ma propre app de coaching, **0 €/mois**, mobile d'abord, très animée.",
   "date_cible": "2026-10-20",
   "mis_a_jour": "2026-10-20",
@@ -115,10 +115,10 @@
     {
       "id": "11",
       "titre": "Tests mobiles, audit sécurité, revue des animations",
-      "statut": "en_cours",
-      "avancement": 60,
+      "statut": "fait",
+      "avancement": 100,
       "qui": "testeur + auditeur-securite + frontend-senior",
-      "note": "Audit fait ; test mobile complet + revue des animations en cours"
+      "note": "Test mobile complet + contre-test VALIDÉS ; revue des animations 8,5/10 avec corrections ; audit sécurité corrigé"
     },
     {
       "id": "12",
@@ -337,17 +337,30 @@
     {
       "date": "2026-10-20",
       "texte": "Questionnaires (une question par écran, 7 types) et Suivi (courbes, carte du corps, nutrition) prêts ; toute l app est réunie : 332 tests verts."
+    },
+    {
+      "date": "2026-10-20",
+      "texte": "Test mobile complet de toute l app validé (connexion, séance, questionnaires, suivi, coach, hors connexion) ; revue des animations 8,5/10 avec finitions (confettis de fin, retour dans la carte « Cette semaine »)."
     }
   ],
   "prochaines_etapes": [
-    "Maquettes comparables et une recommandée",
-    "Moteur de données et de séance testé",
-    "Construction de l'app client"
+    "Ouvrir l app (lancer.cmd) et trancher les décisions provisoires (DECISIONS.html), surtout le choix de maquette",
+    "Mise en route Supabase puis Netlify (MISE-EN-ROUTE.md)",
+    "Essai sur ton téléphone (fluidité, sons, vibrations, installation)",
+    "Ajouter les liens vidéo YouTube des exercices depuis l espace coach"
   ],
   "risques": [
     {
       "niveau": "moyen",
-      "texte": "Volume très important pour une seule journée : priorité à la séance en cours et aux animations, fonctions secondaires réduites si besoin."
+      "texte": "Jamais testé contre un vrai Supabase : la recette à 2 comptes (MISE-EN-ROUTE) est indispensable avant tout vrai client."
+    },
+    {
+      "niveau": "moyen",
+      "texte": "Fluidité des grandes transitions non mesurée sur un Android d entrée de gamme."
+    },
+    {
+      "niveau": "bas",
+      "texte": "Textes juridiques à compléter et à faire relire (HDS)."
     }
   ],
   "liens": [
@@ -362,6 +375,10 @@
     {
       "texte": "Mise en route",
       "href": "MISE-EN-ROUTE.md"
+    },
+    {
+      "texte": "Vidéo du parcours final",
+      "href": "design/app-finale/parcours.webm"
     }
   ]
 }
