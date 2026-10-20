@@ -335,6 +335,16 @@ describe("file d'attente hors connexion", () => {
   }
   const realisation = { id: 'r1', clientId: 'c1', workoutId: 'w', date: '2026-10-20', semaine: '2026-10-19', valeurs: {}, dureeSec: 60, volume: 0, termineLe: NOW }
 
+  it('la déconnexion vide la file hors connexion (M6)', async () => {
+    const b = backendCoupe()
+    b.deconnecter = async () => {}
+    const d = creerApi(b)
+    await d.enregistrerSeanceOuFile(realisation)
+    expect(await d.tailleFile()).toBe(1)
+    await d.deconnecter()
+    expect(await d.tailleFile()).toBe(0)
+  })
+
   it('sans réseau la séance est mise en file ; rejouée deux fois, une seule réalisation', async () => {
     const b = backendCoupe()
     const d = creerApi(b)

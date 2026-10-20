@@ -63,7 +63,11 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
 
   // --- Session ---------------------------------------------------------------------------------
   api.connecter = (identifiant, code) => backend.connecter(identifiant.trim().toLowerCase(), code)
-  api.deconnecter = () => backend.deconnecter()
+  // À la déconnexion, la file hors connexion (séances non envoyées) est vidée : pas de données de santé qui restent sur un appareil partagé (audit M6).
+  // L'interface prévient avant, tant que tailleFile() > 0.
+  api.deconnecter = async () => {
+    try { await backend.deconnecter() } finally { await backend.file.ecrire([]) }
+  }
   api.utilisateurCourant = () => backend.utilisateurCourant()
   api.changerCode = async (ancienCode, nouveauCode) => {
     if (typeof nouveauCode !== 'string' || nouveauCode.length < LONGUEUR_CODE_MIN) throw new ErreurData('CODE_TROP_COURT', `Le code doit faire ${LONGUEUR_CODE_MIN} caractères au minimum`)

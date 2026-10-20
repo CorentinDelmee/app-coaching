@@ -103,6 +103,13 @@ async function exporter() {
   message.value = 'Vos données ont été exportées.'
 }
 
+// Séances non synchronisées dans la file locale : on prévient avant de les perdre (elles sont effacées à la déconnexion).
+const fileEnAttente = ref(0)
+async function demanderDeconnexion() {
+  fileEnAttente.value = await data.tailleFile()
+  if (fileEnAttente.value > 0) return
+  await deconnecter()
+}
 async function deconnecter() {
   await data.deconnecter()
   effacerSeanceEnCours()
@@ -184,7 +191,12 @@ async function deconnecter() {
           </div>
         </div>
 
-        <button class="gros contour" type="button" data-c @click="deconnecter">Se déconnecter</button>
+        <div v-if="fileEnAttente > 0" class="pf-confirme" role="alertdialog" aria-label="Séances non envoyées">
+          <p><b>{{ fileEnAttente }} séance{{ fileEnAttente > 1 ? 's' : '' }} pas encore envoyée{{ fileEnAttente > 1 ? 's' : '' }}.</b> Se déconnecter les efface de ce téléphone. Reconnectez-vous avec du réseau pour les envoyer d'abord.</p>
+          <button class="gros" type="button" @click="deconnecter">Se déconnecter quand même</button>
+          <button class="gros doux" type="button" @click="fileEnAttente = 0">Rester connecté</button>
+        </div>
+        <button v-else class="gros contour" type="button" data-c @click="demanderDeconnexion">Se déconnecter</button>
       </div>
     </section>
   </main>
