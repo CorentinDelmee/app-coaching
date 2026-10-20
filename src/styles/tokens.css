@@ -30,6 +30,7 @@
   --scrim: rgba(0, 0, 0, .5);
   --ombre-feuille: 0 -20px 60px rgba(0, 0, 0, .35);
   --ombre-tiroir: -20px 0 60px rgba(0, 0, 0, .3);
+  --ombre-flottant: 0 8px 24px rgba(0, 0, 0, .3);   /* bouton menu qui flotte au-dessus du contenu qui défile */
 }
 
 /* Ambiance 1 : sombre (anthracite chaud) */
@@ -67,6 +68,7 @@
   --ph-travail-bg: var(--couleur); --ph-travail-fg: #1F1B18;
   --ph-repos-bg: #CFE0F2; --ph-repos-fg: #1F2A44;
   --ombre: 0 18px 50px rgba(60, 40, 20, .18);
+  --ombre-flottant: 0 8px 24px rgba(60, 40, 20, .16);
 }
 /* Ambiance 3 : aplat (le fond EST la couleur d'accent, texte encre) */
 [data-ambiance="aplat"] {

@@ -72,7 +72,8 @@ function entree() {
   gsap.fromTo('.segs i', { scaleY: 0 }, { scaleY: 1, duration: 0.6, stagger: 0.07, delay: 1, ease: 'back.out(2)', clearProps: 'transform' })
   // vie discrète : la pastille respire, la flèche invite à toucher
   const pastille = racine.value.querySelector('.pastille')
-  if (pastille) idle.push(gsap.to(pastille, { scale: 1.1, duration: 1.1, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 2 }))
+  // trois respirations puis repos : un rappel, pas une animation permanente (batterie, écran vu plusieurs fois par jour)
+  if (pastille) idle.push(gsap.to(pastille, { scale: 1.1, duration: 1.1, repeat: 5, yoyo: true, ease: 'sine.inOut', delay: 2 }))
   if (bouclee.value) setTimeout(feter, 1100)
 }
 

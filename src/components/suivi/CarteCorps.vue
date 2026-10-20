@@ -45,7 +45,7 @@ function basculer(vers) {
 
 function toucher(z, e) {
   const el = e.currentTarget
-  if (!mouvementReduit()) gsap.fromTo(el, { scale: 1.1 }, { scale: 1, duration: 0.7, ease: 'elastic.out(1,.45)', clearProps: 'transform' })
+  if (!mouvementReduit()) gsap.fromTo(el, { scale: 1.1, transformOrigin: '50% 50%' }, { scale: 1, duration: 0.7, ease: 'elastic.out(1,.45)', clearProps: 'transform' })
   emit('zone', z.id)
 }
 const clavier = (z, e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toucher(z, e) } }
@@ -54,14 +54,14 @@ const clavier = (z, e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventD
 function flash(id) {
   if (mouvementReduit()) return
   const el = racine.value?.querySelector(`[data-zone="${id}"]`)
-  if (el) gsap.fromTo(el, { scale: 1.18 }, { scale: 1, duration: 0.9, ease: 'elastic.out(1,.4)', clearProps: 'transform' })
+  if (el) gsap.fromTo(el, { scale: 1.18, transformOrigin: '50% 50%' }, { scale: 1, duration: 0.9, ease: 'elastic.out(1,.4)', clearProps: 'transform' })
 }
 defineExpose({ flash })
 
 function entree() {
   if (mouvementReduit()) return
   const els = racine.value.querySelectorAll('.zone')
-  gsap.fromTo(els, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: 'back.out(1.6)', stagger: { amount: 0.7, from: 'center' }, clearProps: 'transform,opacity' })
+  gsap.fromTo(els, { scale: 0.6, opacity: 0, transformOrigin: '50% 50%' }, { scale: 1, opacity: 1, duration: 0.8, ease: 'back.out(1.6)', stagger: { amount: 0.7, from: 'center' }, clearProps: 'transform,opacity' })
 }
 onMounted(() => {
   if (typeof IntersectionObserver === 'undefined') return

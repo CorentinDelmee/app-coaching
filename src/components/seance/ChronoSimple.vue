@@ -45,6 +45,8 @@ function pulse(echelle, duree) {
   if (temps.value && !mouvementReduit()) gsap.fromTo(temps.value, { scale: echelle }, { scale: 1, duration: duree, ease: 'expo.out' })
 }
 watch(() => props.phase, () => pulse(1.08, 0.6))
+// « +15 s » : l'échéance recule, le chiffre fait un petit saut (le geste a bien été pris en compte)
+watch(() => props.fin, (f, avant) => { if (avant && f - avant > 1000) pulse(1.1, 0.5) })
 watch(restant, (r) => { if (r >= 1 && r <= 3) { pulse(1.14, 0.55); SONS.tic() } })
 
 function fermer(vers) {
