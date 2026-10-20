@@ -47,58 +47,59 @@
     {
       "id": "2",
       "titre": "Séance en cours (cœur de l app)",
-      "statut": "en_cours",
-      "avancement": 90,
+      "statut": "fait",
+      "avancement": 100,
       "qui": "developpeur",
-      "note": "Construit (8 formats de circuit, roue, repos, fin, reprise, hors connexion) ; test navigateur indépendant en cours"
+      "note": "Testé en navigateur mobile (tous les formats de circuit, reprise, hors connexion) ; corrections faites"
     },
     {
       "id": "3",
       "titre": "Page Workout (overview)",
-      "statut": "en_cours",
-      "avancement": 5,
+      "statut": "fait",
+      "avancement": 100,
       "qui": "developpeur"
     },
     {
       "id": "4",
       "titre": "Programme / calendrier",
-      "statut": "en_cours",
-      "avancement": 5,
+      "statut": "fait",
+      "avancement": 100,
       "qui": "developpeur"
     },
     {
       "id": "5",
       "titre": "Dashboard + menu animé",
-      "statut": "a_faire",
-      "avancement": 0,
-      "qui": "developpeur"
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "developpeur",
+      "note": "Dashboard sans défilement, menu 6 rubriques"
     },
     {
       "id": "6",
       "titre": "Page Coaching",
-      "statut": "a_faire",
-      "avancement": 0,
+      "statut": "fait",
+      "avancement": 100,
       "qui": "developpeur"
     },
     {
       "id": "7",
       "titre": "Questionnaires",
-      "statut": "a_faire",
-      "avancement": 0,
+      "statut": "en_cours",
+      "avancement": 5,
       "qui": "developpeur"
     },
     {
       "id": "8",
       "titre": "Suivi : graphiques, carte du corps, nutrition",
-      "statut": "a_faire",
-      "avancement": 0,
+      "statut": "en_cours",
+      "avancement": 5,
       "qui": "developpeur"
     },
     {
       "id": "9",
       "titre": "Profil, connexion, accueil/installation, PWA hors connexion",
-      "statut": "a_faire",
-      "avancement": 0,
+      "statut": "en_cours",
+      "avancement": 5,
       "qui": "developpeur"
     },
     {
@@ -179,6 +180,14 @@
       "duree": "35 min",
       "statut": "a_faire",
       "comment": "Le plan gratuit Supabase ne garantit pas de sauvegarde."
+    },
+    {
+      "titre": "Ajouter ton numéro WhatsApp dans .env (VITE_COACH_WHATSAPP=336…, sans +)",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "2 min",
+      "statut": "a_faire",
+      "comment": "REX n a pas le droit d écrire dans les fichiers .env. Sans numéro, les boutons WhatsApp ouvrent WhatsApp sans destinataire."
     }
   ],
   "decisions": [
@@ -292,6 +301,10 @@
     {
       "date": "2026-10-20",
       "texte": "Tableau de bord coach construit : clients, exercices, constructeur de séances, programmes, questionnaires, alertes, import/export."
+    },
+    {
+      "date": "2026-10-20",
+      "texte": "Écran d accueil client animé, menu 6 rubriques, page Workout, calendrier du programme et page Coaching (WhatsApp, payé ce mois) construits."
     }
   ],
   "prochaines_etapes": [
