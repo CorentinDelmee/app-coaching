@@ -59,11 +59,16 @@ export function moinsDe24h(seance, now) {
 const JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
 const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 
+/** '18:30' -> « 18 h 30 », '09:00' -> « 9 h ». */
+export function formaterHeure(heure) {
+  const [h, m] = heure.split(':')
+  return m === '00' ? `${Number(h)} h` : `${Number(h)} h ${m}`
+}
+
 /** « mardi 21 octobre, 18 h 30, à domicile » */
 export function libelleSeance(seance) {
   const d = new Date(quand(seance))
-  const [h, m] = seance.heure.split(':')
-  const heure = m === '00' ? `${Number(h)} h` : `${Number(h)} h ${m}`
+  const heure = formaterHeure(seance.heure)
   const jour = d.getDate() === 1 ? '1er' : d.getDate()
   const lieu = seance.lieu === 'domicile' ? 'à domicile' : 'en salle'
   return `${JOURS[d.getDay()]} ${jour} ${MOIS[d.getMonth()]}, ${heure}, ${lieu}`

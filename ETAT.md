@@ -19,5 +19,14 @@ et `circuitsUi.js` (libellés purs, testés), `src/lib/` (horloge, sons, Wake Lo
 - Tests : `npx vitest run` (276 verts) ; scénarios navigateur `tests/e2e/lot3-*`, `lot4-*`.
 - Reste : essai sur vrai téléphone ; vidéos réelles (aucun lien dans la démo) ; au retour d'un workout la page Programme rejoue son entrée (fondu) après la fermeture ; lot 5 (dashboard/menu) rebranchera les entrées.
 
+## Lots 5 et 6 — FAITS (à valider par le testeur)
+- Dashboard `/` (`src/views/Accueil.vue`, `src/domain/accueil.js`) : aujourd'hui / cette semaine (anneau + compteur) / coaching / programme / questionnaires (pastille seulement s'il y en a). Sans défilement à 390×844. Cas : aucune séance (carte « Aucune séance prévue — M'écrire »), semaine bouclée (carte héros + confettis), workout fait. Liens discrets /demo et /coach en mode local.
+- Menu 6 rubriques (`src/components/MenuApp.vue`, global dans `App.vue`) : cercle depuis le bouton, rideau d'accent entre rubriques, Échap, pastille Questionnaires. Questionnaires / Suivi / Profil -> `/bientot/:rubrique` (`Bientot.vue`).
+- Coaching `/coaching` (`src/views/Coaching.vue`) : séance, Modifier/Annuler (WhatsApp, feuille d'avertissement < 24 h), mot du coach (défaut si absent), « M'envoyer un mot », rang du mois (« 1re »), compteurs semaine/mois, « Payé ce mois : 2 × 35 € = 70 € ».
+- WhatsApp : `src/lib/coach.js`, variable `VITE_COACH_WHATSAPP` (à ajouter dans `.env.example` : REX n'a pas le droit de le modifier ; noté dans CLAUDE.md).
+- Correctif : au retour d'une page refermée dans sa carte, la page d'arrivée n'est plus rejouée (`marquerRetour` / `consommerRetour`).
+- Tests : `npx vitest run` (282 verts) ; `tests/e2e/lot5-*`.
+- Reste : essai téléphone réel ; menu : pas de piège de focus ; Questionnaires (lot 7), Suivi, Profil.
+
 ## Lot suivant
-**Lot 5 — Dashboard + menu**.
+**Lots 7 (Questionnaires), 8 et suivants** selon PLAN.md.

@@ -6,6 +6,8 @@ Référence : `CAHIER-DES-CHARGES.md`. Plan : `PLAN.md`. Passation : `ETAT.md`. 
 Vue 3 + Vite + vue-router + vite-plugin-pwa + Vitest, @supabase/supabase-js, GSAP, graphiques SVG maison.
 Sans `.env` → adaptateur **local** (données factices, localStorage). Avec `.env` (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) → Supabase.
 
+Numéro WhatsApp du coach : variable `VITE_COACH_WHATSAPP` (format international sans « + », ex. 33612345678) dans `.env` ; absent -> WhatsApp laisse choisir le contact. (À ajouter aussi dans `.env.example`, que REX ne peut pas modifier.)
+
 ## Commandes (préfixer `export PATH="/c/Program Files/nodejs:$PATH";` si `npm` est introuvable)
 - Lancer : `npm run dev` (port 5173) — ou double-clic `lancer.cmd`
 - Tests unitaires : `npx vitest run`

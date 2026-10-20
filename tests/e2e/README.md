@@ -26,3 +26,10 @@ Chaque script renvoie une ligne de constats (`||` entre les étapes) et enregist
 | `lot4-programme-semaine-bouclee.js` | Semaine bouclée célébrée, workouts faits dans la colonne du jour, ouverture du workout (« Refaire ») et retour |
 | `lot4-programme-cas-limites.js` | Programme par semaine, programme terminé, avant le début, aucun programme |
 (Mêmes commandes que ci-dessus, port 5182.)
+
+## Lots 5 et 6 (dashboard, menu, Coaching)
+| Script | Ce qu'il vérifie |
+|---|---|
+| `lot5-dashboard-menu.js` | Dashboard sans défilement à 390×844, menu (ouverture, Échap, rubrique avec rideau), arrivée sur Coaching |
+| `lot5-6-cas-limites.js` | Aucune séance prévue (dashboard + Coaching), « Payé ce mois », semaine bouclée, écran « bientôt » |
+(Attention : une séance < 24 h et le clic « Continuer sur WhatsApp » ouvrent un onglet : remplacer `window.open` avant, sinon l'onglet d'origine passe en arrière-plan et les animations s'arrêtent.)

@@ -6,13 +6,13 @@ import { titreWorkout } from './workoutUi.js'
 
 export const JOURS_LONGS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
 export const JOURS_COURTS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
-const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+export const MOIS_NOMS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 const MOIS_COURTS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
 
 const partie = (jour) => { const [a, m, j] = jour.split('-').map(Number); return { a, m, j } }
 
 /** '2026-10-22' -> « jeudi 22 octobre ». */
-export const jourLong = (jour) => `${JOURS_LONGS[jourSemaine(jour)]} ${partie(jour).j} ${MOIS[partie(jour).m - 1]}`
+export const jourLong = (jour) => `${JOURS_LONGS[jourSemaine(jour)]} ${partie(jour).j} ${MOIS_NOMS[partie(jour).m - 1]}`
 /** '2026-10-22' -> « jeu. 22 ». */
 export const jourCourt = (jour) => `${JOURS_COURTS[jourSemaine(jour)].toLowerCase()}. ${partie(jour).j}`
 /** Lundi 2026-10-19 -> « 19 – 25 oct. » (ou « 28 sept. – 4 oct. » à cheval sur deux mois). */
@@ -22,7 +22,7 @@ export function libelleSemaine(lundi) {
   return a.m === b.m ? `${a.j} – ${b.j} ${MOIS_COURTS[b.m - 1]}` : `${a.j} ${MOIS_COURTS[a.m - 1]} – ${b.j} ${MOIS_COURTS[b.m - 1]}`
 }
 /** '2026-10' -> « octobre 2026 ». */
-export const libelleMois = (mois) => { const [a, m] = mois.split('-').map(Number); return `${MOIS[m - 1]} ${a}` }
+export const libelleMois = (mois) => { const [a, m] = mois.split('-').map(Number); return `${MOIS_NOMS[m - 1]} ${a}` }
 /** Mois affiché pour une semaine : celui de son jeudi (la majorité de ses jours). */
 export const moisDeSemaine = (lundi) => ajouterJours(lundi, 3).slice(0, 7)
 export function ajouterMois(mois, n) {

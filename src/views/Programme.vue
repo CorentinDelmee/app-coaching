@@ -9,7 +9,8 @@ import { data } from '../data/index.js'
 import { ajouterJours, estJour, jourLocal, lundiDe } from '../domain/dates.js'
 import { etatSemaine, historiqueSemaines } from '../domain/programme.js'
 import { ajouterMois, colonnesSemaine, grilleMois, JOURS_COURTS, jourLong, libelleMois, libelleSemaine, lignesSemaine, messageSemaine, moisDeSemaine } from '../domain/calendrierUi.js'
-import { lienWhatsApp, messageEcrire } from '../domain/coaching.js'
+import { messageEcrire } from '../domain/coaching.js'
+import { lienCoach } from '../lib/coach.js'
 import { horloge } from '../lib/horloge.js'
 import { utilisateurCourant } from '../lib/session.js'
 import { installerRessort, mouvementReduit } from '../anim/transitions.js'
@@ -84,7 +85,7 @@ const surTitre = computed(() => {
   return n >= 1 && n <= nbSemaines.value ? `Un programme par semaine · semaine ${n} sur ${nbSemaines.value}` : 'Un programme par semaine'
 })
 const numeroCourant = computed(() => (programme.value ? etatSemaine(programme.value, realisations.value, lundiCourant, aujourdhui).numero : 0))
-const lienEcrire = computed(() => lienWhatsApp('', messageEcrire(nomClient.value)))
+const lienEcrire = computed(() => lienCoach(messageEcrire(nomClient.value)))
 
 const peutReculer = computed(() => !!programme.value && lundi.value > lundiDe(programme.value.debut))
 const peutAvancer = computed(() => !!programme.value && etat.value?.statut !== 'termine' && lundi.value < ajouterJours(lundiCourant, 28))
@@ -112,7 +113,7 @@ onMounted(async () => {
   if (!charge.value) return
   // le calendrier mensuel est rendu mais caché : si la page s'ouvre déjà en mois, on le montre sans animation
   if (vue.value === 'mois') afficherMoisDirect()
-  ouvrir()
+  if (!ouvrir()) return // retour depuis un workout : la page est affichée telle quelle
   // petit pop du jour courant une fois la page ouverte
   if (!mouvementReduit()) {
     const chip = $$('.col.auj .chip-w', semaineEl.value)
@@ -262,7 +263,7 @@ const aller = (id, e) => ouvrirWorkout(id, e.currentTarget)
     <section v-else-if="charge" ref="couche" class="page" hidden aria-label="Programme">
       <div class="voile"></div>
       <div class="defile defile-prog">
-        <div class="p-top" data-c>
+        <div class="p-top avec-menu" data-c>
           <button class="rond" type="button" aria-label="Retour" @click="retour"><Icone nom="gauche" /></button>
           <span class="sur-titre">Programme</span>
         </div>

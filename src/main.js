@@ -5,5 +5,6 @@ import './styles/tokens.css'
 import './styles/base.css'
 import './styles/couches.css'
 import './styles/ecrans.css'
+import './styles/accueil.css'
 
 createApp(App).use(router).mount('#app')

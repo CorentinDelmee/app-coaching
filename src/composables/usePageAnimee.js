@@ -3,7 +3,7 @@
 import { onBeforeUnmount, ref } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { fermerPage, nettoyer, ouvrirPage } from '../anim/transitions.js'
-import { poserFantome, prendreSource } from '../anim/passage.js'
+import { consommerRetour, consommerSaut, marquerRetour, poserFantome, prendreSource } from '../anim/passage.js'
 
 export function usePageAnimee(retourDefaut) {
   const route = useRoute()
@@ -13,9 +13,11 @@ export function usePageAnimee(retourDefaut) {
   let fantome = null
   let quitte = false
 
-  /** À appeler quand le contenu est prêt (après nextTick). */
+  /** À appeler quand le contenu est prêt (après nextTick). Renvoie la timeline, ou null si l'entrée est sautée. */
   function ouvrir(opts = {}) {
     const m = prendreSource()
+    // retour depuis une page qui vient de se refermer dans sa carte : on montre la page telle quelle (renvoie null)
+    if (consommerRetour()) { couche.value.hidden = false; return null }
     if (m) fantome = poserFantome(racine.value, m)
     return ouvrirPage(couche.value, fantome, opts)
   }
@@ -25,7 +27,10 @@ export function usePageAnimee(retourDefaut) {
   const partir = () => { quitte = true }
 
   onBeforeRouteLeave(async () => {
-    if (!quitte && couche.value && !couche.value.hidden) { quitte = true; await fermer() }
+    if (!quitte && couche.value && !couche.value.hidden) {
+      quitte = true
+      if (!consommerSaut()) { await fermer(); marquerRetour() }
+    }
     return true
   })
   const retour = () => router.replace(route.query.retour || retourDefaut)

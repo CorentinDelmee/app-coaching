@@ -171,18 +171,18 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 
 ## Lot 5 — Dashboard + menu `[DESIGN]`
 **Dépendances** : lot 4.
-- [ ] Dashboard sans (ou presque) scroll à 390×844 : aujourd'hui (workout prévu/fait), cette semaine x/N, prochaine séance de coaching, mon programme,
+- [x] Dashboard sans (ou presque) scroll à 390×844 : aujourd'hui (workout prévu/fait), cette semaine x/N, prochaine séance de coaching, mon programme,
   questionnaires à remplir (pastille avec le nombre).
-- [ ] Cas visibles : aucune séance prévue → « Aucune séance prévue — m'écrire » (WhatsApp) ; semaine complète → état « Semaine bouclée » célébré ; aucun questionnaire → pas de pastille.
-- [ ] Menu animé à 6 rubriques (Accueil, Programme, Coaching, Questionnaires, Suivi, Profil) ; rubriques pas encore livrées → écran « Bientôt ».
+- [x] Cas visibles : aucune séance prévue → « Aucune séance prévue — m'écrire » (WhatsApp) ; semaine complète → état « Semaine bouclée » célébré ; aucun questionnaire → pas de pastille.
+- [x] Menu animé à 6 rubriques (Accueil, Programme, Coaching, Questionnaires, Suivi, Profil) ; rubriques pas encore livrées → écran « Bientôt ».
 - *Acceptation* : capture 390×844 sans barre de défilement (ou < 1 écran) ; le menu s'ouvre/ferme au clavier et au toucher ; Échap le ferme.
 
 ## Lot 6 — Page Coaching `[DESIGN]` — parallélisable avec 7 et 8 (worktrees séparés)
 **Dépendances** : lot 5.
-- [ ] Transition carte du dashboard → page (élément partagé). « Votre séance : mardi 21 octobre, 18 h 30, à domicile ».
-- [ ] Modifier / Annuler → WhatsApp pré-rempli ; rappel « Annulation gratuite jusqu'à 24 h avant » ; à moins de 24 h → avertissement
+- [x] Transition carte du dashboard → page (élément partagé). « Votre séance : mardi 21 octobre, 18 h 30, à domicile ».
+- [x] Modifier / Annuler → WhatsApp pré-rempli ; rappel « Annulation gratuite jusqu'à 24 h avant » ; à moins de 24 h → avertissement
   « Moins de 24 h avant la séance : elle pourra être due. Continuer ? » avant d'ouvrir WhatsApp.
-- [ ] Mot du coach (sinon message par défaut), « M'envoyer un mot », « C'est votre 3e séance du mois », séances semaine/mois, récap « Payé ce mois : 2 × 35 € = 70 € ».
+- [x] Mot du coach (sinon message par défaut), « M'envoyer un mot », « C'est votre 3e séance du mois », séances semaine/mois, récap « Payé ce mois : 2 × 35 € = 70 € ».
 - *Acceptation* : aucune séance → même carte « Aucune séance prévue — m'écrire » ; « 1re séance du mois » (pas « 1e ») ; mois sans séance faite → « Payé ce mois : 0 € ».
 
 ## Lot 7 — Questionnaires `[DESIGN]` — parallélisable

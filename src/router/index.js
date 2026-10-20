@@ -7,6 +7,9 @@ export default createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/', name: 'accueil', component: Accueil },
+    // Coaching (lot 6) et rubriques pas encore livrées (écran « bientôt »).
+    { path: '/coaching', name: 'coaching', component: () => import('../views/Coaching.vue') },
+    { path: '/bientot/:rubrique', name: 'bientot', component: () => import('../views/Bientot.vue') },
     // Programme du client (lot 4) et aperçu d'un workout (lot 3). ?retour=/chemin règle la page d'arrivée du bouton retour.
     { path: '/programme', name: 'programme', component: () => import('../views/Programme.vue') },
     { path: '/workout/:workoutId', name: 'workout', component: () => import('../views/Workout.vue') },

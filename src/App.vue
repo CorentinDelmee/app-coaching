@@ -3,6 +3,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import FeuilleBas from './components/seance/FeuilleBas.vue'
+import MenuApp from './components/MenuApp.vue'
 import { effacerSeanceEnCours, lireSeanceEnCours } from './lib/seanceEnCours.js'
 
 const router = useRouter()
@@ -31,6 +32,7 @@ function abandonner() {
 
 <template>
   <RouterView />
+  <MenuApp />
   <div v-if="reprise" class="reprise">
     <FeuilleBas :ouverte="ouverte" titre="Reprendre votre séance en cours ?" @fermer="() => {}">
       <p>{{ reprise.etat.workoutNom }} — dernière action à {{ quand(reprise) }}. Vos séries déjà faites sont conservées.</p>
