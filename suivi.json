@@ -48,7 +48,79 @@
       "id": "2",
       "titre": "Séance en cours (cœur de l app)",
       "statut": "en_cours",
-      "avancement": 10,
+      "avancement": 90,
+      "qui": "developpeur",
+      "note": "Construit (8 formats de circuit, roue, repos, fin, reprise, hors connexion) ; test navigateur indépendant en cours"
+    },
+    {
+      "id": "3",
+      "titre": "Page Workout (overview)",
+      "statut": "en_cours",
+      "avancement": 5,
+      "qui": "developpeur"
+    },
+    {
+      "id": "4",
+      "titre": "Programme / calendrier",
+      "statut": "en_cours",
+      "avancement": 5,
+      "qui": "developpeur"
+    },
+    {
+      "id": "5",
+      "titre": "Dashboard + menu animé",
+      "statut": "a_faire",
+      "avancement": 0,
+      "qui": "developpeur"
+    },
+    {
+      "id": "6",
+      "titre": "Page Coaching",
+      "statut": "a_faire",
+      "avancement": 0,
+      "qui": "developpeur"
+    },
+    {
+      "id": "7",
+      "titre": "Questionnaires",
+      "statut": "a_faire",
+      "avancement": 0,
+      "qui": "developpeur"
+    },
+    {
+      "id": "8",
+      "titre": "Suivi : graphiques, carte du corps, nutrition",
+      "statut": "a_faire",
+      "avancement": 0,
+      "qui": "developpeur"
+    },
+    {
+      "id": "9",
+      "titre": "Profil, connexion, accueil/installation, PWA hors connexion",
+      "statut": "a_faire",
+      "avancement": 0,
+      "qui": "developpeur"
+    },
+    {
+      "id": "10",
+      "titre": "Tableau de bord coach",
+      "statut": "en_cours",
+      "avancement": 90,
+      "qui": "developpeur",
+      "note": "Fusionné ; test indépendant en cours"
+    },
+    {
+      "id": "11",
+      "titre": "Tests mobiles, audit sécurité, revue des animations",
+      "statut": "a_faire",
+      "avancement": 0,
+      "qui": "testeur + auditeur-securite + frontend-senior"
+    },
+    {
+      "id": "12",
+      "titre": "MISE-EN-ROUTE.md (Supabase, Netlify)",
+      "statut": "a_faire",
+      "avancement": 0,
       "qui": "developpeur"
     }
   ],
@@ -212,6 +284,14 @@
     {
       "date": "2026-10-20",
       "texte": "5 maquettes de l app client, chacune avec sa propre identité, comparables dans design/index.html ; M1 « Atelier » retenue en provisoire."
+    },
+    {
+      "date": "2026-10-20",
+      "texte": "Séance en cours construite avec les animations M1 : exercice plein écran, roue de valeur, repos auto, 8 formats de circuit, écran de fin, reprise après fermeture."
+    },
+    {
+      "date": "2026-10-20",
+      "texte": "Tableau de bord coach construit : clients, exercices, constructeur de séances, programmes, questionnaires, alertes, import/export."
     }
   ],
   "prochaines_etapes": [
