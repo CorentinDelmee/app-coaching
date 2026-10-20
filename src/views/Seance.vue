@@ -34,7 +34,7 @@ import { effacerSeanceEnCours, lireSeanceEnCours, sauverSeanceEnCours } from '..
 import { utilisateurCourant } from '../lib/session.js'
 import { T, E } from '../anim/constantes.js'
 import { cascade, compter, fermerPage, installerRessort, mouvementReduit, nettoyer, ouvrirCercle } from '../anim/transitions.js'
-import { largeurDe } from '../anim/geometrie.js'
+import { centreDe } from '../anim/geometrie.js'
 import { consommerLancement, leverRideau, marquerFinSeance } from '../anim/passage.js'
 
 const route = useRoute()
@@ -231,7 +231,7 @@ function pulseRow(exIdx, k) {
 // Un double toucher sur « Valider la série » ne doit pas valider la suivante pendant que le chrono s'ouvre :
 // pendant une ouverture de couche, les boutons de la séance sont ignorés.
 let verrouJusqua = 0
-const bloquer = (ms = 700) => { verrouJusqua = performance.now() + ms }
+const bloquer = (ms = 400) => { verrouJusqua = performance.now() + ms } // > un double toucher (~300 ms), sans avaler le geste suivant
 const verrouille = () => performance.now() < verrouJusqua
 
 const srcChrono = ref(null) // bouton d'où naît le cercle du chrono
@@ -340,7 +340,7 @@ function sousSimple(ph) {
 const simpleVisible = computed(() => !!phaseSimple.value && !(phaseSimple.value === 'repos' && reposReduit.value))
 watch(simpleVisible, (v) => {
   if (v) { if (!simpleMonte.value) simpleMonte.value = true } // la création du composant joue l'ouverture
-  else if (simpleMonte.value) simpleRef.value?.fermer(reposReduit.value ? { x: largeurDe(racine.value) / 2, y: 44 } : null)
+  else if (simpleMonte.value) simpleRef.value?.fermer(reposReduit.value ? centreDe(racine.value.querySelector('.se-titre'), racine.value) : null) // se referme là où naît la pastille
 })
 async function simpleFerme() {
   simpleMonte.value = false
@@ -550,7 +550,7 @@ const enregistrement = ref(false)
 const erreurFin = ref('')
 
 function terminerSeance(src) {
-  bloquer(900)
+  bloquer(500)
   feuilleQuitter.value = false
   srcFin.value = src
   if (!etat.value.terminee) envoyer({ type: 'terminer' })
@@ -638,7 +638,7 @@ defineExpose({ envoyer })
           </div>
           <div class="se-barre">
             <button class="rond" type="button" aria-label="Quitter la séance" @click="feuilleQuitter = true"><Icone nom="fermer" /></button>
-            <div class="se-titre"><span>{{ titreCourant }}</span><br><b>{{ courant + 1 }}</b> sur {{ nbItems }}</div>
+            <div class="se-titre" :class="{ cache: reposReduit && etat.repos && !simpleMonte }"><span>{{ titreCourant }}</span><br><b>{{ courant + 1 }}</b> sur {{ nbItems }}</div>
             <button class="rond" type="button" aria-label="Aperçu de la séance" @click="tiroirOuvert = true"><Icone nom="liste" /></button>
           </div>
         </header>
@@ -728,7 +728,9 @@ defineExpose({ envoyer })
 .segments i.cur { background: color-mix(in srgb, var(--texte) 28%, var(--surface-2)); }
 .segments b { display: block; height: 100%; width: 100%; border-radius: 4px; background: var(--accent-lisible); transform-origin: left; transition: transform .8s var(--ease); }
 .se-barre { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 52px; }
-.se-titre { font-size: 15px; font-weight: 600; color: var(--texte-doux); text-align: center; line-height: 1.25; min-width: 0; }
+.se-titre { font-size: 15px; font-weight: 600; color: var(--texte-doux); text-align: center; line-height: 1.25; min-width: 0; transition: opacity .2s var(--ease); }
+/* repos réduit : la pastille prend la place du titre (au centre de la barre), le titre s'efface dessous */
+.se-titre.cache { opacity: 0; }
 .se-titre span { display: inline-block; max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
 .se-titre b { color: var(--texte); font-family: var(--font-chiffres); font-weight: 400; letter-spacing: -.03em; }
 .piste-vue { position: relative; flex: 1; overflow: hidden; touch-action: pan-y; }

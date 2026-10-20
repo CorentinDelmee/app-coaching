@@ -72,7 +72,7 @@ function aller(id, e) {
         </div>
 
         <div v-if="!nbAFaire && groupes.length" class="q-tout-bon" data-c>
-          <Icone nom="coche" /><span>Rien à remplir pour le moment. Merci !</span>
+          <Icone nom="coche" /><span>Rien à remplir pour le moment. Merci&nbsp;!</span>
         </div>
 
         <p v-if="!groupes.length" class="w-vide" data-c>Aucun questionnaire pour l'instant. Votre coach vous en proposera bientôt.</p>

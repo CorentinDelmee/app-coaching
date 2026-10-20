@@ -295,7 +295,7 @@ const quitter = () => retour()
 
           <Transition :css="false" @enter="entrer" @leave="sortir">
             <div :key="index" class="qz-q">
-              <h2>{{ q.libelle.replace(/ ([?!])/g, '$1') }}</h2>
+              <h2>{{ q.libelle.replace(/ ([?!:;])/g, ' $1') }}</h2>
               <p v-if="aide" class="aide" data-qc>{{ aide }}</p>
 
               <div class="qz-corps" data-qc>

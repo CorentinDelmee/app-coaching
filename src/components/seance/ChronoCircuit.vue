@@ -59,7 +59,7 @@ onMounted(() => {
   // pendant l'ouverture en cercle, le contenu ne reçoit pas de toucher (évite un double toucher sur le bouton d'origine)
   const contenu = racine.value.querySelector('.ch-contenu')
   contenu.style.pointerEvents = 'none'
-  setTimeout(() => { contenu.style.pointerEvents = '' }, 450)
+  setTimeout(() => { contenu.style.pointerEvents = '' }, 300)
   if (!mouvementReduit()) gsap.fromTo(contenu, { opacity: 0 }, { opacity: 1, duration: 0.3, delay: 0.22, ease: 'power1.out' })
 })
 onBeforeUnmount(() => { clearTimeout(delaiConfirmer); nettoyer(racine.value) })

@@ -72,7 +72,21 @@ export function ouvrirPage(ec, src, opts = {}) {
     .fromTo(ec, { clipPath: dep }, { clipPath: PLEIN, duration: T.ouvre, ease: E.ouvre }, 0)
     .fromTo(v, { clipPath: 'inset(0px 0px 0px 0px)' }, { clipPath: `inset(0px 0px ${hauteurDe(racine)}px 0px)`, duration: 0.62, ease: 'expo.inOut', immediateRender: false }, T.ouvre * 0.46)
     .add(() => cascade(ec), T.ouvre * 0.4)
+    .add(() => deverrouiller(ec), T.ouvre * 0.42)
   return ec._tl
+}
+
+/* Interruption : passé ~0,35 s (la page est déjà presque pleine et sa cascade lancée), la page accepte les touchers ; le premier
+   toucher accélère la fin de l'entrée (×4) au lieu d'être perdu, et son action s'exécute normalement. */
+function deverrouiller(ec) {
+  ec.style.pointerEvents = ''
+  const tl = ec._tl
+  const accelerer = () => {
+    if (ec._tl !== tl || !tl.isActive()) return // entrée déjà finie (ou remplacée par une fermeture) : rien à accélérer
+    tl.timeScale(4)
+    gsap.getTweensOf($$('[data-c]', ec)).forEach((t) => t.timeScale(4))
+  }
+  ec.addEventListener('pointerdown', accelerer, { capture: true, once: true })
 }
 
 /* ---------- 2. Page -> carte (plus rapide, asymétrique) ---------- */

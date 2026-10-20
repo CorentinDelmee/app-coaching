@@ -19,7 +19,7 @@ const texte = computed(() => {
 </template>
 
 <style scoped>
-.pastille { position: absolute; z-index: 35; top: calc(var(--haut) - 6px); left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 20px; border-radius: 24px; background: var(--ph-repos-bg); color: var(--ph-repos-fg); font-weight: 600; font-size: 16px; box-shadow: var(--ombre);
+.pastille { position: absolute; z-index: 35; top: calc(var(--haut) + 21px); left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 20px; border-radius: 24px; background: var(--ph-repos-bg); color: var(--ph-repos-fg); font-weight: 600; font-size: 16px; box-shadow: var(--ombre);
   transition: transform .14s var(--ease); animation: pastille-entre .5s var(--ease) backwards; }
 /* elle naît là où le chrono vient de se refermer (haut, centre) : petit rebond, sans partir de rien */
 @keyframes pastille-entre { from { opacity: 0; transform: translateX(-50%) scale(.82); } }

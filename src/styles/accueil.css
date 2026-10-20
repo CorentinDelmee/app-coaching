@@ -62,7 +62,8 @@
 .carte.coaching.vide .co-date { font-size: 21px; }
 .carte.coaching.vide .co-heure { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-texte); font-weight: 600; font-size: 16px; }
 .carte.coaching.vide .co-heure svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
-.carte.prog .pg-nom { font-family: var(--font-titre); font-size: 20px; letter-spacing: -.035em; line-height: 1.08; margin-top: auto; }
+.carte.prog .pg-nom { font-family: var(--font-titre); font-size: 20px; letter-spacing: -.035em; line-height: 1.08; margin-top: auto;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; padding-bottom: .06em; } /* nom long : 2 lignes max */
 .carte.prog .pg-s { font-size: 14px; color: var(--texte-doux); margin: 4px 0 10px; }
 .segs { display: flex; gap: 4px; }
 .segs i { flex: 1; height: 8px; border-radius: 4px; background: var(--surface-2); transform-origin: bottom; }

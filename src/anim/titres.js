@@ -10,9 +10,10 @@ export function decouperMots(el) {
     Array.from(noeud.childNodes).forEach((n) => {
       if (n.nodeType === 3) {
         const frag = document.createDocumentFragment()
-        n.textContent.split(/(\s+)/).forEach((w) => {
+        // seuls les espaces ordinaires coupent : une espace insécable reste dans le mot (« passé ? » ne se sépare pas)
+        n.textContent.split(/([ \t\r\n]+)/).forEach((w) => {
           if (!w) return
-          if (/^\s+$/.test(w)) { frag.appendChild(document.createTextNode(' ')); return }
+          if (/^[ \t\r\n]+$/.test(w)) { frag.appendChild(document.createTextNode(' ')); return }
           const m = document.createElement('span'); m.className = 'mot'
           const s = document.createElement('span'); s.textContent = w
           m.appendChild(s); frag.appendChild(m)
