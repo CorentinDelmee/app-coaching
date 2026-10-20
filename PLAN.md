@@ -157,16 +157,16 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 
 ## Lot 3 — Page Workout `[DESIGN]`
 **Dépendances** : lot 2. Lire `design/RECOMMANDATION.md` et le `DESIGN.md` retenu.
-- [ ] Overview qui défile : blocs, exercices (nom, vidéo, séries × reps/poids — valeurs pré-remplies du client si elles existent —, repos),
+- [x] Overview qui défile : blocs, exercices (nom, vidéo, séries × reps/poids — valeurs pré-remplies du client si elles existent —, repos),
   circuits (format + durée), consignes du coach ; bouton **Démarrer** toujours visible (collant) → transition vers la séance.
-- [ ] Workout déjà fait aujourd'hui → mention « Fait aujourd'hui » et bouton « Refaire ». Séance en cours non terminée → bouton « Reprendre ».
+- [x] Workout déjà fait aujourd'hui → mention « Fait aujourd'hui » et bouton « Refaire ». Séance en cours non terminée → bouton « Reprendre ».
 - *Acceptation* : à 390×844, Démarrer reste visible en bas pendant tout le défilement ; un workout sans consigne n'affiche pas de bloc vide.
 
 ## Lot 4 — Programme / calendrier `[DESIGN]`
 **Dépendances** : lot 3.
-- [ ] « Programme Fabien Vincent », colonnes **semaine** par défaut, bascule **mois** animée ; semaine en cours mise en avant ; navigation semaines passées (historique).
-- [ ] « À faire cette semaine » : workouts non placés ; workout fait = coche + jour (« fait le jeudi ») ; jours fixés par le coach affichés comme tels.
-- [ ] Mode par semaine : workouts de la semaine N ; programme terminé → « Programme terminé — votre coach prépare la suite ».
+- [x] « Programme Fabien Vincent », colonnes **semaine** par défaut, bascule **mois** animée ; semaine en cours mise en avant ; navigation semaines passées (historique).
+- [x] « À faire cette semaine » : workouts non placés ; workout fait = coche + jour (« fait le jeudi ») ; jours fixés par le coach affichés comme tels.
+- [x] Mode par semaine : workouts de la semaine N ; programme terminé → « Programme terminé — votre coach prépare la suite ».
 - *Acceptation* : faire un workout un jeudi le fait apparaître coché dans la colonne jeudi et disparaître de « À faire » ; semaine sans programme → « Pas de programme cette semaine ».
 
 ## Lot 5 — Dashboard + menu `[DESIGN]`

@@ -14,7 +14,10 @@ const LETTRES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 /** « Workout 2 — Haut du corps » -> { titre: 'Workout 2', sous: 'Haut du corps' }. */
 export function titreWorkout(nom = '') {
   const m = nom.split(/\s+[—–]\s+/)
-  return m.length > 1 ? { titre: m[0], sous: m.slice(1).join(' — ') } : { titre: nom, sous: '' }
+  if (m.length < 2) return { titre: nom, sous: '' }
+  // « Semaine 2 — Séance A » (programme par semaine) : le numéro de semaine est déjà affiché ailleurs
+  if (/^Semaine \d+$/.test(m[0])) return { titre: m.slice(1).join(' — '), sous: m[0] }
+  return { titre: m[0], sous: m.slice(1).join(' — ') }
 }
 
 /** Durée estimée d'un circuit, en secondes (préparation et explication exclues). */

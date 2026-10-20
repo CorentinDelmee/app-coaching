@@ -18,3 +18,11 @@ Chaque script renvoie une ligne de constats (`||` entre les étapes) et enregist
 | `lot2-amrap-emom-reprise.js` | Pause, rechargement en plein AMRAP, reps en plus, EMOM |
 | `lot2-reprise-pastille.js` | Invitation « Reprendre votre séance en cours ? », pastille de repos, abandon |
 | `lot2-prerempli-record.js` | Roue de valeur, record, commentaire, enregistrement, pré-remplissage de la séance suivante |
+
+## Lots 3 et 4 (page Workout, Programme)
+| Script | Ce qu'il vérifie |
+|---|---|
+| `lot3-workout-demarrer.js` | Overview d'un workout avec circuits, « Démarrer » (cercle) puis arrivée sur la séance |
+| `lot4-programme-semaine-bouclee.js` | Semaine bouclée célébrée, workouts faits dans la colonne du jour, ouverture du workout (« Refaire ») et retour |
+| `lot4-programme-cas-limites.js` | Programme par semaine, programme terminé, avant le début, aucun programme |
+(Mêmes commandes que ci-dessus, port 5182.)

@@ -117,6 +117,7 @@ describe('aperçu du workout', () => {
     expect(dureeCircuitSec('tabata')).toBe(240)
     expect(dureeCircuitSec('amrap', { duree: 600 })).toBe(600)
     expect(titreWorkout('Full body')).toEqual({ titre: 'Full body', sous: '' })
+    expect(titreWorkout('Semaine 2 — Séance A')).toEqual({ titre: 'Séance A', sous: 'Semaine 2' })
   })
 })
 
