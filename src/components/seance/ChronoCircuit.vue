@@ -29,7 +29,11 @@ const m = computed(() => modeleChrono(st.value))
 const grosFormat = computed(() => ['amrap', 'fortime', 'timecap'].includes(st.value.format) && st.value.phase !== 'preparation' && !st.value.termine)
 const sousXl = computed(() => ['emom', 'deathby'].includes(st.value.format) && !st.value.termine && st.value.phase !== 'preparation')
 const grandTitre = computed(() => st.value.format === 'superset' && st.value.phase === 'travail' && !st.value.termine)
+// Circuit terminé : l'écran passe sur l'accent et l'anneau se remplit d'un trait (récompense), au lieu d'un anneau vide sur gris.
+const remplissageFin = ref(0)
+const theme = computed(() => (st.value.termine ? 'travail' : m.value.theme))
 const decalage = computed(() => {
+  if (st.value.termine) return C * (1 - remplissageFin.value)
   const p = m.value.anneauProchain ?? m.value.anneau
   return C * (1 - Math.max(0, Math.min(1, p ?? 0)))
 })
@@ -82,7 +86,13 @@ function annoncerMinute() {
     .to(g, { clipPath: 'inset(0px 0px 100% 0px)', duration: 0.45, ease: 'power3.inOut' }, '+=.45')
     .set(g, { opacity: 0, clearProps: 'clipPath' })
 }
-watch(() => st.value.termine, (t) => { if (t) pulse(grandEl.value, 1.2, 1) })
+watch(() => st.value.termine, (t) => {
+  if (!t) return
+  pulse(grandEl.value, 1.2, 1)
+  if (mouvementReduit()) { remplissageFin.value = 1; return }
+  const o = { p: 0 }
+  gsap.to(o, { p: 1, duration: 1.2, delay: 0.1, ease: 'expo.out', onUpdate: () => { remplissageFin.value = o.p } })
+}, { immediate: true })
 
 // Compteur de tours : petit rebond à chaque +1.
 const toursEl = ref(null)
@@ -103,9 +113,9 @@ defineExpose({ fermer })
 </script>
 
 <template>
-  <div ref="racine" class="couche chrono" hidden :style="{ '--ph-fg': `var(--ph-${m.theme}-fg)`, '--ph-bg-actuel': `var(--ph-${m.theme}-bg)` }">
+  <div ref="racine" class="couche chrono" hidden :style="{ '--ph-fg': `var(--ph-${theme}-fg)`, '--ph-bg-actuel': `var(--ph-${theme}-bg)` }">
     <div class="bgs">
-      <i v-for="p in ['prep', 'travail', 'repos']" :key="p" :data-ph="p" :style="{ opacity: p === m.theme ? 1 : 0 }"></i>
+      <i v-for="p in ['prep', 'travail', 'repos']" :key="p" :data-ph="p" :style="{ opacity: p === theme ? 1 : 0 }"></i>
     </div>
     <div class="ch-contenu" :data-format="st.format">
       <div class="ch-phase"><span class="ch-pt"></span><span>{{ etiquette }}</span></div>

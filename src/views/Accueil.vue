@@ -11,9 +11,9 @@ import { messageEcrire } from '../domain/coaching.js'
 import { lienCoach } from '../lib/coach.js'
 import { horloge } from '../lib/horloge.js'
 import { utilisateurCourant } from '../lib/session.js'
-import { compter, installerRessort, mouvementReduit } from '../anim/transitions.js'
+import { compter, fermerPage, installerRessort, mouvementReduit } from '../anim/transitions.js'
 import { anneau, animerAnneau, motsMontent } from '../anim/titres.js'
-import { consommerRetour, memoriserSource } from '../anim/passage.js'
+import { consommerFinSeance, consommerRetour, memoriserSource } from '../anim/passage.js'
 
 const router = useRouter()
 const racine = ref(null)
@@ -25,6 +25,7 @@ const compteurSemaine = ref(null)
 const salutEl = ref(null)
 const celebration = ref(null)
 let idle = []
+let entrees = null // données de la synthèse (pour recalculer la semaine « avant » la séance qui vient d'être validée)
 
 async function charger() {
   try {
@@ -35,9 +36,8 @@ async function charger() {
       data.programmes.lister({ clientId: id }), data.workouts.lister({ clientId: id }), data.exercices.lister(), data.templates.lire(id),
       data.realisations.lister({ clientId: id }), data.seancesCoaching.lister({ clientId: id }), data.questionnaires.lister(), data.reponses.lister({ clientId: id })
     ])
-    s.value = syntheseAccueil({
-      user: user.value, programme: programmes[0] || null, workouts, exercices, template, realisations, seancesCoaching, questionnaires, reponses, now: horloge.now()
-    })
+    entrees = { user: user.value, programme: programmes[0] || null, workouts, exercices, template, realisations, seancesCoaching, questionnaires, reponses, now: horloge.now() }
+    s.value = syntheseAccueil(entrees)
   } catch (e) {
     erreur.value = 'Impossible de charger votre tableau de bord. Réessayez.'
     console.error(e)
@@ -95,12 +95,48 @@ function feter() {
   }
 }
 
+// --- Retour d'une séance validée : l'écran de fin (copie posée tout de suite, avant le chargement) se referme dans la carte
+// « Cette semaine », puis l'anneau et le compteur gagnent la séance (maquette M1 : S.terminer + animerSemaine).
+function poserCouverture(fin) {
+  const c = document.createElement('div')
+  c.className = 'retour-seance'
+  c.style.cssText = 'position:absolute;inset:0;z-index:300;background:var(--fond);overflow:hidden'
+  if (fin.clone) {
+    fin.clone.removeAttribute('hidden')
+    fin.clone.querySelectorAll(':scope > i').forEach((x) => x.remove()) // confettis encore en vol
+    c.appendChild(fin.clone)
+  }
+  racine.value.appendChild(c)
+  return c
+}
+function retourDeSeance(couverture, fin) {
+  const { faits, total } = s.value.semaine
+  const sans = entrees.realisations.filter((r) => r.id !== fin.realisationId)
+  const avant = Math.min(faits, syntheseAccueil({ ...entrees, realisations: sans }).semaine.faits)
+  anneau(anneauEl.value, total ? avant / total : 0)
+  compteurSemaine.value.textContent = avant
+  fermerPage(couverture, racine.value.querySelector('.carte.semaine'), { onFini: () => { couverture.remove(); gagnerSeance(avant) } })
+}
+function gagnerSeance(avant) {
+  const { faits, total } = s.value.semaine
+  if (faits === avant) return
+  animerAnneau(anneauEl.value, total ? avant / total : 0, fraction.value, { duree: 1.5 })
+  compter(compteurSemaine.value, avant, faits, { duree: 1.1 })
+  if (mouvementReduit()) return
+  gsap.fromTo('.anneau-w', { scale: 0.88 }, { scale: 1, duration: 1.1, ease: 'elastic.out(1,.55)', clearProps: 'transform' })
+  gsap.fromTo('.hero .hero-w, .hero .hero-sous, .hero .hero-meta', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, ease: 'expo.out', clearProps: 'transform,opacity' })
+  if (bouclee.value) setTimeout(feter, 700)
+}
+
 onMounted(async () => {
   installerRessort()
+  const fin = consommerFinSeance()
+  const couverture = fin ? poserCouverture(fin) : null
   await charger()
   await nextTick()
-  if (!s.value) return
+  if (!s.value) { couverture?.remove(); return }
   anneau(anneauEl.value, fraction.value)
+  if (couverture) { consommerRetour(); retourDeSeance(couverture, fin); return }
   if (consommerRetour()) return // retour d'une page refermée dans sa carte : le dashboard est montré tel quel
   entree()
 })

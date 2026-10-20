@@ -35,7 +35,7 @@ import { utilisateurCourant } from '../lib/session.js'
 import { T, E } from '../anim/constantes.js'
 import { cascade, compter, fermerPage, installerRessort, mouvementReduit, nettoyer, ouvrirCercle } from '../anim/transitions.js'
 import { largeurDe } from '../anim/geometrie.js'
-import { consommerLancement, leverRideau } from '../anim/passage.js'
+import { consommerLancement, leverRideau, marquerFinSeance } from '../anim/passage.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -566,7 +566,11 @@ async function validerSeance(commentaire) {
     const r = construireRealisation(fin, { id: realisationId, clientId: user.value.id, programmeId, now: horloge.now() })
     await data.enregistrerSeanceOuFile(r)
     effacerSeanceEnCours()
-    sortir()
+    // récompense : on rentre au tableau de bord, l'écran de fin se referme dans la carte « Cette semaine » (voir Accueil.vue)
+    sortieAutorisee = true
+    libererWakeLock()
+    marquerFinSeance(racine.value?.querySelector('.couche.fin'), realisationId)
+    router.replace('/')
   } catch (e) {
     console.error(e)
     erreurFin.value = e?.message || 'L\'enregistrement a échoué. Réessayez.'

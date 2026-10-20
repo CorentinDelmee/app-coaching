@@ -5,8 +5,8 @@ import { mouvementReduit } from './transitions.js'
 
 const COULEURS = ['var(--accent-texte)', '#ffffff', 'var(--accent-texte)']
 
-/** `conteneur` : élément positionné (absolute/relative) ; `haut` : hauteur de départ en %. */
-export function confettis(conteneur, { haut = 34, nombre = 26, delai = 0.6 } = {}) {
+/** `conteneur` : élément positionné (absolute/relative) ; `haut` : hauteur de départ en % ; `couleurs` : sur l'accent par défaut. */
+export function confettis(conteneur, { haut = 34, nombre = 26, delai = 0.6, couleurs = COULEURS } = {}) {
   if (mouvementReduit() || !conteneur) return
   for (let k = 0; k < nombre; k++) {
     const c = document.createElement('i')
@@ -14,7 +14,7 @@ export function confettis(conteneur, { haut = 34, nombre = 26, delai = 0.6 } = {
     Object.assign(c.style, {
       position: 'absolute', left: '50%', top: `${haut}%`, pointerEvents: 'none', zIndex: 6,
       width: `${8 + Math.random() * 10}px`, height: `${8 + Math.random() * 10}px`,
-      background: COULEURS[k % 3], borderRadius: k % 2 ? '50%' : '3px'
+      background: couleurs[k % couleurs.length], borderRadius: k % 2 ? '50%' : '3px'
     })
     conteneur.appendChild(c)
     const ang = Math.random() * Math.PI * 2

@@ -5,7 +5,9 @@ import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import { gsap } from 'gsap'
 import Icone from '../Icone.vue'
 import { ouvrirCercle, nettoyer, compter, mouvementReduit } from '../../anim/transitions.js'
-import { centreDe, racineDe } from '../../anim/geometrie.js'
+import { centreDe, racineDe, hauteurDe } from '../../anim/geometrie.js'
+import { confettis } from '../../anim/celebration.js'
+import { SONS } from '../../lib/son.js'
 import { minutesDe, milliers } from '../../domain/seanceUi.js'
 import { poidsAffiche, nombreFr } from '../../domain/unites.js'
 
@@ -67,6 +69,8 @@ function animer() {
     .fromTo($('.f-ok'), { opacity: 1 }, { opacity: 1, duration: 0.01 }, '<')
     .fromTo($('.f-ok path'), { strokeDasharray: 40, strokeDashoffset: 40 }, { strokeDashoffset: 0, duration: 0.6, ease: 'power2.out' }, '<.25')
     .fromTo($('.f-anneau'), { scale: 1 }, { scale: 1.06, duration: 0.3, yoyo: true, repeat: 1, ease: 'sine.inOut' }, '<.3')
+    // la coche est posée : les confettis jaillissent de l'anneau (c'est le moment le plus rare de l'app, la fête est permise)
+    .add(() => { SONS.tour(); confettis(racine.value, { haut: (C.y / hauteurDe(racineDe(racine.value))) * 100, nombre: 34, delai: 0, couleurs: ['var(--accent)', 'var(--texte)', 'var(--accent-lisible)'] }) }, '<')
     .fromTo($$('.f-h, .f-p'), { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.1, ease: 'expo.out', clearProps: 'transform' }, '<.1')
     .fromTo($$('.st'), { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.09, ease: 'expo.out', clearProps: 'transform' }, '<.15')
     .add(nombres, '<.1')

@@ -42,6 +42,14 @@ export function consommerSaut() { const s = sautLe && Date.now() - sautLe < 1500
 export function marquerLancement() { lancement = true }
 export function consommerLancement() { const l = lancement; lancement = false; return l }
 
+/* Séance validée : retour au tableau de bord, où l'écran de fin (copie) se referme dans la carte « Cette semaine », qui gagne
+   alors sa séance (anneau + compteur). `realisationId` permet au tableau de bord de calculer le chiffre d'avant. Expire en 4 s. */
+let finSeance = null
+export function marquerFinSeance(el, realisationId) {
+  finSeance = { clone: el ? el.cloneNode(true) : null, realisationId, t: Date.now() }
+}
+export function consommerFinSeance() { const f = finSeance; finSeance = null; return f && Date.now() - f.t < 4000 ? f : null }
+
 export function leverRideau(racine) {
   const rideau = document.createElement('div')
   rideau.style.cssText = 'position:absolute;inset:0;z-index:500;background:var(--accent);pointer-events:none'
