@@ -83,10 +83,10 @@ async function restaurer(p) {
       </div>
     </div>
 
-    <form v-if="formulaire.ouvert" class="c-carte" style="margin-bottom: 16px" @submit.prevent="creer">
+    <form v-if="formulaire.ouvert" class="c-carte" style="margin-bottom: 16px" novalidate @submit.prevent="creer">
       <h2>Nouveau client</h2>
       <div class="c-ligne c-bas" style="margin-bottom: 12px">
-        <label style="flex: 2; min-width: 200px">Nom complet<input v-model="formulaire.nom" placeholder="Prénom Nom" autocomplete="off" required /></label>
+        <label style="flex: 2; min-width: 200px">Nom complet<input v-model="formulaire.nom" placeholder="Prénom Nom" autocomplete="off" /></label>
         <label class="c-court">Tarif (€)<input v-model.number="formulaire.tarif" type="number" min="0" step="1" /></label>
         <label class="c-moyen">Lieu par défaut
           <select v-model="formulaire.lieuDefaut"><option v-for="l in LIEUX" :key="l" :value="l">{{ l === 'domicile' ? 'À domicile' : 'En salle' }}</option></select>

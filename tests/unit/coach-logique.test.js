@@ -25,7 +25,7 @@ describe('champs et séries', () => {
     let it1 = nouvelItemExercice('a', 'x')
     it1 = basculerChamp(it1, 'rpe')
     expect(it1.champs.map((c) => c.cle)).toEqual(['poids', 'reps', 'rpe'])
-    expect(it1.series[0].rpe).toBe(1)
+    expect(it1.series[0].rpe).toBe(7)
     it1 = basculerChamp(it1, 'poids')
     expect(it1.series[0]).not.toHaveProperty('poids')
   })
@@ -53,6 +53,14 @@ describe('champs et séries', () => {
   })
   it('nouvelleSerie suit les champs', () => {
     expect(nouvelleSerie([{ cle: 'poidsDuCorps' }, { cle: 'tempo' }])).toEqual({ poidsDuCorps: false, tempo: '' })
+  })
+})
+
+describe('valeurs par défaut', () => {
+  it('un exercice ajouté est prévu 3 × 10, pas 3 × 0', () => {
+    const it1 = nouvelItemExercice('a', 'x')
+    expect(it1.series).toHaveLength(3)
+    expect(it1.series.every((s) => s.reps === 10)).toBe(true)
   })
 })
 

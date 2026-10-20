@@ -73,7 +73,11 @@ async function enregistrer() {
   erreur.value = ''
   const w = { ...copie(workout.value), nom: workout.value.nom.trim(), clientId: workout.value.clientId || null }
   if (!w.consignes?.trim()) delete w.consignes
-  for (const b of w.blocs) {
+  if (!w.nom) return void (erreur.value = 'Donne un nom à la séance.')
+  if (!w.blocs.length) return void (erreur.value = 'Ajoute au moins un bloc à la séance.')
+  for (const [i, b] of w.blocs.entries()) {
+    if (b.type === 'circuit' && !b.exercices.length) return void (erreur.value = `Le circuit (bloc ${i + 1}) doit contenir au moins un exercice.`)
+    if (b.type === 'circuit' && b.exercices.some((x) => !x.exerciceId)) return void (erreur.value = `Chaque exercice du circuit (bloc ${i + 1}) doit être choisi.`)
     if (b.type === 'exercice' && !b.exerciceId) return void (erreur.value = 'Chaque bloc exercice doit avoir un exercice.')
     if (b.type === 'superset' && b.exercices.some((x) => !x.exerciceId)) return void (erreur.value = 'Chaque exercice du superset doit être choisi.')
   }
