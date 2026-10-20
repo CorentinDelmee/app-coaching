@@ -1,0 +1,10 @@
+/* Design tokens provisoires : remplacés par ceux du DESIGN.md de la maquette retenue (lot 2). */
+:root {
+  --couleur-fond: #1f2023;
+  --couleur-texte: #f2f2f0;
+  --couleur-accent: #c8f169;
+  --police-texte: system-ui, sans-serif;
+  --espace-4: 1rem;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--couleur-fond); color: var(--couleur-texte); font-family: var(--police-texte); }
