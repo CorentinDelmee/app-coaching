@@ -98,9 +98,10 @@
     {
       "id": "9",
       "titre": "Profil, connexion, accueil/installation, PWA hors connexion",
-      "statut": "en_cours",
-      "avancement": 5,
-      "qui": "developpeur"
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "developpeur",
+      "note": "Connexion, consentement, profil (export + suppression des données de santé), page d installation, hors connexion testé en mode avion"
     },
     {
       "id": "10",
@@ -113,9 +114,10 @@
     {
       "id": "11",
       "titre": "Tests mobiles, audit sécurité, revue des animations",
-      "statut": "a_faire",
-      "avancement": 0,
-      "qui": "testeur + auditeur-securite + frontend-senior"
+      "statut": "en_cours",
+      "avancement": 15,
+      "qui": "testeur + auditeur-securite + frontend-senior",
+      "note": "Audit sécurité en cours"
     },
     {
       "id": "12",
@@ -322,6 +324,10 @@
     {
       "date": "2026-10-20",
       "texte": "Écran d accueil client animé, menu 6 rubriques, page Workout, calendrier du programme et page Coaching (WhatsApp, payé ce mois) construits."
+    },
+    {
+      "date": "2026-10-20",
+      "texte": "Connexion, consentement RGPD, profil, page d installation et fonctionnement hors connexion prêts."
     }
   ],
   "prochaines_etapes": [
