@@ -43,7 +43,7 @@ onMounted(() => {
   const cibles = '.f-h, .f-p, .st, .fin-bas, .f-ok, .f-trou'
   gsap.set($$(cibles), { opacity: 0 })
   ouvrirCercle(racine.value, props.src, { duree: 0.7 })
-  delai = setTimeout(animer, mouvementReduit() ? 100 : 560)
+  delai = setTimeout(animer, mouvementReduit() ? 100 : 460)
 })
 onBeforeUnmount(() => { clearTimeout(delai); if (tl) tl.kill(); nettoyer(racine.value) })
 
@@ -62,7 +62,7 @@ function animer() {
   }
   const C = centreDe($('.f-anneau'), racineDe(racine.value))
   tl = gsap.timeline()
-  tl.fromTo(aplat, { clipPath: `circle(1000px at ${C.x}px ${C.y}px)` }, { clipPath: `circle(95px at ${C.x}px ${C.y}px)`, duration: 0.95, ease: 'expo.inOut' }, 0)
+  tl.fromTo(aplat, { clipPath: `circle(1000px at ${C.x}px ${C.y}px)` }, { clipPath: `circle(95px at ${C.x}px ${C.y}px)`, duration: 0.85, ease: 'expo.inOut' }, 0)
     .add(() => { aplat.style.display = 'none' }, '>')
     .set($('.f-trou'), { opacity: 1, scale: 0 }, '<')
     .to($('.f-trou'), { scale: 1, duration: 0.8, ease: 'back.out(1.5)' }, '<')
@@ -71,7 +71,7 @@ function animer() {
     .fromTo($('.f-anneau'), { scale: 1 }, { scale: 1.06, duration: 0.3, yoyo: true, repeat: 1, ease: 'sine.inOut' }, '<.3')
     // la coche est posée : les confettis jaillissent de l'anneau (c'est le moment le plus rare de l'app, la fête est permise)
     .add(() => { SONS.tour(); confettis(racine.value, { haut: (C.y / hauteurDe(racineDe(racine.value))) * 100, nombre: 34, delai: 0, couleurs: ['var(--accent)', 'var(--texte)', 'var(--accent-lisible)'] }) }, '<')
-    .fromTo($$('.f-h, .f-p'), { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.1, ease: 'expo.out', clearProps: 'transform' }, '<.1')
+    .fromTo($$('.f-h, .f-p'), { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.1, ease: 'expo.out', clearProps: 'transform' }, '<-.25')
     .fromTo($$('.st'), { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.09, ease: 'expo.out', clearProps: 'transform' }, '<.15')
     .add(nombres, '<.1')
     .fromTo($('.fin-bas'), { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, ease: 'expo.out', clearProps: 'transform' }, '<.5')
@@ -103,7 +103,7 @@ defineExpose({ racine })
           <Icone nom="coupe" />
           <div>
             <div class="l">{{ record ? (records.length > 1 ? `Nouveau record · +${records.length - 1} autre${records.length > 2 ? 's' : ''}` : 'Nouveau record') : 'Aucun record cette fois' }}</div>
-            <div class="v">{{ record ? `${record.nom} · ${nombreFr(poidsAffiche(record.charge, unite))} ${unite}` : 'La régularité fait les records' }}</div>
+            <div class="v">{{ record ? `${record.nom} · ${nombreFr(poidsAffiche(record.charge, unite))} ${unite}` : 'La régularité fait les records' }}</div>
           </div>
         </div>
       </div>
