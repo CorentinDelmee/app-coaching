@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr" data-ambiance="sombre">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#25221F">
+<title>M1 Atelier · Corentin Delmée Coaching</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="cadre">
+  <main id="tel" aria-label="Application Corentin Delmée Coaching">
+    <div id="pages">
+      <section class="ecran base" id="e-accueil" aria-label="Accueil"></section>
+      <section class="ecran page" id="e-coaching" hidden aria-label="Coaching"></section>
+      <section class="ecran page" id="e-programme" hidden aria-label="Programme"></section>
+      <section class="ecran page" id="e-workout" hidden aria-label="Workout"></section>
+      <section class="ecran page" id="e-questionnaire" hidden aria-label="Questionnaire" data-sans-menu></section>
+      <section class="ecran page" id="e-avenir" hidden aria-label="Bientôt"></section>
+      <section class="ecran page" id="e-seance" hidden aria-label="Séance en cours" data-sans-menu></section>
+    </div>
+    <nav id="menu" aria-label="Menu" hidden></nav>
+    <button id="btn-menu" type="button" aria-label="Ouvrir le menu" aria-expanded="false"><i></i><i></i></button>
+  </main>
+</div>
+
+<div id="dock">
+  <button type="button" id="btn-reglages" aria-label="Réglages d'apparence">Réglages</button>
+  <button type="button" id="btn-x10" aria-pressed="false" aria-label="Accélérer les chronos">×10</button>
+</div>
+<aside id="reglages" hidden aria-label="Réglages d'apparence">
+  <h2>Apparence</h2>
+  <p class="r-lab">Ambiance</p>
+  <div class="r-choix" id="r-ambiances"></div>
+  <p class="r-lab">Accent</p>
+  <div class="r-choix" id="r-accents"></div>
+  <p class="r-note">Le choix est mémorisé. Le bouton ×10 accélère les chronos pour la démo.</p>
+</aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="assets/data.js"></script>
+<script src="assets/anim.js"></script>
+<script src="assets/vues.js"></script>
+<script src="assets/seance.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

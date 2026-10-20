@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="fr" data-ambiance="sombre">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:,">
+<meta name="theme-color" content="#262624">
+<title>M3 « Tableau » — Corentin Delmée Coaching</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500&family=Big+Shoulders+Display:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="tel" id="tel">
+
+  <!-- ===== ACCUEIL ===== -->
+  <section class="ecran" id="e-accueil" aria-label="Accueil">
+    <div class="acc">
+      <header class="acc-haut"><span class="etq">CDC</span><span class="etq">Mar. 20 oct. 2026</span></header>
+      <div class="acc-titre"><span class="etq">Bonjour</span><h1 class="titre-cin" id="h-nom">Fabien</h1></div>
+      <div class="grille" id="grille">
+        <div class="rang">
+          <button class="case" id="c-semaine" data-ouvre="programme" aria-label="Cette semaine : 1 séance sur 3">
+            <span class="etq">Cette semaine</span>
+            <span class="gros num"><span id="fl-semaine"></span></span>
+            <span class="segs" id="segs"><i><b></b></i><i><b></b></i><i><b></b></i></span>
+          </button>
+          <button class="case" id="c-coaching" data-ouvre="coaching">
+            <span class="etq">Prochain coaching</span>
+            <span class="nom">Mar. 27 oct.<br>18 h 30</span>
+            <span class="petit">À domicile</span>
+          </button>
+        </div>
+        <div class="rang">
+          <button class="case" id="c-programme" data-ouvre="programme">
+            <span class="etq">Mon programme</span>
+            <span class="nom">Force &amp; cardio</span>
+            <span class="petit">Semaine 3 sur 8</span>
+          </button>
+          <button class="case" id="c-quest" data-ouvre="questionnaire">
+            <span class="etq">Questionnaires</span>
+            <span class="nom" id="q-nom">Check-in du jour</span>
+            <span class="petit" id="q-petit">5 questions · 1 min</span>
+            <span class="pastille" id="pastille" aria-label="1 à remplir">1</span>
+          </button>
+        </div>
+        <div class="rang">
+          <button class="case sur-accent" id="c-aujourdhui" data-ouvre="workout">
+            <span>
+              <span class="etq">Aujourd'hui · prévu</span>
+              <span class="gros" style="display:block">Workout 2</span>
+              <span class="nom" style="display:block;margin-top:8px">Bas du corps + circuit</span>
+              <span class="petit" id="auj-petit" style="display:block;margin-top:6px">≈ 50 min · 5 exercices · AMRAP 8 min</span>
+            </span>
+            <span class="bas-card"><span id="auj-cta">Voir la séance</span><span aria-hidden="true">▸</span></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== COACHING ===== -->
+  <section class="ecran page" id="e-coaching" aria-label="Coaching">
+    <header class="ph"><button class="carre" data-retour aria-label="Retour">←</button><span class="etq">Coaching</span></header>
+    <div class="defile">
+      <h1 class="titre-cin" style="font-size:72px;margin-bottom:14px">Coaching</h1>
+      <div class="bloc acc-bloc" data-in>
+        <span class="etq">Votre séance</span>
+        <div class="valeur-g" style="margin:6px 0 4px">Mardi 27 octobre</div>
+        <div style="display:flex;align-items:flex-end;justify-content:space-between">
+          <div class="num" style="font-size:68px;line-height:.9"><span id="fl-heure"></span></div>
+          <div style="text-align:right;font:600 28px/.95 var(--font-titre);text-transform:uppercase;padding-bottom:4px">À<br>domicile</div>
+        </div>
+        <span class="rappel">Annulation gratuite jusqu'à 24 h avant</span>
+      </div>
+      <div class="bloc" data-in>
+        <span class="etq">Mot du coach</span>
+        <p class="cit" style="margin-top:8px;font-size:20px">Belle semaine Fabien ! Mardi on attaque le travail de hanches, prévois une bouteille d'eau.</p>
+        <button class="btn sec moy" id="b-mot" style="margin-top:12px;min-height:56px">M'envoyer un mot</button>
+      </div>
+      <div class="duo" data-in>
+        <div class="bloc"><span class="etq">C'est votre</span><div class="gros stat-g"><span id="fl-seances"></span></div><span class="petit etq">séance du mois</span></div>
+        <div class="bloc"><span class="etq">Payé ce mois</span><div class="num" style="font-size:44px;line-height:1.1;margin-top:12px"><span id="fl-euros"></span></div><span class="petit etq" style="display:block;margin-top:6px">3 séances × 35 €</span></div>
+      </div>
+    </div>
+    <div class="barre-bas">
+      <div class="rang-btn"><button class="btn moy" id="b-modif">Modifier</button><button class="btn sec moy" id="b-annul">Annuler</button></div>
+    </div>
+  </section>
+
+  <!-- ===== PROGRAMME ===== -->
+  <section class="ecran page" id="e-programme" aria-label="Programme">
+    <header class="ph"><button class="carre" data-retour aria-label="Retour">←</button><span class="etq">Force &amp; cardio · sem. 3/8 · mode répété</span></header>
+    <div class="defile" id="prog-defile">
+      <h1 class="titre-cin" style="font-size:64px;line-height:.9">Programme Fabien Vincent</h1>
+      <div class="seg-toggle" data-in role="tablist">
+        <span class="ind" id="seg-ind"></span>
+        <button class="on" id="t-sem" role="tab" aria-selected="true">Semaine</button>
+        <button id="t-mois" role="tab" aria-selected="false">Mois</button>
+      </div>
+      <div class="vues" id="vues">
+        <div class="vue" id="vue-sem"></div>
+        <div class="vue" id="vue-mois"></div>
+      </div>
+      <div class="liste-faire" id="liste-faire"></div>
+    </div>
+  </section>
+
+  <!-- ===== WORKOUT (overview) ===== -->
+  <section class="ecran page" id="e-workout" aria-label="Workout 2">
+    <header class="ph"><button class="carre" data-retour aria-label="Retour">←</button><span class="etq">Overview · Mar. 20 oct.</span></header>
+    <div class="defile" id="wk-defile"></div>
+    <div class="barre-bas"><button class="btn" id="b-demarrer">▸ Démarrer</button></div>
+  </section>
+
+  <!-- ===== QUESTIONNAIRE ===== -->
+  <section class="ecran page" id="e-questionnaire" aria-label="Questionnaire">
+    <div class="q-haut">
+      <div class="q-ligne"><button class="carre" data-retour aria-label="Fermer le questionnaire">←</button><span class="etq" id="q-compte">Check-in · 1/5</span></div>
+      <div class="q-prog" id="q-prog"></div>
+    </div>
+    <div class="q-zone" id="q-zone"></div>
+    <div id="q-fin" class="fond-accent">
+      <span class="etq">Check-in du jour</span>
+      <h2 class="titre-cin" id="q-fin-t">Check-in fait.</h2>
+      <p style="font-size:22px;max-width:300px">Merci Fabien, c'est noté. Ton coach voit tes réponses avant la séance.</p>
+      <div class="num" style="font-size:96px;margin-top:20px"><span id="fl-qfin"></span></div>
+      <button class="btn ink rappel-q" id="q-retour" style="margin-top:auto">Retour à l'accueil</button>
+    </div>
+  </section>
+
+  <!-- ===== SUIVI / PROFIL (à venir) ===== -->
+  <section class="ecran page" id="e-suivi" aria-label="Suivi">
+    <header class="ph"><button class="carre" data-retour aria-label="Retour">←</button><span class="etq">Suivi</span></header>
+    <div class="defile"><div class="a-venir"><span class="etq">Rubrique</span><h1 class="titre-cin gros">Suivi</h1><div class="hachures"></div><p style="font-size:22px;max-width:320px">Poids, mensurations et carte des douleurs arrivent bientôt.</p></div></div>
+  </section>
+  <section class="ecran page" id="e-profil" aria-label="Profil">
+    <header class="ph"><button class="carre" data-retour aria-label="Retour">←</button><span class="etq">Profil</span></header>
+    <div class="defile"><div class="a-venir"><span class="etq">Rubrique</span><h1 class="titre-cin gros">Profil</h1><div class="hachures"></div><p style="font-size:22px;max-width:320px">Infos, préférences et export de tes données arrivent bientôt.</p></div></div>
+  </section>
+
+  <!-- ===== SÉANCE EN COURS ===== -->
+  <section class="ecran" id="e-seance" aria-label="Séance en cours">
+    <div class="s-zone" id="s-zone"></div>
+    <div class="s-haut">
+      <div class="s-ligne">
+        <button class="carre" id="s-quitter" aria-label="Quitter la séance">✕</button>
+        <div class="s-prog" id="s-prog"></div>
+        <span class="etq" id="s-compte" style="min-width:36px;text-align:right">1/6</span>
+      </div>
+    </div>
+    <button id="lang-tiroir" aria-label="Ouvrir l'overview de la séance">Séance</button>
+    <div id="voile"></div>
+    <aside id="tiroir" aria-label="Overview de la séance">
+      <div class="t-haut"><span class="gros" style="font:600 40px/.9 var(--font-titre);text-transform:uppercase">Workout 2</span><button class="carre" id="t-fermer" aria-label="Fermer">→</button></div>
+      <div class="t-corps" id="t-corps"></div>
+    </aside>
+    <div class="plein-ov" id="serie-detail"></div>
+  </section>
+
+  <!-- chrono plein écran (repos, travail, préparation, AMRAP, EMOM) -->
+  <section id="chrono" data-phase="repos" aria-label="Chrono">
+    <div class="ch-haut"><div><div class="etq" id="ch-sous">—</div><div class="gros" id="ch-etiq">Repos</div></div><button class="x10" aria-pressed="false" aria-label="Accélérer le temps pour la démonstration">×10</button></div>
+    <div class="ch-corps">
+      <div class="ch-digits" id="ch-digits">
+        <div class="ch-ligne"><span id="fl-m"></span><em>MIN</em></div>
+        <div class="ch-ligne"><span id="fl-s"></span><em>SEC</em></div>
+      </div>
+      <div class="ch-droite" id="ch-droite"></div>
+    </div>
+    <div class="ch-barre"><i id="ch-barre"></i></div>
+    <div class="ch-bas" id="ch-bas"></div>
+  </section>
+
+  <!-- fin de séance -->
+  <section id="fin" class="fond-accent" aria-label="Séance terminée">
+    <div class="barres-fete" id="fete"></div>
+    <div class="fin-corps">
+      <span class="etq">Workout 2 · Bas du corps + circuit</span>
+      <h2 class="titre-cin" id="fin-t">Bravo, séance terminée</h2>
+      <div class="stats" id="stats">
+        <div><span class="etq">Durée</span><br><span id="f-duree"></span></div>
+        <div><span class="etq">Volume (kg)</span><br><span id="f-volume"></span></div>
+        <div><span class="etq">Séries</span><br><span id="f-series"></span></div>
+        <div><span class="etq">Tours AMRAP</span><br><span id="f-tours"></span></div>
+      </div>
+      <div class="record" id="f-record"><span class="ico">★</span><div><span class="etq">Record perso</span><br><b id="f-record-t">Goblet squat · 16 kg</b></div></div>
+      <div style="height:200px"></div>
+    </div>
+    <div class="fin-bas">
+      <input type="text" id="f-comm" placeholder="Un commentaire pour ton coach ? (facultatif)" aria-label="Commentaire facultatif">
+      <button class="btn ink" id="f-valider">Valider ma séance</button>
+    </div>
+  </section>
+
+  <!-- sélecteur vertical -->
+  <section class="plein-ov" id="selecteur" aria-label="Sélecteur de valeur">
+    <div class="sel-haut"><div><div class="etq" id="sel-sous">Série 1</div><div class="gros" id="sel-titre">Répétitions</div></div><button class="carre" id="sel-x" aria-label="Annuler" style="background:var(--encre);color:var(--c-craie);border-color:var(--encre)">✕</button></div>
+    <div class="roue"><div class="roue-scroll" id="roue" tabindex="0" role="spinbutton"></div><div class="roue-fen"></div><div class="roue-unite" id="sel-unite">kg</div></div>
+    <div style="padding-bottom:var(--bas)"><button class="btn" id="sel-ok">Valider</button></div>
+  </section>
+
+  <!-- menu : store -->
+  <nav id="menu" aria-label="Menu"></nav>
+  <button id="btn-menu" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+
+  <div id="volets"><i></i><i></i><i></i><i></i><i></i><i></i><div class="vol-label"></div></div>
+  <div id="streak"></div>
+  <div id="toast" role="status"></div>
+  <div id="modal"></div>
+</div>
+
+<!-- réglages en direct (hors du cadre sur ordinateur) -->
+<div id="reglages">
+  <div id="reg-pan" role="dialog" aria-label="Réglages">
+    <h4>Ambiance</h4>
+    <div class="reg-rang" id="reg-amb"><button data-a="sombre">Ardoise</button><button data-a="clair">Tableau blanc</button><button data-a="craie">Craie</button></div>
+    <h4>Accent</h4>
+    <div class="reg-rang" id="reg-acc"></div>
+    <h4>Démo</h4>
+    <div class="reg-rang"><button id="reg-x10" class="x10-r">Chronos ×10</button><button id="reg-rejouer">Rejouer l'entrée</button></div>
+  </div>
+  <button id="reg-btn" aria-label="Réglages" aria-expanded="false">Aa</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="assets/donnees.js"></script>
+<script src="assets/moteur.js"></script>
+<script src="assets/pages.js"></script>
+<script src="assets/seance.js"></script>
+<script src="assets/demarrage.js"></script>
+</body>
+</html>

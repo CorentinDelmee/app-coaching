@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="fr" data-ambiance="sombre" data-accent="lime">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1C1F27">
+<title>M4 Ressort — Corentin Delmée Coaching</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<!-- Réglages : hors du cadre sur ordinateur, coin haut-gauche sur mobile -->
+<div id="reglages">
+  <button id="rg-btn" aria-label="Réglages" aria-expanded="false"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/></svg></button>
+  <button id="rg-vit" aria-pressed="false" title="Accélérer les chronos pour la démo">×10</button>
+  <div id="rg-panneau" hidden>
+    <p class="rg-t">Ambiance</p>
+    <div class="rg-ligne" data-groupe="ambiance">
+      <button data-v="sombre">Ardoise</button><button data-v="clair">Clair</button><button data-v="nuit">Nuit profonde</button>
+    </div>
+    <p class="rg-t">Accent</p>
+    <div class="rg-ligne" data-groupe="accent">
+      <button class="pt" data-v="lime" aria-label="Lime"></button>
+      <button class="pt" data-v="bleu" aria-label="Bleu électrique"></button>
+      <button class="pt" data-v="violet" aria-label="Violet"></button>
+      <button class="pt" data-v="menthe" aria-label="Menthe"></button>
+      <button class="pt" data-v="rose" aria-label="Rose"></button>
+      <button class="pt" data-v="ambre" aria-label="Ambre"></button>
+    </div>
+    <button id="rg-rejouer" class="rg-rejouer">Rejouer la démo depuis le début</button>
+  </div>
+</div>
+
+<main id="cadre">
+<div id="app">
+
+  <!-- ===== ACCUEIL (dashboard) ===== -->
+  <section id="accueil" class="base">
+    <header class="salut">
+      <div>
+        <p class="date">Mardi 20 octobre</p>
+        <h1>Bonjour <span>Fabien</span></h1>
+      </div>
+      <button class="avatar" data-ouvre="profil" id="c-profil" aria-label="Profil"><span>FV</span></button>
+    </header>
+
+    <div class="cartes">
+      <button class="carte hero" data-ouvre="workout" id="c-aujourdhui">
+        <span class="micro">Aujourd’hui</span>
+        <span class="hero-titre" data-vol>Workout 2</span>
+        <span class="hero-sous">Bas du corps + circuit</span>
+        <span class="hero-bas">
+          <span class="puce">50 min</span><span class="puce">5 exercices</span><span class="puce">AMRAP</span>
+          <span class="hero-go" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+        </span>
+      </button>
+
+      <div class="duo">
+        <div class="carte semaine" id="c-semaine">
+          <span class="micro">Cette semaine</span>
+          <span class="anneau-s">
+            <svg viewBox="0 0 100 100" width="92" height="92"><circle class="a-fond" cx="50" cy="50" r="42"/><circle class="a-val" id="anneau-val" cx="50" cy="50" r="42" pathLength="100"/></svg>
+            <span class="a-txt"><b id="sem-n">1</b><i>/3</i></span>
+          </span>
+          <span class="petit" id="sem-txt">séances faites</span>
+        </div>
+        <button class="carte" data-ouvre="coaching" id="c-coaching">
+          <span class="micro">Prochaine séance</span>
+          <span class="carte-titre" data-vol>Coaching</span>
+          <span class="carte-sous">Mar. 27 oct., 18 h 30</span>
+          <span class="chip-j">dans 7 jours</span>
+        </button>
+      </div>
+
+      <div class="duo">
+        <button class="carte" data-ouvre="programme" id="c-programme">
+          <span class="micro">Mon programme</span>
+          <span class="carte-titre">Force &amp; cardio</span>
+          <span class="carte-sous">Semaine 3 sur 8</span>
+          <span class="segments" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="cur"></i><i></i><i></i><i></i><i></i><i></i></span>
+        </button>
+        <button class="carte" data-ouvre="quest" id="c-quest">
+          <span class="micro">Questionnaires</span>
+          <span class="carte-titre" data-vol id="q-titre">Check-in</span>
+          <span class="carte-sous" id="q-sous">5 questions · 1 min</span>
+          <span class="pastille" id="q-pastille">1</span>
+        </button>
+      </div>
+    </div>
+
+    <button class="dock" id="dock" aria-label="Ouvrir le menu">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><circle cx="6" cy="6" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/></svg>
+      <span>Menu</span>
+    </button>
+  </section>
+
+  <!-- ===== PAGE COACHING ===== -->
+  <section class="page" id="p-coaching" hidden>
+    <header class="p-tete" data-poignee><i class="grabber"></i>
+      <h2 class="p-titre" data-vol>Coaching</h2>
+      <button class="p-fermer" aria-label="Fermer"></button>
+    </header>
+    <div class="p-corps">
+      <div class="bloc-date" data-ent>
+        <p class="micro">Votre séance</p>
+        <p class="gros-date">Mardi 27 octobre</p>
+        <p class="heure">18 h 30 <i>·</i> à domicile</p>
+        <div class="actions-duo">
+          <a class="btn btn-clair" id="co-modifier" href="#">Modifier</a>
+          <a class="btn btn-contour" id="co-annuler" href="#">Annuler</a>
+        </div>
+        <p class="rappel">Annulation gratuite jusqu’à 24 h avant.</p>
+      </div>
+      <div class="carte-mot" data-ent>
+        <p class="micro">Le mot de Corentin</p>
+        <p class="mot">« Belle semaine Fabien ! Mardi on attaque le travail de hanches, prévois une bouteille d’eau. »</p>
+        <a class="btn btn-accent" id="co-mot" href="#">M’envoyer un mot</a>
+      </div>
+      <div class="duo-stat" data-ent>
+        <div class="stat"><p class="micro">Ce mois-ci</p><p class="stat-n">4<sup>e</sup></p><p class="petit">séance du mois</p>
+          <div class="pts"><i class="on"></i><i class="on"></i><i class="on"></i><i class="cur"></i></div></div>
+        <div class="stat"><p class="micro">Récap payé</p><p class="stat-n">105 €</p><p class="petit">3 séances × 35 €</p></div>
+      </div>
+      <p class="note-bas" data-ent>Les séances annulées ne sont pas comptées.</p>
+    </div>
+  </section>
+
+  <!-- ===== PAGE PROGRAMME ===== -->
+  <section class="page" id="p-programme" hidden>
+    <header class="p-tete" data-poignee><i class="grabber"></i>
+      <h2 class="p-titre">Programme <em>Fabien Vincent</em></h2>
+      <button class="p-fermer" aria-label="Fermer"></button>
+    </header>
+    <div class="p-corps" id="pg-corps">
+      <div class="pg-barre" data-ent>
+        <div class="bascule" id="bascule"><i class="b-pouce"></i><button data-vue="semaine" class="on">Semaine</button><button data-vue="mois">Mois</button></div>
+        <p class="petit" id="pg-legende">Semaine en cours · 3 sur 8 · 19 – 25 oct.</p>
+      </div>
+      <div class="pg-zone" data-ent>
+        <div class="v-semaine" id="v-semaine"></div>
+        <div class="v-mois" id="v-mois" hidden></div>
+      </div>
+      <div data-ent>
+        <h3 class="h3">À faire cette semaine</h3>
+        <div class="afaire" id="afaire"></div>
+      </div>
+      <div data-ent>
+        <h3 class="h3">Semaines passées</h3>
+        <div class="histo" id="histo"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PAGE WORKOUT (overview) ===== -->
+  <section class="page" id="p-workout" hidden>
+    <header class="p-tete" data-poignee><i class="grabber"></i>
+      <h2 class="p-titre" data-vol>Workout 2</h2>
+      <button class="p-fermer" aria-label="Fermer"></button>
+    </header>
+    <div class="p-corps" id="w-corps"></div>
+  </section>
+
+  <!-- ===== PAGE QUESTIONNAIRE ===== -->
+  <section class="page" id="p-quest" hidden>
+    <header class="p-tete" data-poignee><i class="grabber"></i>
+      <h2 class="p-titre" data-vol>Check-in</h2>
+      <button class="p-fermer" aria-label="Fermer"></button>
+    </header>
+    <div class="p-corps q-corps">
+      <div class="q-prog"><i id="q-barre"></i></div>
+      <p class="petit q-compte" id="q-compte">Question 1 sur 5</p>
+      <div class="q-scene" id="q-scene"></div>
+      <button class="btn-gros" id="q-suite"><span>Continuer</span></button>
+      <div class="q-fete" id="q-fete" hidden>
+        <div class="fete-rond"><svg viewBox="0 0 48 48" width="56" height="56" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 25l8 8 16-18"/></svg></div>
+        <h3>Merci Fabien</h3>
+        <p>Check-in du jour enregistré. Corentin le verra avant ta séance.</p>
+        <button class="btn-gros" id="q-retour"><span>Retour à l’accueil</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PAGES « À VENIR » (Suivi, Profil) ===== -->
+  <section class="page" id="p-suivi" hidden>
+    <header class="p-tete" data-poignee><i class="grabber"></i><h2 class="p-titre" data-vol>Suivi</h2><button class="p-fermer" aria-label="Fermer"></button></header>
+    <div class="p-corps bientot"><div class="orbes" data-ent><i></i><i></i><i></i></div><p class="gros-date" data-ent>Bientôt là</p><p class="mot" data-ent>Poids, mensurations et carte des douleurs arrivent dans une prochaine version.</p></div>
+  </section>
+  <section class="page" id="p-profil" hidden>
+    <header class="p-tete" data-poignee><i class="grabber"></i><h2 class="p-titre" data-vol>Profil</h2><button class="p-fermer" aria-label="Fermer"></button></header>
+    <div class="p-corps bientot"><div class="orbes" data-ent><i></i><i></i><i></i></div><p class="gros-date" data-ent>Bientôt là</p><p class="mot" data-ent>Tes infos, tes préférences et l’export de tes données arrivent bientôt.</p></div>
+  </section>
+
+  <!-- ===== SÉANCE EN COURS ===== -->
+  <section class="page" id="p-seance" hidden>
+    <div class="sean-haut">
+      <div class="segs" id="segs"></div>
+      <div class="sean-ligne"><span id="sean-bloc">Bloc A</span><span id="sean-pos">2 / 6</span></div>
+    </div>
+    <div class="vue-piste" id="vue"><div class="piste" id="piste"></div></div>
+    <button class="onglet" id="onglet" aria-label="Voir toute la séance"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h10M9 12h10M9 18h10M5 6h.01M5 12h.01M5 18h.01"/></svg></button>
+    <div class="barre-action" id="barre">
+      <div class="face f-bouton on"><button class="btn-gros" id="btn-principal"><span id="btn-lib">Valider la série</span></button></div>
+      <div class="face f-repos">
+        <div class="rp-gauche"><svg viewBox="0 0 100 100" class="rp-anneau"><circle class="a-fond" cx="50" cy="50" r="44"/><circle class="a-val" id="rp-val" cx="50" cy="50" r="44" pathLength="100"/></svg><div><p class="micro">Repos</p><p class="rp-temps" id="rp-temps">1:30</p></div></div>
+        <button class="btn-mini" id="rp-plus">+15 s</button>
+        <button class="btn-mini plein" id="rp-passer">Passer</button>
+      </div>
+      <div class="face f-suivant">
+        <div class="sv-txt"><p class="micro">Série terminée</p><p class="sv-t" id="sv-t">Exercice suivant dans 3 s</p></div>
+        <button class="btn-mini plein" id="sv-rester">Rester ici</button>
+        <i class="sv-barre" id="sv-barre"></i>
+      </div>
+    </div>
+  </section>
+
+  <section class="page chrono" id="p-chrono" hidden>
+    <p class="ch-phase" id="ch-phase">Préparation</p>
+    <p class="ch-titre" id="ch-titre">AMRAP 8 min</p>
+    <div class="ch-centre">
+      <svg viewBox="0 0 200 200" class="ch-anneau"><circle class="a-fond" cx="100" cy="100" r="92"/><circle class="a-val" id="ch-val" cx="100" cy="100" r="92" pathLength="100"/></svg>
+      <div class="ch-temps" id="ch-temps">0:10</div>
+      <p class="ch-sous" id="ch-sous">Le chrono démarre dans quelques secondes</p>
+    </div>
+    <div class="ch-bas">
+      <p class="ch-tours" id="ch-tours" hidden>Tours <b id="ch-n">0</b></p>
+      <button class="ch-gros" id="ch-tour" hidden><span>+1 tour</span></button>
+      <button class="ch-stop" id="ch-stop">Arrêter</button>
+    </div>
+  </section>
+
+  <section class="page" id="p-fin" hidden>
+    <div class="p-corps fin-corps">
+      <div class="fin-confetti" id="fin-confetti"></div>
+      <div class="fete-rond grand" id="fin-rond"><svg viewBox="0 0 48 48" width="64" height="64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 25l8 8 16-18"/></svg></div>
+      <h2 class="fin-titre" id="fin-titre">Bravo, séance terminée</h2>
+      <p class="fin-sous">Workout 2 · Bas du corps + circuit</p>
+      <div class="fin-grille" id="fin-grille"></div>
+      <div class="fin-record" id="fin-record"></div>
+      <textarea class="fin-com" id="fin-com" rows="2" placeholder="Un mot pour Corentin ? (facultatif)"></textarea>
+      <button class="btn-gros" id="fin-valider"><span>Valider ma séance</span></button>
+    </div>
+  </section>
+
+  <!-- ===== FEUILLES (bottom sheets) ===== -->
+  <div class="ov" id="ov-menu" hidden>
+    <div class="ov-scrim"></div>
+    <div class="ov-feuille" id="f-menu">
+      <div class="f-poignee"><i class="grabber"></i></div>
+      <p class="micro f-titre">Menu</p>
+      <div class="tuiles" id="tuiles"></div>
+    </div>
+  </div>
+
+  <div class="ov" id="ov-tiroir" hidden>
+    <div class="ov-scrim"></div>
+    <div class="ov-feuille" id="f-tiroir">
+      <div class="tiroir-zone"><div class="f-poignee"><i class="grabber"></i></div>
+      <div class="tiroir-tete"><p class="micro">Ta séance</p><h3 id="ti-titre">Workout 2</h3></div></div>
+      <div class="tiroir-corps" id="ti-corps"></div>
+    </div>
+  </div>
+
+  <div class="ov" id="ov-detail" hidden>
+    <div class="ov-scrim"></div>
+    <div class="ov-feuille flottante" id="f-detail">
+      <div class="f-poignee"><i class="grabber"></i></div>
+      <p class="micro" id="dt-sur">Goblet squat</p>
+      <h3 class="dt-titre" id="dt-titre">Série 2 sur 4</h3>
+      <div class="dt-champs" id="dt-champs"></div>
+      <p class="petit dt-prec" id="dt-prec"></p>
+      <button class="btn-gros" id="dt-valider"><span>Valider la série</span></button>
+    </div>
+  </div>
+
+  <div class="ov haut" id="ov-sel" hidden>
+    <div class="ov-scrim"></div>
+    <div class="ov-feuille" id="f-sel">
+      <div class="f-poignee"><i class="grabber"></i></div>
+      <p class="micro sel-sur" id="sel-sur">Poids</p>
+      <div class="sel-gros"><span id="sel-val">16</span><span class="sel-unite" id="sel-unite">kg</span></div>
+      <div class="roue" id="roue"><div class="roue-bande"></div><div class="roue-liste" id="roue-liste"></div></div>
+      <button class="btn-gros" id="sel-valider"><span>Valider</span></button>
+    </div>
+  </div>
+
+  <!-- ===== ÎLOT PERSISTANT ===== -->
+  <div id="ilot" aria-live="polite">
+    <div class="ilot-fond" id="ilot-fond"></div>
+    <button class="ic ic-rdv" data-etat="rdv"><i class="point"></i><span>Mar. 27 oct. · 18 h 30</span></button>
+    <div class="ic ic-quest" data-etat="quest"><i class="point"></i><span id="ic-q-t">Check-in</span><b id="ic-q-n">1/5</b></div>
+    <div class="ic ic-seance" data-etat="seance"><i class="point"></i><span id="ic-s-t">0:00</span><b id="ic-s-n">1/6</b></div>
+    <button class="ic ic-repos" data-etat="repos" aria-label="Agrandir le chrono de repos">
+      <svg viewBox="0 0 100 100" class="ic-anneau"><circle class="a-fond" cx="50" cy="50" r="42"/><circle class="a-val" id="ic-r-val" cx="50" cy="50" r="42" pathLength="100"/></svg>
+      <span id="ic-r-t">1:30</span><b>Repos</b>
+    </button>
+    <button class="ic ic-demarrer" data-etat="demarrer"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg><span>Démarrer la séance</span></button>
+    <div class="ic ic-plein" data-etat="plein">
+      <button class="pl-reduire" id="pl-reduire" aria-label="Réduire"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+      <p class="micro pl-lab">Repos</p>
+      <div class="pl-centre">
+        <svg viewBox="0 0 200 200" class="pl-anneau"><circle class="a-fond" cx="100" cy="100" r="92"/><circle class="a-val" id="pl-val" cx="100" cy="100" r="92" pathLength="100"/></svg>
+        <div class="pl-temps" id="pl-temps">1:30</div>
+      </div>
+      <p class="pl-apres" id="pl-apres">Ensuite : Goblet squat, série 3</p>
+      <div class="pl-boutons"><button class="btn-mini" id="pl-plus">+15 s</button><button class="btn-mini plein" id="pl-passer">Passer</button></div>
+    </div>
+  </div>
+
+  <div id="toast" role="status"></div>
+</div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/Flip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/Draggable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/InertiaPlugin.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/CustomEase.min.js"></script>
+<script src="assets/anim.js"></script>
+<script src="assets/donnees.js"></script>
+<script src="assets/ilot.js"></script>
+<script src="assets/selecteur.js"></script>
+<script src="assets/ecrans.js"></script>
+<script src="assets/seance.js"></script>
+<script src="assets/questionnaire.js"></script>
+<script src="assets/reglages.js"></script>
+</body>
+</html>

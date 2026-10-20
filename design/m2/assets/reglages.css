@@ -1,0 +1,11 @@
+/* Pastilles du sélecteur d'accent : elles montrent chaque accent, donc définies ici une fois. */
+:root {
+  --sw-prusse: #2D4BD8; --sw-vermillon: #D8431F; --sw-olive: #667A22;
+  --sw-prune: #7B2D62; --sw-moutarde: #E3A717; --sw-nuit: #1E2A66;
+}
+.reg-acc [data-acc="prusse"] { background: var(--sw-prusse); }
+.reg-acc [data-acc="vermillon"] { background: var(--sw-vermillon); }
+.reg-acc [data-acc="olive"] { background: var(--sw-olive); }
+.reg-acc [data-acc="prune"] { background: var(--sw-prune); }
+.reg-acc [data-acc="moutarde"] { background: var(--sw-moutarde); }
+.reg-acc [data-acc="nuit"] { background: var(--sw-nuit); }

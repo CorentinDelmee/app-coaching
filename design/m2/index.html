@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="fr" data-ambiance="clair" data-accent="prusse">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F4EEE4">
+<title>Carnet — Corentin Delmée Coaching (maquette M2)</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Hanken+Grotesk:wght@300..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/reglages.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-retour" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+    <symbol id="i-fermer" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-fleche" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-coche" viewBox="0 0 24 24"><path class="trait" pathLength="1" d="M5 12.5l4.5 4.5L19 7"/></symbol>
+    <symbol id="i-horloge" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  </defs>
+</svg>
+
+<div class="scene">
+  <div class="cadre" id="cadre">
+    <div id="app">
+
+      <!-- ===== Dashboard ===== -->
+      <section class="ecran visible" id="e-dash" aria-label="Accueil">
+        <div class="d-haut">
+          <span class="kicker" id="d-date">Mardi 20 octobre · S3/8</span>
+          <span style="width:48px"></span>
+        </div>
+        <div class="d-salut"><h1 class="serif">Bonjour,<br><em>Fabien.</em></h1></div>
+
+        <button class="carte hero" id="carte-hero" aria-label="Ouvrir la séance du jour">
+          <span class="marque num" aria-hidden="true">02</span>
+          <span class="kicker" id="h-kicker">Aujourd’hui · ≈ 50 min</span>
+          <span class="vt" id="h-titre">Bas du corps</span>
+          <span class="suite" id="h-suite">+ circuit AMRAP</span>
+          <span class="apercu" id="h-apercu"><i>Goblet squat</i><i>Fente bulgare</i><i>Hip thrust</i><i>Gainage ventral</i></span>
+          <span class="ligne-bas">
+            <span class="meta" id="h-meta">Workout 2<br>5 exercices · 1 circuit</span>
+            <span class="go" id="h-go"><svg viewBox="0 0 24 24"><use href="#i-fleche"/></svg></span>
+          </span>
+        </button>
+
+        <div class="rang rang-1">
+          <button class="carte" id="carte-semaine" aria-label="Cette semaine">
+            <span class="kicker">Cette semaine</span>
+            <span class="sem-anneau" id="sem-anneau">
+              <svg viewBox="0 0 104 104"><circle class="piste" cx="52" cy="52" r="48"/><circle class="prog" id="ring-p" cx="52" cy="52" r="48"/></svg>
+              <span class="centre num"><span id="d-sem-n">1</span><small>/3</small></span>
+            </span>
+            <span class="sous bas" id="d-sem-txt">séance faite</span>
+          </button>
+          <button class="carte cc" id="carte-coaching" aria-label="Prochaine séance de coaching">
+            <span class="kicker">Coaching</span>
+            <span class="vt" id="cc-titre">Mardi 27</span>
+            <span class="mois">octobre</span>
+            <span class="sous bas">18&nbsp;h&nbsp;30<br>à domicile</span>
+            <svg class="fleche-c" viewBox="0 0 24 24"><use href="#i-fleche"/></svg>
+          </button>
+        </div>
+
+        <div class="rang rang-2">
+          <button class="carte" id="carte-prog" aria-label="Mon programme">
+            <span class="kicker">Mon programme</span>
+            <span class="vt" id="pg-titre">Programme</span>
+            <span class="segs8" id="segs8"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="sous">Semaine 3 sur 8</span>
+          </button>
+          <button class="carte" id="carte-quest" aria-label="Questionnaires">
+            <span class="kicker" id="qq-kick">À remplir</span>
+            <span class="vt" id="qq-titre">Check-in</span>
+            <span class="sous bas" id="qq-txt">du jour · 1 min</span>
+            <span class="pastille" id="pastille">1</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ===== Coaching ===== -->
+      <section class="ecran" id="e-coaching" aria-label="Coaching">
+        <div class="p-haut rev"><button class="ico" data-retour aria-label="Retour"><svg viewBox="0 0 24 24"><use href="#i-retour"/></svg></button></div>
+        <div class="defile">
+          <div class="p-tete">
+            <p class="kicker rev">Votre séance</p>
+            <h1 class="vt" id="co-titre">Mardi 27</h1>
+            <p class="p-sous rev">octobre · <em>18&nbsp;h&nbsp;30</em> · à domicile</p>
+          </div>
+          <p class="rappel rev"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>Annulation gratuite jusqu’à 24&nbsp;h avant la séance.</span></p>
+          <div class="rev">
+            <p class="mot-coach" id="co-mot">« Belle semaine Fabien&nbsp;! Mardi on attaque le travail de hanches, prévois une bouteille d’eau. »</p>
+            <span class="signature">— Corentin</span>
+          </div>
+          <div class="stats-co rev">
+            <div><span class="grand num" id="co-n">4</span><sup>e</sup><p>séance du mois</p></div>
+            <div><span class="eur num"><span id="co-eur">105</span><b>€</b></span><p>Ce mois&nbsp;: 3 séances × 35&nbsp;€</p></div>
+          </div>
+        </div>
+        <div class="p-bas rev">
+          <div class="duo">
+            <a class="btn sec" id="co-modif" target="_blank" rel="noopener">Modifier</a>
+            <a class="btn sec" id="co-annul" target="_blank" rel="noopener">Annuler</a>
+          </div>
+          <a class="btn" id="co-mot-btn" target="_blank" rel="noopener">M’envoyer un mot</a>
+        </div>
+      </section>
+
+      <!-- ===== Programme ===== -->
+      <section class="ecran" id="e-programme" aria-label="Programme">
+        <div class="p-haut rev"><button class="ico" data-retour aria-label="Retour"><svg viewBox="0 0 24 24"><use href="#i-retour"/></svg></button></div>
+        <div class="defile" id="pr-defile">
+          <div class="p-tete" style="margin-bottom:14px">
+            <p class="kicker rev">Force &amp; cardio · semaine 3 sur 8</p>
+            <h1 class="vt p-titre" id="pr-titre">Programme</h1>
+            <p class="p-sous rev"><em>Fabien Vincent</em></p>
+          </div>
+          <div class="bascule rev" id="bascule">
+            <i class="pion" id="pion"></i>
+            <button class="on" data-v="semaine">Semaine</button>
+            <button data-v="mois">Mois</button>
+          </div>
+          <div class="rev">
+            <div class="cal-tete"><span class="mois-t" id="cal-titre">Semaine du 19 octobre</span><span class="kicker" id="cal-sous">3 séances / sem.</span></div>
+            <div class="cal semaine" id="cal"><div class="sem-cadre" id="sem-cadre"></div></div>
+          </div>
+          <div class="afaire rev">
+            <h2 class="serif">À faire cette semaine</h2>
+            <ul id="pr-liste"></ul>
+          </div>
+          <div class="histo rev"><div><b class="num">3/3</b>semaine 2</div><div><b class="num">3/3</b>semaine 1</div><div><b class="num">7</b>séances faites</div></div>
+        </div>
+      </section>
+
+      <!-- ===== Overview du workout ===== -->
+      <section class="ecran" id="e-workout" aria-label="Workout">
+        <div class="p-haut rev"><button class="ico" data-retour aria-label="Retour"><svg viewBox="0 0 24 24"><use href="#i-retour"/></svg></button></div>
+        <div class="defile" id="wk-defile">
+          <div class="p-tete" style="margin-bottom:0">
+            <p class="kicker rev">Workout 2 · semaine 3</p>
+            <h1 class="vt" id="wk-titre">Bas du corps</h1>
+            <p class="p-sous rev"><em>+ circuit AMRAP</em></p>
+          </div>
+          <div class="wk-meta rev"><div><b class="num">50</b>minutes environ</div><div><b class="num">5</b>exercices</div><div><b class="num">8</b>min de circuit</div></div>
+          <div class="wk-consigne rev"><span class="kicker">Le mot du coach</span>« Descends lentement sur le squat, 3 secondes. On garde 2 répétitions en réserve.&nbsp;»</div>
+          <div id="wk-blocs"></div>
+        </div>
+        <div class="p-bas rev"><button class="btn gros" id="wk-demarrer">Démarrer la séance <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-fleche"/></svg></button></div>
+      </section>
+
+      <!-- ===== Séance en cours ===== -->
+      <section class="ecran" id="e-seance" aria-label="Séance en cours">
+        <div class="s-haut">
+          <div class="segs" id="segs"></div>
+          <div class="s-barre">
+            <button class="ico" id="s-quitter" aria-label="Quitter la séance"><svg viewBox="0 0 24 24"><use href="#i-fermer"/></svg></button>
+            <span class="kicker" id="s-compteur">01 / 07</span>
+            <span style="width:48px"></span>
+          </div>
+        </div>
+        <div class="slides" id="slides"><div class="track" id="track"></div></div>
+        <button class="languette" id="languette" aria-label="Voir toute la séance"><i class="prise"></i><span>La séance</span></button>
+        <div class="auto-suiv" id="auto-suiv">
+          <div class="tx"><span class="kicker">Exercice suivant</span><span class="nm" id="as-nom">Fente bulgare</span></div>
+          <button class="btn" id="as-rester">Rester ici</button>
+          <i class="barre" id="as-barre"></i>
+        </div>
+        <div class="scrim" id="scrim"></div>
+        <aside class="tiroir" id="tiroir" aria-label="Aperçu de la séance">
+          <p class="kicker">Aperçu · Workout 2</p>
+          <h2 class="serif">Bas du corps<br><em>+ circuit</em></h2>
+          <div class="liste" id="tiroir-liste"></div>
+        </aside>
+        <div class="serie-panel" id="serie-panel" role="dialog" aria-label="Détail de la série">
+          <div class="sp-haut"><button class="ico" id="sp-fermer" aria-label="Fermer"><svg viewBox="0 0 24 24"><use href="#i-fermer"/></svg></button><p class="kicker" id="sp-exo">Goblet squat</p></div>
+          <div class="sp-titre"><b class="vt sp-num num" id="sp-num">2</b><span class="sp-tot" id="sp-tot">/ 4</span><em class="sp-mot">série</em></div>
+          <div class="sp-champs" id="sp-champs"></div>
+          <p class="sp-prec" id="sp-prec"></p>
+          <button class="btn gros" id="sp-valider">Valider la série</button>
+        </div>
+      </section>
+
+      <!-- ===== Circuit : explication + exercices ===== -->
+      <section class="ecran" id="e-circuit" aria-label="Circuit">
+        <div class="p-haut"><button class="ico" id="ci-retour" aria-label="Retour"><svg viewBox="0 0 24 24"><use href="#i-retour"/></svg></button><span class="kicker" id="ci-pos">Circuit</span></div>
+        <div class="stage" id="ci-s1"></div>
+        <div class="stage" id="ci-s2"></div>
+      </section>
+
+      <!-- ===== Fin de séance ===== -->
+      <section class="ecran" id="e-fin" aria-label="Séance terminée">
+        <div class="fin-fili" aria-hidden="true">02</div>
+        <div class="fin-haut"><span class="kicker">Carnet n° 03</span><span class="kicker">Mar. 20 oct. 2026</span></div>
+        <div class="fin-corps">
+          <h1 class="fin-titre serif" id="f-titre">Bravo,<br><em>séance terminée.</em></h1>
+          <svg class="fin-trait" id="f-trait" viewBox="0 0 342 28" preserveAspectRatio="none"><path pathLength="1" d="M4 18 C 60 4, 120 24, 180 12 S 290 6, 338 14"/></svg>
+          <div class="fin-stats" id="f-stats">
+            <div><span class="num"><span id="f-duree">0</span><small>min</small></span><span class="kicker">Durée</span></div>
+            <div><span class="num"><span id="f-volume">0</span><small>kg</small></span><span class="kicker">Volume soulevé</span></div>
+            <div><span class="num"><span id="f-series">0</span></span><span class="kicker">Séries validées</span></div>
+            <div><span class="num"><span id="f-tours">0</span></span><span class="kicker">Tours de circuit</span></div>
+          </div>
+          <p class="fin-record" id="f-record"></p>
+          <div class="fin-bas">
+            <input id="f-com" type="text" placeholder="Un mot pour Corentin ? (facultatif)" aria-label="Commentaire facultatif">
+            <button class="btn gros" id="f-valider">Valider ma séance</button>
+          </div>
+        </div>
+        <div class="tampon" id="tampon" aria-hidden="true">
+          <svg viewBox="0 0 124 124">
+            <defs><path id="tp-c" d="M62 62 m-48 0 a48 48 0 1 1 96 0 a48 48 0 1 1 -96 0"/></defs>
+            <circle cx="62" cy="62" r="58"/><circle cx="62" cy="62" r="34" style="stroke-width:1"/>
+            <text textLength="296" lengthAdjust="spacing"><textPath href="#tp-c" startOffset="0" textLength="296" lengthAdjust="spacing">Validée · Fabien V. · 20.10.26 · Carnet ·</textPath></text>
+            <text class="tc" x="62" y="75" text-anchor="middle">ok</text>
+          </svg>
+        </div>
+      </section>
+
+      <!-- ===== Questionnaire ===== -->
+      <section class="ecran" id="e-quest" aria-label="Check-in du jour">
+        <div class="q-haut">
+          <div class="q-ligne"><button class="ico" id="q-fermer" aria-label="Fermer"><svg viewBox="0 0 24 24"><use href="#i-fermer"/></svg></button><span class="vt" id="q-titre">Check-in</span><span class="kicker" id="q-pos">1 / 5</span></div>
+          <div class="q-prog"><i id="q-barre"></i></div>
+        </div>
+        <div id="q-scene"></div>
+      </section>
+
+      <!-- ===== À venir (Suivi, Profil) ===== -->
+      <section class="ecran" id="e-avenir" aria-label="À venir">
+        <div class="p-haut rev"><button class="ico" data-retour aria-label="Retour"><svg viewBox="0 0 24 24"><use href="#i-retour"/></svg></button></div>
+        <div class="defile">
+          <p class="kicker rev" id="av-kicker">Bientôt</p>
+          <h1 class="vt p-titre" id="av-titre">Suivi</h1>
+          <p class="grand-av serif rev"><em>bientôt.</em></p>
+          <svg class="trait-av rev" viewBox="0 0 220 14" preserveAspectRatio="none"><path pathLength="1" id="av-trait" d="M2 8 C 40 2, 80 12, 120 7 S 190 4, 218 8"/></svg>
+          <p class="t rev" id="av-texte">Ton poids, tes mensurations et la carte des douleurs arrivent dans une prochaine version.</p>
+        </div>
+      </section>
+
+      <!-- ===== Chrono plein écran (repos, travail, circuits) ===== -->
+      <section class="chrono" id="chrono" data-phase="repos" data-mode="repos" aria-live="off">
+        <div class="ch-haut"><span class="kicker" id="ch-label">Repos</span><button class="chip" data-x10>×10</button></div>
+        <p class="ch-phase" id="ch-phase">Respire.</p>
+        <div class="ch-corps">
+          <div class="ch-anneau" id="ch-anneau">
+            <svg viewBox="0 0 320 320"><circle class="piste" cx="160" cy="160" r="150"/><circle class="arc" id="ch-arc" cx="160" cy="160" r="150"/></svg>
+            <div class="ch-temps num" id="ch-temps">1:30</div>
+          </div>
+          <div class="ch-extra" id="ch-extra"></div>
+        </div>
+        <div class="ch-actions" id="ch-actions"></div>
+        <div class="ch-bandeau" id="ch-bandeau"><b>Minute 2</b><span>sur 6</span></div>
+      </section>
+
+      <!-- ===== Sélecteur de valeur ===== -->
+      <section class="selecteur" id="selecteur" role="dialog" aria-label="Choisir une valeur">
+        <div class="sel-haut"><button class="ico" id="sel-fermer" aria-label="Fermer"><svg viewBox="0 0 24 24"><use href="#i-fermer"/></svg></button><p class="kicker" id="sel-titre">Charge</p></div>
+        <div class="sel-roue" id="sel-roue">
+          <div class="sel-filet haut"></div><div class="sel-filet bas"></div><i class="sel-pt"></i>
+          <div id="sel-items"></div>
+          <span class="sel-unite" id="sel-unite">kg</span>
+          <div id="sel-proxy" style="position:absolute;left:0;top:0;width:1px;height:1px;visibility:hidden"></div>
+        </div>
+        <p class="sel-ind">Glisse · ou utilise − et +</p>
+        <div class="sel-bas">
+          <button class="ico" id="sel-moins" aria-label="Moins">−</button>
+          <button class="btn gros" id="sel-ok">Valider</button>
+          <button class="ico" id="sel-plus" aria-label="Plus">+</button>
+        </div>
+      </section>
+
+      <div class="modale" id="modale">
+        <div class="boite">
+          <h2 class="serif">Quitter la <em>séance</em> ?</h2>
+          <p>Les séries validées ne seront pas enregistrées.</p>
+          <button class="btn gros" id="mo-reprendre">Reprendre</button>
+          <button class="btn gros sec" id="mo-quitter">Quitter</button>
+        </div>
+      </div>
+
+      <!-- ===== Menu ===== -->
+      <div class="menu" id="menu" aria-hidden="true">
+        <div class="menu-haut"><span class="kicker">Corentin Delmée Coaching</span></div>
+        <nav>
+          <ul id="menu-liste">
+            <li><a data-r="dash"><span class="mn">01</span><span class="mm"><span class="mot">Accueil</span></span><i class="pt"></i></a></li>
+            <li><a data-r="programme"><span class="mn">02</span><span class="mm"><span class="mot">Programme</span></span><i class="pt"></i></a></li>
+            <li><a data-r="coaching"><span class="mn">03</span><span class="mm"><span class="mot">Coaching</span></span><i class="pt"></i></a></li>
+            <li><a data-r="quest"><span class="mn">04</span><span class="mm"><span class="mot">Questionnaires</span></span><span class="pastille-m" id="menu-pastille">1</span><i class="pt"></i></a></li>
+            <li><a data-r="suivi"><span class="mn">05</span><span class="mm"><span class="mot">Suivi</span></span><i class="pt"></i></a></li>
+            <li><a data-r="profil"><span class="mn">06</span><span class="mm"><span class="mot">Profil</span></span><i class="pt"></i></a></li>
+          </ul>
+        </nav>
+        <div class="menu-pied"><span class="kicker">Fabien Vincent</span><span class="chips"><button class="chip" data-reg>Réglages</button><button class="chip" data-x10>×10</button></span></div>
+      </div>
+      <button id="btn-menu" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
+
+      <div class="rideau" id="rideau"></div>
+      <div id="vol"></div>
+      <div class="toast" id="toast"></div>
+    </div>
+  </div>
+</div>
+
+<button class="x10-btn" id="x10-btn" data-x10 title="Accélère tous les chronos par 10 (démo)">×10</button>
+<button class="reg-btn" id="reg-btn" data-reg>Réglages</button>
+<aside class="reg" id="reg" aria-label="Réglages de la maquette">
+  <h3 class="serif">Réglages</h3>
+  <span class="kicker">Ambiance</span>
+  <div class="reg-amb" id="reg-amb">
+    <button data-amb="clair">Papier</button><button data-amb="sombre">Encre</button><button data-amb="sauge">Sauge</button>
+  </div>
+  <span class="kicker">Accent</span>
+  <div class="reg-acc" id="reg-acc">
+    <button data-acc="prusse" title="Bleu de Prusse"></button><button data-acc="vermillon" title="Vermillon"></button><button data-acc="olive" title="Olive"></button>
+    <button data-acc="prune" title="Prune"></button><button data-acc="moutarde" title="Moutarde"></button><button data-acc="nuit" title="Bleu nuit"></button>
+  </div>
+</aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/Flip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/Draggable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/InertiaPlugin.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
+<script src="assets/outils.js"></script>
+<script src="assets/ecrans.js"></script>
+<script src="assets/seance.js"></script>
+<script src="assets/reglages.js"></script>
+</body>
+</html>

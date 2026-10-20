@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquettes de l'app : comparer</title>
+<style>
+  :root { --fond:#22211f; --surface:#2c2a27; --texte:#f2eee7; --doux:#b5aea3; --filet:#3c3935; --accent:#e5486a; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--fond); color:var(--texte); font:16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; padding:40px 20px 80px; }
+  .wrap { max-width:1240px; margin:0 auto; }
+  h1 { font-weight:400; font-size:clamp(30px,5vw,48px); letter-spacing:-.02em; line-height:1.1; }
+  .intro { color:var(--doux); max-width:62ch; margin:14px 0 8px; }
+  .reco { display:inline-block; margin:10px 0 34px; padding:10px 16px; border-radius:999px; background:var(--accent); color:#1f1b18; font-weight:600; text-decoration:none; }
+  .grille { display:grid; gap:22px; }
+  article { background:var(--surface); border:1px solid var(--filet); border-radius:24px; padding:22px; display:grid; gap:18px; grid-template-columns:1fr; }
+  article.recommandee { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
+  .entete { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+  .num { font-variant-numeric:tabular-nums; color:var(--doux); font-size:14px; letter-spacing:.08em; }
+  h2 { font-weight:500; font-size:28px; letter-spacing:-.01em; }
+  .badge { font-size:13px; font-weight:600; padding:3px 10px; border-radius:999px; background:var(--accent); color:#1f1b18; }
+  .idee { font-size:18px; }
+  dl { display:grid; grid-template-columns:max-content 1fr; gap:6px 14px; font-size:15px; }
+  dt { color:var(--doux); }
+  .liens { display:flex; gap:10px; flex-wrap:wrap; }
+  .liens a { color:var(--texte); text-decoration:none; border:1px solid var(--filet); border-radius:999px; padding:10px 16px; min-height:44px; display:inline-flex; align-items:center; }
+  .liens a.p { background:var(--texte); color:var(--fond); border-color:var(--texte); font-weight:600; }
+  .liens a:focus-visible, .reco:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+  .vignettes { display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; scroll-snap-type:x mandatory; }
+  .vignettes a { flex:0 0 auto; scroll-snap-align:start; }
+  .vignettes img { display:block; width:150px; height:auto; aspect-ratio:390/844; object-fit:cover; border-radius:14px; border:1px solid var(--filet); background:#111; }
+  .vignettes figcaption { font-size:12px; color:var(--doux); margin-top:4px; }
+  @media (min-width:980px) { article { grid-template-columns:minmax(320px,1fr) 1.35fr; align-items:start; } }
+  @media (hover:hover) and (pointer:fine) { .liens a { transition:background-color .15s ease; } .liens a:not(.p):hover { background:var(--filet); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>App « Corentin Delmée Coaching » : 5 maquettes à comparer</h1>
+  <p class="intro">Chaque maquette est un prototype cliquable au format téléphone, qu'on ouvre d'un double-clic. Le parcours complet est le même partout : accueil, menu, Coaching, Programme, workout, séance en cours (série, sélecteur, repos, AMRAP), fin de séance et check-in. Le petit panneau de réglage change la couleur et l'ambiance. Le bouton ×10 accélère les chronos.</p>
+  <p class="intro">Sur ordinateur, réduisez la fenêtre ou utilisez le mode téléphone du navigateur (F12, puis Ctrl+Maj+M). Le mieux reste de l'ouvrir sur votre téléphone.</p>
+  <a class="reco" href="RECOMMANDATION.md">Recommandée en provisoire : M1 « Atelier », voir la recommandation</a>
+
+  <div class="grille">
+
+    <article class="recommandee">
+      <div>
+        <div class="entete"><span class="num">M1</span><h2>Atelier</h2><span class="badge">Recommandée</span></div>
+        <p class="idee">L'héritière du site M3 que vous aimez : tout s'ouvre en découpe depuis l'élément touché.</p>
+        <dl>
+          <dt>Polices</dt><dd>Unbounded (titres, graisse 400) · Onest (texte)</dd>
+          <dt>Couleurs</dt><dd>Anthracite chaud et framboise · ambiances sombre, clair, aplat</dd>
+          <dt>Mouvement</dt><dd>La carte devient la page à partir de son rectangle, le menu s'ouvre en cercle depuis le bouton, un rideau d'accent passe entre les rubriques, la série et la roue s'ouvrent depuis la ligne. À la fin, l'aplat se referme en anneau et la séance retombe dans « cette semaine 2/3 ».</dd>
+        </dl>
+        <div class="liens" style="margin-top:16px"><a class="p" href="m1/index.html">Ouvrir le prototype</a><a href="m1/captures/parcours.webm">Vidéo parcours</a><a href="m1/captures/fin.webm">Vidéo AMRAP et fin</a><a href="m1/DESIGN.md">DESIGN.md</a></div>
+      </div>
+      <div class="vignettes">
+        <a href="m1/captures/01-dashboard.png"><figure><img src="m1/captures/01-dashboard.png" alt="M1, accueil" loading="lazy"><figcaption>Accueil</figcaption></figure></a>
+        <a href="m1/captures/07-exercice.png"><figure><img src="m1/captures/07-exercice.png" alt="M1, exercice" loading="lazy"><figcaption>Exercice</figcaption></figure></a>
+        <a href="m1/captures/09-selecteur.png"><figure><img src="m1/captures/09-selecteur.png" alt="M1, sélecteur" loading="lazy"><figcaption>Sélecteur</figcaption></figure></a>
+        <a href="m1/captures/12-amrap-chrono.png"><figure><img src="m1/captures/12-amrap-chrono.png" alt="M1, AMRAP" loading="lazy"><figcaption>AMRAP</figcaption></figure></a>
+        <a href="m1/captures/13-fin.png"><figure><img src="m1/captures/13-fin.png" alt="M1, fin de séance" loading="lazy"><figcaption>Fin</figcaption></figure></a>
+      </div>
+    </article>
+
+    <article>
+      <div>
+        <div class="entete"><span class="num">M2</span><h2>Carnet</h2></div>
+        <p class="idee">Un carnet d'entraînement de luxe qui s'écrit sous vos yeux : la typographie est l'élément partagé.</p>
+        <dl>
+          <dt>Polices</dt><dd>Fraunces (serif fin, italique) · Hanken Grotesk · IBM Plex Mono (étiquettes)</dd>
+          <dt>Couleurs</dt><dd>Papier chaud et encre bleue · ambiances clair, encre (sombre), sauge</dd>
+          <dt>Mouvement</dt><dd>Le titre de la carte voyage et grandit jusqu'à devenir le titre de la page. Les chiffres serif roulent, les traits et les coches se dessinent, la roue de chiffres est énorme. La fin de séance compose une « couverture de magazine » avec un tampon.</dd>
+        </dl>
+        <div class="liens" style="margin-top:16px"><a class="p" href="m2/index.html">Ouvrir le prototype</a><a href="m2/captures/parcours.webm">Vidéo parcours</a><a href="m2/captures/fin.webm">Vidéo AMRAP et fin</a><a href="m2/DESIGN.md">DESIGN.md</a></div>
+      </div>
+      <div class="vignettes">
+        <a href="m2/captures/01-dashboard.png"><figure><img src="m2/captures/01-dashboard.png" alt="M2, accueil" loading="lazy"><figcaption>Accueil</figcaption></figure></a>
+        <a href="m2/captures/07-exercice.png"><figure><img src="m2/captures/07-exercice.png" alt="M2, exercice" loading="lazy"><figcaption>Exercice</figcaption></figure></a>
+        <a href="m2/captures/09-selecteur.png"><figure><img src="m2/captures/09-selecteur.png" alt="M2, sélecteur" loading="lazy"><figcaption>Sélecteur</figcaption></figure></a>
+        <a href="m2/captures/12-amrap-chrono.png"><figure><img src="m2/captures/12-amrap-chrono.png" alt="M2, AMRAP" loading="lazy"><figcaption>AMRAP</figcaption></figure></a>
+        <a href="m2/captures/13-fin.png"><figure><img src="m2/captures/13-fin.png" alt="M2, fin de séance" loading="lazy"><figcaption>Fin</figcaption></figure></a>
+      </div>
+    </article>
+
+    <article>
+      <div>
+        <div class="entete"><span class="num">M3</span><h2>Tableau</h2></div>
+        <p class="idee">Le tableau blanc du box devenu app : brut, énorme, lisible à trois mètres, avec un mouvement mécanique.</p>
+        <dl>
+          <dt>Polices</dt><dd>Big Shoulders Display (condensée) · Barlow · JetBrains Mono (chiffres)</dd>
+          <dt>Couleurs</dt><dd>Ardoise et jaune surligneur · ambiances ardoise, tableau blanc, craie (vert d'école)</dd>
+          <dt>Mouvement</dt><dd>Des volets en bandes passent entre les écrans, les compteurs tournent cran par cran comme un afficheur à palettes, et l'exercice suivant arrive d'un coup de caméra horizontal. Le menu tombe comme un store.</dd>
+        </dl>
+        <div class="liens" style="margin-top:16px"><a class="p" href="m3/index.html">Ouvrir le prototype</a><a href="m3/captures/parcours.webm">Vidéo parcours</a><a href="m3/captures/fin.webm">Vidéo AMRAP et fin</a><a href="m3/DESIGN.md">DESIGN.md</a></div>
+      </div>
+      <div class="vignettes">
+        <a href="m3/captures/01-dashboard.png"><figure><img src="m3/captures/01-dashboard.png" alt="M3, accueil" loading="lazy"><figcaption>Accueil</figcaption></figure></a>
+        <a href="m3/captures/07-exercice.png"><figure><img src="m3/captures/07-exercice.png" alt="M3, exercice" loading="lazy"><figcaption>Exercice</figcaption></figure></a>
+        <a href="m3/captures/09-selecteur.png"><figure><img src="m3/captures/09-selecteur.png" alt="M3, sélecteur" loading="lazy"><figcaption>Sélecteur</figcaption></figure></a>
+        <a href="m3/captures/12-amrap-chrono.png"><figure><img src="m3/captures/12-amrap-chrono.png" alt="M3, AMRAP" loading="lazy"><figcaption>AMRAP</figcaption></figure></a>
+        <a href="m3/captures/13-fin.png"><figure><img src="m3/captures/13-fin.png" alt="M3, fin de séance" loading="lazy"><figcaption>Fin</figcaption></figure></a>
+      </div>
+    </article>
+
+    <article>
+      <div>
+        <div class="entete"><span class="num">M4</span><h2>Ressort</h2></div>
+        <p class="idee">Tout est un objet physique qu'on tire et qui rebondit, avec un îlot flottant qui se transforme d'un écran à l'autre.</p>
+        <dl>
+          <dt>Polices</dt><dd>Sora (titres, graisse 400) · DM Sans</dd>
+          <dt>Couleurs</dt><dd>Ardoise bleutée et lime électrique · ambiances ardoise, clair, nuit profonde</dd>
+          <dt>Mouvement</dt><dd>Un îlot persistant affiche le rendez-vous, devient « Démarrer », puis le chrono de repos (un tap l'ouvre en plein écran). Le menu et l'aperçu sont des feuilles qu'on tire au doigt. On ferme une page en la glissant vers le bas : elle rétrécit jusqu'à sa carte.</dd>
+        </dl>
+        <div class="liens" style="margin-top:16px"><a class="p" href="m4/index.html">Ouvrir le prototype</a><a href="m4/captures/parcours.webm">Vidéo parcours</a><a href="m4/captures/fin.webm">Vidéo AMRAP et fin</a><a href="m4/DESIGN.md">DESIGN.md</a></div>
+      </div>
+      <div class="vignettes">
+        <a href="m4/captures/01-dashboard.png"><figure><img src="m4/captures/01-dashboard.png" alt="M4, accueil" loading="lazy"><figcaption>Accueil</figcaption></figure></a>
+        <a href="m4/captures/07-exercice.png"><figure><img src="m4/captures/07-exercice.png" alt="M4, exercice" loading="lazy"><figcaption>Exercice</figcaption></figure></a>
+        <a href="m4/captures/09-selecteur.png"><figure><img src="m4/captures/09-selecteur.png" alt="M4, sélecteur" loading="lazy"><figcaption>Sélecteur</figcaption></figure></a>
+        <a href="m4/captures/10-repos.png"><figure><img src="m4/captures/10-repos.png" alt="M4, repos et îlot" loading="lazy"><figcaption>Repos (îlot)</figcaption></figure></a>
+        <a href="m4/captures/13-fin.png"><figure><img src="m4/captures/13-fin.png" alt="M4, fin de séance" loading="lazy"><figcaption>Fin</figcaption></figure></a>
+      </div>
+    </article>
+
+    <article>
+      <div>
+        <div class="entete"><span class="num">M5</span><h2>Profondeur</h2></div>
+        <p class="idee">L'app comme un espace en 3D : les écrans sont des plans qui reculent, les exercices forment un paquet de cartes.</p>
+        <dl>
+          <dt>Polices</dt><dd>Syne (titres, graisse 500) · Albert Sans</dd>
+          <dt>Couleurs</dt><dd>Graphite et bleu électrique · ambiances graphite, clair, bleu profond</dd>
+          <dt>Mouvement</dt><dd>Pour le menu, l'écran recule et pivote pour révéler les rubriques derrière lui. En séance, les exercices sont un paquet de cartes en profondeur et chaque exercice validé s'envole. La roue est en 3D, et les tuiles de fin arrivent du fond.</dd>
+        </dl>
+        <div class="liens" style="margin-top:16px"><a class="p" href="m5/index.html">Ouvrir le prototype</a><a href="m5/captures/parcours.webm">Vidéo parcours</a><a href="m5/DESIGN.md">DESIGN.md</a></div>
+      </div>
+      <div class="vignettes">
+        <a href="m5/captures/01-dashboard.png"><figure><img src="m5/captures/01-dashboard.png" alt="M5, accueil" loading="lazy"><figcaption>Accueil</figcaption></figure></a>
+        <a href="m5/captures/02-menu.png"><figure><img src="m5/captures/02-menu.png" alt="M5, menu" loading="lazy"><figcaption>Menu</figcaption></figure></a>
+        <a href="m5/captures/07-exercice.png"><figure><img src="m5/captures/07-exercice.png" alt="M5, exercice" loading="lazy"><figcaption>Exercice</figcaption></figure></a>
+        <a href="m5/captures/09-selecteur.png"><figure><img src="m5/captures/09-selecteur.png" alt="M5, sélecteur" loading="lazy"><figcaption>Sélecteur</figcaption></figure></a>
+        <a href="m5/captures/13-fin.png"><figure><img src="m5/captures/13-fin.png" alt="M5, fin de séance" loading="lazy"><figcaption>Fin</figcaption></figure></a>
+      </div>
+    </article>
+
+  </div>
+</div>
+</body>
+</html>

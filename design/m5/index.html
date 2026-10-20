@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="fr" data-ambiance="sombre">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>M5 Profondeur — Corentin Delmée Coaching</title>
+<meta name="theme-color" content="#202224">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&family=Azeret+Mono:wght@400;500;600&family=Syne:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<!-- Icônes -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-fleche" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-retour" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-fermer" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-horloge" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-liste" viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-roue" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-vitesse" viewBox="0 0 24 24"><path d="M4 7l6 5-6 5zM13 7l6 5-6 5z" fill="currentColor"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-moins" viewBox="0 0 24 24"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+</svg>
+
+<div id="cadre">
+  <div id="stage">
+
+    <!-- ===== MENU (derrière le plan) ===== -->
+    <nav id="menu" hidden aria-label="Rubriques">
+      <p class="m-entete">Corentin Delmée<br>Coaching</p>
+      <ul>
+        <li><button class="m-item" data-rub="e-dash"><span class="m-n">01</span><span class="m-t">Accueil</span></button></li>
+        <li><button class="m-item" data-rub="e-prog"><span class="m-n">02</span><span class="m-t">Programme</span></button></li>
+        <li><button class="m-item" data-rub="e-coach"><span class="m-n">03</span><span class="m-t">Coaching</span></button></li>
+        <li><button class="m-item" data-rub="e-quest"><span class="m-n">04</span><span class="m-t">Questionnaires</span><span class="m-pastille" id="m-pastille">1</span></button></li>
+        <li><button class="m-item" data-rub="e-suivi"><span class="m-n">05</span><span class="m-t">Suivi</span></button></li>
+        <li><button class="m-item" data-rub="e-profil"><span class="m-n">06</span><span class="m-t">Profil</span></button></li>
+      </ul>
+      <p class="m-pied">Fabien Vincent<br><span>Force &amp; cardio · semaine 3 / 8</span></p>
+    </nav>
+
+    <!-- ===== PLAN (l'écran courant, qui recule quand le menu s'ouvre) ===== -->
+    <div id="plan">
+
+      <!-- DASHBOARD -->
+      <section class="ecran page actif" id="e-dash" data-mode="menu" data-teinte="surface">
+        <div class="deco" aria-hidden="true">
+          <span class="deco-n" data-depth="0.5">20</span>
+          <i class="deco-o1" data-depth="1"></i>
+          <i class="deco-o2" data-depth="1.6"></i>
+        </div>
+        <header class="haut" data-couche="2">
+          <button class="btn-nav" data-nav aria-label="Menu"><span class="burger"><i></i><i></i></span></button>
+          <span class="haut-info">Semaine 3 sur 8</span>
+        </header>
+        <div class="salut" data-couche="1">
+          <p class="salut-p">Bonjour</p>
+          <h1 class="salut-h" id="salut-h">Fabien.</h1>
+          <p class="salut-date">mardi 20 octobre</p>
+        </div>
+        <div class="grille">
+          <button class="carte c-aujourdhui" id="c-aujourdhui" data-teinte="accent" data-ouvre="e-workout" data-couche="3">
+            <span class="ghost">W2</span>
+            <span class="etiq">Aujourd’hui</span>
+            <span class="c-titre">Workout 2</span>
+            <span class="c-sous">Bas du corps + circuit</span>
+            <span class="c-pieds"><span class="chip">50 min</span><span class="chip">7 exercices</span><span class="chip" id="c-etat">À faire</span></span>
+            <span class="c-go"><svg class="ic"><use href="#i-fleche"/></svg></span>
+          </button>
+          <button class="carte c-semaine" id="c-semaine" data-teinte="surface" data-ouvre="e-prog" data-couche="2">
+            <span class="etiq">Cette semaine</span>
+            <span class="anneau-s">
+              <svg viewBox="0 0 120 120"><circle class="as-fond" cx="60" cy="60" r="50"/><circle class="as-val" id="as-val" cx="60" cy="60" r="50" transform="rotate(-90 60 60)"/></svg>
+              <span class="as-txt"><b id="as-n">1</b><i>/3</i></span>
+            </span>
+            <span class="c-mini" id="c-semaine-txt">2 séances à faire</span>
+          </button>
+          <button class="carte c-coaching" id="c-coaching" data-teinte="inverse" data-ouvre="e-coach" data-couche="2">
+            <span class="etiq">Coaching</span>
+            <span class="c-date"><b>27</b><i>oct.</i></span>
+            <span class="c-mini">mardi · 18 h 30<br>À domicile</span>
+          </button>
+          <button class="carte c-programme" id="c-programme" data-teinte="surface" data-ouvre="e-prog" data-couche="1">
+            <span class="etiq">Mon programme</span>
+            <span class="c-prog-t">Force &amp; cardio</span>
+            <span class="barres" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on cur"></i><i></i><i></i><i></i><i></i><i></i></span>
+          </button>
+          <button class="carte c-quest" id="c-quest" data-teinte="surface" data-ouvre="e-quiz" data-couche="1">
+            <span class="etiq">Questionnaires</span>
+            <span class="c-prog-t" id="c-quest-t">Check-in du jour</span>
+            <span class="pastille" id="pastille-quest">1</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- PROGRAMME -->
+      <section class="ecran page" id="e-prog" data-mode="menu" data-teinte="surface" data-teinte-defaut="surface" hidden>
+        <div class="rideau"></div>
+        <header class="page-haut">
+          <div class="ph-ligne" data-entree><button class="btn-nav" data-nav aria-label="Menu"><span class="burger"><i></i><i></i></span><svg class="ic ic-retour"><use href="#i-retour"/></svg></button><span class="etiq">Programme</span></div>
+          <h1 class="page-titre" data-entree>Programme<br>Fabien Vincent</h1>
+          <p class="page-sous" data-entree>Force &amp; cardio · semaine 3 sur 8 · 3 séances par semaine</p>
+        </header>
+        <div class="page-corps">
+          <div class="seg" id="seg-vue" data-entree>
+            <i class="seg-i"></i>
+            <button data-vue="semaine" class="on">Semaine</button>
+            <button data-vue="mois">Mois</button>
+          </div>
+          <div class="vues">
+            <div class="vue vue-semaine" id="vue-semaine">
+              <div class="cols" id="cols"></div>
+              <p class="etiq etiq-liste" data-entree>À faire cette semaine</p>
+              <ul class="wl" id="wl"></ul>
+            </div>
+            <div class="vue vue-mois" id="vue-mois" hidden>
+              <p class="mois-t">Octobre 2026</p>
+              <div class="mois-sem"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+              <div class="mois-grille" id="mois-grille"></div>
+              <div class="legende"><span><i class="lg lg-fait"></i>Fait</span><span><i class="lg lg-auj"></i>Aujourd’hui</span><span><i class="lg lg-coach"></i>Coaching</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COACHING -->
+      <section class="ecran page" id="e-coach" data-mode="menu" data-teinte="inverse" data-teinte-defaut="inverse" hidden>
+        <div class="rideau"></div>
+        <header class="page-haut">
+          <div class="ph-ligne" data-entree><button class="btn-nav" data-nav aria-label="Menu"><span class="burger"><i></i><i></i></span><svg class="ic ic-retour"><use href="#i-retour"/></svg></button><span class="etiq">Votre séance</span></div>
+          <h1 class="page-titre grand" data-entree>Mardi 27<br>octobre</h1>
+          <p class="page-sous gros" data-entree>18 h 30 · à domicile</p>
+        </header>
+        <div class="page-corps">
+          <div class="btns2" data-entree>
+            <button class="btn btn-sec" data-wa="modifier">Modifier</button>
+            <button class="btn btn-sec" data-wa="annuler">Annuler</button>
+          </div>
+          <p class="rappel" data-entree><svg class="ic"><use href="#i-horloge"/></svg>Annulation gratuite jusqu’à 24 h avant</p>
+          <div class="mot" data-entree>
+            <span class="mot-av">C</span>
+            <p>« Belle semaine Fabien ! Mardi on attaque le travail de hanches, prévois une bouteille d’eau. »</p>
+            <button class="btn btn-ligne" data-wa="mot">M’envoyer un mot</button>
+          </div>
+          <div class="duo" data-entree>
+            <div class="stat"><b>4<sup>e</sup></b><span>C’est votre 4<sup>e</sup> séance du mois</span></div>
+            <div class="stat stat-accent"><b>105 €</b><span>Ce mois : 3 séances × 35 € = 105 €</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- QUESTIONNAIRES (liste) -->
+      <section class="ecran page" id="e-quest" data-mode="menu" data-teinte="surface" data-teinte-defaut="surface" hidden>
+        <div class="rideau"></div>
+        <header class="page-haut">
+          <div class="ph-ligne" data-entree><button class="btn-nav" data-nav aria-label="Menu"><span class="burger"><i></i><i></i></span><svg class="ic ic-retour"><use href="#i-retour"/></svg></button><span class="etiq">Questionnaires</span></div>
+          <h1 class="page-titre" data-entree>À remplir<br>aujourd’hui</h1>
+        </header>
+        <div class="page-corps">
+          <button class="qitem" id="q-item-checkin" data-teinte="accent" data-ouvre="e-quiz" data-entree>
+            <span class="qi-t">Check-in du jour</span>
+            <span class="qi-s">5 questions · 1 minute</span>
+            <span class="pastille" id="pastille-quest2">1</span>
+          </button>
+          <div class="qitem qitem-off" data-entree>
+            <span class="qi-t">Bilan de la semaine</span>
+            <span class="qi-s">Disponible dimanche</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SUIVI / PROFIL (à venir) -->
+      <section class="ecran page avenir" id="e-suivi" data-mode="menu" data-teinte="surface" data-teinte-defaut="surface" hidden>
+        <div class="rideau"></div>
+        <header class="page-haut">
+          <div class="ph-ligne" data-entree><button class="btn-nav" data-nav aria-label="Menu"><span class="burger"><i></i><i></i></span><svg class="ic ic-retour"><use href="#i-retour"/></svg></button><span class="etiq">Suivi</span></div>
+          <h1 class="page-titre" data-entree>Poids, mesures,<br>douleurs.</h1>
+        </header>
+        <div class="page-corps">
+          <div class="pile3d" aria-hidden="true"><i></i><i></i><i></i></div>
+          <p class="avenir-t" data-entree>À venir</p>
+          <p class="avenir-p" data-entree>Tes courbes et la carte du corps arrivent très bientôt.</p>
+        </div>
+      </section>
+      <section class="ecran page avenir" id="e-profil" data-mode="menu" data-teinte="surface" data-teinte-defaut="surface" hidden>
+        <div class="rideau"></div>
+        <header class="page-haut">
+          <div class="ph-ligne" data-entree><button class="btn-nav" data-nav aria-label="Menu"><span class="burger"><i></i><i></i></span><svg class="ic ic-retour"><use href="#i-retour"/></svg></button><span class="etiq">Profil</span></div>
+          <h1 class="page-titre" data-entree>Fabien<br>Vincent</h1>
+        </header>
+        <div class="page-corps">
+          <div class="pile3d" aria-hidden="true"><i></i><i></i><i></i></div>
+          <p class="avenir-t" data-entree>À venir</p>
+          <p class="avenir-p" data-entree>Préférences, son, export de tes données : bientôt.</p>
+        </div>
+      </section>
+
+      <!-- WORKOUT (overview) -->
+      <section class="ecran page" id="e-workout" data-mode="retour" data-teinte="accent" data-teinte-defaut="accent" hidden>
+        <div class="rideau"></div>
+        <header class="page-haut">
+          <div class="ph-ligne" data-entree><button class="btn-nav" data-nav aria-label="Retour"><span class="burger"><i></i><i></i></span><svg class="ic ic-retour"><use href="#i-retour"/></svg></button><span class="etiq">Workout 2 · aujourd’hui</span></div>
+          <h1 class="page-titre" data-entree>Bas du corps<br>+ circuit</h1>
+          <p class="page-sous" data-entree>Environ 50 min · 5 exercices · 2 circuits</p>
+        </header>
+        <div class="page-corps scroll" id="wo-corps">
+          <div class="consigne" data-entree><span class="etiq">Consigne du coach</span><p>« Descends lentement sur le squat, 3 secondes. On garde 2 répétitions en réserve. »</p></div>
+          <div id="wo-blocs"></div>
+          <div class="wo-espace"></div>
+        </div>
+        <div class="wo-bas" data-entree><button class="btn btn-prim" id="btn-demarrer" data-teinte="accent">Démarrer la séance<svg class="ic"><use href="#i-fleche"/></svg></button></div>
+      </section>
+
+      <!-- SÉANCE EN COURS -->
+      <section class="ecran page" id="e-seance" data-mode="retour" data-teinte="accent" data-bande="0" hidden>
+        <div class="rideau"></div>
+        <div class="seance" id="seance">
+          <div class="s-haut">
+            <div class="segments" id="segments"></div>
+            <div class="s-ligne">
+              <button class="s-icone" id="s-fermer" aria-label="Quitter la séance"><svg class="ic"><use href="#i-fermer"/></svg></button>
+              <span class="s-titre" id="s-titre">Échauffement</span>
+              <span class="s-temps" id="s-temps">0:00</span>
+            </div>
+          </div>
+          <div class="paquet" id="paquet"></div>
+          <div class="actions" id="actions">
+            <button class="btn btn-sec btn-petit" id="btn-second" hidden aria-label="Retour"><svg class="ic"><use href="#i-retour"/></svg></button>
+            <button class="btn btn-prim" id="btn-principal"><span id="btn-principal-t">Valider la série</span></button>
+          </div>
+          <button class="tab-tiroir" id="tab-tiroir" aria-label="Voir la séance"><svg class="ic"><use href="#i-liste"/></svg></button>
+
+          <!-- série agrandie -->
+          <div class="ov ov-serie" id="o-serie" hidden>
+            <div class="os-tete"><div><span class="etiq" id="os-etiq">Série 1 sur 4</span><h2 id="os-nom">Goblet squat</h2></div><button class="s-icone" id="os-fermer" aria-label="Fermer"><svg class="ic"><use href="#i-fermer"/></svg></button></div>
+            <div class="os-champs" id="os-champs"></div>
+            <p class="os-prec" id="os-prec"></p>
+            <button class="btn btn-prim" id="os-valider">Valider la série</button>
+          </div>
+
+          <!-- grand sélecteur -->
+          <div class="ov ov-roue" id="o-roue" hidden>
+            <div class="or-tete"><span class="etiq" id="orr-etiq">Charge</span><button class="s-icone" id="orr-fermer" aria-label="Annuler"><svg class="ic"><use href="#i-fermer"/></svg></button></div>
+            <div class="orr-lecture"><b id="orr-val">16</b><i id="orr-unite">kg</i></div>
+            <div class="roue" id="roue"><div class="roue-barre"></div><div class="roue-liste" id="roue-liste"></div></div>
+            <button class="btn btn-prim" id="orr-valider">Valider</button>
+          </div>
+
+          <!-- repos / travail -->
+          <div class="ov ov-chrono" id="o-repos" hidden>
+            <div class="fonds"><i class="f-prep"></i><i class="f-travail"></i><i class="f-repos"></i><i class="f-flash"></i></div>
+            <div class="oc-haut"><span class="oc-phase" id="or-phase">Repos</span><button class="s-icone s-icone-oc" id="or-quitter" aria-label="Fermer"><svg class="ic"><use href="#i-fermer"/></svg></button></div>
+            <div class="anneau3d" id="anneau3d">
+              <svg viewBox="0 0 320 320"><circle class="a-fond" cx="160" cy="160" r="148"/><circle class="a-val" id="a-val" cx="160" cy="160" r="148" transform="rotate(-90 160 160)"/></svg>
+              <div class="a-centre"><span class="a-temps" id="or-temps">1:30</span><span class="a-sous" id="or-sous">secondes</span></div>
+            </div>
+            <p class="oc-suite" id="or-suite"></p>
+            <div class="oc-bas" id="or-bas">
+              <button class="btn btn-oc" id="or-plus">+15 s</button>
+              <button class="btn btn-oc btn-oc-plein" id="or-passer">Passer</button>
+            </div>
+            <button class="oc-rester" id="or-rester" hidden>Rester ici</button>
+          </div>
+
+          <!-- circuit plein écran -->
+          <div class="ov ov-circuit" id="o-circuit" hidden>
+            <div class="fonds"><i class="f-prep"></i><i class="f-travail"></i><i class="f-repos"></i><i class="f-flash"></i></div>
+            <div class="oc-haut"><span class="oc-phase" id="oci-phase">AMRAP · 8 min</span><button class="s-icone s-icone-oc" id="oci-quitter" aria-label="Arrêter"><svg class="ic"><use href="#i-fermer"/></svg></button></div>
+            <div class="oci-barre"><i id="oci-barre"></i></div>
+            <p class="oci-ligne" id="oci-ligne"></p>
+            <div class="oci-digits" id="oci-digits">08:00</div>
+            <div class="oci-milieu" id="oci-milieu">
+              <span class="oci-lab" id="oci-lab">Tours</span>
+              <b id="oci-tours">0</b>
+            </div>
+            <p class="oci-recette" id="oci-recette"></p>
+            <div class="oci-minutes" id="oci-minutes" hidden></div>
+            <button class="oci-tour" id="oci-tour"><svg class="ic"><use href="#i-plus"/></svg>1 tour</button>
+            <div class="oci-bandeau" id="oci-bandeau" aria-hidden="true"><span>Minute 2</span></div>
+            <div class="oci-bilan" id="oci-bilan" hidden>
+              <span class="etiq">Temps !</span>
+              <h2 id="ob-titre">4 tours</h2>
+              <p id="ob-p">Combien de répétitions en plus dans le dernier tour ?</p>
+              <div class="stepper"><button id="ob-moins" aria-label="Moins"><svg class="ic"><use href="#i-moins"/></svg></button><b id="ob-val">0</b><button id="ob-plus" aria-label="Plus"><svg class="ic"><use href="#i-plus"/></svg></button></div>
+              <button class="btn btn-prim" id="ob-valider">Valider le résultat</button>
+            </div>
+          </div>
+
+          <!-- tiroir overview -->
+          <div class="scrim" id="scrim-tiroir"></div>
+          <aside class="tiroir" id="tiroir" aria-label="Aperçu de la séance">
+            <div class="ti-tete"><span class="etiq">Ma séance</span><button class="s-icone" id="ti-fermer" aria-label="Fermer"><svg class="ic"><use href="#i-fermer"/></svg></button></div>
+            <ol id="ti-liste"></ol>
+          </aside>
+        </div>
+      </section>
+
+      <!-- FIN DE SÉANCE -->
+      <section class="ecran page pleine" id="e-fin" data-mode="retour" data-teinte="accent" hidden>
+        <div class="fin">
+          <div class="fin-badge" id="fin-badge"><svg class="ic"><use href="#i-check"/></svg></div>
+          <h1 class="fin-titre" id="fin-titre">Bravo,<br>séance<br>terminée.</h1>
+          <div class="fin-grille" id="fin-grille">
+            <div class="tuile"><span>Durée</span><b id="f-duree">0:00</b></div>
+            <div class="tuile"><span>Volume</span><b id="f-volume">0</b><i>kg</i></div>
+            <div class="tuile"><span>Séries</span><b id="f-series">0</b></div>
+            <div class="tuile tuile-rec"><span>Record</span><b id="f-record">Squat</b><i id="f-record-p">16 kg × 10</i></div>
+          </div>
+          <label class="fin-mot"><span>Un mot pour Corentin ? (facultatif)</span><input type="text" id="fin-mot" placeholder="Les hanches un peu raides…" maxlength="80"></label>
+          <button class="btn btn-inv" id="btn-valider-seance">Valider ma séance</button>
+        </div>
+        <div class="confettis" id="confettis" aria-hidden="true"></div>
+      </section>
+
+      <!-- QUESTIONNAIRE -->
+      <section class="ecran page" id="e-quiz" data-mode="retour" data-teinte="surface" hidden>
+        <div class="rideau"></div>
+        <div class="quiz">
+          <div class="q-haut">
+            <button class="s-icone" id="q-fermer" aria-label="Fermer"><svg class="ic"><use href="#i-fermer"/></svg></button>
+            <div class="q-barre"><i id="q-barre"></i></div>
+            <span class="q-compte" id="q-compte">1 / 5</span>
+          </div>
+          <div class="q-pile" id="q-pile"></div>
+          <div class="q-bas"><button class="btn btn-prim" id="q-suivant">Suivant</button></div>
+          <div class="q-fete" id="q-fete" hidden>
+            <div class="fin-badge" id="q-badge"><svg class="ic"><use href="#i-check"/></svg></div>
+            <h2>Merci Fabien !</h2>
+            <p>Check-in enregistré. Corentin le verra avant ta séance.</p>
+            <button class="btn btn-inv" id="q-retour">Retour à l’accueil</button>
+            <div class="confettis" id="q-confettis" aria-hidden="true"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- feuille WhatsApp -->
+      <div class="ov ov-wa" id="o-wa" hidden>
+        <span class="etiq" id="wa-etiq">WhatsApp</span>
+        <h2 id="wa-titre">Demander une modification</h2>
+        <p class="wa-msg" id="wa-msg"></p>
+        <a class="btn btn-prim" id="wa-lien" href="https://wa.me/?text=" target="_blank" rel="noopener">Ouvrir WhatsApp</a>
+        <button class="btn btn-ligne" id="wa-fermer">Fermer</button>
+      </div>
+
+      <div id="plan-voile" aria-hidden="true"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Outils de démo (hors cadre sur ordinateur) -->
+<div id="outils">
+  <button id="btn-reglages" aria-label="Réglages d’ambiance" aria-expanded="false"><svg class="ic"><use href="#i-roue"/></svg></button>
+  <button id="btn-vitesse" aria-label="Accélérer les chronos ×10" aria-pressed="false"><svg class="ic"><use href="#i-vitesse"/></svg><span>×10</span></button>
+</div>
+<aside id="reglages" hidden>
+  <p class="etiq">Ambiance</p>
+  <div class="rg-amb" id="rg-amb">
+    <button data-amb="sombre">Graphite</button>
+    <button data-amb="clair">Clair</button>
+    <button data-amb="bleu">Bleu profond</button>
+  </div>
+  <p class="etiq">Accent</p>
+  <div class="rg-acc" id="rg-acc"></div>
+</aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/Flip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/Draggable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/InertiaPlugin.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/CustomEase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
+<script src="assets/donnees.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/ecrans.js"></script>
+<script src="assets/seance.js"></script>
+<script>REX.demarrer();</script>
+</body>
+</html>
