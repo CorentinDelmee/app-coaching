@@ -49,3 +49,14 @@
 - 2026-10-20 Lot 5 — Carte du jour : workout placé aujourd'hui, sinon premier non fait ; « fait » (durée + prochain) ; « bouclée » (priorité sur « fait ») ; « aucun » sans programme.
 - 2026-10-20 Lot 6 — Numéro WhatsApp du coach : `VITE_COACH_WHATSAPP` via `src/lib/coach.js` (repli : `wa.me/?text=`, WhatsApp demande le contact). `.env.example` n'est pas modifiable par REX : la variable est documentée dans `CLAUDE.md` et à ajouter à la main.
 - 2026-10-20 Lot 6 — Moins de 24 h : Modifier et Annuler passent par une feuille de confirmation (« Moins de 24 h avant la séance : elle pourra être due. Continuer ? ») avant d'ouvrir WhatsApp ; au-delà, le lien s'ouvre directement. Le mot du coach est le plus récent ; défaut si aucun.
+
+## Lots 7-8 (questionnaires, suivi) — décisions du développeur
+- Routes `/questionnaires`, `/questionnaires/:id`, `/suivi` ; les anciennes adresses `/bientot/questionnaires|suivi` (menu, carte de l'accueil) y redirigent. Menu masqué pendant le passage d'un questionnaire (comme en séance).
+- Brouillon d'un questionnaire dans `localStorage` (`lib/brouillonQuestionnaire.js`, valable le jour où il a été commencé) : état d'interface, pas une donnée métier. Les réponses finales passent par `data.reponses`.
+- Une réponse hebdo avec poids / tours en cm crée aussi une mesure du jour (`data.mesures`) : c'est ce qui alimente les courbes. Une seule mesure, une seule douleur par zone, une seule habitude / photo de repas / calories par jour (la ligne existante est remplacée).
+- Question « nombre » : vide tant que le client n'a pas réglé la roue, sauf s'il existe une valeur précédente (réponses, puis mesures) ; `defaut` facultatif sur la question pour la position de départ de la roue.
+- Choix unique et émojis passent seuls à la question suivante, sauf la dernière (bouton « Envoyer » explicite, pas d'envoi par un toucher accidentel).
+- Photo : redessinée dans un canvas (EXIF retiré, orientation appliquée), JPEG q 0,8, 1280 px max (900 px q 0,7 pour les photos de repas), stockée en data URL dans la réponse / l'entrée nutrition. Stockage plein : message clair, brouillon conservé.
+- Habitudes de nutrition : liste par défaut en code (`HABITUDES_DEFAUT`) + celles déjà cochées ; la personnalisation par le coach reste à faire (lot 10 ou plus tard).
+- Carte du corps : silhouette schématique SVG (pas d'illustration anatomique), une zone colorée = dernière note de moins de 14 jours ; gauche / droite = côté de la personne. Identifiants de zone `epaule-droite`, `genou-gauche`… (compatibles avec les données de démo).
+- Courbes SVG maison (`domain/graphique.js` pour la géométrie, `Courbe.vue`) : échelle à graduations rondes, x proportionnel aux dates, tracé lissé sans dépassement ; tableau « Voir les valeurs » + texte alternatif pour l'accessibilité.

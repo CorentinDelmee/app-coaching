@@ -187,15 +187,15 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 
 ## Lot 7 — Questionnaires `[DESIGN]` — parallélisable
 **Dépendances** : lot 5.
-- [ ] Liste (quotidien / hebdo / ponctuel, à faire vs faits) ; une question par écran avec transitions ; 7 types de question ; photo compressée (≤ 1280 px).
-- [ ] Fin = petite célébration ; réponse douleur > 6 → alerte coach (1.12). Questionnaire déjà rempli aujourd'hui → « Déjà fait aujourd'hui ».
+- [x] Liste (quotidien / hebdo / ponctuel, à faire vs faits) ; une question par écran avec transitions ; 7 types de question ; photo compressée (≤ 1280 px).
+- [x] Fin = petite célébration ; réponse douleur > 6 → alerte coach (1.12). Questionnaire déjà rempli aujourd'hui → « Déjà fait aujourd'hui ».
 - *Acceptation* : la pastille du dashboard baisse après envoi ; quitter au milieu puis revenir reprend à la question en cours ; stockage plein → message, pas de perte silencieuse.
 
 ## Lot 8 — Suivi + carte du corps `[DESIGN]` — parallélisable
 **Dépendances** : lot 5.
-- [ ] Graphiques SVG maison : poids et mensurations dans le temps ; une seule mesure → point unique + « Ajoutez une 2e mesure pour voir la courbe ».
-- [ ] Nutrition selon modules du client : habitudes à cocher, photos de repas, check-in calories ; aucun module → rubrique masquée.
-- [ ] Carte du corps (face/dos) : toucher une zone → intensité 0-10 → courbe par zone ; > 6 → alerte coach.
+- [x] Graphiques SVG maison : poids et mensurations dans le temps ; une seule mesure → point unique + « Ajoutez une 2e mesure pour voir la courbe ».
+- [x] Nutrition selon modules du client : habitudes à cocher, photos de repas, check-in calories ; aucun module → rubrique masquée.
+- [x] Carte du corps (face/dos) : toucher une zone → intensité 0-10 → courbe par zone ; > 6 → alerte coach.
 - *Acceptation* : graphiques lisibles à 390 px, valeurs accessibles (texte alternatif / tableau) ; zone sans donnée → « Aucune douleur notée ».
 
 ## Lot 9 — Profil, connexion, accueil/installation, PWA hors connexion `[DESIGN]`

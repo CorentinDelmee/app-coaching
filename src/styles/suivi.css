@@ -1,0 +1,5 @@
+/* Écran Suivi (lot 8) : blocs en cartes. Aucune couleur en dur (voir tokens.css). */
+.bloc-suivi { background: var(--surface); border-radius: var(--r-carte); padding: 20px 18px 18px; margin-bottom: 16px; }
+.bloc-suivi > h2 { font-family: var(--font-titre); font-weight: 400; font-size: 20px; letter-spacing: -.04em; line-height: 1.1; margin-bottom: 14px; }
+.sv-sous { margin: -6px 0 6px; font-size: 15px; line-height: 1.4; color: var(--texte-doux); }
+.sv-toast { position: absolute; left: var(--pad); right: var(--pad); bottom: calc(var(--bas) + 12px); z-index: 70; padding: 14px 18px; border-radius: 18px; background: var(--surface-2); font-size: 15px; font-weight: 600; line-height: 1.35; box-shadow: var(--ombre), inset 0 0 0 2px var(--accent-lisible); }

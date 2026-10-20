@@ -1,0 +1,62 @@
+async page => {
+  const SP = 'captures/';
+  const log = []; const errs = [];
+  page.on('pageerror', e => errs.push(String(e)));
+  page.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
+  await page.goto('http://localhost:5182/');
+  await page.evaluate(() => { localStorage.clear(); localStorage.setItem('cdc-coaching/1:session', 'client-fabien-vincent'); });
+  await page.goto('http://localhost:5182/questionnaires/q-bilan-hebdo');
+  await page.waitForTimeout(2200);
+  log.push('poids ' + await page.textContent('.nt-val'));
+  await page.screenshot({ path: SP + 'h-1.png' });
+  await page.click('.nombre-tuile'); await page.waitForTimeout(1400);
+  await page.screenshot({ path: SP + 'h-roue.png' });
+  await page.click('.roue-couche .gros'); await page.waitForTimeout(900);
+  const next = async (w = 1300) => { await page.click('.qz-bas .gros'); await page.waitForTimeout(w); };
+  await page.screenshot({ path: SP + 'h-2.png' });
+  await next();
+  log.push('q2 ' + await page.textContent('.qz-q h2') + ' val ' + await page.textContent('.nt-val'));
+  await next(); log.push('q3 ' + await page.textContent('.qz-q h2'));
+  log.push('hanches disabled=' + await page.isDisabled('.qz-bas .gros'));
+  await page.click('.nombre-tuile'); await page.waitForTimeout(1200); await page.click('.roue-couche .gros'); await page.waitForTimeout(900);
+  log.push('hanches ' + await page.textContent('.nt-val'));
+  await page.screenshot({ path: SP + 'h-3.png' });
+  await next();
+  // emojis: auto-advance? ressenti
+  await page.click('.emoji >> nth=3'); await page.waitForTimeout(400);
+  await page.screenshot({ path: SP + 'h-emoji.png' });
+  await page.waitForTimeout(1500);
+  log.push('q4 ' + await page.textContent('.qz-q h2'));
+  await page.click('.choix button >> nth=0'); await page.click('.choix button >> nth=2'); await page.waitForTimeout(300);
+  await page.screenshot({ path: SP + 'h-multi.png' });
+  await next();
+  log.push('q5 ' + await page.textContent('.qz-q h2'));
+  await page.click('.choix button >> nth=1'); await page.waitForTimeout(1600);
+  log.push('q6 ' + await page.textContent('.qz-q h2'));
+  await page.fill('.qz-texte', 'Bonne semaine'); await page.screenshot({ path: SP + 'h-texte.png' });
+  // quitter au milieu puis revenir
+  await page.click('.qz-haut .rond'); await page.waitForTimeout(1500);
+  log.push('after quit ' + page.url());
+  log.push('liste: ' + await page.evaluate(() => document.querySelector('.defile').innerText.replace(/\n+/g, ' | ')));
+  await page.click('.q-groupe .ligne-w >> nth=1'); await page.waitForTimeout(2800);
+  await page.screenshot({ path: SP + 'h-reprise.png' });
+  log.push('reprise h2 ' + await page.textContent('.qz-q h2') + ' | texte=' + await page.inputValue('.qz-texte'));
+  await next();
+  log.push('q8 ' + await page.textContent('.qz-q h2') + ' btn=' + await page.textContent('.qz-bas .gros'));
+  await page.screenshot({ path: SP + 'h-photo.png' });
+  // photo: générer un fichier image via canvas
+  const buf = await page.evaluate(async () => { const c = document.createElement('canvas'); c.width = 3000; c.height = 2000; const x = c.getContext('2d'); x.fillStyle = '#c33'; x.fillRect(0,0,3000,2000); x.fillStyle='#fff'; x.fillRect(100,100,800,800); const b = await new Promise(r => c.toBlob(r, 'image/jpeg', .9)); return Array.from(new Uint8Array(await b.arrayBuffer())); });
+  await page.setInputFiles('.qz-photo input', { name: 'p.jpg', mimeType: 'image/jpeg', buffer: Buffer.from(buf) });
+  await page.waitForTimeout(1200);
+  log.push('photo size ' + await page.evaluate(() => { const i = document.querySelector('.qz-photo img'); return i ? i.src.length + ' ' + i.naturalWidth + 'x' + i.naturalHeight : 'none'; }));
+  await page.screenshot({ path: SP + 'h-photo2.png' });
+  await next(300); log.push('ERRS ' + JSON.stringify(errs));
+  await page.waitForTimeout(400); await page.screenshot({ path: SP + 'h-fin-a.png' });
+  await page.waitForTimeout(1500); await page.screenshot({ path: SP + 'h-fin.png' });
+  log.push('fin ' + await page.evaluate(() => document.querySelector('.qz-fin').innerText.replace(/\n+/g, ' | ')));
+  log.push('stored ' + await page.evaluate(() => { const d = JSON.parse(localStorage.getItem('cdc-coaching/1')); const r = d.reponses.filter(x => x.questionnaireId === 'q-bilan-hebdo'); const m = d.mesures.filter(x => x.id.startsWith('mes-')); return JSON.stringify({ r: r.length, keys: r[0] && Object.keys(r[0].valeurs), m }); }));
+  await page.click('.qz-fin .gros'); await page.waitForTimeout(1500);
+  log.push('retour ' + page.url() + ' | ' + await page.evaluate(() => document.querySelector('.defile').innerText.replace(/\n+/g, ' | ')));
+  await page.screenshot({ path: SP + 'h-liste2.png' });
+  return log.join('\n') + '\nerrs ' + JSON.stringify(errs);
+}

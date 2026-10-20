@@ -33,3 +33,12 @@ Chaque script renvoie une ligne de constats (`||` entre les étapes) et enregist
 | `lot5-dashboard-menu.js` | Dashboard sans défilement à 390×844, menu (ouverture, Échap, rubrique avec rideau), arrivée sur Coaching |
 | `lot5-6-cas-limites.js` | Aucune séance prévue (dashboard + Coaching), « Payé ce mois », semaine bouclée, écran « bientôt » |
 (Attention : une séance < 24 h et le clic « Continuer sur WhatsApp » ouvrent un onglet : remplacer `window.open` avant, sinon l'onglet d'origine passe en arrière-plan et les animations s'arrêtent.)
+
+## Lots 7 et 8 (questionnaires, suivi)
+| Script | Ce qu'il vérifie |
+|---|---|
+| `lot7-questionnaire-hebdo-reprise-photo.js` | Bilan hebdo (Fabien) : roue des nombres, choix multiple, quitter puis reprendre à la même question, photo compressée (≤ 1280 px), fin, mesure créée pour le suivi |
+| `lot7-checkin-curseur-alerte.js` | Check-in quotidien (Thomas) : curseur au pouce + vibration, émojis, avance automatique, douleur 9 -> message « Corentin est prévenu » |
+| `lot8-suivi-lea-complet.js` | Suivi de Léa (tous les modules) : 2e mesure de poids, carte du corps (zone, intensité > 6, courbe de la zone, dos), habitude, photo de repas, calories |
+| `lot78-mouvement-reduit-modules.js` | Mouvement réduit : aucun élément décalé / invisible ; Thomas (aucun module) : pas de rubrique Nutrition |
+(Mêmes commandes que ci-dessus, port 5182 ; les scripts remettent le stockage à zéro eux-mêmes.)
