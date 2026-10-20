@@ -390,7 +390,7 @@ describe('supabase/schema.sql', () => {
   })
 
   it('un client ne lit que ses lignes et ne peut changer ni son rôle ni son tarif ni ses modules', () => {
-    expect(sql).toMatch(/create policy profiles_lecture on profiles[\s\S]*?id = auth\.uid\(\) or is_coach\(\)/)
+    expect(sql).toMatch(/create policy profiles_lecture on profiles[\s\S]*?\(id = auth\.uid\(\)\) or is_coach\(\)/)
     expect(sql).toMatch(/new\.role := old\.role/)
     expect(sql).toMatch(/new\.tarif := old\.tarif/)
     expect(sql).toMatch(/new\.modules := old\.modules/)
@@ -400,6 +400,16 @@ describe('supabase/schema.sql', () => {
       for (const [, nom, table, commande, corps] of policies.filter((p) => p[2] === t && p[3] !== 'select')) {
         expect(corps, `${table} ${nom} (${commande})`).toMatch(/is_coach\(\)/)
       }
+    }
+  })
+
+  it('I1 : un client archivé perd l accès (toute policy client teste est_actif)', () => {
+    expect(sql).toMatch(/create function est_actif\(\)[\s\S]*?security definer set search_path = public, pg_temp[\s\S]*?not archive/)
+    expect(sql.indexOf('create function est_actif')).toBeLessThan(sql.indexOf('create policy'))
+    expect(sql).toMatch(/revoke execute on function est_actif\(\) from public, anon/)
+    const policies = [...sql.matchAll(/create policy (\w+) on ([\w.]+) for (\w+) to authenticated([^;]*);/g)]
+    for (const [, nom, , , corps] of policies.filter((p) => /auth\.uid\(\)/.test(p[4]) && !/profiles_lecture/.test(p[1]))) {
+      expect(corps, nom).toMatch(/est_actif\(\)/)
     }
   })
 
