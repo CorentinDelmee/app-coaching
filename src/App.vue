@@ -13,7 +13,7 @@ const ouverte = ref(false)
 onMounted(async () => {
   await router.isReady()
   const s = lireSeanceEnCours()
-  if (!s || route.name === 'seance') return
+  if (!s || route.name === 'seance' || route.name === 'workout') return // la page Workout propose elle-même « Reprendre »
   reprise.value = s
   requestAnimationFrame(() => { ouverte.value = true })
 })

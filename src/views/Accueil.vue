@@ -1,7 +1,16 @@
+<script setup>
+import { memoriserSource } from '../anim/passage.js'
+</script>
+
 <template>
   <main class="squelette">
     <h1>Corentin Delmée Coaching</h1>
     <p>Squelette de l'app — les écrans arrivent lot par lot.</p>
+    <nav class="demo" aria-label="Programme et workouts">
+      <RouterLink to="/programme" @click="memoriserSource($event.currentTarget)">Mon programme</RouterLink>
+      <RouterLink to="/workout/w-fabien-2" @click="memoriserSource($event.currentTarget)">Workout 2 — Haut du corps</RouterLink>
+      <RouterLink to="/workout/w-fabien-3" @click="memoriserSource($event.currentTarget)">Workout 3 — Corps entier (circuits)</RouterLink>
+    </nav>
     <nav class="demo" aria-label="Séances de démonstration">
       <RouterLink to="/demo/seance">Séance de démo (haut du corps, superset)</RouterLink>
       <RouterLink to="/demo/temps">Séance de démo (bas du corps, série au temps)</RouterLink>

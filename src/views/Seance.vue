@@ -35,6 +35,7 @@ import { utilisateurCourant } from '../lib/session.js'
 import { T, E } from '../anim/constantes.js'
 import { cascade, compter, fermerPage, installerRessort, mouvementReduit, nettoyer, ouvrirCercle } from '../anim/transitions.js'
 import { largeurDe } from '../anim/geometrie.js'
+import { consommerLancement, leverRideau } from '../anim/passage.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -593,7 +594,9 @@ onMounted(async () => {
   // ouverture : le cercle part du bas de l'écran (là où se trouvait « Démarrer »), le contenu monte en cascade
   const els = racine.value.querySelectorAll('[data-c]')
   gsap.set(els, { opacity: 0 })
-  ouvrirCercle(racine.value, null)
+  // arrivée depuis « Démarrer » de la page Workout : un rideau d'accent (déjà plein à l'écran) s'efface ; sinon cercle depuis le bas
+  if (consommerLancement()) leverRideau(racine.value)
+  else ouvrirCercle(racine.value, null)
   cascade(racine.value, { delay: 0.3 })
   raf = requestAnimationFrame(boucle)
   intervalle = setInterval(() => tick(), 250)
