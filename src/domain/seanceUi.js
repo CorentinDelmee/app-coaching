@@ -89,4 +89,4 @@ export const exerciceComplet = (item) => (item.type === 'circuit' ? item.faite :
 /** 3725 s -> « 62 min » (durée lisible de l'écran de fin). */
 export const minutesDe = (sec) => Math.max(1, Math.round(sec / 60))
 
-export const milliers = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+export const milliers = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
