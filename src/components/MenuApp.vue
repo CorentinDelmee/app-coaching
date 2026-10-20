@@ -21,18 +21,20 @@ const RUBRIQUES = [
   { id: 'accueil', n: '01', t: 'Accueil', chemin: '/' },
   { id: 'programme', n: '02', t: 'Programme', chemin: '/programme' },
   { id: 'coaching', n: '03', t: 'Coaching', chemin: '/coaching' },
-  { id: 'questionnaires', n: '04', t: 'Questionnaires', chemin: '/bientot/questionnaires' },
-  { id: 'suivi', n: '05', t: 'Suivi', chemin: '/bientot/suivi' },
+  { id: 'questionnaires', n: '04', t: 'Questionnaires', chemin: '/questionnaires' },
+  { id: 'suivi', n: '05', t: 'Suivi', chemin: '/suivi' },
   { id: 'profil', n: '06', t: 'Profil', chemin: '/bientot/profil' }
 ]
 
 // Pas de menu en séance, sur la page Workout (le bouton Démarrer y est roi) ni dans l'espace coach.
-const visible = computed(() => !['seance', 'workout'].includes(route.name) && !/^\/coach(\/|$)/.test(route.path))
+const visible = computed(() => !['seance', 'workout', 'questionnaire'].includes(route.name) && !/^\/coach(\/|$)/.test(route.path))
 const courante = computed(() => {
   const n = route.name
   if (n === 'accueil') return 'accueil'
   if (n === 'programme' || n === 'workout') return 'programme'
   if (n === 'coaching') return 'coaching'
+  if (n === 'questionnaires' || n === 'questionnaire') return 'questionnaires'
+  if (n === 'suivi') return 'suivi'
   if (n === 'bientot') return route.params.rubrique
   return ''
 })

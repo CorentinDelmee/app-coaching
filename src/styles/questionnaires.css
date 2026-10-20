@@ -1,0 +1,81 @@
+/* Écrans Questionnaires (lot 7) : liste + passage une question par écran. Porté de design/m1/assets/style.css (.qz*).
+   Globaux (importés par les vues) parce que la carte touchée est clonée par les transitions. Aucune couleur en dur. */
+
+/* ---------- Liste ---------- */
+.q-groupe { margin-top: 22px; }
+.q-groupe h3 { font-family: var(--font-titre); font-weight: 400; font-size: 17px; letter-spacing: -.03em; margin-bottom: 12px; }
+.q-pastille { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 5px 11px; border-radius: 14px; background: var(--accent); color: var(--accent-texte); flex: none; }
+.q-tout-bon { display: flex; align-items: center; gap: 14px; margin-top: 6px; padding: 16px 18px; border-radius: var(--r-carte); background: var(--surface); font-size: 16px; font-weight: 600; }
+.q-tout-bon svg { width: 26px; height: 26px; flex: none; stroke: var(--bien); fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Passage d'un questionnaire ---------- */
+.qz { position: absolute; inset: 0; display: flex; flex-direction: column; padding: var(--haut) var(--pad) var(--bas); }
+.qz-haut { display: flex; align-items: center; gap: 14px; min-height: 56px; }
+.qz-barre { flex: 1; height: 10px; border-radius: 5px; background: var(--surface-2); overflow: hidden; }
+.qz-barre b { display: block; height: 100%; width: 100%; background: var(--accent-lisible); transform-origin: left; transform: scaleX(0); border-radius: 5px; }
+.qz-n { font-family: var(--font-chiffres); font-size: 14px; color: var(--texte-doux); min-width: 40px; text-align: right; }
+.qz-scene { position: relative; flex: 1; margin-top: 18px; overflow: hidden; }
+.qz-q { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.qz-q h2 { font-family: var(--font-titre); font-weight: 400; font-size: 29px; line-height: 1.1; letter-spacing: -.04em; }
+.qz-q .aide { margin-top: 10px; font-size: 16px; color: var(--texte-doux); }
+.qz-corps { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+.qz-bas { padding-top: 12px; display: flex; gap: 10px; align-items: center; }
+.qz-bas .gros { flex: 1; }
+.qz-erreur { margin-bottom: 10px; padding: 12px 16px; border-radius: 16px; background: var(--surface-2); font-size: 15px; font-weight: 600; line-height: 1.35; box-shadow: inset 0 0 0 2px var(--accent-lisible); }
+.qz-reprise { position: absolute; left: 50%; top: 4px; z-index: 4; transform: translateX(-50%); white-space: nowrap; padding: 8px 14px; border-radius: 18px; background: var(--surface-2); font-size: 13.5px; font-weight: 600; pointer-events: none; }
+
+/* émojis */
+.emojis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.emoji { aspect-ratio: 1 / 1.35; border-radius: 22px; background: var(--surface); font-size: 38px; display: grid; place-items: center; transition: background-color .2s; }
+.emoji span { display: block; filter: saturate(.8); }
+.emoji[aria-pressed="true"] { background: var(--accent); }
+.emoji[aria-pressed="true"] span { filter: none; }
+.emoji-lab { text-align: center; margin-top: 22px; font-family: var(--font-titre); font-size: 24px; letter-spacing: -.04em; min-height: 32px; }
+
+/* choix unique / multiple */
+.choix { display: flex; flex-direction: column; gap: 10px; max-height: 100%; overflow-y: auto; scrollbar-width: none; }
+.choix::-webkit-scrollbar { display: none; }
+.choix button { min-height: 68px; flex: none; border-radius: 22px; background: var(--surface); padding: 0 22px; text-align: left; font-size: 19px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 12px; transition: background-color .2s, transform .14s var(--ease); }
+.choix button:active { transform: scale(.98); }
+.choix button[aria-pressed="true"] { background: var(--accent); color: var(--accent-texte); }
+.choix .coche { width: 28px; height: 28px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--filet); flex: none; display: grid; place-items: center; }
+.choix .coche svg { width: 16px; height: 16px; stroke: var(--accent); fill: none; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.choix button[aria-pressed="true"] .coche { box-shadow: none; background: var(--accent-texte); }
+.choix button[aria-pressed="true"] .coche svg { opacity: 1; }
+
+/* nombre (tuile qui ouvre la roue) */
+.nombre-tuile { width: 100%; min-height: 210px; border-radius: var(--r-carte); background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; transition: transform .14s var(--ease); }
+.nombre-tuile:active { transform: scale(.98); }
+.nombre-tuile .nt-val { font-family: var(--font-chiffres); font-size: 84px; letter-spacing: -.07em; line-height: 1; color: var(--accent-lisible); font-variant-numeric: tabular-nums; }
+.nombre-tuile .nt-val.vide { opacity: .35; }
+.nombre-tuile .nt-val small { font-family: var(--font-texte); font-size: 30px; letter-spacing: 0; font-weight: 600; color: var(--texte-doux); margin-left: 8px; }
+.nombre-tuile .nt-aide { font-size: 15px; color: var(--texte-doux); font-weight: 600; }
+
+/* texte */
+.qz-texte { width: 100%; min-height: 200px; resize: none; border: 0; border-radius: var(--r-carte); background: var(--surface); color: var(--texte); font: inherit; font-size: 19px; line-height: 1.4; padding: 20px; }
+.qz-texte::placeholder { color: var(--texte-doux); }
+.qz-texte:focus-visible { outline: 3px solid var(--accent-lisible); outline-offset: 2px; }
+
+/* photo */
+.qz-photo { position: relative; display: grid; place-items: center; width: 100%; height: min(340px, 100%); border-radius: var(--r-carte); background: var(--surface); overflow: hidden; cursor: pointer; text-align: center; }
+.qz-photo input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+.qz-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.qz-photo .ph-vide { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 20px; font-weight: 600; font-size: 17px; }
+.qz-photo .ph-vide svg { width: 44px; height: 44px; stroke: var(--accent-lisible); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.qz-photo .ph-vide small { font-weight: 400; font-size: 14px; color: var(--texte-doux); }
+.qz-photo:focus-within { outline: 3px solid var(--accent-lisible); outline-offset: 3px; }
+.ph-changer { margin-top: 10px; text-align: center; font-size: 14.5px; font-weight: 600; color: var(--accent-lisible); }
+
+/* fin */
+.qz-fin { z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: var(--accent); color: var(--accent-texte); padding: 30px; }
+.qz-fin .gd { font-family: var(--font-titre); font-size: 38px; letter-spacing: -.05em; line-height: 1.04; }
+.qz-fin p { margin-top: 12px; font-size: 18px; max-width: 290px; line-height: 1.35; }
+.qz-fin .rond-ok { width: 120px; height: 120px; border-radius: 50%; background: var(--accent-texte); color: var(--accent); display: grid; place-items: center; margin-bottom: 26px; }
+.qz-fin .rond-ok svg { width: 56px; height: 56px; stroke: currentColor; fill: none; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.qz-fin .gros { margin-top: 34px; background: var(--accent-texte); color: var(--accent); }
+.qz-fin .resume { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; justify-content: center; }
+.qz-fin .resume span { padding: 7px 13px; border-radius: 18px; background: color-mix(in srgb, var(--accent-texte) 14%, transparent); font-size: 14px; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .emoji, .choix button, .nombre-tuile { transition: none; }
+}
