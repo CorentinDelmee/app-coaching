@@ -200,7 +200,7 @@ function animerMois(entree, dir = 1) {
   const cels = $$('.cel', vm)
   if (entree) {
     gsap.fromTo(vm, { clipPath: 'inset(0px 0px 100% 0px round 24px)' }, { clipPath: 'inset(0px 0px 0% 0px round 24px)', duration: 0.9, ease: 'expo.out', clearProps: 'clipPath' })
-    gsap.fromTo(cels, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, stagger: { each: 0.014, from: 'start' }, ease: 'back.out(1.8)', clearProps: 'transform,opacity' })
+    gsap.fromTo(cels, { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, stagger: { each: 0.014, from: 'start' }, ease: 'back.out(1.8)', clearProps: 'transform,opacity' })
     gsap.fromTo($$('.bande-semaine', vm), { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: 0.9, delay: 0.35, ease: 'expo.out' })
     gsap.fromTo($$('.legende', vm), { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, delay: 0.5, ease: 'expo.out', clearProps: 'transform,opacity' })
   } else {
@@ -234,7 +234,7 @@ function celebrer() {
   if (!b || !bouclee.value || vue.value !== 'semaine') return
   if (mouvementReduit()) { gsap.fromTo(b, { opacity: 0 }, { opacity: 1, duration: 0.3 }); return }
   gsap.fromTo(b, { scale: 0.7, opacity: 0, y: 24 }, { scale: 1, opacity: 1, y: 0, duration: 1, ease: 'back.out(1.7)', clearProps: 'transform,opacity' })
-  gsap.fromTo(coupeEl.value, { rotate: -28, scale: 0.4 }, { rotate: 0, scale: 1, duration: 1.1, delay: 0.12, ease: 'back.out(1.7)', clearProps: 'transform' })
+  gsap.fromTo(coupeEl.value, { rotate: -28, scale: 0.7 }, { rotate: 0, scale: 1, duration: 1.1, delay: 0.12, ease: 'back.out(1.7)', clearProps: 'transform' })
   const n = 18
   for (let i = 0; i < n; i++) {
     const c = document.createElement('span')

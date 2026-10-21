@@ -164,7 +164,7 @@ function surTouche(e) {
 // le bouton apparaît (avec un petit ressort) chaque fois que le menu devient disponible : après connexion, en sortant de la séance…
 function apparition() {
   rafraichir()
-  nextTick(() => { if (btn.value && !rm()) gsap.fromTo(btn.value, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, delay: 0.5, ease: 'back.out(1.7)', clearProps: 'transform,opacity' }) })
+  nextTick(() => { if (btn.value && !rm()) gsap.fromTo(btn.value, { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, delay: 0.5, ease: 'back.out(1.7)', clearProps: 'transform,opacity' }) })
 }
 onMounted(() => { window.addEventListener('keydown', surTouche); if (visible.value) apparition() })
 watch(visible, (v) => { if (v) apparition() })

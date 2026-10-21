@@ -202,7 +202,7 @@ const sortieVideo = (el, fin) => {
       <!-- Bouton collant : visible pendant tout le défilement ; retour à portée du pouce -->
       <div class="dock-bas" data-c>
         <button class="rond" type="button" aria-label="Retour" @click="retour"><Icone nom="gauche" /></button>
-        <button v-if="!sansDemarrer" ref="btn" class="gros" type="button" :disabled="enCoursDeLancement || !apercu.sections.length" @click="demarrer()">{{ bouton.libelle }}<Icone nom="fleche" /></button>
+        <button v-if="!sansDemarrer" ref="btn" class="gros" :class="{ lance: enCoursDeLancement }" type="button" :disabled="enCoursDeLancement || !apercu.sections.length" @click="demarrer()">{{ bouton.libelle }}<Icone nom="fleche" /></button>
       </div>
     </section>
 

@@ -12,10 +12,10 @@ const scrim = ref(null)
 onMounted(() => { gsap.set(feuille.value, { yPercent: 110, visibility: 'hidden' }) })
 watch(() => props.ouverte, (v) => {
   const rm = mouvementReduit()
-  gsap.to(scrim.value, { opacity: v ? 1 : 0, duration: 0.3 })
+  gsap.to(scrim.value, { opacity: v ? 1 : 0, duration: 0.3, overwrite: true })
   if (v) gsap.set(feuille.value, { visibility: 'visible' })
   if (rm) { gsap.set(feuille.value, { yPercent: v ? 0 : 110, visibility: v ? 'visible' : 'hidden' }); return }
-  gsap.to(feuille.value, { yPercent: v ? 0 : 110, duration: v ? 0.6 : 0.35, ease: v ? 'expo.out' : 'power3.out', onComplete: () => { if (!v) gsap.set(feuille.value, { visibility: 'hidden' }) } })
+  gsap.to(feuille.value, { yPercent: v ? 0 : 110, duration: v ? 0.6 : 0.35, ease: v ? 'expo.out' : 'power3.out', overwrite: true, onComplete: () => { if (!v) gsap.set(feuille.value, { visibility: 'hidden' }) } })
 })
 </script>
 

@@ -42,6 +42,7 @@ b { font-weight: 600; }
 .gros.doux { background: var(--surface-2); color: var(--texte); }
 .gros.contour { background: transparent; color: var(--texte); box-shadow: inset 0 0 0 2px var(--filet); }
 .gros:disabled { opacity: .4; }
+.gros.lance:disabled { opacity: 1; } /* lancement d'une séance : désactivé (double toucher) sans pâlir, le cercle jaune naît de lui */
 
 @media (prefers-reduced-motion: reduce) {
   .rond, .gros, :where(button, a.gros, [role="button"], label.case) { transition: none; }
