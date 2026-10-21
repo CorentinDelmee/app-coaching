@@ -86,7 +86,7 @@ export function pastillesPrescription(lesPuces) {
  * @returns {{titre, sous, meta: string[], sections: object[], prerempli: boolean, consigne: string|null, nbSeries: number}}
  *  sections : { kind:'bloc', lettre, titre, exos[] } | { kind:'superset', lettre, titre, detail, exos[] } | { kind:'circuit', lettre, nom, detail, exos[] }
  *  `lettre` : A, B, C… dans l'ordre des sections (circuits compris), comme les « Bloc A / B / C » de la maquette V2 ;
- *  `option` : circuit facultatif (le modèle n'a pas encore ce drapeau : il vaut toujours false aujourd'hui).
+ *  `option` : circuit facultatif (drapeau `facultatif` du bloc circuit).
  */
 export function apercuWorkout({ workout, exercices, template = null, unite = 'kg', realisations = [] }) {
   const bib = Object.fromEntries(exercices.map((e) => [e.id, e]))
@@ -108,7 +108,7 @@ export function apercuWorkout({ workout, exercices, template = null, unite = 'kg
       courant = null
       const t = titreCircuit(it.format, it.params)
       sections.push({
-        kind: 'circuit', id: it.id, lettre: prochaineLettre(), option: !!it.option, nom: t.nom, detail: t.detail, libelle: it.nom,
+        kind: 'circuit', id: it.id, lettre: prochaineLettre(), option: !!it.facultatif, nom: t.nom, detail: t.detail, libelle: it.nom,
         exos: it.exercices.map((x) => ({ reps: x.reps ?? null, consignes: x.consignes || null, nom: bib[x.exerciceId]?.nom || 'Exercice', video: videoDe(bib[x.exerciceId]) }))
       })
     } else if (it.supersetId) {

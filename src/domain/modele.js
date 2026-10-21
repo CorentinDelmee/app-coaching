@@ -41,7 +41,7 @@ export const CHAMPS = {
  * - Workout { id, clientId|null, nom, consignes?, blocs[] } ; blocs :
  *   { type:'exercice', id, exerciceId, champs:[{cle, modifiableParClient}], series:[{poids:60, reps:8…}], repos?, consignes? }
  *   { type:'superset', id, repos?, exercices:[{id, exerciceId, champs, series}] }   (A/B enchaînés, repos après le passage)
- *   { type:'circuit', id, nom?, format, params, exercices:[{exerciceId, reps?, consignes?}] }
+ *   { type:'circuit', id, nom?, format, params, facultatif?:bool (« option » de fin de séance), exercices:[{exerciceId, reps?, consignes?}] }
  * - Programme { id, clientId, nom, mode:'repete'|'parSemaine', debut:'AAAA-MM-JJ', nbSemaines?, workouts?[] (repete),
  *   semaines?[[workoutId]] (parSemaine), joursFixes?{workoutId: 0-6 (0 = lundi)} }
  * - Realisation { id, clientId, workoutId, programmeId?, date, semaine (lundi), valeurs:{blocId:{exerciceId, series[]}},
@@ -139,6 +139,7 @@ export function validerWorkout(w) {
       } else if (b.type === 'circuit') {
         if (!FORMATS_CIRCUIT.includes(b.format)) msg(`${ou}.format`, `doit valoir l'une de ces valeurs : ${FORMATS_CIRCUIT.join(', ')}`)
         if (!Array.isArray(b.exercices)) msg(`${ou}.exercices`, 'doit être une liste')
+        if (b.facultatif !== undefined && typeof b.facultatif !== 'boolean') msg(`${ou}.facultatif`, 'doit être vrai ou faux')
       } else msg(`${ou}.type`, 'doit valoir exercice, superset ou circuit')
     })
   })

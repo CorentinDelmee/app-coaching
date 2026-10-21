@@ -80,11 +80,11 @@ export function detailTiroir(item, unitePoids = 'kg') {
 
 /** Avancement d'un exercice (0..1) pour la barre de segments. */
 export function fractionExercice(item) {
-  if (item.type === 'circuit') return item.faite ? 1 : 0
+  if (item.type === 'circuit') return item.faite || item.passee ? 1 : 0
   return item.series.length ? item.series.filter((s) => s.faite).length / item.series.length : 1
 }
 
-export const exerciceComplet = (item) => (item.type === 'circuit' ? item.faite : item.series.every((s) => s.faite))
+export const exerciceComplet = (item) => (item.type === 'circuit' ? !!(item.faite || item.passee) : item.series.every((s) => s.faite))
 
 /** 3725 s -> « 62 min » (durée lisible de l'écran de fin). */
 export const minutesDe = (sec) => Math.max(1, Math.round(sec / 60))

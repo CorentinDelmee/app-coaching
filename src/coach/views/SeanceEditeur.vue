@@ -73,6 +73,7 @@ async function enregistrer() {
   erreur.value = ''
   const w = { ...copie(workout.value), nom: workout.value.nom.trim(), clientId: workout.value.clientId || null }
   if (!w.consignes?.trim()) delete w.consignes
+  for (const b of w.blocs) if (b.type === 'circuit' && !b.facultatif) delete b.facultatif
   if (!w.nom) return void (erreur.value = 'Donne un nom à la séance.')
   if (!w.blocs.length) return void (erreur.value = 'Ajoute au moins un bloc à la séance.')
   for (const [i, b] of w.blocs.entries()) {
@@ -154,6 +155,7 @@ async function enregistrer() {
             <input type="number" min="0" :value="valeurParam(b, p.cle)" @input="majParam(i, p.cle, $event.target.value === '' ? 0 : Number($event.target.value))" />
           </label>
         </div>
+        <label class="c-case" style="margin-bottom: 10px"><input v-model="b.facultatif" type="checkbox" />Facultatif : le client peut le passer (« Faire l'option » en fin de séance)</label>
         <div v-for="(x, j) in b.exercices" :key="j" class="c-ligne c-bas" style="margin-bottom: 8px">
           <div style="flex: 1; min-width: 200px"><SelecteurExercice :model-value="x.exerciceId" :exercices="exercices" label="Exercice" @update:model-value="majExoCircuit(i, j, { exerciceId: $event })" /></div>
           <label class="c-court">Reps<input type="number" min="0" :value="x.reps" @input="majExoCircuit(i, j, { reps: $event.target.value === '' ? undefined : Number($event.target.value) })" /></label>

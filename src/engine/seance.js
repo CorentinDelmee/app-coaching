@@ -8,7 +8,9 @@
 // Appeler `{ type: 'tick' }` régulièrement (ex. 4 fois par seconde) pour faire avancer repos/travail/avance auto.
 //
 // Actions : demarrer · modifierValeur · validerSerie · lancerSerie · annulerTravail · ajouterRepos · passerRepos ·
-//           rester · allerA · terminerCircuit · commenter · terminer · tick
+//           rester · allerA · terminerCircuit · passerOption · commenter · terminer · tick
+// Circuit facultatif (`facultatif: true`, « l'option » de M2) : la séance n'en dépend pas ; une fois les blocs obligatoires faits,
+// l'interface le propose (`optionProposee`) ; le client le fait (`terminerCircuit`) ou le passe (`passerOption`).
 import { CHAMPS } from '../domain/modele.js'
 
 export const DELAI_AVANCE_AUTO = 3000
@@ -67,7 +69,7 @@ function construireExercices(workout, template) {
     } else if (b.type === 'circuit') {
       items.push({
         id: b.id, type: 'circuit', nom: b.nom || null, format: b.format, params: b.params || {}, exercices: b.exercices || [],
-        faite: false, resultat: null
+        facultatif: !!b.facultatif, faite: false, passee: false, resultat: null
       })
     }
   }
@@ -90,7 +92,15 @@ export function demarrerSeance({ workout, template = null, clientId = null, reco
 
 // --- Requêtes ---------------------------------------------------------------------------------------
 
-const exerciceComplet = (e) => (e.type === 'circuit' ? e.faite : e.series.every((s) => s.faite))
+// Un circuit facultatif passé compte comme réglé (la séance peut se terminer) sans compter comme fait.
+const circuitClos = (e) => !!e.faite || !!e.passee
+const exerciceComplet = (e) => (e.type === 'circuit' ? circuitClos(e) : e.series.every((s) => s.faite))
+
+/** Les blocs obligatoires (hors circuits facultatifs) sont tous faits. */
+export const obligatoiresFaits = (etat) => etat.exercices.every((e) => (e.type === 'circuit' && e.facultatif ? true : exerciceComplet(e)))
+
+/** Index du circuit facultatif à proposer maintenant (obligatoires finis, option ni faite ni passée), sinon -1. */
+export const optionProposee = (etat) => (obligatoiresFaits(etat) ? etat.exercices.findIndex((e) => e.type === 'circuit' && e.facultatif && !circuitClos(e)) : -1)
 
 /** Membres d'un superset (indices d'exercices), sinon juste [idx]. */
 function groupe(etat, idx) {
@@ -106,7 +116,7 @@ export function prochaineSerie(etat) {
     if (vus.has(i)) continue
     const g = groupe(etat, i)
     g.forEach((x) => vus.add(x))
-    if (etat.exercices[i].type === 'circuit') { if (!etat.exercices[i].faite) return { exIdx: i, serieIdx: null } ; continue }
+    if (etat.exercices[i].type === 'circuit') { if (!circuitClos(etat.exercices[i])) return { exIdx: i, serieIdx: null } ; continue }
     const nb = Math.max(...g.map((x) => etat.exercices[x].series.length))
     for (let s = 0; s < nb; s++) {
       for (const x of g) {
@@ -136,7 +146,8 @@ export function vue(etat, now) {
     avancerAutoRestant: etat.avancerAuto ? Math.max(0, Math.ceil((etat.avancerAuto.finLe - now) / 1000)) : 0,
     avancerAutoVers: etat.avancerAuto ? etat.avancerAuto.vers : null,
     seriesFaites: faites, seriesTotal: total,
-    exercicesFaits: etat.exercices.filter(exerciceComplet).length,
+    exercicesFaits: etat.exercices.filter((e) => (e.type === 'circuit' ? e.faite : exerciceComplet(e))).length,
+    optionProposee: optionProposee(etat),
     prochaine: prochaineSerie(etat)
   }
 }
@@ -311,6 +322,14 @@ const FONCTIONS = {
     it.faite = true
     it.resultat = resultat ?? null
     apresProgression(e, exIdx, now, e.exercices.every(exerciceComplet))
+  },
+  passerOption: (e, { exIdx }) => {
+    const it = e.exercices[exIdx]
+    if (!it || it.type !== 'circuit' || !it.facultatif) return refuser(e, 'pas-une-option')
+    if (it.faite) return
+    it.passee = true
+    e.evenements.push({ type: 'option-passee', exIdx })
+    if (e.exercices.every(exerciceComplet)) e.evenements.push({ type: 'seance-complete' })
   },
   commenter: (e, { texte }) => { e.commentaire = texte },
   terminer,

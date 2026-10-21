@@ -30,7 +30,7 @@ function bloc(id, nom, n, serie, { repos = 90, champs, consignes } = {}) {
   return b
 }
 const superset = (id, repos, exos) => ({ type: 'superset', id, repos, exercices: exos })
-const circuit = (id, nom, format, params, exercices) => ({ type: 'circuit', id, nom, format, params, exercices })
+const circuit = (id, nom, format, params, exercices, facultatif = false) => ({ type: 'circuit', id, nom, format, params, exercices, ...(facultatif ? { facultatif: true } : {}) })
 const exSimple = (nom, reps) => ({ exerciceId: exId(nom), ...(reps ? { reps } : {}) })
 
 function workout(id, clientId, nom, blocs, consignes) {
@@ -60,7 +60,8 @@ function workoutsFabien(c) {
     bloc('w3-b1', 'Soulevé de terre jambes tendues', 3, { poids: 40, reps: 10 }, { repos: 90 }),
     bloc('w3-b2', 'Pompes', 3, { reps: 12 }, { repos: 60 }),
     circuit('w3-b3', 'Finisher AMRAP', 'amrap', { duree: 8 * 60 }, [exSimple('Burpees', 5), exSimple('Squat sauté', 10), exSimple('Mountain climbers', 20)]),
-    circuit('w3-b4', 'Finisher EMOM', 'emom', { minutes: 6, exercices: ['Kettlebell swing', 'Pompes'] }, [exSimple('Kettlebell swing', 12), exSimple('Pompes', 10)])
+    // Option de fin de séance (M2) : EMOM 6 min facultatif
+    circuit('w3-b4', 'Option EMOM', 'emom', { minutes: 6, exercices: ['Kettlebell swing', 'Pompes'] }, [exSimple('Kettlebell swing', 12), exSimple('Pompes', 10)], true)
   ])
   // Séance d'essai : un circuit de chaque autre format (hors programme).
   const wc = workout('w-fabien-circuits', c, 'Circuits — essai de tous les formats', [
