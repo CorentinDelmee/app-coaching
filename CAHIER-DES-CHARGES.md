@@ -162,6 +162,24 @@ champ : **modifiable par le client** oui/non.
   d'animation), transitions réelles, panneau accent/ambiance, page index comparative, captures et
   vidéos mobiles, revue des animations avant présentation. Une recommandée en provisoire.
 
+### 7.1 Direction V2 (retours de Corentin du 21/10/2026 — référence : `RETOURS-MAQUETTES-V1.md`)
+- **Base M5** (style, polices, mise en page, **menu et ses animations pour toute l'app**, page Coaching,
+  Programme), enrichie de M1, M2, M4. **M3 abandonnée.**
+- **Accent jaune** ; texte toujours foncé sur le jaune, jamais de jaune en texte sur fond clair (contraste vérifié partout).
+- **Ambiances clair / sombre / bleu profond** (celles de M5), au choix du client dans son profil ; défaut : clair.
+- **Séance** : une page entière par exercice ou par bloc (pas de cartes) ; lisibilité de M1 ; transitions de
+  démarrage de M1 ; transitions entre exercices de M2 ; sélecteur glissant reps/charges de M1 **tel quel** ;
+  étiquettes AMRAP/EMOM de M1 ; temps total de séance en haut (M4) ; effets rebondis légers (M4).
+- **Timers** : décompte animé + petite phrase (« Respire », « Repos », « Tiens bon ») de M2, son de fin de M1,
+  2-3 polices de chiffres à comparer (pas celle de M1).
+- **Overview workout** : sections par bloc (A, B, C…) ; encart exercice retravaillé.
+- **Circuits** : déroulé M2 (« Découvrir le circuit », option), détail et affichage de l'option/EMOM de M4,
+  changement de couleur d'écran de M1 ; un circuit qui démarre ouvre une nouvelle section qui se referme à la fin.
+- **Check-in** : modèle M2 (sons, chiffres qui passent dessus/dessous, humeur) avec les polices de M5 + animations du questionnaire M1.
+- **Dashboard** : aplat jaune (texte foncé recommandé, blanc à comparer) ; message d'accueil à remplacer (2-3 versions).
+- **Accessibilité** : mode « Grand affichage » dans le profil (textes, chiffres, boutons, chronos) ; zoom du
+  téléphone jamais bloqué ; contrastes forts, zones à toucher larges.
+
 ## 8. Hors périmètre V1
 Synchro Google Agenda, paiement en ligne, photos de progression, messagerie interne (WhatsApp à la
 place), notifications push, publication sur les stores, nom de domaine.
@@ -175,3 +193,8 @@ place), notifications push, publication sur les stores, nom de domaine.
    sécurité (droits RLS) ; revue finale des animations.
 5. `supabase/schema.sql` + `MISE-EN-ROUTE.md` (Supabase, clés, Netlify) ; `lancer.cmd`.
 6. Tout commité ; ETAT.md et suivi à jour.
+
+## 10. Journal
+- 2026-10-21 — Retours de Corentin sur les 5 maquettes V1 (`RETOURS-MAQUETTES-V1.md`) : base M5 + M1/M2/M4,
+  M3 abandonnée, accent jaune, 3 ambiances au choix, mode « Grand affichage » (→ §7.1). Bug signalé :
+  récap de la semaine du Programme qui ouvre toujours le workout du jour.
