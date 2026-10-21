@@ -1,6 +1,6 @@
 {
   "titre": "Corentin Delmée Coaching — application (PWA)",
-  "phase": "V2 en cours (mode absent) : maquette consolidée puis application à l'app",
+  "phase": "V2 appliquée et testée en local — à toi : essayer sur téléphone et trancher D4-D7",
   "objectif": "Remplacer **My PT Hub (52 €/mois)** par ma propre app de coaching, **0 €/mois**, mobile d'abord, très animée.",
   "date_cible": "2026-10-20",
   "mis_a_jour": "2026-10-21",
@@ -155,12 +155,21 @@
     {
       "id": "V2.4",
       "titre": "Tests mobile + revue finale des animations",
-      "statut": "en_cours",
-      "avancement": 10,
-      "qui": "testeur + frontend-senior"
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "testeur + frontend-senior",
+      "note": "Testeur : validé, 0 bloquant ; revue animations 9,5/10 ; 8 mineurs corrigés (370 tests verts)"
     }
   ],
   "taches_humaines": [
+    {
+      "titre": "Essayer la V2 sur ton téléphone (sons, vibrations, fluidité, Grand affichage)",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "20 min",
+      "statut": "a_faire",
+      "comment": "Jamais testé sur un vrai appareil."
+    },
     {
       "titre": "Mise en route Supabase (UE) : projet, schema.sql, authentification, compte coach, .env, test local",
       "qui": "Corentin",
@@ -488,13 +497,16 @@
     {
       "date": "2026-10-21",
       "texte": "Séance, circuits (avec option facultative) et check-in refaits au niveau de la maquette V2."
+    },
+    {
+      "date": "2026-10-21",
+      "texte": "V2 testée (validée, aucun bug bloquant), animations revues, 8 petits défauts corrigés. Captures : docs/captures-v2/final/."
     }
   ],
   "prochaines_etapes": [
-    "Ouvrir l app (lancer.cmd) et trancher les décisions provisoires (DECISIONS.html), surtout le choix de maquette",
-    "Mise en route Supabase puis Netlify (MISE-EN-ROUTE.md)",
-    "Essai sur ton téléphone (fluidité, sons, vibrations, installation)",
-    "Ajouter les liens vidéo YouTube des exercices depuis l espace coach"
+    "Ouvrir l'app (lancer.cmd) et la maquette V2 (design-v2/index.html) ; trancher D4-D7 dans DECISIONS.html (modifiable dans src/config/apparence.js)",
+    "Essai sur ton téléphone : sons, vibrations, fluidité, Grand affichage, ambiances",
+    "Mise en route Supabase puis Netlify (MISE-EN-ROUTE.md)"
   ],
   "risques": [
     {
@@ -530,6 +542,10 @@
     {
       "texte": "Maquette V2 consolidée",
       "href": "design-v2/index.html"
+    },
+    {
+      "texte": "Captures finales V2",
+      "href": "docs/captures-v2/final/"
     }
   ]
 }
