@@ -33,8 +33,9 @@ function abandonner() {
 </script>
 
 <template>
-  <RouterView />
+  <!-- Le menu vient AVANT la page dans le DOM : posé derrière elle (même niveau, ordre du DOM), il apparaît quand la page recule. -->
   <MenuApp />
+  <RouterView />
   <HorsConnexion />
   <div v-if="reprise" class="reprise">
     <FeuilleBas :ouverte="ouverte" titre="Reprendre votre séance en cours ?" @fermer="() => {}">

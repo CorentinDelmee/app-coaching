@@ -17,3 +17,10 @@ export const E = {
   slide: 'expo.out'
 }
 export const PLEIN = 'inset(0px 0px 0px 0px round 0px)'
+
+// --- Maquette V2 (design-v2/assets/noyau.js) ---
+// Menu « push back » : part de la largeur où la page reculée reste visible, échelle et rotation Y de cette page.
+export const MENU = { x: 0.7, scale: 0.82, rot: -14 }
+// Rebonds M4 « avec mesure » (jamais elastic sur l'interface courante) : ressort des cartes/boutons, pastilles et pop d'apparition.
+export const REBOND = { ressort: 'back.out(1.4)', pop: 'back.out(1.7)' }
+// Jamais d'ease-in sur l'interface : les sorties utilisent power3.out (0,28-0,3 s).
