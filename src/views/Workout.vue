@@ -6,7 +6,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import Icone from '../components/Icone.vue'
 import { data } from '../data/index.js'
-import { apercuWorkout, etatBouton } from '../domain/workoutUi.js'
+import { apercuWorkout, etatBouton, templatePourJour } from '../domain/workoutUi.js'
 import { jourLocal } from '../domain/dates.js'
 import { jourLong } from '../domain/calendrierUi.js'
 import { horloge } from '../lib/horloge.js'
@@ -29,7 +29,9 @@ const btn = ref(null)
 const enCoursDeLancement = ref(false)
 const videosOuvertes = ref({}) // exerciceLigne.id -> true
 
-const sousTitre = computed(() => (apercu.value ? `${jourLong(aujourdhui)}` : ''))
+// Jour touché dans le récap (?jour=AAAA-MM-JJ) ; sans lui, aujourd'hui.
+const jourAffiche = /^\d{4}-\d{2}-\d{2}$/.test(route.query.jour || '') ? route.query.jour : aujourdhui
+const sousTitre = computed(() => (apercu.value ? `${jourLong(jourAffiche)}` : ''))
 const premierPuce = (p) => !p.startsWith('repos')
 
 async function charger() {
@@ -41,7 +43,7 @@ async function charger() {
       data.workouts.lire(id), data.exercices.lister(), data.templates.lire(user.id), data.realisations.lister({ clientId: user.id })
     ])
     if (!workout) { erreur.value = 'Ce workout est introuvable.'; return }
-    apercu.value = apercuWorkout({ workout, exercices, template, unite: user.preferences?.unite || 'kg' })
+    apercu.value = apercuWorkout({ workout, exercices, template: templatePourJour({ template, realisations, workoutId: id, jour: route.query.jour || null }), unite: user.preferences?.unite || 'kg' })
     const s = lireSeanceEnCours()
     bouton.value = etatBouton({
       workoutId: id, aujourdhui, realisations,

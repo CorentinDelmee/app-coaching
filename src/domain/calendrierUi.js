@@ -60,7 +60,7 @@ export function colonnesSemaine(etat, lignes, aujourdhui) {
     const puces = (etat.parJour[i] || []).map((id) => {
       const l = parId[id]
       const mention = l.statut === 'fait' ? (jour === aujourdhui ? 'fait auj.' : `fait ${jourCourt(jour)}`) : jour === aujourdhui ? 'auj.' : 'coach'
-      return { workoutId: id, code: l.code, statut: l.statut, mention }
+      return { workoutId: id, code: l.code, statut: l.statut, mention, jour }
     })
     return { jour, nom: JOURS_COURTS[i], numero: partie(jour).j, auj: jour === aujourdhui, puces }
   })

@@ -222,10 +222,10 @@ async function choisirJour(c) {
 }
 
 // --- Ouvrir un workout : la page naît de l'élément touché ---
-function ouvrirWorkout(workoutId, el) {
+function ouvrirWorkout(workoutId, el, jour = null) {
   memoriserSource(el)
   partir()
-  router.push({ name: 'workout', params: { workoutId }, query: { retour: route.fullPath } })
+  router.push({ name: 'workout', params: { workoutId }, query: { retour: route.fullPath, ...(jour ? { jour } : {}) } })
 }
 
 // --- Semaine bouclée : la bannière jaillit, des confettis partent de la coupe ---
@@ -250,7 +250,7 @@ function celebrer() {
     })
   }
 }
-const aller = (id, e) => ouvrirWorkout(id, e.currentTarget)
+const aller = (id, e, jour = null) => ouvrirWorkout(id, e.currentTarget, jour)
 </script>
 
 <template>
@@ -314,7 +314,7 @@ const aller = (id, e) => ouvrirWorkout(id, e.currentTarget)
                     <span class="j">{{ c.nom }}</span>
                     <span class="d">{{ c.numero }}</span>
                     <button v-for="p in c.puces" :key="p.workoutId" type="button" class="chip-w" :class="p.statut === 'fait' ? 'fait' : c.auj ? 'prevu' : 'coach'"
-                      :aria-label="`${p.code} ${p.statut === 'fait' ? 'fait' : 'prévu'} ${jourLong(c.jour)}`" @click="aller(p.workoutId, $event)">
+                      :aria-label="`${p.code} ${p.statut === 'fait' ? 'fait' : 'prévu'} ${jourLong(c.jour)}`" @click="aller(p.workoutId, $event, p.jour)">
                       <span v-if="p.statut === 'fait'"><Icone nom="coche" /></span><span v-else></span>
                       <span>{{ p.code }}</span>
                       <small>{{ p.mention }}</small>
@@ -331,7 +331,7 @@ const aller = (id, e) => ouvrirWorkout(id, e.currentTarget)
 
                 <div v-if="aFaire.length" class="a-faire" data-s>
                   <h3>À faire cette semaine</h3>
-                  <button v-for="(l, i) in aFaire" :key="l.workoutId" type="button" class="ligne-w cliquable" :class="{ 'en-avant': enCours && i === 0 }" @click="aller(l.workoutId, $event)">
+                  <button v-for="(l, i) in aFaire" :key="l.workoutId" type="button" class="ligne-w cliquable" :class="{ 'en-avant': enCours && i === 0 }" @click="aller(l.workoutId, $event, l.jour)">
                     <span class="wn">{{ l.code }}</span>
                     <span class="wt">{{ l.titre }}<small>{{ l.sous ? `${l.sous} · ` : '' }}{{ l.texte }}</small></span>
                     <span class="fl"><Icone nom="fleche" /></span>
@@ -340,7 +340,7 @@ const aller = (id, e) => ouvrirWorkout(id, e.currentTarget)
 
                 <div v-if="faits.length" class="a-faire" data-s>
                   <h3>Fait</h3>
-                  <button v-for="l in faits" :key="l.workoutId" type="button" class="ligne-w cliquable fait" @click="aller(l.workoutId, $event)">
+                  <button v-for="l in faits" :key="l.workoutId" type="button" class="ligne-w cliquable fait" @click="aller(l.workoutId, $event, l.jour)">
                     <span class="wn"><Icone nom="coche" /></span>
                     <span class="wt">{{ l.titre }}<small>{{ l.sous ? `${l.sous} · ` : '' }}{{ l.texte }}</small></span>
                     <span class="etat">{{ l.code }}</span>

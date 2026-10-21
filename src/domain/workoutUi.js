@@ -7,6 +7,7 @@ import { titreCircuit } from './circuitsUi.js'
 import { puces, jetonsSerie } from './seanceUi.js'
 import { videoDe } from './video.js'
 import { pluriel } from './format.js'
+import { mettreAJourTemplate } from './realisations.js'
 
 const TRAVAIL_PAR_SERIE = 40 // secondes estimées pour une série en répétitions
 const LETTRES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -121,4 +122,15 @@ export function etatBouton({ workoutId, aujourdhui, realisations, enCours }) {
   if (enCours && enCours.workoutId === workoutId) return { action: 'reprendre', libelle: 'Reprendre la séance', mention: 'Séance en cours' }
   if (realisations.some((r) => r.workoutId === workoutId && r.date === aujourdhui)) return { action: 'refaire', libelle: 'Refaire la séance', mention: 'Fait aujourd\'hui' }
   return { action: 'demarrer', libelle: 'Démarrer la séance', mention: null }
+}
+
+/**
+ * Template à utiliser pour afficher le workout d'un jour donné (récap de la semaine) :
+ * séance faite ce jour-là -> ses valeurs réalisées (la plus récente si plusieurs) ; sinon le template courant.
+ */
+export function templatePourJour({ template, realisations, workoutId, jour }) {
+  if (!jour) return template
+  const faites = realisations.filter((r) => r.workoutId === workoutId && r.date === jour).sort((a, b) => (a.termineLe ?? 0) - (b.termineLe ?? 0))
+  const derniere = faites[faites.length - 1]
+  return derniere ? mettreAJourTemplate(null, derniere) : template
 }
