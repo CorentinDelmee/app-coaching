@@ -232,7 +232,7 @@ defineExpose({ fermer })
 .btn-gros { width: 100%; min-height: calc(var(--e) * 110px); border-radius: 30px; background: var(--ph-fg); color: var(--ph-bg-actuel); font-family: var(--font-titre); font-size: calc(var(--e) * 30px); letter-spacing: -.04em; font-weight: 400; margin-bottom: 12px; transition: transform .32s var(--ressort); flex: none; }
 .btn-gros.geant { min-height: calc(var(--e) * 138px); border-radius: 34px; font-size: calc(var(--e) * 34px); }
 .btn-gros:active { transform: scale(.97); transition-duration: .1s; }
-.btn-gros:disabled { opacity: .35; }
+.btn-gros:disabled { background: transparent; color: var(--ph-fg); box-shadow: inset 0 0 0 3px var(--ph-fg); } /* en pause : bouton "contour", libellé lisible */
 .ch-anneau { position: relative; width: calc(var(--e-chrono) * 300px); max-width: 100%; aspect-ratio: 1; margin: auto 0; display: grid; place-items: center; }
 .ch-anneau.titre { width: 100%; aspect-ratio: auto; height: calc(var(--e-chrono) * 300px); }
 .ch-anneau svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
