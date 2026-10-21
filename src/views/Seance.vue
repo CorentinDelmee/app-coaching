@@ -282,7 +282,7 @@ function actionPrincipale(i, el) {
   const it = items.value[i]
   if (it.type === 'circuit') {
     if (it.faite || it.passee) return suiteOuFin(i, el)
-    ouvrirSection(i)
+    ouvrirSection(i, el)
     return
   }
   if (toutFait.value) return terminerSeance(el)
@@ -475,9 +475,11 @@ const sectionRef = ref(null)
 const sectionIdx = ref(-1)
 let fermerSectionApres = false
 const itemSection = computed(() => items.value[sectionIdx.value] || null)
-function ouvrirSection(i) {
+const srcSection = ref(null) // bouton d'où naît la section
+function ouvrirSection(i, el = null) {
   if (verrouille() || sectionMontee.value) return
   bloquer(700)
+  srcSection.value = el
   sectionIdx.value = i
   sectionMontee.value = true
 }
@@ -750,7 +752,7 @@ defineExpose({ envoyer })
         @reduire="actionsSimple.reduire" @ferme="simpleFerme"
       />
       <SectionCircuit
-        v-if="sectionMontee && itemSection" ref="sectionRef" :item="itemSection" :exercices="bib" :repere="reperes[sectionIdx]" :debut="etat.demarreLe"
+        v-if="sectionMontee && itemSection" ref="sectionRef" :item="itemSection" :exercices="bib" :repere="reperes[sectionIdx]" :debut="etat.demarreLe" :src="srcSection"
         @pret="lancerCircuit(sectionIdx, $event)" @video="ouvrirVideo" @ferme="sectionMontee = false"
       />
       <ChronoCircuit

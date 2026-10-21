@@ -1,14 +1,15 @@
 <script setup>
 // Section d'un circuit (M1 + M2 + M4) : un circuit qui démarre OUVRE UNE NOUVELLE SECTION de la séance. L'écran change de couleur
-// (teinte inversée) par un balayage du bas vers le haut, puis : « Découvrir le circuit » -> explication -> exercices -> « Je suis prêt »
-// (le chrono s'ouvre alors par-dessus). À la fin du circuit, la section se referme (balayage inverse) sur la page du circuit.
+// (teinte inversée) par un cercle depuis le bouton touché, puis : « Découvrir le circuit » -> explication -> exercices -> « Je suis prêt »
+// (le chrono s'ouvre alors par-dessus). À la fin du circuit, la section se referme dans le bouton d'action de la page.
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { gsap } from 'gsap'
 import Icone from '../Icone.vue'
 import TempsTotal from './TempsTotal.vue'
 import { butCircuit, etapesExplication, minutesDesExercices, titreCircuit } from '../../domain/circuitsUi.js'
 import { videoDe } from '../../domain/video.js'
-import { mouvementReduit, nettoyer } from '../../anim/transitions.js'
+import { fermerCercle, mouvementReduit, nettoyer, ouvrirCercle } from '../../anim/transitions.js'
+import { racineDe } from '../../anim/geometrie.js'
 import { REBOND } from '../../anim/constantes.js'
 import { useEnLigne } from '../../composables/useEnLigne.js'
 import { SONS } from '../../lib/son.js'
@@ -17,7 +18,8 @@ const props = defineProps({
   item: { type: Object, required: true },
   exercices: { type: Object, default: () => ({}) }, // bibliothèque indexée par id
   repere: { type: Object, default: () => ({ lettre: 'A', rang: 1, taille: 1 }) },
-  debut: { type: Number, default: 0 }
+  debut: { type: Number, default: 0 },
+  src: { type: Object, default: null } // bouton « Découvrir le circuit » : la section naît de lui (maquette V2)
 })
 const emit = defineEmits(['pret', 'video', 'ferme'])
 const enLigne = useEnLigne()
@@ -57,9 +59,12 @@ onMounted(() => {
   occupe = true
   const voile = el.querySelector('.cc-voile')
   // balayage bas -> haut, puis le voile jaune (la couleur de l'effort) se retire vers le haut : l'écran « change de couleur »
-  gsap.timeline({ onComplete: () => { occupe = false; gsap.set(el, { clearProps: 'clipPath' }) } })
-    .fromTo(el, { clipPath: balayage.ferme }, { clipPath: balayage.ouvert, duration: 0.75, ease: 'expo.out' }, 0)
-    .fromTo(voile, { clipPath: 'inset(0% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.7, ease: 'power3.out' }, 0.38)
+  // cercle jaune depuis le bouton touché (moment rare : 0,85 s), puis le voile jaune se relève sur la teinte inverse ; sans bouton : balayage bas -> haut
+  const depuisBouton = props.src && props.src.isConnected
+  const tl = gsap.timeline({ onComplete: () => { occupe = false; gsap.set(el, { clearProps: 'clipPath' }) } })
+  if (depuisBouton) ouvrirCercle(el, props.src, { duree: 0.85 })
+  else tl.fromTo(el, { clipPath: balayage.ferme }, { clipPath: balayage.ouvert, duration: 0.75, ease: 'expo.out' }, 0)
+  tl.fromTo(voile, { clipPath: 'inset(0% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.7, ease: 'expo.inOut' }, depuisBouton ? 0.42 : 0.38)
     .fromTo('.cc-haut', { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out' }, 0.5)
     .fromTo(entrees, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.09, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.55)
 })
@@ -100,7 +105,10 @@ function fermer() {
   occupe = true
   const fin = () => emit('ferme')
   if (mouvementReduit()) { gsap.to(el, { opacity: 0, duration: 0.18, onComplete: fin }); return }
-  gsap.to(el, { clipPath: balayage.ferme, duration: 0.55, ease: 'power3.out', onComplete: fin })
+  // la section se referme dans le bouton d'action de la page affichée (maquette V2) ; à défaut, balayage inverse
+  const cible = racineDe(el).querySelector('.panel:not([inert]) [data-action]')
+  if (cible && cible.offsetParent !== null) fermerCercle(el, cible, { duree: 0.7, onFini: fin })
+  else gsap.to(el, { clipPath: balayage.ferme, duration: 0.55, ease: 'power3.out', onComplete: fin })
 }
 defineExpose({ fermer, retour })
 </script>
