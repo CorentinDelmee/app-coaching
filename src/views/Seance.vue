@@ -2,7 +2,7 @@
 // Séance en cours : le cœur de l'app. Cette vue orchestre ; les temps et les règles viennent des moteurs
 // (src/engine/seance.js, src/engine/circuits.js), l'affichage des composants de src/components/seance/.
 // État sauvegardé à chaque action (reprise après rechargement), Wake Lock, sons/vibrations.
-import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import Icone from '../components/Icone.vue'
@@ -10,6 +10,8 @@ import PanneauExercice from '../components/seance/PanneauExercice.vue'
 import PanneauCircuit from '../components/seance/PanneauCircuit.vue'
 import SerieDetail from '../components/seance/SerieDetail.vue'
 import RoueValeur from '../components/seance/RoueValeur.vue'
+import SectionCircuit from '../components/seance/SectionCircuit.vue'
+import TempsTotal from '../components/seance/TempsTotal.vue'
 import ChronoSimple from '../components/seance/ChronoSimple.vue'
 import ChronoCircuit from '../components/seance/ChronoCircuit.vue'
 import TiroirOverview from '../components/seance/TiroirOverview.vue'
@@ -25,14 +27,14 @@ import { configRoue } from '../domain/roue.js'
 import { CHAMPS } from '../domain/modele.js'
 import { poidsAffiche, nombreFr } from '../domain/unites.js'
 import { videoDe } from '../domain/video.js'
-import { derniereFois, detailTiroir, exerciceComplet, fractionExercice, libelleAction, serieCourante, estAuTemps } from '../domain/seanceUi.js'
+import { derniereFois, detailTiroir, exerciceComplet, fractionExercice, libelleAction, reperesBlocs, serieCourante, estAuTemps } from '../domain/seanceUi.js'
 import { titreCircuit } from '../domain/circuitsUi.js'
 import { horloge } from '../lib/horloge.js'
 import { SONS, deverrouiller, regler as reglerSon } from '../lib/son.js'
 import { activerWakeLock, libererWakeLock } from '../lib/wakelock.js'
 import { effacerSeanceEnCours, lireSeanceEnCours, sauverSeanceEnCours } from '../lib/seanceEnCours.js'
 import { utilisateurCourant } from '../lib/session.js'
-import { T, E } from '../anim/constantes.js'
+import { T, E, REBOND } from '../anim/constantes.js'
 import { cascade, compter, fermerPage, installerRessort, mouvementReduit, nettoyer, ouvrirCercle } from '../anim/transitions.js'
 import { centreDe } from '../anim/geometrie.js'
 import { consommerLancement, leverRideau, marquerFinSeance } from '../anim/passage.js'
@@ -156,7 +158,10 @@ function glisser(j, avant) {
   const x = -j * largeurVue()
   if (mouvementReduit()) { gsap.fromTo(piste.value, { opacity: 0 }, { opacity: 1, duration: 0.25, onStart: () => gsap.set(piste.value, { x }) }); return }
   gsap.to(piste.value, { x, duration: T.slide, ease: E.slide, overwrite: true })
-  const els = racine.value.querySelectorAll(`.panel[data-i="${j}"] > *`)
+  // la page quittée recule en s'estompant (M2), celle d'arrivée amène son contenu élément par élément
+  const ancien = racine.value.querySelector(`.panel[data-i="${avant}"]`)
+  if (ancien) gsap.fromTo(ancien, { scale: 1, opacity: 1 }, { scale: 0.9, opacity: 0.3, duration: T.slide, ease: 'power3.out', clearProps: 'transform,opacity' })
+  const els = racine.value.querySelectorAll(`.panel[data-i="${j}"] [data-c]`)
   gsap.fromTo(els, { x: 50 * (j >= avant ? 1 : -1), opacity: 0 }, { x: 0, opacity: 1, duration: 0.9, stagger: 0.05, delay: 0.08, ease: 'expo.out', clearProps: 'transform,opacity' })
 }
 watch(courant, (j, avant) => glisser(j, avant))
@@ -193,11 +198,11 @@ function swipeHaut() {
   const W = largeurVue()
   const v = s.dx / Math.max(1, performance.now() - s.t)
   let j = courant.value
-  if ((s.dx < -W * 0.2 || v < -0.45) && j < nbItems.value - 1) j++
-  else if ((s.dx > W * 0.2 || v > 0.45) && j > 0) j--
+  if ((s.dx < -W * 0.2 || v < -0.25) && j < nbItems.value - 1) j++
+  else if ((s.dx > W * 0.2 || v > 0.25) && j > 0) j--
   setTimeout(() => { aGlisse = false }, 50)
   if (j !== courant.value) envoyer({ type: 'allerA', exIdx: j })
-  else gsap.to(piste.value, { x: -courant.value * W, duration: 0.6, ease: 'expo.out' })
+  else gsap.to(piste.value, { x: -courant.value * W, duration: 0.6, ease: REBOND.ressort })
 }
 const surRedimension = () => { if (piste.value) gsap.set(piste.value, { x: -courant.value * largeurVue() }) }
 
@@ -205,7 +210,13 @@ const surRedimension = () => { if (piste.value) gsap.set(piste.value, { x: -cour
 // En-tête : segments, titre
 // ---------------------------------------------------------------------------------------------
 const fractions = computed(() => items.value.map(fractionExercice))
-const titreCourant = computed(() => (items.value[courant.value] ? nomItem(items.value[courant.value]) : ''))
+const reperes = computed(() => reperesBlocs(items.value))
+// « Bloc A » (ou « Option » pour un circuit facultatif) au-dessus de « 2 sur 7 » dans l'en-tête
+const titreCourant = computed(() => {
+  const it = items.value[courant.value]
+  if (!it) return ''
+  return it.facultatif ? 'Option' : `Bloc ${reperes.value[courant.value].lettre}`
+})
 const toutFait = computed(() => items.value.length > 0 && items.value.every(exerciceComplet))
 // Les champs utilisés ici (séries faites, prochaine série…) ne dépendent pas de l'heure.
 const resume = computed(() => (etat.value ? vueSeance(etat.value, 0) : null))
@@ -235,24 +246,28 @@ const bloquer = (ms = 400) => { verrouJusqua = performance.now() + ms } // > un 
 const verrouille = () => performance.now() < verrouJusqua
 
 const srcChrono = ref(null) // bouton d'où naît le cercle du chrono
-const stades = reactive({}) // circuits : 'expl' | 'exos' (par index)
-const stadeDe = (i) => stades[i] || 'expl'
 
 function libelleDe(i) {
   const it = items.value[i]
   const derniereEtape = i === nbItems.value - 1
   if (it.type !== 'circuit') return libelleAction(it, { toutFait: toutFait.value, derniereEtape })
-  if (it.faite) return toutFait.value || derniereEtape ? 'Terminer la séance' : 'Exercice suivant'
-  return stadeDe(i) === 'expl' ? 'Voir les mouvements' : `Lancer ${titreCircuit(it.format, it.params).nom}`
+  if (it.faite || it.passee) return toutFait.value || derniereEtape ? 'Terminer la séance' : 'Exercice suivant'
+  return it.facultatif ? 'Faire l\'option' : 'Découvrir le circuit'
+}
+// Seconde action d'un circuit : passer (obligatoire : discret ; facultatif : vrai bouton, « Terminer sans l'option » en fin de séance)
+function libelleSecondaire(i) {
+  const it = items.value[i]
+  if (it.type !== 'circuit' || it.faite || it.passee) return ''
+  if (!it.facultatif) return 'Passer ce circuit'
+  return i === nbItems.value - 1 ? 'Terminer sans l\'option' : 'Passer l\'option'
 }
 
 function actionPrincipale(i, el) {
   if (verrouille()) return
   const it = items.value[i]
   if (it.type === 'circuit') {
-    if (it.faite) return suiteOuFin(i, el)
-    if (stadeDe(i) === 'expl') stades[i] = 'exos'
-    else lancerCircuit(i, el)
+    if (it.faite || it.passee) return suiteOuFin(i, el)
+    ouvrirSection(i)
     return
   }
   if (toutFait.value) return terminerSeance(el)
@@ -265,8 +280,11 @@ function suiteOuFin(i, el) {
   if (i === nbItems.value - 1) terminerSeance(el)
   else envoyer({ type: 'allerA', exIdx: i + 1 })
 }
-function passerCircuit(i) {
-  if (i === nbItems.value - 1) terminerSeance(null)
+function passerCircuit(i, el) {
+  if (verrouille()) return
+  // une option passée est notée comme telle (le moteur la compte comme réglée) ; un circuit obligatoire sauté reste non fait
+  if (items.value[i].facultatif) envoyer({ type: 'passerOption', exIdx: i })
+  if (i === nbItems.value - 1) terminerSeance(el)
   else envoyer({ type: 'allerA', exIdx: i + 1 })
 }
 
@@ -313,7 +331,8 @@ const modeleSimple = computed(() => {
   const e = etat.value
   const fin = ph === 'prep' ? preparation.value.finLe : ph === 'travail' ? e.travail.finLe : e.repos.finLe
   const duree = ph === 'prep' ? 3000 : ph === 'travail' ? e.travail.duree * 1000 : e.repos.duree * 1000
-  return { phase: ph, fin, duree, sous: sousSimple(ph) }
+  const exIdx = ph === 'prep' ? preparation.value.exIdx : ph === 'travail' ? e.travail.exIdx : e.repos.exIdx
+  return { phase: ph, fin, duree, sous: sousSimple(ph), exo: nomItem(e.exercices[exIdx]) }
 })
 const affichageSimple = ref(null) // dernier modèle non nul : le chrono reste affiché pendant sa fermeture
 watch(modeleSimple, (m) => { if (m) affichageSimple.value = m }, { immediate: true })
@@ -371,7 +390,7 @@ const actionsSimple = {
 // ---------------------------------------------------------------------------------------------
 const avance = computed(() => {
   const a = etat.value?.avancerAuto
-  return a && !etat.value.repos && !phaseSimple.value && !circuitMonte.value ? a : null
+  return a && !etat.value.repos && !phaseSimple.value && !circuitMonte.value && !sectionMontee.value ? a : null
 })
 const nomSuivant = computed(() => (avance.value ? nomItem(items.value[avance.value.vers]) : ''))
 
@@ -384,7 +403,7 @@ const roueOuverte = ref(null)  // { cle, idx, k, src, config, ancienne }
 const roueRef = ref(null)
 
 function ouvrirSerie(idx, k, src) {
-  if (verrouille() || aGlisse || serieOuverte.value || simpleMonte.value || circuitMonte.value) return
+  if (verrouille() || aGlisse || serieOuverte.value || simpleMonte.value || circuitMonte.value || sectionMontee.value) return
   bloquer()
   serieOuverte.value = { idx, k, src }
 }
@@ -435,6 +454,18 @@ function validerDepuisSerie(btn) {
 // ---------------------------------------------------------------------------------------------
 const circuitMonte = ref(false)
 const circuitRef = ref(null)
+// Section du circuit (M1/M2) : s'ouvre au toucher de « Découvrir le circuit », reste sous le chrono, se referme à la fin du circuit
+const sectionMontee = ref(false)
+const sectionRef = ref(null)
+const sectionIdx = ref(-1)
+let fermerSectionApres = false
+const itemSection = computed(() => items.value[sectionIdx.value] || null)
+function ouvrirSection(i) {
+  if (verrouille() || sectionMontee.value) return
+  bloquer(700)
+  sectionIdx.value = i
+  sectionMontee.value = true
+}
 const itemCircuit = computed(() => (circuit.value ? items.value.find((x) => x.id === circuit.value.itemId) : null))
 const circuitAffiche = ref(null) // dernier chrono non nul : reste affiché pendant sa fermeture
 watch(circuit, (c) => { if (c) circuitAffiche.value = c }, { immediate: true })
@@ -466,6 +497,7 @@ function actionCircuit(id) {
 function validerCircuit({ repsEnPlus }) {
   const it = itemCircuit.value
   const idx = items.value.indexOf(it)
+  fermerSectionApres = true // la section se referme une fois le chrono parti
   if (stMaintenant().saisieRequise) ajouterEvenement('reps-en-plus', { valeur: repsEnPlus })
   const final = etatChrono(it.format, it.params, circuit.value.evenements, horloge.now() + 1)
   envoyer({ type: 'terminerCircuit', exIdx: idx, resultat: final.resultat })
@@ -481,7 +513,10 @@ function passerPreparation() {
   circuit.value = { ...circuit.value, evenements: evs }
   sauver()
 }
-function circuitFerme() { circuitMonte.value = false }
+function circuitFerme() {
+  circuitMonte.value = false
+  if (fermerSectionApres) { fermerSectionApres = false; sectionRef.value?.fermer() }
+}
 
 // ---------------------------------------------------------------------------------------------
 // Tiroir, vidéo, sortie
@@ -521,6 +556,7 @@ function demanderQuitter() {
   if (videoMontee.value) return fermerVideo()
   if (tiroirOuvert.value) { tiroirOuvert.value = false; return }
   if (simpleMonte.value || circuitMonte.value) return
+  if (sectionMontee.value) return sectionRef.value?.retour()
   feuilleQuitter.value = !feuilleQuitter.value
 }
 // Le bouton « retour » du téléphone ferme d'abord la couche du dessus, puis demande confirmation.
@@ -531,10 +567,21 @@ onBeforeRouteLeave(() => {
 })
 const surTouche = (e) => { if (e.key === 'Escape') demanderQuitter() }
 
+// Sortie de la séance : on REVIENT dans l'historique (sans empiler une copie de la page d'origine, sinon le geste retour
+// retombait sur le workout et demandait 2 appuis). `history.state.back` = page précédente ; sans elle (adresse ouverte directement) : replace.
+const cheminDe = (adresse) => (adresse || '').split('?')[0]
+function retourHistorique(cible) {
+  const avant = cheminDe(window.history.state?.back)
+  const retour = route.query.retour
+  if (avant && retour && avant === cheminDe(retour) && cheminDe(cible) === cheminDe(retour)) return router.back()
+  // fin de séance : on rentre au tableau de bord en sautant le workout si c'est de là qu'on est venu
+  if (cible === '/' && avant && retour && avant === cheminDe(retour) && route.query.depuis === '/') return router.go(-2)
+  return router.replace(cible)
+}
 function sortir() {
   sortieAutorisee = true
   libererWakeLock()
-  fermerPage(racine.value, null, { onFini: () => router.replace(route.query.depuis ? { path: route.query.retour, query: { retour: route.query.depuis } } : route.query.retour || '/') })
+  fermerPage(racine.value, null, { onFini: () => (route.query.depuis ? router.replace({ path: route.query.retour, query: { retour: route.query.depuis } }) : retourHistorique(route.query.retour || '/')) })
 }
 function abandonner() {
   effacerSeanceEnCours()
@@ -570,7 +617,7 @@ async function validerSeance(commentaire) {
     sortieAutorisee = true
     libererWakeLock()
     marquerFinSeance(racine.value?.querySelector('.couche.fin'), realisationId)
-    router.replace('/')
+    retourHistorique('/')
   } catch (e) {
     console.error(e)
     erreurFin.value = e?.message || 'L\'enregistrement a échoué. Réessayez.'
@@ -639,7 +686,7 @@ defineExpose({ envoyer })
           <div class="se-barre">
             <button class="rond" type="button" aria-label="Quitter la séance" @click="feuilleQuitter = true"><Icone nom="fermer" /></button>
             <div class="se-titre" :class="{ cache: reposReduit && etat.repos && !simpleMonte }"><span>{{ titreCourant }}</span><br><b>{{ courant + 1 }}</b> sur {{ nbItems }}</div>
-            <button class="rond" type="button" aria-label="Aperçu de la séance" @click="tiroirOuvert = true"><Icone nom="liste" /></button>
+            <button class="pastille-total" type="button" aria-label="Aperçu de la séance et temps écoulé" @click="tiroirOuvert = true"><TempsTotal :debut="etat.demarreLe" /></button>
           </div>
         </header>
 
@@ -647,11 +694,11 @@ defineExpose({ envoyer })
           <div ref="piste" class="piste">
             <template v-for="(it, i) in items" :key="it.id">
               <PanneauCircuit
-                v-if="it.type === 'circuit'" :item="it" :idx="i" :stade="stadeDe(i)" :exercices="bib" :libelle="libelleDe(i)" :inert="i !== courant"
-                @action="actionPrincipale(i, $event)" @passer="passerCircuit(i)" @video="ouvrirVideo"
+                v-if="it.type === 'circuit'" :item="it" :idx="i" :exercices="bib" :libelle="libelleDe(i)" :libelle-secondaire="libelleSecondaire(i)" :repere="reperes[i]" :inert="i !== courant"
+                @action="actionPrincipale(i, $event)" @passer="passerCircuit(i, $event)" @video="ouvrirVideo"
               />
               <PanneauExercice
-                v-else :item="it" :idx="i" :exercice="exo(it)" :unite="unite" :derniere="derniereParExercice[it.exerciceId]" :libelle="libelleDe(i)" :inert="i !== courant"
+                v-else :item="it" :idx="i" :exercice="exo(it)" :unite="unite" :derniere="derniereParExercice[it.exerciceId]" :libelle="libelleDe(i)" :repere="reperes[i]" :inert="i !== courant"
                 @ouvrir-serie="(k, el) => ouvrirSerie(i, k, el)" @action="actionPrincipale(i, $event)" @video="ouvrirVideo(exo(it))"
               />
             </template>
@@ -683,12 +730,16 @@ defineExpose({ envoyer })
 
       <ChronoSimple
         v-if="simpleMonte && affichageSimple" :key="cleSimple" ref="simpleRef" :phase="affichageSimple.phase" :fin="affichageSimple.fin"
-        :duree="affichageSimple.duree" :sous="affichageSimple.sous" :src="srcChrono" :reductible="affichageSimple.phase === 'repos'"
+        :duree="affichageSimple.duree" :sous="affichageSimple.sous" :etiquette-exo="affichageSimple.exo" :debut="etat.demarreLe" :src="srcChrono" :reductible="affichageSimple.phase === 'repos'"
         @plus="actionsSimple.plus" @passer="actionsSimple.passer" @terminer="actionsSimple.terminer" @annuler="actionsSimple.annuler"
         @reduire="actionsSimple.reduire" @ferme="simpleFerme"
       />
+      <SectionCircuit
+        v-if="sectionMontee && itemSection" ref="sectionRef" :item="itemSection" :exercices="bib" :repere="reperes[sectionIdx]" :debut="etat.demarreLe"
+        @pret="lancerCircuit(sectionIdx, $event)" @video="ouvrirVideo" @ferme="sectionMontee = false"
+      />
       <ChronoCircuit
-        v-if="circuitMonte && itemAffiche" ref="circuitRef" :item="itemAffiche" :evenements="circuitAffiche.evenements" :mouvements="mouvementsChrono" :src="srcChrono"
+        v-if="circuitMonte && itemAffiche" ref="circuitRef" :item="itemAffiche" :evenements="circuitAffiche.evenements" :mouvements="mouvementsChrono" :debut="etat.demarreLe" :src="srcChrono"
         @action="actionCircuit" @pause="ajouterEvenement('pause')" @reprendre="ajouterEvenement('reprendre')" @arreter="arreterCircuit"
         @passer-prep="passerPreparation" @valider="validerCircuit" @ferme="circuitFerme"
       />
@@ -727,13 +778,15 @@ defineExpose({ envoyer })
 .segments i { flex: 1; height: 7px; border-radius: 4px; background: var(--surface-2); overflow: hidden; display: block; }
 .segments i.cur { background: color-mix(in srgb, var(--texte) 28%, var(--surface-2)); }
 .segments b { display: block; height: 100%; width: 100%; border-radius: 4px; background: var(--accent-lisible); transform-origin: left; transition: transform .8s var(--ease); }
-.se-barre { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 52px; }
-.se-titre { font-size: 15px; font-weight: 600; color: var(--texte-doux); text-align: center; line-height: 1.25; min-width: 0; transition: opacity .2s var(--ease); }
+.se-barre { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: calc(var(--e) * 52px); }
+.se-titre { font-size: calc(var(--e) * 13px); letter-spacing: .12em; text-transform: uppercase; font-weight: 600; color: var(--texte-doux); text-align: center; line-height: 1.3; min-width: 0; transition: opacity .2s var(--ease); }
+/* temps total de séance (M4) : pastille blanche qui ouvre aussi l'aperçu */
+.pastille-total { min-width: calc(var(--e) * 76px); min-height: var(--cible); padding: 6px 12px; border-radius: 18px; background: var(--surface); color: var(--texte); display: inline-flex; align-items: center; justify-content: center; flex: none; }
 /* repos réduit : la pastille prend la place du titre (au centre de la barre), le titre s'efface dessous */
 .se-titre.cache { opacity: 0; }
 .se-titre span { display: inline-block; max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
-.se-titre b { color: var(--texte); font-family: var(--font-chiffres); font-weight: 400; letter-spacing: -.03em; }
-.piste-vue { position: relative; flex: 1; overflow: hidden; touch-action: pan-y; }
+.se-titre b { color: var(--texte); font-family: var(--font-texte); font-weight: 700; letter-spacing: 0; }
+.piste-vue { position: relative; flex: 1; overflow: hidden; overflow: clip; touch-action: pan-y; }
 .piste { position: absolute; inset: 0; display: flex; will-change: transform; }
 .video-cadre { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 18px; overflow: hidden; background: var(--surface-2); margin: 14px 0 12px; }
 .video-cadre iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }

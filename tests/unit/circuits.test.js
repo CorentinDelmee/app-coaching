@@ -265,3 +265,17 @@ describe('signaux et explication', () => {
     for (const f of ['emom', 'timecap', 'deathby', 'intervalles', 'superset']) expect(explication(f)).not.toBe('')
   })
 })
+
+import { butCircuit, minutesDesExercices } from '../../src/domain/circuitsUi.js'
+describe('page circuit : but et minutes EMOM', () => {
+  it('but sans le nom du format', () => {
+    expect(butCircuit('amrap', { duree: 480 })).toBe('Faire le plus de tours possible en 8 min.')
+    expect(butCircuit('emom', { minutes: 6 })).toMatch(/^Toutes les minutes, pendant 6 min/)
+    expect(butCircuit('fortime', {})).toMatch(/^Terminer le travail/)
+  })
+  it('minutes de chaque exercice d\'un EMOM', () => {
+    expect(minutesDesExercices(2, 6)).toEqual(['minutes 1, 3, 5', 'minutes 2, 4, 6'])
+    expect(minutesDesExercices(3, 6)).toEqual(['minutes 1, 4', 'minutes 2, 5', 'minutes 3, 6'])
+    expect(minutesDesExercices(1, 6)).toEqual([])
+  })
+})

@@ -1,6 +1,6 @@
 // Ce que l'écran affiche pour chaque format de circuit (purs, testés). Le calcul du temps reste dans engine/circuits.js :
 // ici on ne fait que traduire son état (`etatChrono`) en textes, gros chiffre, anneau et bouton d'action.
-import { paramsComplets } from '../engine/circuits.js'
+import { explication, paramsComplets } from '../engine/circuits.js'
 import { formaterChrono, pluriel } from './format.js'
 
 export const NOMS_FORMATS = {
@@ -41,6 +41,22 @@ export function etapesExplication(format, params = {}) {
     case 'superset': return [prep, 'Enchaînez les exercices sans pause, dans l\'ordre.', `Touchez « Suivant » après chacun ; repos de ${p.repos} s après chaque passage.`]
     default: return [prep]
   }
+}
+
+/** But du circuit en une phrase, sans le nom du format : « Faire le plus de tours possible en 8 minutes. » */
+export function butCircuit(format, params = {}) {
+  const t = explication(format, params).replace(/^[^—]+—\s*/, '').replace(/^objectif\s*:\s*/i, '').trim()
+  return t ? t.charAt(0).toUpperCase() + t.slice(1) : ''
+}
+
+/** EMOM : minutes où revient chaque exercice. 2 exercices sur 6 minutes -> ['minutes 1, 3, 5', 'minutes 2, 4, 6'] (tableau vide s'il n'y a qu'un exercice). */
+export function minutesDesExercices(nbExercices, totalMinutes) {
+  if (nbExercices < 2) return []
+  return Array.from({ length: nbExercices }, (_, i) => {
+    const liste = []
+    for (let m = i + 1; m <= totalMinutes; m += nbExercices) liste.push(m)
+    return `${liste.length > 1 ? 'minutes' : 'minute'} ${liste.join(', ')}`
+  })
 }
 
 /** Secondes qui restent avant le prochain changement de segment (pour le tic des 3 dernières secondes), null si sans objet. */

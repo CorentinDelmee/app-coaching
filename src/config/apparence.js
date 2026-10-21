@@ -8,7 +8,15 @@ export const CHOIX = {
   /** Message d'accueil du tableau de bord : 'pret' (« Prêt, Fabien ? ») | 'semaine' (« Plus que 2 séances… »). */
   accueil: 'pret',
   /** Texte posé sur l'aplat jaune : 'fonce' (12,1 : 1) | 'blanc' (1,4 : 1, illisible : seulement pour comparer). */
-  texteAplat: 'fonce'
+  texteAplat: 'fonce',
+  /** Adresse des petites phrases du chrono : 'vous' (« Respirez. ») | 'tu' (« Respire. »). L'app entière vouvoie : défaut 'vous'. */
+  adresse: 'vous'
+}
+
+/** Petites phrases posées au-dessus des chiffres des chronos (design-v2/assets/config.js). */
+export const PHRASES = {
+  vous: { prep: 'Préparez-vous.', travail: 'Tenez bon.', repos: 'Respirez.', reposFin: 'On y retourne.', fin: 'Temps !' },
+  tu: { prep: 'Prépare-toi.', travail: 'Tiens bon.', repos: 'Respire.', reposFin: 'On y retourne.', fin: 'Temps !' }
 }
 
 /** Ambiances proposées au client (clé = valeur de html[data-ambiance]). La première est le défaut (« clair par défaut »). */

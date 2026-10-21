@@ -4,9 +4,13 @@
 import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { gsap } from 'gsap'
 import Icone from '../Icone.vue'
+import ChiffresRoulants from '../ChiffresRoulants.vue'
+import TempsTotal from './TempsTotal.vue'
 import { ouvrirCercle, fermerCercle, nettoyer, mouvementReduit } from '../../anim/transitions.js'
 import { modeleChrono, secondesAvantChangement, sonDuSignal } from '../../domain/circuitsUi.js'
 import { detecterSignal, etatChrono } from '../../engine/circuits.js'
+import { phraseCircuit } from '../../domain/phrases.js'
+import { useBalayageCouleur } from '../../composables/useBalayageCouleur.js'
 import { useMaintenant } from '../../composables/useMaintenant.js'
 import { SONS } from '../../lib/son.js'
 
@@ -14,6 +18,7 @@ const props = defineProps({
   item: { type: Object, required: true },            // le circuit : { format, params, … }
   evenements: { type: Array, required: true },       // événements du chrono (démarrer, pause, tour…), voir engine/circuits
   mouvements: { type: Array, default: () => [] },    // [{ q, n }] pour la liste de l'AMRAP
+  debut: { type: Number, default: 0 },               // début de la séance (temps total affiché en haut)
   src: { type: Object, default: null }
 })
 const emit = defineEmits(['action', 'pause', 'reprendre', 'arreter', 'passer-prep', 'valider', 'ferme'])
@@ -32,6 +37,12 @@ const grandTitre = computed(() => st.value.format === 'superset' && st.value.pha
 // Circuit terminé : l'écran passe sur l'accent et l'anneau se remplit d'un trait (récompense), au lieu d'un anneau vide sur gris.
 const remplissageFin = ref(0)
 const theme = computed(() => (st.value.termine ? 'travail' : m.value.theme))
+const affiche = useBalayageCouleur(racine, theme)
+const phrase = computed(() => phraseCircuit({ theme: theme.value, termine: st.value.termine }))
+// Les durées (1:23, 45) défilent en roulette ; les textes (« Pompes ») changent d'un bloc.
+const grandChiffres = computed(() => /^[\d:]+$/.test(m.value.grand))
+const phraseEl = ref(null)
+watch(phrase, () => { if (phraseEl.value && !mouvementReduit()) gsap.fromTo(phraseEl.value, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out' }) })
 const decalage = computed(() => {
   if (st.value.termine) return C * (1 - remplissageFin.value)
   const p = m.value.anneauProchain ?? m.value.anneau
@@ -62,11 +73,11 @@ onMounted(() => {
   setTimeout(() => { contenu.style.pointerEvents = '' }, 300)
   if (!mouvementReduit()) gsap.fromTo(contenu, { opacity: 0 }, { opacity: 1, duration: 0.3, delay: 0.22, ease: 'power1.out' })
 })
-onBeforeUnmount(() => { clearTimeout(delaiConfirmer); nettoyer(racine.value) })
+onBeforeUnmount(() => { clearTimeout(delaiConfirmer); nettoyer(racine.value); gsap.killTweensOf(phraseEl.value) })
 
 // --- Animations d'événement ---------------------------------------------------------------------
 function pulse(el, echelle, duree) {
-  if (el && !mouvementReduit()) gsap.fromTo(el, { scale: echelle }, { scale: 1, duration: duree, ease: 'expo.out' })
+  if (el && !mouvementReduit()) gsap.fromTo(el, { scale: echelle }, { scale: 1, duration: duree, ease: 'back.out(1.5)' })
 }
 // Chaque seconde des 3 dernières : le gros chiffre pulse (le tic sonore est joué par le parent).
 watch(() => secondesAvantChangement(st.value), (s, avant) => { if (s !== avant && s >= 1 && s <= 3) pulse(grandEl.value, 1.14, 0.55) })
@@ -96,7 +107,7 @@ watch(() => st.value.termine, (t) => {
 
 // Compteur de tours : petit rebond à chaque +1.
 const toursEl = ref(null)
-watch(() => st.value.tours, (n, avant) => { if (n > avant && toursEl.value && !mouvementReduit()) gsap.fromTo(toursEl.value, { scale: 1.5, y: -8 }, { scale: 1, y: 0, duration: 0.7, ease: 'elastic.out(1,.45)' }) })
+watch(() => st.value.tours, (n, avant) => { if (n > avant && toursEl.value && !mouvementReduit()) gsap.fromTo(toursEl.value, { scale: 1.35, y: -8 }, { scale: 1, y: 0, duration: 0.6, ease: 'back.out(1.7)' }) })
 
 // Sons : un signal à chaque changement de segment (départ, travail, repos, minute, fin), un tic sur les 3 dernières secondes.
 let precedent = null
@@ -113,18 +124,22 @@ defineExpose({ fermer })
 </script>
 
 <template>
-  <div ref="racine" class="couche chrono" hidden :style="{ '--ph-fg': `var(--ph-${theme}-fg)`, '--ph-bg-actuel': `var(--ph-${theme}-bg)` }">
+  <div ref="racine" class="couche chrono" hidden :style="{ '--ph-fg': `var(--ph-${affiche}-fg)`, '--ph-bg-actuel': `var(--ph-${affiche}-bg)` }">
     <div class="bgs">
-      <i v-for="p in ['prep', 'travail', 'repos']" :key="p" :data-ph="p" :style="{ opacity: p === theme ? 1 : 0 }"></i>
+      <i v-for="p in ['prep', 'travail', 'repos']" :key="p" :data-ph="p"></i>
     </div>
     <div class="ch-contenu" :data-format="st.format">
-      <div class="ch-phase"><span class="ch-pt"></span><span>{{ etiquette }}</span></div>
+      <div class="ch-haut">
+        <span class="ch-label">{{ item.nom || etiquette }}</span>
+        <TempsTotal :debut="debut" />
+      </div>
+      <p ref="phraseEl" class="ch-phrase">{{ phrase }}</p>
       <p class="ch-sous" :class="{ xl: sousXl }">{{ m.sous }}</p>
 
       <!-- AMRAP, For Time, Time cap : chiffre géant, barre de progression, gros bouton -->
       <template v-if="grosFormat">
         <div class="ch-gros">
-          <div ref="grandEl" class="ch-temps xl" role="timer">{{ m.grand }}</div>
+          <div ref="grandEl" class="ch-temps xl" role="timer"><ChiffresRoulants v-if="grandChiffres" :valeur="m.grand" /><template v-else>{{ m.grand }}</template></div>
           <div v-if="m.anneau !== null" class="barre" aria-hidden="true"><i :style="{ transform: `scaleX(${Math.max(0, Math.min(1, m.anneau))})` }"></i></div>
           <div class="ch-petit">{{ m.petit }}</div>
           <template v-if="st.format === 'amrap'">
@@ -148,7 +163,7 @@ defineExpose({ fermer })
             <circle class="reste" :class="{ lisse }" cx="150" cy="150" r="136" :style="{ strokeDasharray: C, strokeDashoffset: decalage }" />
           </svg>
           <div class="ch-centre">
-            <div ref="grandEl" class="ch-temps" :class="{ 'en-titre': grandTitre, texte: st.termine && st.format === 'fortime' }" role="timer">{{ m.grand }}</div>
+            <div ref="grandEl" class="ch-temps" :class="{ 'en-titre': grandTitre, texte: st.termine && st.format === 'fortime' }" role="timer"><ChiffresRoulants v-if="grandChiffres" :valeur="m.grand" /><template v-else>{{ m.grand }}</template></div>
             <div v-if="m.petit" class="ch-petit">{{ m.petit }}</div>
           </div>
         </div>
@@ -188,59 +203,63 @@ defineExpose({ fermer })
 
 <style scoped>
 .chrono { z-index: 60; color: var(--ph-fg); }
-.bgs { position: absolute; inset: 0; }
-.bgs i { position: absolute; inset: 0; transition: opacity .22s linear; }
+.bgs { position: absolute; inset: 0; z-index: 0; } /* contexte d empilement : les couches de couleur restent sous le contenu */
+.bgs i { position: absolute; inset: 0; opacity: 0; }
 .bgs i[data-ph="prep"] { background: var(--ph-prep-bg); }
 .bgs i[data-ph="travail"] { background: var(--ph-travail-bg); }
 .bgs i[data-ph="repos"] { background: var(--ph-repos-bg); }
-.ch-contenu { position: absolute; inset: 0; padding: var(--haut) var(--pad) var(--bas); display: flex; flex-direction: column; align-items: center; }
-.ch-phase { font-family: var(--font-titre); font-size: 22px; letter-spacing: -.03em; margin-top: 16px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
-.ch-pt { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: currentColor; }
-.ch-sous { margin-top: 8px; font-size: 17px; opacity: .78; text-align: center; font-weight: 500; line-height: 1.3; max-width: 340px; min-height: 22px; }
-.ch-sous.xl { font-family: var(--font-titre); font-size: 30px; letter-spacing: -.04em; line-height: 1.1; opacity: 1; margin-top: 14px; font-weight: 400; }
-.ch-gros { width: 100%; flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.ch-temps { font-family: var(--font-chrono); font-weight: 500; font-size: 112px; letter-spacing: -.05em; font-variant-numeric: tabular-nums; line-height: 1; }
-.ch-temps.xl { font-size: 150px; }
-.ch-temps.en-titre { font-family: var(--font-titre); font-weight: 400; font-size: 42px; letter-spacing: -.05em; line-height: 1.05; text-align: center; padding: 0 18px; }
-.ch-petit { font-size: 22px; font-weight: 500; opacity: .8; margin-top: 8px; font-variant-numeric: tabular-nums; text-align: center; min-height: 6px; }
+.ch-contenu { position: absolute; inset: 0; z-index: 1; padding: var(--haut) var(--pad) var(--bas); display: flex; flex-direction: column; align-items: center; }
+.ch-haut { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: var(--cible); }
+.ch-label { flex: 1; min-width: 0; font-size: calc(var(--e) * 13px); letter-spacing: .12em; text-transform: uppercase; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ch-phrase { font-family: var(--font-titre); font-weight: 400; font-size: calc(var(--e) * 40px); letter-spacing: -.045em; line-height: 1.05; margin-top: 8px; text-align: center; }
+.ch-sous { margin-top: 8px; font-size: calc(var(--e) * 17px); opacity: .85; text-align: center; font-weight: 500; line-height: 1.3; max-width: 340px; min-height: 22px; }
+.ch-sous.xl { font-family: var(--font-titre); font-size: calc(var(--e) * 30px); letter-spacing: -.04em; line-height: 1.1; opacity: 1; margin-top: 14px; font-weight: 400; }
+.ch-gros { width: 100%; flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ch-temps { font-family: var(--font-chrono); font-weight: var(--graisse-chrono); font-size: calc(var(--e-chrono) * 112px); letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1; }
+.ch-temps.xl { font-size: calc(var(--e-chrono) * 150px); }
+.ch-temps.en-titre { font-family: var(--font-titre); font-weight: 400; font-size: calc(var(--e) * 42px); letter-spacing: -.05em; line-height: 1.05; text-align: center; padding: 0 18px; }
+.ch-petit { font-size: calc(var(--e) * 22px); font-weight: 500; opacity: .8; margin-top: 8px; font-variant-numeric: tabular-nums; text-align: center; min-height: 6px; }
 .barre { width: 78%; height: 8px; border-radius: 4px; background: color-mix(in srgb, currentColor 20%, transparent); overflow: hidden; margin-top: 12px; }
 .barre i { display: block; height: 100%; background: currentColor; border-radius: 4px; transform-origin: left; }
 .ch-tours { display: flex; align-items: center; gap: 14px; margin: 8px 0 2px; }
-.ch-tours b { font-family: var(--font-chiffres); font-weight: 400; font-size: 64px; letter-spacing: -.07em; line-height: 1; min-width: 80px; text-align: center; font-variant-numeric: tabular-nums; }
-.ch-tours span { font-size: 15px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; opacity: .75; }
+.ch-tours b { font-family: var(--font-chrono); font-weight: var(--graisse-chrono); font-size: calc(var(--e-chrono) * 72px); letter-spacing: -.01em; line-height: 1; min-width: 80px; text-align: center; font-variant-numeric: tabular-nums; }
+.ch-tours span { font-size: calc(var(--e) * 15px); letter-spacing: .14em; text-transform: uppercase; font-weight: 600; opacity: .75; }
 .moins { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, currentColor 16%, transparent); }
 .moins svg, .pm svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; }
 .liste-mvt { width: 100%; margin: 8px 0; display: flex; flex-direction: column; }
-.liste-mvt li { display: flex; align-items: baseline; gap: 12px; padding: 7px 4px; border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent); font-size: 17px; font-weight: 500; }
-.liste-mvt li b { font-family: var(--font-chiffres); font-weight: 400; min-width: 34px; letter-spacing: -.04em; }
-.btn-gros { width: 100%; min-height: 110px; border-radius: 30px; background: var(--ph-fg); color: var(--ph-bg-actuel); font-family: var(--font-titre); font-size: 30px; letter-spacing: -.04em; font-weight: 400; margin-bottom: 12px; transition: transform .14s var(--ease); flex: none; }
-.btn-gros.geant { min-height: 138px; border-radius: 34px; font-size: 34px; }
-.btn-gros:active { transform: scale(.97); }
+.liste-mvt li { display: flex; align-items: baseline; gap: 12px; padding: 7px 4px; border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent); font-size: calc(var(--e) * 17px); font-weight: 500; }
+.liste-mvt li b { font-family: var(--font-chrono); font-weight: var(--graisse-chrono); min-width: 34px; }
+.btn-gros { width: 100%; min-height: calc(var(--e) * 110px); border-radius: 30px; background: var(--ph-fg); color: var(--ph-bg-actuel); font-family: var(--font-titre); font-size: calc(var(--e) * 30px); letter-spacing: -.04em; font-weight: 400; margin-bottom: 12px; transition: transform .32s var(--ressort); flex: none; }
+.btn-gros.geant { min-height: calc(var(--e) * 138px); border-radius: 34px; font-size: calc(var(--e) * 34px); }
+.btn-gros:active { transform: scale(.97); transition-duration: .1s; }
 .btn-gros:disabled { opacity: .35; }
-.ch-anneau { position: relative; width: 300px; height: 300px; margin: auto 0; display: grid; place-items: center; }
-.ch-anneau.titre { width: 100%; height: 300px; }
+.ch-anneau { position: relative; width: calc(var(--e-chrono) * 300px); max-width: 100%; aspect-ratio: 1; margin: auto 0; display: grid; place-items: center; }
+.ch-anneau.titre { width: 100%; aspect-ratio: auto; height: calc(var(--e-chrono) * 300px); }
 .ch-anneau svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
 .piste-a { fill: none; stroke: currentColor; stroke-opacity: .2; stroke-width: 14; }
 .reste { fill: none; stroke: currentColor; stroke-width: 14; stroke-linecap: round; }
 .reste.lisse { transition: stroke-dashoffset 1s linear; }
 .ch-centre { position: relative; display: flex; flex-direction: column; align-items: center; }
-.ch-temps.texte { font-size: 76px; }
-.reps-plus { width: 100%; background: color-mix(in srgb, currentColor 14%, transparent); border-radius: 24px; padding: 12px 14px 12px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-weight: 600; font-size: 16px; }
+.ch-temps.texte { font-size: calc(var(--e-chrono) * 76px); }
+.reps-plus { width: 100%; background: color-mix(in srgb, currentColor 14%, transparent); border-radius: 24px; padding: 12px 14px 12px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-weight: 600; font-size: calc(var(--e) * 16px); }
 .pm { display: flex; align-items: center; gap: 6px; }
-.pm button { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, currentColor 16%, transparent); }
-.pm b { font-family: var(--font-chiffres); font-weight: 400; font-size: 40px; min-width: 64px; text-align: center; letter-spacing: -.06em; }
+.pm button { width: calc(var(--e) * 56px); height: calc(var(--e) * 56px); border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, currentColor 16%, transparent); }
+.pm b { font-family: var(--font-chrono); font-weight: var(--graisse-chrono); font-size: calc(var(--e) * 44px); min-width: 64px; text-align: center; }
 .ch-bas { width: 100%; display: flex; flex-direction: column; gap: 10px; flex: none; }
 .rang-btn { display: flex; gap: 10px; }
-.rang-btn button { flex: 1; min-height: 64px; border-radius: 22px; font-weight: 600; font-size: 17px; background: color-mix(in srgb, currentColor 16%, transparent); transition: transform .14s var(--ease); }
-.rang-btn button:active { transform: scale(.96); }
+.rang-btn button { flex: 1; min-height: calc(var(--e) * 64px); border-radius: 22px; font-weight: 600; font-size: calc(var(--e) * 17px); background: color-mix(in srgb, currentColor 16%, transparent); transition: transform .32s var(--ressort); }
+.rang-btn button:active { transform: scale(.96); transition-duration: .1s; }
 .rang-btn button.plein { background: var(--ph-fg); color: var(--ph-bg-actuel); }
 .minute-flash { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; text-align: center; background: var(--ph-fg); color: var(--ph-bg-actuel); pointer-events: none; opacity: 0; }
 .mf-n { font-family: var(--font-titre); font-size: 22px; letter-spacing: .1em; text-transform: uppercase; }
 .mf-m { font-family: var(--font-titre); font-size: 54px; letter-spacing: -.05em; line-height: 1.02; margin-top: 10px; padding: 0 20px; }
+/* Grand affichage : le chiffre et le bouton prennent la place de la liste des mouvements */
+:global(html[data-grand="oui"]) .liste-mvt { display: none; }
 @media (max-height: 760px) {
   .liste-mvt { display: none; }
-  .ch-anneau { width: 250px; height: 250px; } .ch-temps { font-size: 92px; } .ch-temps.xl { font-size: 124px; }
-  .btn-gros.geant { min-height: 112px; }
+  .ch-anneau { width: calc(var(--e-chrono) * 250px); } .ch-temps { font-size: calc(var(--e-chrono) * 92px); } .ch-temps.xl { font-size: calc(var(--e-chrono) * 124px); }
+  .ch-phrase { font-size: calc(var(--e) * 32px); }
+  .btn-gros.geant { min-height: calc(var(--e) * 112px); }
 }
-@media (prefers-reduced-motion: reduce) { .bgs i, .btn-gros, .rang-btn button, .reste.lisse { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .btn-gros, .rang-btn button, .reste.lisse { transition: none; } }
 </style>

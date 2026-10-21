@@ -86,6 +86,43 @@ export function fractionExercice(item) {
 
 export const exerciceComplet = (item) => (item.type === 'circuit' ? !!(item.faite || item.passee) : item.series.every((s) => s.faite))
 
+/**
+ * Repères de bloc de chaque élément de la séance (mêmes lettres que l'overview du Workout) :
+ * les exercices simples consécutifs forment un bloc ; un superset et un circuit sont un bloc chacun.
+ * @returns {{ lettre: string, rang: number, taille: number }[]}  « Bloc A · 1 sur 2 » = lettre A, rang 1, taille 2
+ */
+export function reperesBlocs(items) {
+  const reperes = []
+  let lettre = -1
+  let ouvert = null // bloc d'exercices simples en cours : { lettre, debut }
+  const L = (n) => String.fromCharCode(65 + (n % 26))
+  items.forEach((it, i) => {
+    if (it.type === 'circuit') { ouvert = null; reperes.push({ lettre: L(++lettre), rang: 1, taille: 1 }); return }
+    if (it.supersetId) {
+      ouvert = null
+      const debut = reperes.length && items[i - 1]?.supersetId === it.supersetId ? reperes[i - 1].lettre : L(++lettre)
+      reperes.push({ lettre: debut, rang: (it.supersetIndex ?? 0) + 1, taille: it.supersetTaille || 2 })
+      return
+    }
+    if (!ouvert) ouvert = { lettre: L(++lettre), debut: i }
+    reperes.push({ lettre: ouvert.lettre, rang: i - ouvert.debut + 1, taille: 0 })
+  })
+  // taille d'un bloc d'exercices simples = nombre d'éléments qui portent sa lettre (hors superset)
+  reperes.forEach((r, i) => {
+    if (items[i].type !== 'circuit' && !items[i].supersetId) r.taille = reperes.filter((x, j) => x.lettre === r.lettre && items[j].type !== 'circuit' && !items[j].supersetId).length
+  })
+  return reperes
+}
+
+/** Temps total de séance : 754000 ms -> « 12:34 » (« 1:02:03 » au-delà d'une heure). */
+export function tempsTotal(ms) {
+  const t = Math.max(0, Math.floor(ms / 1000))
+  const h = Math.floor(t / 3600)
+  const m = Math.floor((t % 3600) / 60)
+  const s = String(t % 60).padStart(2, '0')
+  return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`
+}
+
 /** 3725 s -> « 62 min » (durée lisible de l'écran de fin). */
 export const minutesDe = (sec) => Math.max(1, Math.round(sec / 60))
 

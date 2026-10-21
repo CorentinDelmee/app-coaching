@@ -1,12 +1,17 @@
 <script setup>
-// Chrono plein écran d'une série : préparation (« Prêt ? »), temps de travail, repos. Cercle depuis le bouton touché.
+// Chrono plein écran d'une série : préparation, temps de travail, repos. Cercle depuis le bouton touché.
+// V2 : petite phrase au-dessus (« Respirez. »), chiffres en roulette qui descendent, balayage de couleur entre les phases, temps total de séance.
 // Le temps vient du moteur de séance (échéances absolues) : ce composant affiche, il ne compte pas.
-import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onMounted, onBeforeUnmount, ref, toRef, watch } from 'vue'
 import { gsap } from 'gsap'
 import Icone from '../Icone.vue'
+import ChiffresRoulants from '../ChiffresRoulants.vue'
+import TempsTotal from './TempsTotal.vue'
 import { ouvrirCercle, fermerCercle, nettoyer, mouvementReduit } from '../../anim/transitions.js'
 import { formaterChrono } from '../../domain/format.js'
+import { phraseSerie } from '../../domain/phrases.js'
 import { useMaintenant } from '../../composables/useMaintenant.js'
+import { useBalayageCouleur } from '../../composables/useBalayageCouleur.js'
 import { SONS } from '../../lib/son.js'
 
 const props = defineProps({
@@ -14,6 +19,8 @@ const props = defineProps({
   fin: { type: Number, required: true },         // échéance (ms, horloge de l'app)
   duree: { type: Number, required: true },       // durée totale de la phase (ms), pour l'anneau
   sous: { type: String, default: '' },
+  etiquetteExo: { type: String, default: '' },   // nom de l'exercice, en petites capitales en haut à gauche
+  debut: { type: Number, default: 0 },           // début de la séance (temps total affiché en haut)
   src: { type: Object, default: null },         // bouton d'où naît le cercle
   reductible: { type: Boolean, default: false } // le repos peut se réduire en pastille
 })
@@ -21,12 +28,15 @@ const emit = defineEmits(['plus', 'passer', 'terminer', 'annuler', 'reduire', 'f
 
 const racine = ref(null)
 const temps = ref(null)
+const phraseEl = ref(null)
 const maintenant = useMaintenant()
 const restant = computed(() => Math.max(0, Math.ceil((props.fin - maintenant.value) / 1000)))
 const fraction = computed(() => Math.min(1, Math.max(0, (props.fin - maintenant.value) / props.duree)))
 const C = 2 * Math.PI * 136 // circonférence de l'anneau (rayon 136 dans un viewBox 300)
 
-const etiquette = computed(() => ({ prep: 'Prêt ?', travail: 'Allez !', repos: 'Repos' }[props.phase]))
+const affiche = useBalayageCouleur(racine, toRef(props, 'phase'))
+const etiquette = computed(() => ({ prep: 'Préparation', travail: 'Travail', repos: 'Repos' }[props.phase]))
+const phrase = computed(() => phraseSerie(props.phase, restant.value))
 const texteTemps = computed(() => formaterChrono(restant.value * 1000))
 const decalage = computed(() => C * (1 - fraction.value))
 
@@ -38,16 +48,18 @@ onMounted(() => {
   setTimeout(() => { contenu.style.pointerEvents = '' }, 300)
   if (!mouvementReduit()) gsap.fromTo(contenu, { opacity: 0 }, { opacity: 1, duration: 0.3, delay: 0.22, ease: 'power1.out' })
 })
-onBeforeUnmount(() => nettoyer(racine.value))
+onBeforeUnmount(() => { nettoyer(racine.value); gsap.killTweensOf([temps.value, phraseEl.value]) })
 
 // Petit coup de pouce visuel : changement de phase, et chaque seconde des 3 dernières.
 function pulse(echelle, duree) {
-  if (temps.value && !mouvementReduit()) gsap.fromTo(temps.value, { scale: echelle }, { scale: 1, duration: duree, ease: 'expo.out' })
+  if (temps.value && !mouvementReduit()) gsap.fromTo(temps.value, { scale: echelle }, { scale: 1, duration: duree, ease: 'back.out(1.5)' })
 }
 watch(() => props.phase, () => pulse(1.08, 0.6))
 // « +15 s » : l'échéance recule, le chiffre fait un petit saut (le geste a bien été pris en compte)
 watch(() => props.fin, (f, avant) => { if (avant && f - avant > 1000) pulse(1.1, 0.5) })
-watch(restant, (r) => { if (r >= 1 && r <= 3) { pulse(1.14, 0.55); SONS.tic() } })
+watch(restant, (r) => { if (r >= 1 && r <= 3) { pulse(1.1, 0.55); SONS.tic() } })
+// La phrase monte d'un cran quand elle change (le texte lui-même vient de domain/phrases.js)
+watch(phrase, () => { if (phraseEl.value && !mouvementReduit()) gsap.fromTo(phraseEl.value, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out' }) })
 
 function fermer(vers) {
   fermerCercle(racine.value, vers, { onFini: () => emit('ferme') })
@@ -56,22 +68,26 @@ defineExpose({ fermer })
 </script>
 
 <template>
-  <div ref="racine" class="couche chrono" hidden :style="{ '--ph-fg': `var(--ph-${phase}-fg)`, '--ph-bg-actuel': `var(--ph-${phase}-bg)` }">
+  <div ref="racine" class="couche chrono" hidden :style="{ '--ph-fg': `var(--ph-${affiche}-fg)`, '--ph-bg-actuel': `var(--ph-${affiche}-bg)` }">
     <div class="bgs">
-      <i v-for="p in ['prep', 'travail', 'repos']" :key="p" :data-ph="p" :style="{ opacity: p === phase ? 1 : 0 }"></i>
+      <i v-for="p in ['prep', 'travail', 'repos']" :key="p" :data-ph="p"></i>
     </div>
     <div class="ch-contenu">
-      <button v-if="reductible" class="reduire" type="button" aria-label="Réduire le repos" @click="emit('reduire')"><Icone nom="bas" /></button>
-      <div class="ch-phase"><span class="ch-pt"></span><span>{{ etiquette }}</span></div>
-      <p class="ch-sous">{{ sous }}</p>
+      <div class="ch-haut">
+        <button v-if="reductible" class="reduire" type="button" aria-label="Réduire le repos" @click="emit('reduire')"><Icone nom="bas" /></button>
+        <span class="ch-label">{{ etiquetteExo || etiquette }}</span>
+        <TempsTotal :debut="debut" />
+      </div>
+      <p ref="phraseEl" class="ch-phrase">{{ phrase }}</p>
       <div class="ch-anneau">
         <svg viewBox="0 0 300 300" aria-hidden="true">
           <circle class="piste-a" cx="150" cy="150" r="136" />
           <circle class="reste" cx="150" cy="150" r="136" :style="{ strokeDasharray: C, strokeDashoffset: decalage }" />
         </svg>
-        <div ref="temps" class="ch-temps" role="timer" :aria-label="`${etiquette} : ${texteTemps}`">{{ texteTemps }}</div>
+        <div ref="temps" class="ch-temps" role="timer" :aria-label="`${etiquette} : ${texteTemps}`"><ChiffresRoulants :valeur="texteTemps" /></div>
       </div>
       <div class="ch-bas">
+        <p class="ch-sous">{{ sous }}</p>
         <div v-if="phase === 'repos'" class="rang-btn">
           <button type="button" @click="emit('plus')">+15 s</button>
           <button type="button" class="plein" @click="emit('passer')">Passer</button>
@@ -91,27 +107,28 @@ defineExpose({ fermer })
 
 <style scoped>
 .chrono { z-index: 60; color: var(--ph-fg); }
-.bgs { position: absolute; inset: 0; }
-.bgs i { position: absolute; inset: 0; transition: opacity .22s linear; }
+.bgs { position: absolute; inset: 0; z-index: 0; } /* contexte d empilement : les couches de couleur restent sous le contenu */
+.bgs i { position: absolute; inset: 0; opacity: 0; }
 .bgs i[data-ph="prep"] { background: var(--ph-prep-bg); }
 .bgs i[data-ph="travail"] { background: var(--ph-travail-bg); }
 .bgs i[data-ph="repos"] { background: var(--ph-repos-bg); }
-.ch-contenu { position: absolute; inset: 0; padding: var(--haut) var(--pad) var(--bas); display: flex; flex-direction: column; align-items: center; }
-.reduire { position: absolute; left: var(--pad); top: var(--haut); width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, currentColor 16%, transparent); }
+.ch-contenu { position: absolute; inset: 0; z-index: 1; padding: var(--haut) var(--pad) var(--bas); display: flex; flex-direction: column; align-items: center; }
+.ch-haut { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: var(--cible); }
+.ch-label { flex: 1; min-width: 0; font-size: calc(var(--e) * 13px); letter-spacing: .12em; text-transform: uppercase; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.reduire { width: var(--cible); height: var(--cible); border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, currentColor 16%, transparent); flex: none; }
 .reduire svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-.ch-phase { font-family: var(--font-titre); font-size: 22px; letter-spacing: -.03em; margin-top: 16px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
-.ch-pt { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: currentColor; }
-.ch-sous { margin-top: 8px; font-size: 17px; opacity: .78; text-align: center; font-weight: 500; line-height: 1.3; max-width: 320px; min-height: 22px; }
-.ch-anneau { position: relative; width: 300px; height: 300px; margin: auto 0; display: grid; place-items: center; }
+.ch-phrase { font-family: var(--font-titre); font-weight: 400; font-size: calc(var(--e) * 44px); letter-spacing: -.045em; line-height: 1.05; margin-top: 10px; text-align: center; }
+.ch-anneau { position: relative; width: calc(var(--e-chrono) * 300px); max-width: 100%; aspect-ratio: 1; margin: auto 0; display: grid; place-items: center; }
 .ch-anneau svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
 .piste-a { fill: none; stroke: currentColor; stroke-opacity: .2; stroke-width: 14; }
 .reste { fill: none; stroke: currentColor; stroke-width: 14; stroke-linecap: round; }
-.ch-temps { font-family: var(--font-chrono); font-weight: 500; font-size: 112px; letter-spacing: -.05em; font-variant-numeric: tabular-nums; line-height: 1; }
+.ch-temps { font-family: var(--font-chrono); font-weight: var(--graisse-chrono); font-size: calc(var(--e-chrono) * 112px); letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1; }
 .ch-bas { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+.ch-sous { font-size: calc(var(--e) * 17px); opacity: .85; text-align: center; font-weight: 500; line-height: 1.3; min-height: 22px; }
 .rang-btn { display: flex; gap: 10px; }
-.rang-btn button { flex: 1; min-height: 64px; border-radius: 22px; font-weight: 600; font-size: 17px; background: color-mix(in srgb, currentColor 16%, transparent); transition: transform .14s var(--ease); }
-.rang-btn button:active { transform: scale(.96); }
+.rang-btn button { flex: 1; min-height: calc(var(--e) * 64px); border-radius: 22px; font-weight: 600; font-size: calc(var(--e) * 17px); background: color-mix(in srgb, currentColor 16%, transparent); transition: transform .32s var(--ressort); }
+.rang-btn button:active { transform: scale(.96); transition-duration: .1s; }
 .rang-btn button.plein { background: var(--ph-fg); color: var(--ph-bg-actuel); }
-@media (max-height: 760px) { .ch-anneau { width: 250px; height: 250px; } .ch-temps { font-size: 92px; } }
-@media (prefers-reduced-motion: reduce) { .bgs i, .rang-btn button { transition: none; } }
+@media (max-height: 760px) { .ch-anneau { width: calc(var(--e-chrono) * 250px); } .ch-temps { font-size: calc(var(--e-chrono) * 92px); } .ch-phrase { font-size: calc(var(--e) * 36px); } }
+@media (prefers-reduced-motion: reduce) { .rang-btn button { transition: none; } }
 </style>

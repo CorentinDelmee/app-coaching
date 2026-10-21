@@ -199,3 +199,24 @@ describe('chrono de circuit : ce que l\'écran affiche', () => {
     }
   })
 })
+
+import { reperesBlocs, tempsTotal } from '../../src/domain/seanceUi.js'
+describe('repères de bloc et temps total', () => {
+  const ex = (id) => ({ id, type: 'exercice', supersetId: null, series: [] })
+  const ss = (id, sid, j, n) => ({ id, type: 'exercice', supersetId: sid, supersetIndex: j, supersetTaille: n, series: [] })
+  const ci = (id) => ({ id, type: 'circuit' })
+  it('exercices consécutifs = un bloc ; superset et circuit = un bloc chacun', () => {
+    const r = reperesBlocs([ex('a'), ex('b'), ss('c', 's', 0, 2), ss('d', 's', 1, 2), ex('e'), ci('f'), ci('g')])
+    expect(r.map((x) => x.lettre)).toEqual(['A', 'A', 'B', 'B', 'C', 'D', 'E'])
+    expect(r[0]).toEqual({ lettre: 'A', rang: 1, taille: 2 })
+    expect(r[1]).toEqual({ lettre: 'A', rang: 2, taille: 2 })
+    expect(r[3]).toEqual({ lettre: 'B', rang: 2, taille: 2 })
+    expect(r[4]).toEqual({ lettre: 'C', rang: 1, taille: 1 })
+  })
+  it('temps total lisible', () => {
+    expect(tempsTotal(0)).toBe('0:00')
+    expect(tempsTotal(754000)).toBe('12:34')
+    expect(tempsTotal(3723000)).toBe('1:02:03')
+    expect(tempsTotal(-5)).toBe('0:00')
+  })
+})
