@@ -147,16 +147,16 @@
     {
       "id": "V2.3",
       "titre": "Application de la V2 à l'app (design, ambiances, Grand affichage, séance, circuits, check-in)",
-      "statut": "en_cours",
-      "avancement": 50,
+      "statut": "fait",
+      "avancement": 100,
       "qui": "developpeur",
-      "note": "Socle fait (ambiances, Grand affichage, menu M5, dashboard, coaching, programme, overview, profil) ; reste séance/circuits/check-in"
+      "note": "Séance page par page, chronos M2, circuits en section, option facultative, check-in M2 ; 369 tests verts"
     },
     {
       "id": "V2.4",
       "titre": "Tests mobile + revue finale des animations",
-      "statut": "a_faire",
-      "avancement": 0,
+      "statut": "en_cours",
+      "avancement": 10,
       "qui": "testeur + frontend-senior"
     }
   ],
@@ -484,6 +484,10 @@
     {
       "date": "2026-10-21",
       "texte": "L'app a son nouveau look V2 hors séance : 3 ambiances et « Grand affichage » dans le profil, menu M5, dashboard jaune. Choix ouverts modifiables dans src/config/apparence.js."
+    },
+    {
+      "date": "2026-10-21",
+      "texte": "Séance, circuits (avec option facultative) et check-in refaits au niveau de la maquette V2."
     }
   ],
   "prochaines_etapes": [
