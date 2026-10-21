@@ -14,8 +14,8 @@
   --alerte: #F2B36B;
   --r: 12px;
   --ease: cubic-bezier(.23, 1, .32, 1);
-  --font-titre: 'Unbounded', 'Arial Black', system-ui, sans-serif;
-  --font-texte: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-titre: 'Syne', system-ui, sans-serif;
+  --font-texte: 'Albert Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   display: grid; grid-template-columns: 220px 1fr; min-height: 100dvh;
   background: var(--fond); color: var(--texte); font: 400 15px/1.45 var(--font-texte);
 }

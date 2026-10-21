@@ -181,14 +181,7 @@ export function compter(el, de, a, opts = {}) {
   })
 }
 
-/* ---------- Ressort discret au relâchement d'un bouton ---------- */
-let ressortInstalle = false
-export function installerRessort() {
-  if (ressortInstalle || typeof document === 'undefined') return
-  ressortInstalle = true
-  document.addEventListener('pointerup', (e) => {
-    const b = e.target.closest && e.target.closest('.gros, .rond, .btn-gros, .rang-btn button, .btn-menu, .btn-ressort')
-    if (!b || rm() || b.dataset.sansRessort) return
-    gsap.fromTo(b, { scale: 0.955 }, { scale: 1, duration: 0.6, ease: 'back.out(2.6)', overwrite: 'auto', clearProps: 'transform' })
-  }, true)
-}
+/* ---------- Ressort au relâchement d'un bouton ----------
+   Maquette V2 : fait en CSS (enfoncement 100 ms, relâchement 320 ms rebondi, variable --ressort de tokens.css), interruptible et sans JS.
+   Conservée vide pour les écrans qui l'appellent encore. */
+export function installerRessort() {}

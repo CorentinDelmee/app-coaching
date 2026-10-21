@@ -1,90 +1,108 @@
-/* Design tokens — direction M1 « Atelier » (design/DESIGN.md). SEUL fichier où les couleurs sont écrites en dur.
-   Les composants n'utilisent que des variables : on peut aligner ces valeurs avec le site sans toucher au reste.
-   Ambiance : attribut data-ambiance sur <html> (sombre par défaut, clair, aplat). Accent : --couleur. */
+/* Design tokens — maquette V2 consolidée (design-v2/DESIGN.md, base M5 « Profondeur »). SEUL fichier où les couleurs sont écrites en dur.
+   Les composants n'utilisent que des variables. Réglages posés sur <html> par src/lib/apparence.js :
+   data-ambiance = clair (défaut) | sombre | bleu · data-grand = oui | non · data-chrono = barlow | inter | azeret · data-aplat = fonce | blanc.
+   Accent jaune : TOUJOURS du texte foncé posé dessus ; jamais de jaune en texte ni en trait fin sur fond clair (→ --accent-lisible). */
 
-/* Polices auto-hébergées (latin, variables) : précachées par le service worker, donc disponibles hors connexion. */
-@font-face {
-  font-family: 'Unbounded'; font-style: normal; font-weight: 200 900; font-display: swap;
-  src: url('../assets/fonts/unbounded-latin-wght-normal.woff2') format('woff2-variations');
-}
-@font-face {
-  font-family: 'Onest'; font-style: normal; font-weight: 100 900; font-display: swap;
-  src: url('../assets/fonts/onest-latin-wght-normal.woff2') format('woff2-variations');
-}
+/* Polices auto-hébergées (latin) : précachées par le service worker, donc disponibles hors connexion. */
+@font-face { font-family: 'Syne'; font-style: normal; font-weight: 400 800; font-display: swap; src: url('../assets/fonts/syne-latin-wght-normal.woff2') format('woff2-variations'); }
+@font-face { font-family: 'Albert Sans'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('../assets/fonts/albert-sans-latin-wght-normal.woff2') format('woff2-variations'); }
+/* Chiffres du chrono : Barlow Semi Condensed 600 (choix provisoire, src/config/apparence.js) ; les deux autres restent disponibles tant que Corentin n'a pas tranché. */
+@font-face { font-family: 'Barlow Semi Condensed'; font-style: normal; font-weight: 600; font-display: swap; src: url('../assets/fonts/barlow-semi-condensed-latin-600-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('../assets/fonts/inter-tight-latin-wght-normal.woff2') format('woff2-variations'); }
+@font-face { font-family: 'Azeret Mono'; font-style: normal; font-weight: 500; font-display: swap; src: url('../assets/fonts/azeret-mono-latin-500-normal.woff2') format('woff2'); }
 
 :root {
-  --couleur: #E5486A;             /* accent : framboise (lagon #2FB8B0, citron #D8E04A, sauge #9DC08B, lilas #A99BEA, corail #F28C86) */
-  --encre: #1F1B18;               /* texte posé sur l'accent */
-  --creme: #F6F0E6;
-  --font-titre: 'Unbounded', 'Arial Black', system-ui, sans-serif;
-  --font-texte: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-chiffres: 'Unbounded', system-ui, sans-serif;
-  --font-chrono: 'Onest', system-ui, sans-serif;   /* chiffres tabulaires fiables */
-  --r-carte: 26px;
+  --font-titre: 'Syne', system-ui, sans-serif;
+  --font-texte: 'Albert Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-chiffres: 'Syne', system-ui, sans-serif;
+  --font-chrono: 'Barlow Semi Condensed', system-ui, sans-serif;   /* remplacée selon data-chrono ; chiffres tabulaires vérifiés */
+  --graisse-chrono: 600;
+
+  /* Échelle « Grand affichage » : 1 (normal) ou 1.2 (grand) ; chronos 1 ou 1.12 (déjà presque pleine largeur).
+     Écrire les tailles qui doivent grossir en calc(var(--e) * 16px), les chronos en calc(var(--e-chrono) * 124px). */
+  --e: 1;
+  --e-chrono: 1;
+  --cible: calc(var(--e) * 48px);   /* zone à toucher minimale (≥ 48 px) */
+
+  /* Accent jaune + texte foncé dessus (12,1 : 1) */
+  --jaune: #FFD43B;
+  --encre: #1A1B1E;
+  --creme: #F1F2EF;
+  --couleur: var(--jaune);            /* ancien nom de l'accent, encore lu par l'espace coach et d'anciens composants */
+  --accent: var(--jaune);
+  --accent-texte: var(--encre);
+  --on-accent-doux: rgba(26, 27, 30, .68);
+  --aplat-texte: var(--encre);        /* texte de l'aplat du tableau de bord (réglage : data-aplat) */
+  --ok: #46D9A8; --ok-texte: #0F2A22; /* validé : fond vert + texte foncé (8,6 : 1) */
+
+  --rayon: 28px;
+  --r-carte: 28px;
   --r-btn: 22px;
   --pad: 16px;
   --gap: 12px;
   --haut: calc(env(safe-area-inset-top, 0px) + 24px);
   --bas: max(env(safe-area-inset-bottom, 0px), 16px);
   --ease: cubic-bezier(.23, 1, .32, 1);
+  --ressort: cubic-bezier(.34, 1.45, .64, 1);   /* relâchement d'un bouton : rebond léger (M4), appui 100 ms */
+  --ease-vaul: cubic-bezier(.32, .72, 0, 1);
   --scrim: rgba(0, 0, 0, .5);
-  --ombre-feuille: 0 -20px 60px rgba(0, 0, 0, .35);
-  --ombre-tiroir: -20px 0 60px rgba(0, 0, 0, .3);
-  --ombre-flottant: 0 8px 24px rgba(0, 0, 0, .3);   /* bouton menu qui flotte au-dessus du contenu qui défile */
 }
 
-/* Ambiance 1 : sombre (anthracite chaud) */
-:root, [data-ambiance="sombre"] {
-  --fond: #25221F;
-  --surface: #302C28;
-  --surface-2: #3B3631;
-  --texte: #F3EDE4;
-  --texte-doux: rgba(243, 237, 228, .62);
-  --filet: rgba(243, 237, 228, .12);
-  --accent: var(--couleur);
-  --accent-texte: var(--encre);
-  --accent-lisible: var(--couleur);
-  --on-accent-doux: rgba(31, 27, 24, .66);
-  --bien: #8FD3A0;
-  --ph-prep-bg: #3B3631; --ph-prep-fg: #F3EDE4;
-  --ph-travail-bg: var(--couleur); --ph-travail-fg: #1F1B18;
-  --ph-repos-bg: #2A3F6B; --ph-repos-fg: #E8EEFA;
-  --ombre: 0 18px 50px rgba(0, 0, 0, .35);
+/* Ambiance 1 : clair (défaut) */
+:root, html[data-ambiance="clair"] {
+  --fond: #E3E5E8; --fond-profond: #D2D5DA; --surface: #FFFFFF; --surface-2: #EEF0F2;
+  --texte: #1B1D20; --texte-doux: #565B62; --filet: rgba(27, 29, 32, .13);
+  --ombre: rgba(40, 50, 70, .26);
+  --accent-lisible: #1B1D20;          /* accent utilisé comme trait / texte sur le fond : jamais de jaune sur clair */
+  --focus: #1B1D20;
+  --bien: #17684D;                    /* vert lisible en texte sur clair (5,3 : 1) */
+  --repos-bg: #CFE0F2; --repos-fg: #16233D;
+  --prep-bg: #1B1D20;  --prep-fg: #F1F2EF;
 }
-/* Ambiance 2 : clair (crème / papier) */
-[data-ambiance="clair"] {
-  --fond: #F4EEE3;
-  --surface: #FBF8F2;
-  --surface-2: #E9E0D1;
-  --texte: #26211D;
-  --texte-doux: rgba(38, 33, 29, .62);
-  --filet: rgba(38, 33, 29, .13);
-  --accent: var(--couleur);
-  --accent-texte: var(--encre);
-  --accent-lisible: color-mix(in srgb, var(--couleur) 62%, #1F1B18);
-  --on-accent-doux: rgba(31, 27, 24, .66);
-  --bien: #2F7D4A;
-  --ph-prep-bg: #E4DACB; --ph-prep-fg: #26211D;
-  --ph-travail-bg: var(--couleur); --ph-travail-fg: #1F1B18;
-  --ph-repos-bg: #CFE0F2; --ph-repos-fg: #1F2A44;
-  --ombre: 0 18px 50px rgba(60, 40, 20, .18);
-  --ombre-flottant: 0 8px 24px rgba(60, 40, 20, .16);
+/* Ambiance 2 : sombre */
+html[data-ambiance="sombre"] {
+  --fond: #202224; --fond-profond: #16181A; --surface: #2B2E31; --surface-2: #363A3E;
+  --texte: #F1F2EF; --texte-doux: #A4A8AA; --filet: rgba(241, 242, 239, .13);
+  --ombre: rgba(0, 0, 0, .5);
+  --accent-lisible: var(--jaune);
+  --focus: var(--jaune);
+  --bien: var(--ok);
+  --repos-bg: #2A3F6B; --repos-fg: #E8EEFA;
+  --prep-bg: #F1F2EF;  --prep-fg: #1B1D20;
 }
-/* Ambiance 3 : aplat (le fond EST la couleur d'accent, texte encre) */
-[data-ambiance="aplat"] {
-  --fond: var(--couleur);
-  --surface: color-mix(in srgb, var(--couleur) 86%, #1F1B18);
-  --surface-2: color-mix(in srgb, var(--couleur) 72%, #1F1B18);
-  --texte: #1F1B18;
-  --texte-doux: rgba(31, 27, 24, .68);
-  --filet: rgba(31, 27, 24, .2);
-  --accent: #1F1B18;
-  --accent-texte: #F6F0E6;
-  --accent-lisible: #1F1B18;
-  --on-accent-doux: rgba(246, 240, 230, .7);
-  --bien: #1F1B18;
-  --ph-prep-bg: color-mix(in srgb, var(--couleur) 80%, #fff); --ph-prep-fg: #1F1B18;
-  --ph-travail-bg: #1F1B18; --ph-travail-fg: #F6F0E6;
-  --ph-repos-bg: color-mix(in srgb, var(--couleur) 45%, #fff); --ph-repos-fg: #1F1B18;
-  --ombre: 0 18px 50px rgba(0, 0, 0, .25);
+/* Ambiance 3 : bleu profond */
+html[data-ambiance="bleu"] {
+  --fond: #141B33; --fond-profond: #0B1024; --surface: #1F2A4D; --surface-2: #2A3866;
+  --texte: #EAF0FF; --texte-doux: #9DAAD0; --filet: rgba(234, 240, 255, .14);
+  --ombre: rgba(2, 5, 20, .6);
+  --accent-lisible: var(--jaune);
+  --focus: var(--jaune);
+  --bien: var(--ok);
+  --repos-bg: #31508F; --repos-fg: #F2F6FF;
+  --prep-bg: #EAF0FF;  --prep-fg: #141B33;
 }
+
+/* Alias des phases de chrono (anciens noms, lus par la séance) : préparation, travail (jaune + encre), repos */
+:root {
+  --ph-prep-bg: var(--prep-bg); --ph-prep-fg: var(--prep-fg);
+  --ph-travail-bg: var(--accent); --ph-travail-fg: var(--accent-texte);
+  --ph-repos-bg: var(--repos-bg); --ph-repos-fg: var(--repos-fg);
+  --ombre-feuille: 0 -20px 60px var(--ombre);
+  --ombre-tiroir: -20px 0 60px var(--ombre);
+  --ombre-flottant: 0 8px 24px var(--ombre);
+}
+
+html[data-aplat="blanc"] { --aplat-texte: #FFFFFF; }
+html[data-grand="oui"] { --e: 1.2; --e-chrono: 1.12; }
+
+/* Police des chiffres du chrono (choix provisoire dans src/config/apparence.js) */
+html[data-chrono="barlow"] { --font-chrono: 'Barlow Semi Condensed', system-ui, sans-serif; --graisse-chrono: 600; }
+html[data-chrono="inter"]  { --font-chrono: 'Inter Tight', system-ui, sans-serif; --graisse-chrono: 600; }
+html[data-chrono="azeret"] { --font-chrono: 'Azeret Mono', ui-monospace, monospace; --graisse-chrono: 500; }
+
+/* Teintes de carte / page (M5) : --tb = fond, --tf = texte */
+[data-teinte="accent"]  { --tb: var(--accent);  --tf: var(--accent-texte); }
+[data-teinte="inverse"] { --tb: var(--texte);   --tf: var(--fond); }
+[data-teinte="surface"] { --tb: var(--surface); --tf: var(--texte); }
+[data-teinte="aplat"]   { --tb: var(--accent);  --tf: var(--aplat-texte); }
+[data-teinte="encre"]   { --tb: var(--encre);   --tf: var(--creme); }

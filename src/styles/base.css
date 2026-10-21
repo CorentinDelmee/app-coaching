@@ -1,6 +1,8 @@
 /* Base commune : remise à zéro légère, typographie, boutons de la maison. Aucune couleur en dur (voir tokens.css). */
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; background: var(--fond); color: var(--texte); font-family: var(--font-texte); }
+/* Texte courant : suit le Grand affichage (--e) */
+body { font-size: calc(var(--e) * 16px); line-height: 1.4; }
 /* App plein écran : pas de « tirer pour rafraîchir » qui recharge en pleine séance, pas de gonflement du texte en paysage */
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior: none; }
 body { -webkit-font-smoothing: antialiased; overscroll-behavior: none; }
@@ -10,32 +12,32 @@ button, [role="button"], label.case { -webkit-user-select: none; user-select: no
 
 /* Retour d'appui commun : tout ce qui se touche s'enfonce un peu. Spécificité nulle (:where) : les composants qui ont
    leur propre :active (cartes, lignes, chronos…) ou une position en transform (pastille de repos) gardent la leur. */
-:where(button, a.gros, [role="button"], label.case) { transition: transform .14s var(--ease); }
-:where(button, a.gros, [role="button"], label.case):where(:active:not(:disabled)) { transform: scale(.97); }
+:where(button, a.gros, [role="button"], label.case) { transition: transform .32s var(--ressort); }
+:where(button, a.gros, [role="button"], label.case):where(:active:not(:disabled)) { transform: scale(.97); transition-duration: .1s; }
 [hidden] { display: none !important; }
 ol, ul { list-style: none; }
 a { color: inherit; }
 b { font-weight: 600; }
-:focus-visible { outline: 3px solid var(--accent-lisible); outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--focus, var(--accent-lisible)); outline-offset: 3px; }
 
-.titre-page { font-family: var(--font-titre); font-weight: 400; font-size: 34px; line-height: 1.05; letter-spacing: -.03em; }
-.sur-titre { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--texte-doux); font-weight: 500; }
+.titre-page { font-family: var(--font-titre); font-weight: 500; font-size: calc(var(--e) * 36px); line-height: 1.03; letter-spacing: -.03em; }
+.sur-titre { font-size: calc(var(--e) * 12px); letter-spacing: .14em; text-transform: uppercase; color: var(--texte-doux); font-weight: 500; }
 .chiffre { font-family: var(--font-chiffres); font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
 
 .rond {
-  width: 52px; height: 52px; border-radius: 50%; display: inline-grid; place-items: center;
-  background: var(--surface); color: var(--texte); flex: none; transition: transform .14s var(--ease);
+  width: calc(var(--e) * 52px); height: calc(var(--e) * 52px); border-radius: 50%; display: inline-grid; place-items: center;
+  background: var(--surface); color: var(--texte); flex: none; transition: transform .32s var(--ressort);
 }
-.rond:active { transform: scale(.94); }
+.rond:active { transform: scale(.94); transition-duration: .1s; }
 .rond svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .gros {
-  display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 68px;
+  display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: calc(var(--e) * 68px);
   border-radius: var(--r-btn); background: var(--accent); color: var(--accent-texte);
-  font-family: var(--font-titre); font-weight: 500; font-size: 16px; letter-spacing: -.005em; padding: 0 22px;
-  transition: transform .14s var(--ease);
+  font-family: var(--font-texte); font-weight: 600; font-size: calc(var(--e) * 18px); letter-spacing: .005em; padding: 0 22px;
+  transition: transform .32s var(--ressort);
 }
-.gros:active { transform: scale(.97); }
-.gros.doux { background: var(--surface); color: var(--texte); }
+.gros:active { transform: scale(.97); transition-duration: .1s; }
+.gros.doux { background: var(--surface-2); color: var(--texte); }
 .gros.contour { background: transparent; color: var(--texte); box-shadow: inset 0 0 0 2px var(--filet); }
 .gros:disabled { opacity: .4; }
 

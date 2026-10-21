@@ -3,6 +3,7 @@ import Accueil from '../views/Accueil.vue'
 import { routeCoach } from '../coach/routes.js'
 import { data } from '../data/index.js'
 import { redirection } from './garde.js'
+import { appliquerDepuisProfil } from '../lib/apparence.js'
 
 // Les routes de l'app sont ajoutées lot par lot (voir PLAN.md).
 const router = createRouter({
@@ -39,6 +40,10 @@ const router = createRouter({
 })
 
 // Garde : non connecté -> accueil public ; client hors /coach ; coach -> /coach ; consentement au premier lancement.
-router.beforeEach(async (to) => redirection({ user: await data.utilisateurCourant(), nom: to.name, chemin: to.path }))
+router.beforeEach(async (to) => {
+  const user = await data.utilisateurCourant()
+  appliquerDepuisProfil(user) // ambiance + Grand affichage du client
+  return redirection({ user, nom: to.name, chemin: to.path })
+})
 
 export default router

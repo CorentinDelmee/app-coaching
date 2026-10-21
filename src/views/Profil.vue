@@ -12,7 +12,11 @@ import { horloge } from '../lib/horloge.js'
 import { effacerSeanceEnCours } from '../lib/seanceEnCours.js'
 import { utilisateurCourant } from '../lib/session.js'
 import { regler as reglerSon, SONS } from '../lib/son.js'
-import { installerRessort } from '../anim/transitions.js'
+import { AMBIANCES } from '../config/apparence.js'
+import { apparence, appliquer } from '../lib/apparence.js'
+import { gsap } from 'gsap'
+import { cercle, centreDe, racineDe, rayonMax } from '../anim/geometrie.js'
+import { installerRessort, mouvementReduit } from '../anim/transitions.js'
 import { memoriserSource, sauterFermeture } from '../anim/passage.js'
 import { usePageAnimee } from '../composables/usePageAnimee.js'
 
@@ -20,6 +24,8 @@ const router = useRouter()
 const { racine, couche, ouvrir, retour } = usePageAnimee('/')
 const user = shallowRef(null)
 const prefs = ref({ son: true, vibration: true, unite: 'kg' })
+const voileAmbiance = ref(null)
+const apercuChrono = ref(null)
 const message = ref('')
 
 onMounted(async () => {
@@ -42,11 +48,36 @@ const lieu = computed(() => (user.value?.lieuDefaut === 'salle' ? 'En salle' : '
 
 async function enregistrerPrefs(patch) {
   prefs.value = { ...prefs.value, ...patch }
-  const maj = await data.profils.modifier(user.value.id, { preferences: { ...(user.value.preferences || {}), ...prefs.value } })
+  const maj = await data.profils.modifier(user.value.id, { preferences: { ...(user.value.preferences || {}), ...prefs.value, ambiance: apparence.ambiance, grand: apparence.grand } })
   user.value = maj
   reglerSon(maj.preferences)
   if (patch.son === true) SONS.valide()
   if (patch.vibration === true && navigator.vibrate) navigator.vibrate(30)
+}
+
+// --- Apparence : ambiance (clair par défaut / sombre / bleu profond) + Grand affichage. Appliquées tout de suite, enregistrées dans le profil. ---
+// Changer d'ambiance : une tache de la nouvelle couleur part de la vignette touchée, le thème bascule dessous, puis la tache s'efface.
+function choisirAmbiance(a, e) {
+  if (a.id === apparence.ambiance) return
+  const bouton = e.currentTarget
+  const v = voileAmbiance.value
+  const pref = { ambiance: a.id }
+  if (mouvementReduit() || !v) { appliquer({ ...apparence, ...pref }); enregistrerPrefs(pref); return }
+  const r = racineDe(bouton)
+  const c = centreDe(bouton, r)
+  const R = rayonMax(c.x, c.y, r)
+  v.style.background = a.fond
+  v.style.display = 'block'
+  gsap.timeline()
+    .fromTo(v, { clipPath: cercle(0, c.x, c.y), opacity: 1 }, { clipPath: cercle(R, c.x, c.y), duration: 0.6, ease: 'power3.inOut' })
+    .add(() => { appliquer({ ...apparence, ...pref }); enregistrerPrefs(pref) })
+    .to(v, { opacity: 0, duration: 0.35, ease: 'power1.out', onComplete: () => { v.style.display = 'none'; gsap.set(v, { clearProps: 'clipPath,opacity' }) } })
+}
+function basculerGrand() {
+  const grand = !apparence.grand
+  appliquer({ ...apparence, grand })
+  enregistrerPrefs({ grand })
+  if (!mouvementReduit() && apercuChrono.value) gsap.fromTo(apercuChrono.value, { scale: grand ? 0.84 : 1.18 }, { scale: 1, duration: 0.55, ease: 'back.out(1.4)', clearProps: 'transform' })
 }
 
 // --- Changer son code ---
@@ -122,6 +153,7 @@ async function deconnecter() {
   <main ref="racine" class="ecran" data-racine>
     <section v-if="user" ref="couche" class="page" hidden aria-label="Profil">
       <div class="voile"></div>
+      <div ref="voileAmbiance" class="voile-ambiance" style="display: none" aria-hidden="true"></div>
       <div class="defile defile-prog">
         <div class="p-top avec-menu" data-c>
           <button class="rond" type="button" aria-label="Retour" @click="retour"><Icone nom="gauche" /></button>
@@ -139,6 +171,21 @@ async function deconnecter() {
             <div><dt>Identifiant</dt><dd>{{ user.identifiant }}</dd></div>
             <div><dt>Séances</dt><dd>{{ lieu }}</dd></div>
           </dl>
+        </div>
+
+        <div class="bloc" data-c>
+          <p class="sur-titre">Apparence</p>
+          <div class="amb" role="radiogroup" aria-label="Ambiance">
+            <button v-for="a in AMBIANCES" :key="a.id" class="amb-choix" type="button" role="radio" :aria-checked="apparence.ambiance === a.id" :data-ambiance="a.id" @click="choisirAmbiance(a, $event)">
+              <span class="amb-vignette"><i></i><i></i></span>
+              <span class="amb-nom">{{ a.nom }}</span>
+            </button>
+          </div>
+          <div class="pf-ligne">
+            <span class="pf-lib">Grand affichage<small>Textes, chiffres et boutons plus grands</small></span>
+            <button class="interrupteur" type="button" role="switch" :aria-checked="apparence.grand" aria-label="Grand affichage" @click="basculerGrand"><i></i></button>
+          </div>
+          <p class="pf-apercu" aria-hidden="true"><span ref="apercuChrono" class="chiffres-chrono">12:34</span><small>Aperçu des chiffres du chrono</small></p>
         </div>
 
         <div class="bloc" data-c>
