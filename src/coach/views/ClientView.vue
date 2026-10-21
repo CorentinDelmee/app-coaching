@@ -185,7 +185,7 @@ async function archiver() {
     </div>
 
     <div class="c-onglets" role="tablist">
-      <button v-for="[cle, texte] in ONGLETS" :key="cle" class="c-onglet" role="tab" :aria-selected="onglet === cle" @click="onglet = cle">{{ texte }}</button>
+      <button v-for="[cle, texte] in ONGLETS" :key="cle" class="c-onglet" role="tab" :aria-selected="onglet === cle" @click="onglet = cle; $event.currentTarget.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })">{{ texte }}</button>
     </div>
 
     <!-- Aperçu -->
