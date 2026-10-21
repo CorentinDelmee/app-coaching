@@ -13,7 +13,7 @@
 .p-entete { margin: 6px 0 20px; }
 .p-entete .sur-titre { margin-bottom: 10px; text-transform: none; letter-spacing: .02em; font-size: 14px; }
 .rond:disabled { opacity: .35; pointer-events: none; }
-.rond.petit { width: 46px; height: 46px; background: var(--surface); }
+.rond.petit { width: var(--cible); height: var(--cible); background: var(--surface); }
 .rond.petit svg { width: 20px; height: 20px; }
 
 /* ---------- En-tête de page (maquette V2) : bandeau de teinte (data-teinte -> --tb / --tf) aux coins bas arrondis ---------- */
@@ -106,12 +106,13 @@
 .col .j { font-size: calc(var(--e) * 12px); font-weight: 600; color: var(--texte-doux); text-transform: uppercase; letter-spacing: .08em; }
 .col .d { font-family: var(--font-chiffres); font-size: calc(var(--e) * 20px); letter-spacing: -.03em; }
 .col.auj .j { color: var(--accent-texte); opacity: .8; }
-.chip-w { width: calc(100% - 8px); flex: 1; max-height: 150px; min-height: 96px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px 0; font-family: var(--font-chiffres); font-size: calc(var(--e) * 16px); letter-spacing: -.04em; transition: transform .32s var(--ressort); }
+.chip-w { position: relative; width: calc(100% - 2px); flex: 1; max-height: 150px; min-height: 96px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px 0; font-family: var(--font-chiffres); font-size: calc(var(--e) * 16px); letter-spacing: -.04em; transition: transform .32s var(--ressort); }
 .chip-w:active { transform: scale(.94); transition-duration: .1s; }
 .chip-w small { font-family: var(--font-texte); font-size: calc(var(--e) * 11px); font-weight: 600; letter-spacing: 0; opacity: .85; text-align: center; line-height: 1.1; }
 .chip-w.fait { background: var(--ok); color: var(--ok-texte); }
 .chip-w.prevu { background: var(--accent-texte); color: var(--accent); }
 .chip-w.coach { background: var(--surface-2); color: var(--texte); }
+.chip-w::after { content: ''; position: absolute; inset: -6px -6px; } /* zone à toucher ≥ 48 px dans une colonne étroite */
 .chip-w svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .col .vide { flex: 1; width: 2px; background: repeating-linear-gradient(var(--filet) 0 5px, transparent 5px 11px); border-radius: 1px; opacity: .8; }
 

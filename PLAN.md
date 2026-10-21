@@ -238,3 +238,8 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 ## Idées à proposer à Corentin (non planifiées)
 - Bouton « réinitialiser la démo » visible dans le profil en mode local (utile pour les tests et les démonstrations à un prospect).
 - Rappel visuel sur le dashboard le jour d'une séance de coaching (« C'est aujourd'hui, 18 h 30 »).
+
+## V2 — application de la maquette `design-v2/` (mode absent, 2026-10-21)
+- [x] **V2.3a** socle + écrans hors séance : tokens V2 et polices, choix ouverts (`src/config/apparence.js`), préférences client (ambiance, Grand affichage), menu M5, dashboard à aplat jaune, Coaching, Programme, overview Workout en sections, Profil. Captures `docs/captures-v2/`.
+- [ ] **V2.3b** séance en cours, circuits, check-in (`Seance.vue`, `components/seance/`, `QuestionnaireRemplir.vue`) au style V2 ; moteur `src/engine` inchangé.
+- [ ] **V2.4** tests navigateur (anciens scripts `tests/e2e/lot5-*` à adapter) + revue des animations.

@@ -87,7 +87,7 @@ html[data-grand="oui"] .anneau-s { margin: 12px 0; }
 .carte.coaching.vide .c-mini { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; opacity: 1; }
 .carte.coaching.vide .c-mini svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
 .acces-dev { flex: none; display: flex; justify-content: center; gap: 18px; font-size: 12px; opacity: .55; padding-top: 10px; }
-.acces-dev a { text-decoration: none; padding: 12px 4px; }
+.acces-dev a { text-decoration: none; display: inline-flex; align-items: center; min-height: 48px; padding: 0 8px; }
 
 /* ---------- Page Coaching ---------- */
 .bloc { background: var(--surface); border-radius: var(--r-carte); padding: 20px; margin-bottom: var(--gap); }
