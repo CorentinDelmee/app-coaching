@@ -73,7 +73,7 @@ async function charger() {
     if (!workout) { erreur.value = 'Cette séance est introuvable.'; return }
     bib.value = Object.fromEntries(exos.map((e) => [e.id, e]))
     realisations.value = historique
-    const sauvegarde = lireSeanceEnCours()
+    const sauvegarde = lireSeanceEnCours(horloge.now())
     if (sauvegarde && sauvegarde.workoutId === id && sauvegarde.clientId === user.value.id && !route.query.nouvelle) {
       etat.value = { ...sauvegarde.etat, evenements: [] }
       circuit.value = sauvegarde.circuit || null

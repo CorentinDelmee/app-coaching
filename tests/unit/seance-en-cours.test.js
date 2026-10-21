@@ -53,4 +53,12 @@ describe('séance en cours sauvegardée localement', () => {
     globalThis.localStorage.setItem('cdc-coaching/seance-en-cours', JSON.stringify({ version: 99, workoutId: 'w1', etat: {} }))
     expect(lireSeanceEnCours()).toBe(null)
   })
+  it('un événement de chrono daté du futur est borné à maintenant (pas de « Tour NaN »)', () => {
+    const now = 5_000_000
+    const e = demarrerSeance({ workout, clientId: 'c1' }, now)
+    const evenements = [{ type: 'demarrer', t: now - 1000 }, { type: 'tour', t: now + 9_999_999 }, { type: 'tour', t: NaN }]
+    sauverSeanceEnCours({ workoutId: 'w1', clientId: 'c1', realisationId: 'r1', etat: e, circuit: { itemId: 'c', evenements } })
+    const ev = lireSeanceEnCours(now).circuit.evenements
+    expect(ev).toEqual([{ type: 'demarrer', t: now - 1000 }, { type: 'tour', t: now }])
+  })
 })
