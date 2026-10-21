@@ -139,9 +139,10 @@
     {
       "id": "V2.2",
       "titre": "Maquette consolidée V2 (base M5 + M1/M2/M4) avec panneau de réglages",
-      "statut": "en_cours",
-      "avancement": 10,
-      "qui": "frontend-senior"
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "frontend-senior",
+      "note": "design-v2/index.html — panneau : ambiance, aplat, police chrono, accueil, Grand affichage"
     },
     {
       "id": "V2.3",
@@ -324,6 +325,102 @@
       "statut": "tranchee",
       "reponse": "Majeurs seulement",
       "provisoire": true
+    },
+    {
+      "id": "D4",
+      "categorie": "Design V2",
+      "question": "Police des chiffres du chrono ?",
+      "contexte": "Comparer dans design-v2/index.html (panneau de réglages).",
+      "options": [
+        {
+          "nom": "Barlow Semi Condensed",
+          "resume": "Chiffres étroits donc plus grands, bien distincts"
+        },
+        {
+          "nom": "Inter Tight",
+          "resume": "Neutre, compacte"
+        },
+        {
+          "nom": "Azeret Mono",
+          "resume": "Mono technique"
+        }
+      ],
+      "recommandation": "Barlow Semi Condensed",
+      "pourquoi": "Plus grands chiffres à largeur égale, lisibles de loin.",
+      "si_pas_de_reponse": "Barlow Semi Condensed (appliqué en provisoire, modifiable dans src/config d'apparence).",
+      "echeance": "",
+      "statut": "tranchee",
+      "reponse": "Barlow Semi Condensed",
+      "provisoire": true
+    },
+    {
+      "id": "D5",
+      "categorie": "Design V2",
+      "question": "Message d'accueil du dashboard ?",
+      "contexte": "Remplace « Bonjour Fabien ». Varie selon le moment.",
+      "options": [
+        {
+          "nom": "« Prêt, Fabien ? »",
+          "resume": "Devient « Bien joué, Fabien. » après la séance, « Semaine bouclée ! » en fin de semaine"
+        },
+        {
+          "nom": "Autres versions",
+          "resume": "Visibles dans le panneau de la maquette V2"
+        }
+      ],
+      "recommandation": "« Prêt, Fabien ? »",
+      "pourquoi": "Court, ton coach, change avec l'avancement.",
+      "si_pas_de_reponse": "« Prêt, Fabien ? » (appliqué en provisoire, modifiable dans src/config d'apparence).",
+      "echeance": "",
+      "statut": "tranchee",
+      "reponse": "« Prêt, Fabien ? »",
+      "provisoire": true
+    },
+    {
+      "id": "D6",
+      "categorie": "Design V2",
+      "question": "Texte sur l'aplat jaune ?",
+      "contexte": "Contraste mesuré : foncé 12,1:1, blanc 1,4:1 (illisible).",
+      "options": [
+        {
+          "nom": "Foncé",
+          "resume": "Lisible partout"
+        },
+        {
+          "nom": "Blanc",
+          "resume": "Refusé : contraste insuffisant"
+        }
+      ],
+      "recommandation": "Foncé",
+      "pourquoi": "Seule option lisible.",
+      "si_pas_de_reponse": "Foncé (appliqué en provisoire, modifiable dans src/config d'apparence).",
+      "echeance": "",
+      "statut": "tranchee",
+      "reponse": "Foncé",
+      "provisoire": true
+    },
+    {
+      "id": "D7",
+      "categorie": "Design V2",
+      "question": "Bouton jaune en ambiance claire : ajouter un liseré ?",
+      "contexte": "Le bouton jaune se détache peu du fond gris clair (1,1:1) ; il reste reconnaissable par son libellé foncé.",
+      "options": [
+        {
+          "nom": "Sans liseré",
+          "resume": "Tel que la maquette"
+        },
+        {
+          "nom": "Avec liseré foncé fin",
+          "resume": "Plus visible"
+        }
+      ],
+      "recommandation": "Sans liseré",
+      "pourquoi": "Libellé foncé suffisant ; à revoir sur téléphone.",
+      "si_pas_de_reponse": "Sans liseré (appliqué en provisoire, modifiable dans src/config d'apparence).",
+      "echeance": "",
+      "statut": "tranchee",
+      "reponse": "Sans liseré",
+      "provisoire": true
     }
   ],
   "avancees": [
@@ -378,6 +475,10 @@
     {
       "date": "2026-10-21",
       "texte": "Bug corrigé : dans Programme, toucher un autre jour ouvre bien le workout de ce jour-là (fait = réalisé, à venir = prévu)."
+    },
+    {
+      "date": "2026-10-21",
+      "texte": "Maquette V2 consolidée prête : design-v2/index.html (panneau de réglages pour comparer)."
     }
   ],
   "prochaines_etapes": [
@@ -416,6 +517,10 @@
     {
       "texte": "Vidéo du parcours final",
       "href": "design/app-finale/parcours.webm"
+    },
+    {
+      "texte": "Maquette V2 consolidée",
+      "href": "design-v2/index.html"
     }
   ]
 }
