@@ -19,7 +19,8 @@ async page => {
   await seed('fabien.vincent');
   const SP = 'captures/';
   const out = [];
-  const txt = (s) => page.evaluate((s) => document.querySelector(s)?.textContent?.trim(), s);
+  // les chiffres en roulette (V2) portent leur valeur dans .sr-seul : on lit celle-là quand elle existe
+  const txt = (s) => page.evaluate((s) => { const e = document.querySelector(s); if (!e) return undefined; const v = e.querySelector('.sr-seul'); return (v || e).textContent.trim(); }, s);
   await page.goto('http://localhost:5182/');
   await page.evaluate(() => { localStorage.clear(); });
   await seed('fabien.vincent');

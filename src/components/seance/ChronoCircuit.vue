@@ -226,7 +226,7 @@ defineExpose({ fermer })
 .ch-tours span { font-size: calc(var(--e) * 15px); letter-spacing: .14em; text-transform: uppercase; font-weight: 600; opacity: .75; }
 .moins { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, currentColor 16%, transparent); }
 .moins svg, .pm svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; }
-.liste-mvt { width: 100%; margin: 8px 0; display: flex; flex-direction: column; }
+.liste-mvt { width: 100%; margin: 8px 0; display: var(--liste-circuit, flex); flex-direction: column; } /* Grand affichage : le chiffre et le bouton prennent la place de la liste (tokens.css) */
 .liste-mvt li { display: flex; align-items: baseline; gap: 12px; padding: 7px 4px; border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent); font-size: calc(var(--e) * 17px); font-weight: 500; }
 .liste-mvt li b { font-family: var(--font-chrono); font-weight: var(--graisse-chrono); min-width: 34px; }
 .btn-gros { width: 100%; min-height: calc(var(--e) * 110px); border-radius: 30px; background: var(--ph-fg); color: var(--ph-bg-actuel); font-family: var(--font-titre); font-size: calc(var(--e) * 30px); letter-spacing: -.04em; font-weight: 400; margin-bottom: 12px; transition: transform .32s var(--ressort); flex: none; }
@@ -253,8 +253,6 @@ defineExpose({ fermer })
 .minute-flash { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; text-align: center; background: var(--ph-fg); color: var(--ph-bg-actuel); pointer-events: none; opacity: 0; }
 .mf-n { font-family: var(--font-titre); font-size: 22px; letter-spacing: .1em; text-transform: uppercase; }
 .mf-m { font-family: var(--font-titre); font-size: 54px; letter-spacing: -.05em; line-height: 1.02; margin-top: 10px; padding: 0 20px; }
-/* Grand affichage : le chiffre et le bouton prennent la place de la liste des mouvements */
-:global(html[data-grand="oui"]) .liste-mvt { display: none; }
 @media (max-height: 760px) {
   .liste-mvt { display: none; }
   .ch-anneau { width: calc(var(--e-chrono) * 250px); } .ch-temps { font-size: calc(var(--e-chrono) * 92px); } .ch-temps.xl { font-size: calc(var(--e-chrono) * 124px); }

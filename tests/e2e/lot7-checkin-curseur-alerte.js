@@ -20,7 +20,7 @@ async page => {
   await page.mouse.move(r.x + r.width * 0.7, r.y + 36, { steps: 8 });
   await page.screenshot({ path: SP + 'c-drag.png' });
   await page.mouse.up();
-  log.push('val ' + await page.textContent('.cd-val .v') + ' vib ' + await page.evaluate(() => window.__vib.length));
+  log.push('val ' + await page.textContent('.cd-val .v .sr-seul') + ' vib ' + await page.evaluate(() => window.__vib.length));
   await page.click('.qz-bas .gros'); await page.waitForTimeout(1500);
   await page.screenshot({ path: SP + 'c-2.png' });
   await page.click('.emoji >> nth=4'); await page.waitForTimeout(1900); // auto
@@ -31,7 +31,7 @@ async page => {
   log.push('q4 ' + await page.textContent('.qz-q h2'));
   const r2 = await page.locator('.cd-rail').boundingBox();
   await page.mouse.click(r2.x + r2.width * 0.85, r2.y + 36); await page.waitForTimeout(500);
-  log.push('douleur ' + await page.textContent('.cd-val .v'));
+  log.push('douleur ' + await page.textContent('.cd-val .v .sr-seul'));
   await page.screenshot({ path: SP + 'c-4.png' });
   await page.click('.qz-bas .gros'); await page.waitForTimeout(1400);
   await page.click('.choix button >> nth=1'); await page.waitForTimeout(1600);

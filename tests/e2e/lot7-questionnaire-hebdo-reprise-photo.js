@@ -13,7 +13,7 @@ async page => {
   await entrer(true, 'client-fabien-vincent');
   await page.goto('http://localhost:5182/questionnaires/q-bilan-hebdo');
   await page.waitForTimeout(2200);
-  log.push('poids ' + await page.textContent('.nt-val'));
+  log.push('poids ' + await page.textContent('.nt-val .sr-seul'));
   await page.screenshot({ path: SP + 'h-1.png' });
   await page.click('.nombre-tuile'); await page.waitForTimeout(1400);
   await page.screenshot({ path: SP + 'h-roue.png' });
@@ -21,11 +21,11 @@ async page => {
   const next = async (w = 1300) => { await page.click('.qz-bas .gros'); await page.waitForTimeout(w); };
   await page.screenshot({ path: SP + 'h-2.png' });
   await next();
-  log.push('q2 ' + await page.textContent('.qz-q h2') + ' val ' + await page.textContent('.nt-val'));
+  log.push('q2 ' + await page.textContent('.qz-q h2') + ' val ' + await page.textContent('.nt-val .sr-seul'));
   await next(); log.push('q3 ' + await page.textContent('.qz-q h2'));
   log.push('hanches disabled=' + await page.isDisabled('.qz-bas .gros'));
   await page.click('.nombre-tuile'); await page.waitForTimeout(1200); await page.click('.roue-couche .gros'); await page.waitForTimeout(900);
-  log.push('hanches ' + await page.textContent('.nt-val'));
+  log.push('hanches ' + await page.textContent('.nt-val .sr-seul'));
   await page.screenshot({ path: SP + 'h-3.png' });
   await next();
   // emojis: auto-advance? ressenti

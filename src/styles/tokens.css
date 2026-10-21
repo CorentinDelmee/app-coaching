@@ -93,7 +93,7 @@ html[data-ambiance="bleu"] {
 }
 
 html[data-aplat="blanc"] { --aplat-texte: #FFFFFF; }
-html[data-grand="oui"] { --e: 1.2; --e-chrono: 1.12; }
+html[data-grand="oui"] { --e: 1.2; --e-chrono: 1.12; --liste-circuit: none; }
 
 /* Police des chiffres du chrono (choix provisoire dans src/config/apparence.js) */
 html[data-chrono="barlow"] { --font-chrono: 'Barlow Semi Condensed', system-ui, sans-serif; --graisse-chrono: 600; }

@@ -24,10 +24,11 @@ async page => {
   const vers = async (i) => { await page.locator('.se-barre button').last().click(); await page.waitForTimeout(900); await page.locator('.tiroir li button').nth(i).click(); await page.waitForTimeout(1300); };
   const lancer = async () => {
     await page.locator('.panel:not([inert]) [data-action]').click(); await page.waitForTimeout(900);
-    await page.locator('.panel:not([inert]) [data-action]').click(); await page.waitForTimeout(1200);
+    await page.click('[data-voir]'); await page.waitForTimeout(1000); await page.click('[data-pret]'); await page.waitForTimeout(1200); // section du circuit : Voir les exercices, puis Je suis prêt
     await page.getByRole('button', { name: 'Commencer maintenant' }).click(); await page.waitForTimeout(1400);
   };
-  const txt = (s) => page.evaluate((s) => document.querySelector(s)?.textContent?.trim(), s);
+  // les chiffres en roulette (V2) portent leur valeur dans .sr-seul : on lit celle-là quand elle existe
+  const txt = (s) => page.evaluate((s) => { const e = document.querySelector(s); if (!e) return undefined; const v = e.querySelector('.sr-seul'); return (v || e).textContent.trim(); }, s);
   const valider = async () => { await page.getByRole('button', { name: 'Valider le circuit' }).click(); await page.waitForTimeout(1500); };
   const resultat = () => page.evaluate(() => document.querySelector('.panel:not([inert]) .circuit-fait')?.textContent?.trim());
 
@@ -37,7 +38,7 @@ async page => {
   await page.waitForTimeout(2300);
   await page.evaluate(() => window.__horloge.regler(1));
   await page.screenshot({ path: SP + '24-deathby.png' });
-  out.push('deathby: ' + await txt('.ch-phase') + ' / ' + await txt('.ch-sous') + ' / ' + await txt('.ch-temps'));
+  out.push('deathby: ' + await txt('.ch-phrase') + ' / ' + await txt('.ch-sous') + ' / ' + await txt('.ch-temps'));
   await page.getByRole('button', { name: 'Échec', exact: true }).click(); await page.waitForTimeout(500);
   out.push('deathby fin: ' + await txt('.ch-temps') + ' ' + await txt('.ch-petit'));
   await valider(); out.push('panel: ' + await resultat());
@@ -45,36 +46,36 @@ async page => {
   // 3 Tabata
   await vers(3); await lancer();
   await page.screenshot({ path: SP + '25-tabata-travail.png' });
-  out.push('tabata: ' + await txt('.ch-phase') + ' / ' + await txt('.ch-sous') + ' / ' + await txt('.ch-temps'));
+  out.push('tabata: ' + await txt('.ch-phrase') + ' / ' + await txt('.ch-sous') + ' / ' + await txt('.ch-temps'));
   await page.evaluate(() => window.__horloge.regler(1)); await page.waitForTimeout(100);
   await page.evaluate(() => window.__horloge.regler(5)); await page.waitForTimeout(3000); await page.evaluate(() => window.__horloge.regler(1));
   await page.screenshot({ path: SP + '26-tabata-repos.png' });
-  out.push('tabata+: ' + await txt('.ch-phase') + ' / ' + await txt('.ch-sous') + ' / ' + await txt('.ch-temps'));
+  out.push('tabata+: ' + await txt('.ch-phrase') + ' / ' + await txt('.ch-sous') + ' / ' + await txt('.ch-temps'));
   await page.evaluate(() => window.__horloge.regler(80)); await page.waitForTimeout(3500); await page.evaluate(() => window.__horloge.regler(1));
   await page.screenshot({ path: SP + '27-tabata-fin.png' });
-  out.push('tabata fin: ' + await txt('.ch-phase') + ' / ' + await txt('.ch-temps') + ' ' + await txt('.ch-petit'));
+  out.push('tabata fin: ' + await txt('.ch-phrase') + ' / ' + await txt('.ch-temps') + ' ' + await txt('.ch-petit'));
   await valider(); out.push('panel: ' + await resultat());
 
   // 4 Intervalles 5 x 40/20
   await vers(4); await lancer();
-  out.push('interv: ' + await txt('.ch-phase') + ' / ' + await txt('.ch-sous') + ' / ' + await txt('.ch-temps'));
+  out.push('interv: ' + await txt('.ch-phrase') + ' / ' + await txt('.ch-sous') + ' / ' + await txt('.ch-temps'));
   await page.evaluate(() => window.__horloge.regler(80)); await page.waitForTimeout(4500); await page.evaluate(() => window.__horloge.regler(1));
-  out.push('interv fin: ' + await txt('.ch-phase') + ' / ' + await txt('.ch-temps') + ' ' + await txt('.ch-petit'));
+  out.push('interv fin: ' + await txt('.ch-phrase') + ' / ' + await txt('.ch-temps') + ' ' + await txt('.ch-petit'));
   await valider(); out.push('panel: ' + await resultat());
 
   // 5 Superset
   await vers(5); await lancer();
   await page.screenshot({ path: SP + '28-superset.png' });
-  out.push('superset: ' + await txt('.ch-phase') + ' / ' + await txt('.ch-temps'));
+  out.push('superset: ' + await txt('.ch-phrase') + ' / ' + await txt('.ch-temps'));
   await page.getByRole('button', { name: 'Suivant', exact: true }).click(); await page.waitForTimeout(300);
   out.push('superset B: ' + await txt('.ch-temps'));
   await page.getByRole('button', { name: 'Passage fini' }).click(); await page.waitForTimeout(500);
   await page.screenshot({ path: SP + '29-superset-repos.png' });
-  out.push('superset repos: ' + await txt('.ch-phase') + ' / ' + await txt('.ch-temps'));
+  out.push('superset repos: ' + await txt('.ch-phrase') + ' / ' + await txt('.ch-temps'));
   await page.getByRole('button', { name: 'Passer le repos' }).click(); await page.waitForTimeout(400);
-  out.push('superset 2: ' + await txt('.ch-phase') + ' / ' + await txt('.ch-temps'));
+  out.push('superset 2: ' + await txt('.ch-phrase') + ' / ' + await txt('.ch-temps'));
   for (const n of ['Suivant', 'Passage fini', 'Passer le repos', 'Suivant', 'Passage fini']) { await page.getByRole('button', { name: n, exact: true }).click(); await page.waitForTimeout(250); }
-  out.push('superset fin: ' + await txt('.ch-phase') + ' / ' + await txt('.ch-temps') + ' ' + await txt('.ch-petit'));
+  out.push('superset fin: ' + await txt('.ch-phrase') + ' / ' + await txt('.ch-temps') + ' ' + await txt('.ch-petit'));
   await valider(); out.push('panel: ' + await resultat());
   return out.join(' || ');
 }

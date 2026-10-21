@@ -241,5 +241,5 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 
 ## V2 — application de la maquette `design-v2/` (mode absent, 2026-10-21)
 - [x] **V2.3a** socle + écrans hors séance : tokens V2 et polices, choix ouverts (`src/config/apparence.js`), préférences client (ambiance, Grand affichage), menu M5, dashboard à aplat jaune, Coaching, Programme, overview Workout en sections, Profil. Captures `docs/captures-v2/`.
-- [ ] **V2.3b** séance en cours, circuits, check-in (`Seance.vue`, `components/seance/`, `QuestionnaireRemplir.vue`) au style V2 ; moteur `src/engine` inchangé.
+- [x] **V2.3b** séance en cours, circuits, check-in au style V2 : pages entières avec repères de bloc et temps total, chronos à phrase + chiffres en roulette + balayage de couleur, section de circuit (« Découvrir le circuit »), option facultative (`facultatif` : moteur, démo, éditeur coach), check-in M2, ouverture depuis l'overview, retour en un geste. Captures `docs/captures-v2/seance/`.
 - [ ] **V2.4** tests navigateur (anciens scripts `tests/e2e/lot5-*` à adapter) + revue des animations.

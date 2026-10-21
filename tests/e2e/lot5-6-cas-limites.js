@@ -29,7 +29,7 @@ async page => {
   await page.goto('http://localhost:5182/coaching');
   await page.waitForTimeout(3500);
   await page.screenshot({ path: SP + 'thomas-c.png' });
-  log.push(await page.evaluate(() => document.querySelector('.carte-vide')?.textContent.replace(/\s+/g,' ') + ' | ' + document.querySelector('.recap-calc').textContent.replace(/\s+/g,' ')));
+  log.push(await page.evaluate(() => document.querySelector('.carte-vide')?.textContent.replace(/\s+/g,' ') + ' | ' + document.querySelector('.stat-accent')?.textContent.replace(/\s+/g,' ')));
   // semaine bouclée sur le dashboard de Fabien
   await page.evaluate(() => {
     const s = JSON.parse(localStorage.getItem('cdc-coaching/1'));

@@ -72,7 +72,7 @@ defineExpose({ fermer, racine })
 .champs { flex: 1; display: flex; flex-direction: column; gap: var(--gap); margin: 18px 0 14px; min-height: 0; }
 .champ { position: relative; flex: 1; border-radius: var(--r-carte); background: var(--surface); text-align: left; padding: 18px 22px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; min-height: 0; transition: transform .16s var(--ease); }
 button.champ:active { transform: scale(.98); }
-.ch-lab { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; font-weight: 600; color: var(--texte-doux); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ch-lab { font-size: calc(var(--e) * 13px); letter-spacing: .12em; text-transform: uppercase; font-weight: 600; color: var(--texte-doux); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .ch-lab em { font-style: normal; text-transform: none; letter-spacing: 0; display: inline-flex; align-items: center; gap: 6px; color: var(--accent-lisible); }
 .verrou .ch-lab em { color: var(--texte-doux); }
 .ch-lab em svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
@@ -84,8 +84,8 @@ button.champ:active { transform: scale(.98); }
 .champs[data-n="3"] .ch-val, .champs[data-n="4"] .ch-val { font-size: 56px; }
 .champs[data-n="3"] .ch-val small, .champs[data-n="4"] .ch-val small { font-size: 20px; }
 .champs[data-n="3"] .champ, .champs[data-n="4"] .champ { padding: 14px 20px; }
-.aucun { color: var(--texte-doux); font-size: 16px; }
-.sv-prec { font-size: 14.5px; color: var(--texte-doux); text-align: center; margin-bottom: 12px; min-height: 18px; }
+.aucun { color: var(--texte-doux); font-size: calc(var(--e) * 16px); }
+.sv-prec { font-size: calc(var(--e) * 14.5px); color: var(--texte-doux); text-align: center; margin-bottom: 12px; min-height: calc(var(--e) * 18px); }
 @media (max-height: 700px) { .ch-val { font-size: 76px; } }
 @media (prefers-reduced-motion: reduce) { .champ { transition: none; } }
 </style>

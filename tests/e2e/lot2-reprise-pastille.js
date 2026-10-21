@@ -19,7 +19,8 @@ async page => {
   await seed('fabien.vincent');
   const SP = 'captures/';
   const out = [];
-  const txt = (s) => page.evaluate((s) => document.querySelector(s)?.textContent?.trim(), s);
+  // les chiffres en roulette (V2) portent leur valeur dans .sr-seul : on lit celle-là quand elle existe
+  const txt = (s) => page.evaluate((s) => { const e = document.querySelector(s); if (!e) return undefined; const v = e.querySelector('.sr-seul'); return (v || e).textContent.trim(); }, s);
   await page.goto('http://localhost:5182/seance/w-fabien-1?nouvelle=1');
   await page.waitForTimeout(1800);
   await page.locator('.panel:not([inert]) [data-action]').click();
@@ -32,7 +33,7 @@ async page => {
   out.push('invite: ' + await page.evaluate(() => document.querySelector('.reprise')?.textContent?.replace(/\s+/g, ' ').trim()));
   await page.getByRole('button', { name: 'Reprendre', exact: true }).click();
   await page.waitForTimeout(2500);
-  out.push('apres reprise: ' + await txt('.ch-phase') + ' ' + await txt('.ch-temps') + ' ' + page.url());
+  out.push('apres reprise: ' + await txt('.ch-phrase') + ' ' + await txt('.ch-temps') + ' ' + page.url());
   await page.screenshot({ path: SP + '41-reprise.png' });
   // pastille : on réduit le repos
   await page.getByRole('button', { name: 'Réduire le repos' }).click();

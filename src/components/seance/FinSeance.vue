@@ -132,24 +132,24 @@ defineExpose({ racine })
 .f-trou { position: absolute; inset: 22px; border-radius: 50%; background: var(--fond); }
 .ok { position: absolute; left: 50%; top: 50%; margin: -34px 0 0 -34px; width: 68px; height: 68px; stroke: var(--accent-lisible); fill: none; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
 .fin-t { text-align: center; }
-h2 { font-family: var(--font-titre); font-weight: 400; font-size: 36px; letter-spacing: -.05em; line-height: 1.04; }
-.f-p { margin-top: 8px; color: var(--texte-doux); font-size: 17px; }
+h2 { font-family: var(--font-titre); font-weight: 400; font-size: calc(var(--e) * 36px); letter-spacing: -.05em; line-height: 1.04; }
+.f-p { margin-top: 8px; color: var(--texte-doux); font-size: calc(var(--e) * 17px); }
 .fin-stats { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .st { background: var(--surface); border-radius: 22px; padding: 13px 16px; }
-.st .v { font-family: var(--font-chiffres); font-size: 36px; letter-spacing: -.06em; line-height: 1; font-variant-numeric: tabular-nums; }
-.st .v small { font-size: 16px; letter-spacing: 0; color: var(--texte-doux); margin-left: 4px; font-family: var(--font-texte); }
-.st .l { margin-top: 6px; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; color: var(--texte-doux); }
+.st .v { font-family: var(--font-chiffres); font-size: calc(var(--e) * 36px); letter-spacing: -.06em; line-height: 1; font-variant-numeric: tabular-nums; }
+.st .v small { font-size: calc(var(--e) * 16px); letter-spacing: 0; color: var(--texte-doux); margin-left: 4px; font-family: var(--font-texte); }
+.st .l { margin-top: 6px; font-size: calc(var(--e) * 13px); letter-spacing: .1em; text-transform: uppercase; font-weight: 600; color: var(--texte-doux); }
 .st.record { grid-column: 1 / -1; background: var(--accent); color: var(--accent-texte); display: flex; align-items: center; gap: 14px; }
 .st.record.vide { background: var(--surface); color: var(--texte); }
 .st.record .l { color: var(--on-accent-doux); margin: 0 0 2px; }
 .st.record.vide .l { color: var(--texte-doux); }
-.st.record .v { font-size: 20px; letter-spacing: -.04em; line-height: 1.15; }
+.st.record .v { font-size: calc(var(--e) * 20px); letter-spacing: -.04em; line-height: 1.15; }
 .st.record svg { width: 34px; height: 34px; flex: none; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .fin-bas { margin-top: auto; padding-top: 12px; display: flex; flex-direction: column; gap: 8px; }
-.lien-com { color: var(--texte-doux); font-size: 15px; font-weight: 500; min-height: 44px; text-decoration: underline; text-underline-offset: 3px; }
-.com { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--texte-doux); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
-textarea { font: inherit; font-size: 16px; letter-spacing: 0; text-transform: none; font-weight: 400; color: var(--texte); background: var(--surface); border: 0; border-radius: 18px; padding: 12px 14px; resize: none; }
+.lien-com { color: var(--texte-doux); font-size: calc(var(--e) * 15px); font-weight: 500; min-height: calc(var(--e) * 44px); text-decoration: underline; text-underline-offset: 3px; }
+.com { display: flex; flex-direction: column; gap: 6px; font-size: calc(var(--e) * 13px); color: var(--texte-doux); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+textarea { font: inherit; font-size: calc(var(--e) * 16px); letter-spacing: 0; text-transform: none; font-weight: 400; color: var(--texte); background: var(--surface); border: 0; border-radius: 18px; padding: 12px 14px; resize: none; }
 textarea:focus-visible { outline: 3px solid var(--accent-lisible); }
-.erreur { color: var(--accent-lisible); font-size: 14.5px; font-weight: 500; }
+.erreur { color: var(--accent-lisible); font-size: calc(var(--e) * 14.5px); font-weight: 500; }
 @media (max-height: 760px) { .fin-hero { height: 150px; } .f-anneau { width: 120px; height: 120px; } .f-trou { inset: 16px; } .ok { width: 50px; height: 50px; margin: -25px 0 0 -25px; } h2 { font-size: 30px; } }
 </style>

@@ -14,7 +14,8 @@ Chaque script renvoie une ligne de constats (`||` entre les étapes) et enregist
 | Script | Ce qu'il vérifie |
 |---|---|
 | `lot2-seance-complete.js` | Une séance de Fabien (superset compris) de bout en bout, avance automatique, écran de fin |
-| `lot2-circuits-formats.js` | For Time, Time cap, Death by, Tabata, Intervalles, Superset (le cap ne bouge pas, le temps final exclut la préparation) |
+| `lot2-circuits-formats.js` | For Time, Time cap, Death by, Tabata, Intervalles, Superset (le cap ne bouge pas, le temps final exclut la préparation) ; V2 : « Découvrir le circuit » ouvre la section, `[data-voir]` puis `[data-pret]` lancent le chrono |
+| `v2b-parcours-complet.js` | V2.3b : démarrage, exercices, repos, circuit (section, chrono, fermeture), option (« Faire l'option » / « Terminer sans l'option »), fin ; arguments d'ambiance dans l'URL du script (voir l'en-tête) ; geste retour en un appui |
 | `lot2-amrap-emom-reprise.js` | Pause, rechargement en plein AMRAP, reps en plus, EMOM |
 | `lot2-reprise-pastille.js` | Invitation « Reprendre votre séance en cours ? », pastille de repos, abandon |
 | `lot2-prerempli-record.js` | Roue de valeur, record, commentaire, enregistrement, pré-remplissage de la séance suivante |

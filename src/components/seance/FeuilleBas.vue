@@ -30,8 +30,8 @@ watch(() => props.ouverte, (v) => {
 <style scoped>
 .scrim { position: absolute; inset: 0; z-index: 80; background: var(--scrim); opacity: 0; pointer-events: none; }
 .feuille { position: absolute; z-index: 90; left: 0; right: 0; bottom: 0; background: var(--surface); border-radius: 30px 30px 0 0; padding: 26px var(--pad) var(--bas); box-shadow: var(--ombre-feuille); }
-h3 { font-family: var(--font-titre); font-weight: 400; font-size: 24px; letter-spacing: -.04em; }
-.feuille :deep(p) { margin: 8px 0 20px; color: var(--texte-doux); font-size: 16px; line-height: 1.4; }
+h3 { font-family: var(--font-titre); font-weight: 400; font-size: calc(var(--e) * 24px); letter-spacing: -.04em; }
+.feuille :deep(p) { margin: 8px 0 20px; color: var(--texte-doux); font-size: calc(var(--e) * 16px); line-height: 1.4; }
 .feuille :deep(.gros + .gros) { margin-top: 10px; }
 .feuille :deep(.gros.doux) { background: var(--surface-2); }
 </style>

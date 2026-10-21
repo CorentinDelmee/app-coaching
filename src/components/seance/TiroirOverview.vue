@@ -86,15 +86,15 @@ function ongletHaut() { setTimeout(() => { t = null }, 0) }
 .tab-tiroir svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .scrim { position: absolute; inset: 0; z-index: 40; background: var(--scrim); opacity: 0; pointer-events: none; }
 .tiroir { position: absolute; z-index: 41; top: 0; right: 0; bottom: 0; width: 86%; background: var(--surface); border-radius: 30px 0 0 30px; padding: calc(var(--haut) + 4px) 18px var(--bas); display: flex; flex-direction: column; touch-action: pan-y; box-shadow: var(--ombre-tiroir); }
-h3 { font-family: var(--font-titre); font-weight: 400; font-size: 22px; letter-spacing: -.04em; }
-.t-sous { font-size: 14px; color: var(--texte-doux); margin: 4px 0 14px; }
+h3 { font-family: var(--font-titre); font-weight: 400; font-size: calc(var(--e) * 22px); letter-spacing: -.04em; }
+.t-sous { font-size: calc(var(--e) * 14px); color: var(--texte-doux); margin: 4px 0 14px; }
 ol { flex: 1; overflow-y: auto; scrollbar-width: none; }
-li button { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 60px; text-align: left; border-top: 1px solid var(--filet); font-size: 17px; font-weight: 600; }
+li button { width: 100%; display: flex; align-items: center; gap: 12px; min-height: calc(var(--e) * 60px); text-align: left; border-top: 1px solid var(--filet); font-size: calc(var(--e) * 17px); font-weight: 600; }
 li:first-child button { border-top: 0; }
-.tn { width: 34px; height: 34px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; font-family: var(--font-chiffres); font-size: 13px; flex: none; }
+.tn { width: 34px; height: 34px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; font-family: var(--font-chiffres); font-size: calc(var(--e) * 13px); flex: none; }
 .tn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
 li.fait .tn { background: var(--accent); color: var(--accent-texte); }
 li.courant button { color: var(--accent-lisible); }
-small { display: block; font-weight: 400; font-size: 13.5px; color: var(--texte-doux); margin-top: 1px; }
+small { display: block; font-weight: 400; font-size: calc(var(--e) * 13.5px); color: var(--texte-doux); margin-top: 1px; }
 .t-poignee { position: absolute; left: 8px; top: 50%; width: 5px; height: 56px; margin-top: -28px; border-radius: 3px; background: var(--filet); }
 </style>

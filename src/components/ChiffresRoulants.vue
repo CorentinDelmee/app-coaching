@@ -45,7 +45,8 @@ onBeforeUnmount(() => { if (racine.value) gsap.killTweensOf(racine.value.querySe
 </script>
 
 <template>
-  <span ref="racine" class="rl-wrap" :aria-label="String(valeur)" role="text">
+  <span ref="racine" class="rl-wrap">
+    <span class="sr-seul">{{ valeur }}</span><!-- la valeur pour les lecteurs d'écran ; les colonnes qui défilent sont masquées (aria-hidden) -->
     <template v-for="s in signes" :key="s.cle">
       <span v-if="s.chiffre" class="rl" :data-k="s.cle" aria-hidden="true"><span class="rl-m">{{ s.c }}</span><span class="rl-c"><i v-for="(n, i) in COLONNE" :key="i">{{ n }}</i></span></span>
       <span v-else class="rl-s" aria-hidden="true">{{ s.c }}</span>
@@ -54,7 +55,8 @@ onBeforeUnmount(() => { if (racine.value) gsap.killTweensOf(racine.value.querySe
 </template>
 
 <style scoped>
-.rl-wrap { display: inline-flex; align-items: flex-start; font-variant-numeric: tabular-nums; line-height: 1; white-space: nowrap; }
+.sr-seul { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.rl-wrap { position: relative; display: inline-flex; align-items: flex-start; font-variant-numeric: tabular-nums; line-height: 1; white-space: nowrap; }
 .rl { position: relative; display: inline-block; height: 1.1em; overflow: hidden; overflow: clip; }
 .rl-m { visibility: hidden; display: block; line-height: 1.1; } /* donne sa largeur à la cellule */
 .rl-c { position: absolute; left: 0; right: 0; top: 0; will-change: transform; }
