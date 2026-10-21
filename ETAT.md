@@ -13,5 +13,5 @@ Voir `TABLEAU-DE-BORD.html` : mise en route Supabase + Netlify (`MISE-EN-ROUTE.m
 ## Points fragiles connus
 - Jamais testé contre un vrai Supabase (adaptateur, Edge Functions, schéma) ni sur un vrai téléphone (fluidité clip-path Android moyen, vibrations iOS, invite d'installation).
 - Exercices de démo sans lien vidéo.
-- Mineurs non corrigés : à 390 px l'onglet actif coach est coupé ; le tableau de bord de Thomas défile (872 px pour 844). Le geste retour après une séance est corrigé (un seul appui). `usePageAnimee.retour` (bouton retour des pages Workout / Programme…) empile encore une copie de la page d'origine dans l'historique : même défaut, non traité (hors lot).
+- Lot V2.5 (mineurs) corrigé : contrastes pied d'accueil et bouton chrono en pause, toast qui laisse passer les taps, sortie de séance et `retour` des pages animées en vrai retour, horodatages futurs bornés à la reprise, résultat de circuit laissé affiché (plus d'avance auto), onglet coach recentré. Reste : le tableau de bord de Thomas défile (872 px pour 844) ; le bandeau « Exercice suivant » recouvre visuellement le bouton (taps transmis seulement).
 - Sons (Web Audio) et vibrations de la V2 jamais entendus sur un vrai téléphone ; bilan d'AMRAP avec − / + (pas le grand sélecteur de la maquette) ; l'option est un circuit : seul le dernier bloc d'une séance a « Terminer sans l'option ».
