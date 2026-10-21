@@ -13,7 +13,7 @@ import { messageEcrire } from '../domain/coaching.js'
 import { lienCoach } from '../lib/coach.js'
 import { horloge } from '../lib/horloge.js'
 import { utilisateurCourant } from '../lib/session.js'
-import { installerRessort, mouvementReduit } from '../anim/transitions.js'
+import { mouvementReduit } from '../anim/transitions.js'
 import { memoriserSource } from '../anim/passage.js'
 import { usePageAnimee } from '../composables/usePageAnimee.js'
 
@@ -107,7 +107,6 @@ const coupeEl = ref(null)
 const $$ = (sel, el) => Array.from((el || document).querySelectorAll(sel))
 
 onMounted(async () => {
-  installerRessort()
   await charger()
   await nextTick()
   if (!charge.value) return
@@ -117,7 +116,7 @@ onMounted(async () => {
   // petit pop du jour courant une fois la page ouverte
   if (!mouvementReduit()) {
     const chip = $$('.col.auj .chip-w', semaineEl.value)
-    if (chip.length) gsap.fromTo(chip, { scale: 0.8 }, { scale: 1, duration: 1, delay: 0.9, ease: 'elastic.out(1,.5)', clearProps: 'transform' })
+    if (chip.length) gsap.fromTo(chip, { scale: 0.8 }, { scale: 1, duration: 0.8, delay: 0.9, ease: 'back.out(1.7)', clearProps: 'transform' })
   }
   if (bouclee.value && vue.value === 'semaine') setTimeout(celebrer, 900)
 })
@@ -234,8 +233,8 @@ function celebrer() {
   const b = banniereEl.value
   if (!b || !bouclee.value || vue.value !== 'semaine') return
   if (mouvementReduit()) { gsap.fromTo(b, { opacity: 0 }, { opacity: 1, duration: 0.3 }); return }
-  gsap.fromTo(b, { scale: 0.7, opacity: 0, y: 24 }, { scale: 1, opacity: 1, y: 0, duration: 1, ease: 'elastic.out(1,.55)', clearProps: 'transform,opacity' })
-  gsap.fromTo(coupeEl.value, { rotate: -28, scale: 0.4 }, { rotate: 0, scale: 1, duration: 1.1, delay: 0.12, ease: 'elastic.out(1,.4)', clearProps: 'transform' })
+  gsap.fromTo(b, { scale: 0.7, opacity: 0, y: 24 }, { scale: 1, opacity: 1, y: 0, duration: 1, ease: 'back.out(1.7)', clearProps: 'transform,opacity' })
+  gsap.fromTo(coupeEl.value, { rotate: -28, scale: 0.4 }, { rotate: 0, scale: 1, duration: 1.1, delay: 0.12, ease: 'back.out(1.7)', clearProps: 'transform' })
   const n = 18
   for (let i = 0; i < n; i++) {
     const c = document.createElement('span')
@@ -246,7 +245,7 @@ function celebrer() {
     gsap.fromTo(c, { x: 0, y: 0, scale: 0, rotate: 0, opacity: 1 }, {
       x: Math.cos(a) * d, y: Math.sin(a) * d * 0.8 - 18, scale: 0.6 + Math.random() * 0.8, rotate: Math.random() * 360,
       duration: 1.1, ease: 'expo.out',
-      onComplete: () => gsap.to(c, { opacity: 0, y: '+=26', duration: 0.5, ease: 'power1.in', onComplete: () => c.remove() })
+      onComplete: () => gsap.to(c, { opacity: 0, y: '+=26', duration: 0.5, ease: 'power1.out', onComplete: () => c.remove() })
     })
   }
 }
@@ -263,14 +262,17 @@ const aller = (id, e, jour = null) => ouvrirWorkout(id, e.currentTarget, jour)
     <section v-else-if="charge" ref="couche" class="page" hidden aria-label="Programme">
       <div class="voile"></div>
       <div class="defile defile-prog">
-        <div class="p-top avec-menu" data-c>
-          <button class="rond" type="button" aria-label="Retour" @click="retour"><Icone nom="gauche" /></button>
-          <span class="sur-titre">Programme</span>
-        </div>
-        <div class="p-entete" data-c>
-          <p class="sur-titre">{{ surTitre }}</p>
-          <h1 class="titre-page">Programme<br>{{ nomClient }}</h1>
-        </div>
+        <header class="page-haut" data-teinte="surface">
+          <div class="p-top avec-menu" data-c>
+            <button class="rond" type="button" aria-label="Retour" @click="retour"><Icone nom="gauche" /></button>
+            <span class="sur-titre">Programme</span>
+          </div>
+          <div class="p-entete" data-c>
+            <h1 class="page-titre">Programme<br>{{ nomClient }}</h1>
+            <p class="page-sous">{{ surTitre }}</p>
+          </div>
+        </header>
+        <div class="page-corps">
 
         <!-- Aucun programme : état vide visible, avec un mot au coach -->
         <div v-if="!programme" class="vide-prog" data-c>
@@ -380,6 +382,7 @@ const aller = (id, e, jour = null) => ouvrirWorkout(id, e.currentTarget, jour)
             </div>
           </div>
         </template>
+        </div>
       </div>
     </section>
   </main>

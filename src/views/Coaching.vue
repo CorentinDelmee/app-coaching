@@ -16,7 +16,7 @@ import { formaterNombre, ordinalFeminin } from '../domain/format.js'
 import { lienCoach } from '../lib/coach.js'
 import { horloge } from '../lib/horloge.js'
 import { utilisateurCourant } from '../lib/session.js'
-import { compter, installerRessort, mouvementReduit } from '../anim/transitions.js'
+import { compter, mouvementReduit } from '../anim/transitions.js'
 import { usePageAnimee } from '../composables/usePageAnimee.js'
 
 const { racine, couche, ouvrir, retour } = usePageAnimee('/')
@@ -31,7 +31,6 @@ const mot = ref('')
 const now = horloge.now()
 
 onMounted(async () => {
-  installerRessort()
   try {
     user.value = await utilisateurCourant()
     if (!user.value) { erreur.value = 'Connectez-vous pour voir votre coaching.'; return }
@@ -64,7 +63,8 @@ const tarifUnique = computed(() => {
 const moisLabel = computed(() => libelleMois(jourLocal(now).slice(0, 7)))
 const bientot = computed(() => !!prochaine.value && moinsDe24h(prochaine.value, now))
 const motAffiche = computed(() => mot.value || MOT_PAR_DEFAUT)
-const jourGrand = computed(() => { const j = jourLong(prochaine.value.date); return j.charAt(0).toUpperCase() + j.slice(1) })
+// « Mardi 27 » / « octobre » : le jour et son numéro sur la 1re ligne, le mois sur la 2e (maquette V2)
+const jourGrand = computed(() => { const [jour, num, ...mois] = jourLong(prochaine.value.date).split(' '); return [`${jour.charAt(0).toUpperCase()}${jour.slice(1)} ${num}`, mois.join(' ')] })
 const lieu = computed(() => (prochaine.value.lieu === 'domicile' ? 'à domicile' : 'en salle'))
 const nom = computed(() => user.value?.nom || '')
 const lienModifier = computed(() => lienCoach(messageModifier(prochaine.value, nom.value)))
@@ -95,7 +95,6 @@ function compteurs(delai) {
   const total = els('[data-compteur="total"]')
   compter(total, 0, paye.value.total, { duree: 1.5, delay: delai + 0.2, fmt: (v) => formaterNombre(Math.round(v * 100) / 100) })
   if (mouvementReduit()) return
-  if (prochaine.value) gsap.fromTo('.co-grand em', { scale: 0.9 }, { scale: 1, duration: 1, delay: delai + 0.5, ease: 'elastic.out(1,.5)', clearProps: 'transform' })
 }
 </script>
 
@@ -110,52 +109,60 @@ function compteurs(delai) {
       <section ref="couche" class="page" hidden aria-label="Coaching">
         <div class="voile"></div>
         <div class="defile defile-prog">
-          <div class="p-top avec-menu" data-c>
-            <button class="rond" type="button" aria-label="Retour" @click="retour"><Icone nom="gauche" /></button>
-            <span class="sur-titre">Coaching</span>
-          </div>
-
-          <!-- Séance prévue -->
-          <div v-if="prochaine" class="p-entete" data-c>
-            <p class="sur-titre">Votre séance</p>
-            <h1 class="co-grand" :aria-label="`Votre séance : ${libelleSeance(prochaine)}`">{{ jourGrand }}<br><em>{{ formaterHeure(prochaine.heure) }}</em><br>{{ lieu }}</h1>
-          </div>
-          <!-- Aucune séance : même carte que sur le dashboard -->
-          <a v-else class="carte-vide" :href="lienEcrire" target="_blank" rel="noopener" data-c>
-            <span class="cv-t">Aucune séance prévue</span>
-            <span class="cv-s">M'écrire pour en planifier une <Icone nom="fleche" /></span>
-          </a>
-
-          <div v-if="prochaine" class="bloc" data-c>
-            <div class="co-actions">
-              <a class="petit-btn" :href="lienModifier" target="_blank" rel="noopener" @click="surAction($event, lienModifier)">Modifier</a>
-              <a class="petit-btn" :href="lienAnnuler" target="_blank" rel="noopener" @click="surAction($event, lienAnnuler)">Annuler</a>
+          <!-- En-tête inversé (maquette V2) : la séance en grand ; sans séance, simple titre -->
+          <header class="page-haut" data-teinte="inverse">
+            <div class="p-top avec-menu" data-c>
+              <button class="rond" type="button" aria-label="Retour" @click="retour"><Icone nom="gauche" /></button>
+              <span class="sur-titre">{{ prochaine ? 'Votre séance' : 'Coaching' }}</span>
             </div>
-            <p class="co-regle" :class="{ alerte: bientot }">
-              <span aria-hidden="true">{{ bientot ? '!' : '↺' }}</span>
-              <span v-if="!bientot"><b>Annulation gratuite</b> jusqu'à 24 h avant la séance. On en parle sur WhatsApp.</span>
-              <span v-else><b>Moins de 24 h avant la séance :</b> l'annulation gratuite n'est plus possible.</span>
-            </p>
-          </div>
+            <template v-if="prochaine">
+              <h1 class="page-titre grand" data-c :aria-label="`Votre séance : ${libelleSeance(prochaine)}`">{{ jourGrand[0] }}<br>{{ jourGrand[1] }}</h1>
+              <p class="page-sous grand" data-c>{{ formaterHeure(prochaine.heure) }} · {{ lieu }}</p>
+            </template>
+            <h1 v-else class="page-titre" data-c>Pas de séance<br>prévue</h1>
+          </header>
 
-          <div class="bloc mot-coach" data-c>
-            <p class="sur-titre">Le mot de Corentin</p>
-            <blockquote>« {{ motAffiche }} »</blockquote>
-            <a class="petit-btn plein" :href="lienMot" target="_blank" rel="noopener">M'envoyer un mot</a>
-          </div>
+          <div class="page-corps">
+            <!-- Aucune séance : même carte que sur le dashboard -->
+            <a v-if="!prochaine" class="carte-vide" :href="lienEcrire" target="_blank" rel="noopener" data-c>
+              <span class="cv-t">Aucune séance prévue</span>
+              <span class="cv-s">M'écrire pour en planifier une <Icone nom="fleche" /></span>
+            </a>
 
-          <div v-if="prochaine && rang" class="bloc rang-bloc" data-c>
-            <div class="stat-grand"><span data-compteur="rang">{{ rang }}</span><small>{{ ordinalFeminin(rang).replace(/^\d+/, '') }}</small></div>
-            <p class="stat-leg">{{ phraseRang(rang) }}</p>
-          </div>
+            <template v-else>
+              <div class="co-actions" data-c>
+                <a class="gros doux" :href="lienModifier" target="_blank" rel="noopener" @click="surAction($event, lienModifier)">Modifier</a>
+                <a class="gros doux" :href="lienAnnuler" target="_blank" rel="noopener" @click="surAction($event, lienAnnuler)">Annuler</a>
+              </div>
+              <p class="co-regle" :class="{ alerte: bientot }" data-c>
+                <Icone v-if="!bientot" nom="horloge" />
+                <span v-else class="co-alerte" aria-hidden="true">!</span>
+                <span v-if="!bientot">Annulation gratuite jusqu'à 24 h avant la séance. On en parle sur WhatsApp.</span>
+                <span v-else><b>Moins de 24 h avant la séance :</b> l'annulation gratuite n'est plus possible.</span>
+              </p>
+            </template>
 
-          <div class="duo" data-c>
-            <div class="bloc"><div class="stat-grand"><span data-compteur="semaine">{{ nbSemaine }}</span></div><p class="stat-leg">{{ nbSemaine > 1 ? 'séances' : 'séance' }} cette semaine</p></div>
-            <div class="bloc"><div class="stat-grand"><span data-compteur="mois">{{ nbMois }}</span></div><p class="stat-leg">{{ nbMois > 1 ? 'séances' : 'séance' }} en {{ moisLabel.split(' ')[0] }}</p></div>
-          </div>
+            <div class="mot-coach" data-c>
+              <span class="mot-av" aria-hidden="true">C</span>
+              <p class="mot-t">« {{ motAffiche }} »</p>
+              <a class="gros contour" :href="lienMot" target="_blank" rel="noopener">M'envoyer un mot</a>
+            </div>
 
-          <div class="bloc" data-c>
-            <p class="recap-calc"><span class="sur-titre recap-l">Payé ce mois : </span><span class="recap-v"><template v-if="paye.nb && tarifUnique !== null">{{ paye.nb }} × {{ formaterNombre(tarifUnique) }} € = </template><span class="total"><span data-compteur="total">{{ formaterNombre(paye.total) }}</span> €</span></span></p>
+            <div class="duo" data-c>
+              <div v-if="prochaine && rang" class="stat">
+                <b class="stat-n"><span data-compteur="rang">{{ rang }}</span><sup>{{ ordinalFeminin(rang).replace(/^\d+/, '') }}</sup></b>
+                <span>{{ phraseRang(rang) }}</span>
+              </div>
+              <div class="stat stat-accent">
+                <b class="stat-n"><span data-compteur="total">{{ formaterNombre(paye.total) }}</span>&nbsp;€</b>
+                <span>Payé ce mois<template v-if="paye.nb && tarifUnique !== null"> : {{ paye.nb }} × {{ formaterNombre(tarifUnique) }} €</template></span>
+              </div>
+            </div>
+
+            <div class="duo" data-c>
+              <div class="stat"><b class="stat-n"><span data-compteur="semaine">{{ nbSemaine }}</span></b><span>{{ nbSemaine > 1 ? 'séances' : 'séance' }} cette semaine</span></div>
+              <div class="stat"><b class="stat-n"><span data-compteur="mois">{{ nbMois }}</span></b><span>{{ nbMois > 1 ? 'séances' : 'séance' }} en {{ moisLabel.split(' ')[0] }}</span></div>
+            </div>
           </div>
         </div>
       </section>

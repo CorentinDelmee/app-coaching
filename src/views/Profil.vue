@@ -155,15 +155,15 @@ async function deconnecter() {
       <div class="voile"></div>
       <div ref="voileAmbiance" class="voile-ambiance" style="display: none" aria-hidden="true"></div>
       <div class="defile defile-prog">
-        <div class="p-top avec-menu" data-c>
-          <button class="rond" type="button" aria-label="Retour" @click="retour"><Icone nom="gauche" /></button>
-          <span class="sur-titre">Profil</span>
-        </div>
-        <div class="p-entete" data-c>
-          <p class="sur-titre">Votre compte</p>
-          <h1 class="titre-page">{{ user.nom }}</h1>
-        </div>
-        <p v-if="message" class="pf-message" role="status">{{ message }}</p>
+        <header class="page-haut" data-teinte="surface">
+          <div class="p-top avec-menu" data-c>
+            <button class="rond" type="button" aria-label="Retour" @click="retour"><Icone nom="gauche" /></button>
+            <span class="sur-titre">Votre compte</span>
+          </div>
+          <h1 class="page-titre" data-c>{{ user.nom }}</h1>
+        </header>
+        <p v-if="message" class="pf-message" role="status" style="margin-top: 16px">{{ message }}</p>
+        <div class="page-corps">
 
         <div class="bloc" data-c>
           <p class="sur-titre">Informations</p>
@@ -244,6 +244,7 @@ async function deconnecter() {
           <button class="gros doux" type="button" @click="fileEnAttente = 0">Rester connecté</button>
         </div>
         <button v-else class="gros contour" type="button" data-c @click="demanderDeconnexion">Se déconnecter</button>
+        </div>
       </div>
     </section>
   </main>

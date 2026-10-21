@@ -5,7 +5,7 @@ import { formaterHeure, prochaineSeance } from './coaching.js'
 import { questionnairesDus } from './questionnairesDus.js'
 import { accesSante } from './consentement.js'
 import { jourLocal } from './dates.js'
-import { jourLong, JOURS_COURTS, MOIS_NOMS } from './calendrierUi.js'
+import { jourLong, MOIS_COURTS, MOIS_NOMS } from './calendrierUi.js'
 import { minutesDe } from './seanceUi.js'
 
 const majuscule = (t) => t.charAt(0).toUpperCase() + t.slice(1)
@@ -13,7 +13,7 @@ const majuscule = (t) => t.charAt(0).toUpperCase() + t.slice(1)
 /**
  * @returns {{prenom, jour, hero, semaine, coaching, programme, questionnaires}}
  *  hero : { etat:'prevu'|'fait'|'bouclee'|'aucun', workoutId|null, etiquette, titre, sous, meta[] }
- *  semaine : { faits, total } ; coaching : null | { date:'Mar. 27', mois:'octobre', heure:'18 h 30', lieu:'à domicile' }
+ *  semaine : { faits, total } ; coaching : null | { date:'Mar. 27', mois:'octobre', heure:'18 h 30', lieu:'à domicile', jourNom:'mardi', num:27, moisCourt:'oct.' }
  *  programme : null | { nom, numero, total|null, segments:boolean[] } ; questionnaires : nombre à remplir
  */
 export function syntheseAccueil({ user, programme, workouts, exercices, template, realisations, seancesCoaching, questionnaires, reponses, now }) {
@@ -34,7 +34,7 @@ export function syntheseAccueil({ user, programme, workouts, exercices, template
       const suivant = restants[0]
       hero = {
         etat: 'fait', workoutId: faitAuj.workoutId, etiquette: r?.dureeSec ? `Terminé · ${minutesDe(r.dureeSec)} min` : 'Terminé',
-        titre: `Bravo ${prenom}`, sous: `${nomDe(faitAuj.workoutId).titre} est dans la boîte`,
+        titre: nomDe(faitAuj.workoutId).titre, sous: nomDe(faitAuj.workoutId).sous, // le message « Bien joué, Fabien. » est dans le titre de l'aplat
         meta: suivant ? [`Prochain : ${nomDe(suivant.workoutId).titre}`, ...(nomDe(suivant.workoutId).sous ? [nomDe(suivant.workoutId).sous] : [])] : []
       }
     } else {
@@ -52,7 +52,8 @@ export function syntheseAccueil({ user, programme, workouts, exercices, template
     const [, m, j] = s.date.split('-').map(Number)
     const jourNom = jourLong(s.date).split(' ')[0]
     coaching = {
-      date: `${majuscule(jourNom).slice(0, 3)}. ${j}`, mois: MOIS_NOMS[m - 1], heure: formaterHeure(s.heure), lieu: s.lieu === 'domicile' ? 'à domicile' : 'en salle'
+      date: `${majuscule(jourNom).slice(0, 3)}. ${j}`, mois: MOIS_NOMS[m - 1], heure: formaterHeure(s.heure), lieu: s.lieu === 'domicile' ? 'à domicile' : 'en salle',
+      jourNom, num: j, moisCourt: MOIS_COURTS[m - 1] // carte de la maquette V2 : « 27 oct. » puis « mardi · 18 h 30 »
     }
   }
 

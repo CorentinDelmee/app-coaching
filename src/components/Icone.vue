@@ -15,7 +15,8 @@ const CHEMINS = {
   cadenas: 'M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z',
   plus: 'M12 5v14M5 12h14',
   moins: 'M5 12h14',
-  pause: 'M8 5v14M16 5v14'
+  pause: 'M8 5v14M16 5v14',
+  horloge: 'M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 1 0 0-17zM12 7.5V12l3 2'
 }
 </script>
 

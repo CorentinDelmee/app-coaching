@@ -4,7 +4,7 @@
 import { demarrerSeance } from '../engine/seance.js'
 import { paramsComplets } from '../engine/circuits.js'
 import { titreCircuit } from './circuitsUi.js'
-import { puces, jetonsSerie } from './seanceUi.js'
+import { puces, jetonsSerie, derniereFois } from './seanceUi.js'
 import { videoDe } from './video.js'
 import { pluriel } from './format.js'
 import { mettreAJourTemplate } from './realisations.js'
@@ -65,42 +65,62 @@ function detailSeries(item, unite) {
 
 const prerempli = (item) => item.series.some((s) => item.champs.some((c) => c.modifiableParClient && s.valeurs[c.cle] !== s.prescrit[c.cle]))
 
+const mmss = (sec) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`
+
 /**
- * @param {{workout, exercices: object[], template?: object|null, unite?: 'kg'|'lb'}} p
- * @returns {{titre, sous, meta: string[], sections: object[], prerempli: boolean, consigne: string|null, nbSeries: number}}
- *  sections : { kind:'bloc', titre, exos[] } | { kind:'superset', titre, detail, exos[] } | { kind:'circuit', nom, detail, exos[] }
+ * Prescription d'un exercice en pastilles lisibles (encart de la maquette V2) : valeur en grand, unité en petit.
+ * ['4 × 8 reps', '60 kg', 'repos 90 s'] -> [{ valeur: '4 × 8', unite: 'reps' }, { valeur: '60', unite: 'kg' }, { valeur: '1:30', unite: 'repos' }]
  */
-export function apercuWorkout({ workout, exercices, template = null, unite = 'kg' }) {
+export function pastillesPrescription(lesPuces) {
+  return lesPuces.map((p) => {
+    const repos = p.match(/^repos (\d+) s$/)
+    if (repos) return { valeur: mmss(Number(repos[1])), unite: 'repos' }
+    const m = p.match(/^(.+?) (reps|kg|lb|s|séries?)$/)
+    return m ? { valeur: m[1], unite: m[2] } : { valeur: p, unite: '' }
+  })
+}
+
+/**
+ * @param {{workout, exercices: object[], template?: object|null, unite?: 'kg'|'lb', realisations?: object[]}} p
+ *   realisations : séances passées du client, pour « Dernière fois » (seulement celles à compter, l'appelant filtre)
+ * @returns {{titre, sous, meta: string[], sections: object[], prerempli: boolean, consigne: string|null, nbSeries: number}}
+ *  sections : { kind:'bloc', lettre, titre, exos[] } | { kind:'superset', lettre, titre, detail, exos[] } | { kind:'circuit', lettre, nom, detail, exos[] }
+ *  `lettre` : A, B, C… dans l'ordre des sections (circuits compris), comme les « Bloc A / B / C » de la maquette V2 ;
+ *  `option` : circuit facultatif (le modèle n'a pas encore ce drapeau : il vaut toujours false aujourd'hui).
+ */
+export function apercuWorkout({ workout, exercices, template = null, unite = 'kg', realisations = [] }) {
   const bib = Object.fromEntries(exercices.map((e) => [e.id, e]))
   const items = demarrerSeance({ workout, template }, 0).exercices
   const ligne = (it) => {
     const e = bib[it.exerciceId] || {}
     return {
       id: it.id, nom: e.nom || 'Exercice', description: e.description || null, consignes: it.consignes,
-      puces: puces(it, unite), variante: detailSeries(it, unite), prerempli: prerempli(it), video: videoDe(e)
+      puces: puces(it, unite), pastilles: pastillesPrescription(puces(it, unite)), derniere: derniereFois(realisations, it.exerciceId, unite),
+      variante: detailSeries(it, unite), prerempli: prerempli(it), video: videoDe(e)
     }
   }
   const sections = []
   let lettre = 0
+  const prochaineLettre = () => LETTRES[lettre++ % 26]
   let courant = null
   for (const it of items) {
     if (it.type === 'circuit') {
       courant = null
       const t = titreCircuit(it.format, it.params)
       sections.push({
-        kind: 'circuit', id: it.id, nom: t.nom, detail: t.detail, libelle: it.nom,
+        kind: 'circuit', id: it.id, lettre: prochaineLettre(), option: !!it.option, nom: t.nom, detail: t.detail, libelle: it.nom,
         exos: it.exercices.map((x) => ({ reps: x.reps ?? null, consignes: x.consignes || null, nom: bib[x.exerciceId]?.nom || 'Exercice', video: videoDe(bib[x.exerciceId]) }))
       })
     } else if (it.supersetId) {
       courant = null
       let s = sections.find((x) => x.id === it.supersetId)
       if (!s) {
-        s = { kind: 'superset', id: it.supersetId, titre: 'Superset', detail: `repos ${it.repos ?? 60} s après chaque passage`, exos: [] }
+        s = { kind: 'superset', id: it.supersetId, lettre: prochaineLettre(), titre: 'Superset', detail: `repos ${it.repos ?? 60} s après chaque passage`, exos: [] }
         sections.push(s)
       }
       s.exos.push({ ...ligne(it), lettre: LETTRES[s.exos.length] })
     } else {
-      if (!courant) { courant = { kind: 'bloc', titre: `Bloc ${LETTRES[lettre++ % 26]}`, exos: [] }; sections.push(courant) }
+      if (!courant) { const l = prochaineLettre(); courant = { kind: 'bloc', lettre: l, titre: `Bloc ${l}`, exos: [] }; sections.push(courant) }
       courant.exos.push(ligne(it))
     }
   }

@@ -31,7 +31,7 @@ describe('synthèse du tableau de bord', () => {
     expect(s.hero).toMatchObject({ etat: 'prevu', etiquette: 'Aujourd\'hui' })
     expect(s.hero.meta[0]).toMatch(/^≈ \d+ min$/)
     expect(s.semaine.total).toBe(3)
-    expect(s.coaching).toEqual({ date: 'Sam. 24', mois: 'octobre', heure: '18 h 30', lieu: 'à domicile' })
+    expect(s.coaching).toEqual({ date: 'Sam. 24', mois: 'octobre', heure: '18 h 30', lieu: 'à domicile', jourNom: 'samedi', num: 24, moisCourt: 'oct.' })
     expect(s.programme).toMatchObject({ nom: 'Programme Fabien Vincent', numero: 4, total: null })
     expect(s.programme.segments.filter(Boolean)).toHaveLength(4)
     expect(s.questionnaires).toBe(1) // bilan hebdo à faire ; check-in du jour déjà fait

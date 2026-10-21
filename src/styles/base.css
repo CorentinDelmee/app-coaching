@@ -1,6 +1,8 @@
 /* Base commune : remise à zéro légère, typographie, boutons de la maison. Aucune couleur en dur (voir tokens.css). */
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; background: var(--fond); color: var(--texte); font-family: var(--font-texte); }
+/* Le fond est sur <html> seulement : le menu (z-index -1, derrière les pages) ne doit pas être masqué par un fond de <body>. */
+html { background: var(--fond); }
+html, body { height: 100%; color: var(--texte); font-family: var(--font-texte); }
 /* Texte courant : suit le Grand affichage (--e) */
 body { font-size: calc(var(--e) * 16px); line-height: 1.4; }
 /* App plein écran : pas de « tirer pour rafraîchir » qui recharge en pleine séance, pas de gonflement du texte en paysage */

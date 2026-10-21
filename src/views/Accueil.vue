@@ -4,17 +4,21 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
+import { SplitText } from 'gsap/SplitText'
 import Icone from '../components/Icone.vue'
 import { data, mode } from '../data/index.js'
 import { syntheseAccueil } from '../domain/accueil.js'
 import { messageEcrire } from '../domain/coaching.js'
+import { messageAccueil } from '../domain/messageAccueil.js'
+import { CHOIX } from '../config/apparence.js'
 import { lienCoach } from '../lib/coach.js'
 import { horloge } from '../lib/horloge.js'
 import { utilisateurCourant } from '../lib/session.js'
-import { compter, fermerPage, installerRessort, mouvementReduit } from '../anim/transitions.js'
-import { anneau, animerAnneau, motsMontent } from '../anim/titres.js'
+import { compter, fermerPage, mouvementReduit } from '../anim/transitions.js'
+import { anneau, animerAnneau } from '../anim/titres.js'
 import { consommerFinSeance, consommerRetour, memoriserSource } from '../anim/passage.js'
 
+gsap.registerPlugin(SplitText)
 const router = useRouter()
 const racine = ref(null)
 const erreur = ref('')
@@ -25,6 +29,7 @@ const compteurSemaine = ref(null)
 const salutEl = ref(null)
 const celebration = ref(null)
 let idle = []
+let decoupe = null // SplitText du message d'accueil (à défaire avant de changer le texte)
 let entrees = null // données de la synthèse (pour recalculer la semaine « avant » la séance qui vient d'être validée)
 
 async function charger() {
@@ -48,36 +53,66 @@ const fraction = computed(() => (s.value && s.value.semaine.total ? s.value.sema
 const bouclee = computed(() => s.value?.hero.etat === 'bouclee')
 const lienEcrire = computed(() => lienCoach(messageEcrire(user.value?.nom || '')))
 const dev = mode === 'local'
+const reste = computed(() => (s.value ? Math.max(0, s.value.semaine.total - s.value.semaine.faits) : 0))
+const semaineInfo = computed(() => {
+  const p = s.value?.programme
+  return p && p.numero >= 1 ? `Semaine ${p.numero}${p.total ? ` sur ${p.total}` : ''}` : ''
+})
+const fantome = computed(() => { const n = s.value?.hero.titre.match(/(\d+)\s*$/); return n ? `W${n[1]}` : '' }) // grand « W2 » décoratif de l'aplat
 
-// --- Entrée : mots qui montent, cartes révélées en clip-path, anneau + compteurs, pastille ---
+// Message d'accueil (variante choisie dans src/config/apparence.js). Le titre est posé à la main (SplitText découpe ses lettres) :
+// d'où cette fonction, qui défait la découpe précédente avant de remplacer le texte.
+function poserMessage(msg) {
+  if (decoupe) { decoupe.revert(); decoupe = null }
+  const h = salutEl.value
+  h.textContent = ''
+  msg.lignes.forEach((l, i) => { if (i) h.appendChild(document.createElement('br')); h.appendChild(document.createTextNode(l)) })
+  h.classList.toggle('long', msg.long)
+}
+const messageActuel = () => messageAccueil({ variante: CHOIX.accueil, prenom: s.value.prenom, etat: s.value.hero.etat, reste: reste.value })
+function animerMessage(delai = 0) {
+  const h = salutEl.value
+  if (mouvementReduit()) { gsap.fromTo(h, { opacity: 0 }, { opacity: 1, duration: 0.3, clearProps: 'opacity' }); return }
+  decoupe = SplitText.create(h, { type: 'chars', charsClass: 'car' })
+  gsap.fromTo(decoupe.chars, { opacity: 0, z: -360, y: 60, rotationX: -80 }, { opacity: 1, z: 0, y: 0, rotationX: 0, duration: 1.05, stagger: 0.035, ease: 'expo.out', delay: delai, clearProps: 'transform,opacity' })
+}
+
+// --- Entrée (maquette V2) : l'aplat jaune descend comme un rideau, le message se pose lettre à lettre depuis la profondeur,
+// la carte du jour puis les cartes arrivent en 3D ; anneau + compteur + pastille. Seulement transform / opacity / clip-path. ---
 function entree() {
-  const cartes = Array.from(racine.value.querySelectorAll('.carte'))
+  const cartes = Array.from(racine.value.querySelectorAll('.grille .carte'))
+  const hero = racine.value.querySelector('.c-aujourdhui')
   anneau(anneauEl.value, 0)
+  poserMessage(messageActuel())
   if (mouvementReduit()) {
-    gsap.fromTo(cartes, { opacity: 0 }, { opacity: 1, duration: 0.3, clearProps: 'opacity' })
+    gsap.fromTo([racine.value.querySelector('.aplat'), ...cartes], { opacity: 0 }, { opacity: 1, duration: 0.3, clearProps: 'opacity' })
     anneau(anneauEl.value, fraction.value)
     return
   }
-  motsMontent(salutEl.value, 0.05)
-  gsap.fromTo('.a-haut .jour', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.8, delay: 0.05, ease: 'expo.out' })
-  gsap.fromTo(cartes, { clipPath: 'inset(100% 0px 0px 0px round 26px)', y: 36 },
-    { clipPath: 'inset(0% 0px 0px 0px round 26px)', y: 0, duration: 1.1, stagger: 0.1, ease: 'expo.out', delay: 0.12, clearProps: 'clipPath,transform' })
-  gsap.fromTo('.hero .c-lab, .hero .hero-w, .hero .hero-sous, .hero .hero-meta li', { y: 30, opacity: 0 },
-    { y: 0, opacity: 1, duration: 0.9, stagger: 0.06, ease: 'expo.out', delay: 0.4, clearProps: 'transform,opacity' })
-  gsap.fromTo('.carte.coaching > *, .carte.prog > *, .carte.quest > *', { y: 18, opacity: 0 },
-    { y: 0, opacity: 1, duration: 0.8, stagger: 0.04, ease: 'expo.out', delay: 0.7, clearProps: 'transform,opacity' })
-  animerAnneau(anneauEl.value, 0, fraction.value, { duree: 1.6, delay: 0.7 })
-  compter(compteurSemaine.value, 0, s.value.semaine.faits, { duree: 1.2, delay: 0.7 })
-  if (racine.value.querySelector('.pastille')) gsap.fromTo('.pastille', { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, delay: 1.1, ease: 'back.out(2.4)', clearProps: 'transform,opacity' })
-  gsap.fromTo('.segs i', { scaleY: 0 }, { scaleY: 1, duration: 0.6, stagger: 0.07, delay: 1, ease: 'back.out(2)', clearProps: 'transform' })
-  // vie discrète : la pastille respire, la flèche invite à toucher
+  const tl = gsap.timeline()
+  tl.fromTo('.aplat', { clipPath: 'inset(0px 0px 100% 0px round 0px 0px 34px 34px)' }, { clipPath: 'inset(0px 0px 0% 0px round 0px 0px 34px 34px)', duration: 1, ease: 'expo.inOut', clearProps: 'clipPath' }, 0)
+    .fromTo('.aplat-fond span', { opacity: 0, y: 80, z: -300 }, { opacity: 1, y: 0, z: 0, duration: 1.8, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.2)
+    .fromTo('.haut-info', { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.8, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.35)
+    .fromTo('.salut-p', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.8, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.45)
+    .add(() => animerMessage(0), 0.4)
+  if (hero) tl.fromTo(hero, { opacity: 0, y: 70, z: -200, rotationX: 16 }, { opacity: 1, y: 0, z: 0, rotationX: 0, duration: 1.1, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.55)
+  cartes.forEach((c, i) => {
+    const k = i < 2 ? 2 : 1 // les deux cartes du haut arrivent de plus loin
+    tl.fromTo(c, { opacity: 0, z: -200 - k * 80, y: 60 + k * 36, rotationX: 18 }, { opacity: 1, z: 0, y: 0, rotationX: 0, duration: 0.85 + k * 0.14, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.7 + i * 0.08)
+  })
+  animerAnneau(anneauEl.value, 0, fraction.value, { duree: 1.4, delay: 0.9 })
+  compter(compteurSemaine.value, 0, s.value.semaine.faits, { duree: 1.1, delay: 0.9 })
   const pastille = racine.value.querySelector('.pastille')
-  // trois respirations puis repos : un rappel, pas une animation permanente (batterie, écran vu plusieurs fois par jour)
-  if (pastille) idle.push(gsap.to(pastille, { scale: 1.1, duration: 1.1, repeat: 5, yoyo: true, ease: 'sine.inOut', delay: 2 }))
+  if (pastille) {
+    gsap.fromTo(pastille, { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, delay: 1.3, ease: 'back.out(1.7)', clearProps: 'transform,opacity' })
+    // trois respirations puis repos : un rappel, pas une animation permanente (batterie, écran vu plusieurs fois par jour)
+    idle.push(gsap.to(pastille, { scale: 1.1, duration: 1.1, repeat: 5, yoyo: true, ease: 'sine.inOut', delay: 2.4 }))
+  }
+  gsap.fromTo('.barres i', { scaleY: 0 }, { scaleY: 1, duration: 0.6, stagger: 0.07, delay: 1.1, ease: 'back.out(1.7)', clearProps: 'transform' })
   if (bouclee.value) setTimeout(feter, 1100)
 }
 
-// Semaine bouclée : confettis depuis la carte héros
+// Semaine bouclée : confettis depuis la carte du jour
 function feter() {
   const h = celebration.value
   if (!h || mouvementReduit()) return
@@ -91,13 +126,13 @@ function feter() {
     const d = 80 + Math.random() * 140
     gsap.fromTo(c, { x: 0, y: 0, scale: 0, opacity: 1 }, {
       x: Math.cos(a) * d, y: Math.sin(a) * d - 30, scale: 0.6 + Math.random() * 0.9, rotate: Math.random() * 540, duration: 1 + Math.random() * 0.4, ease: 'expo.out',
-      onComplete: () => gsap.to(c, { opacity: 0, y: '+=120', duration: 0.9, ease: 'power2.in', onComplete: () => c.remove() })
+      onComplete: () => gsap.to(c, { opacity: 0, y: '+=120', duration: 0.9, ease: 'power2.out', onComplete: () => c.remove() })
     })
   }
 }
 
 // --- Retour d'une séance validée : l'écran de fin (copie posée tout de suite, avant le chargement) se referme dans la carte
-// « Cette semaine », puis l'anneau et le compteur gagnent la séance (maquette M1 : S.terminer + animerSemaine).
+// « Cette semaine », puis l'anneau, le compteur et le message d'accueil gagnent la séance (« Prêt, Fabien ? » -> « Bien joué, Fabien. »). ---
 function poserCouverture(fin) {
   const c = document.createElement('div')
   c.className = 'retour-seance'
@@ -116,21 +151,23 @@ function retourDeSeance(couverture, fin) {
   const avant = Math.min(faits, syntheseAccueil({ ...entrees, realisations: sans }).semaine.faits)
   anneau(anneauEl.value, total ? avant / total : 0)
   compteurSemaine.value.textContent = avant
+  poserMessage(messageAccueil({ variante: CHOIX.accueil, prenom: s.value.prenom, etat: 'prevu', reste: total - avant })) // le message d'« avant »
   fermerPage(couverture, racine.value.querySelector('.carte.semaine'), { onFini: () => { couverture.remove(); gagnerSeance(avant) } })
 }
 function gagnerSeance(avant) {
   const { faits, total } = s.value.semaine
+  poserMessage(messageActuel())
   if (faits === avant) return
+  animerMessage(0.1)
   animerAnneau(anneauEl.value, total ? avant / total : 0, fraction.value, { duree: 1.5 })
   compter(compteurSemaine.value, avant, faits, { duree: 1.1 })
   if (mouvementReduit()) return
-  gsap.fromTo('.anneau-w', { scale: 0.88 }, { scale: 1, duration: 1.1, ease: 'elastic.out(1,.55)', clearProps: 'transform' })
-  gsap.fromTo('.hero .hero-w, .hero .hero-sous, .hero .hero-meta', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, ease: 'expo.out', clearProps: 'transform,opacity' })
+  gsap.fromTo('.anneau-s', { scale: 0.88 }, { scale: 1, duration: 0.8, ease: 'back.out(1.7)', clearProps: 'transform' })
+  gsap.fromTo('.c-aujourdhui .c-lab, .c-aujourdhui .c-titre, .c-aujourdhui .c-sous, .c-aujourdhui .c-pieds', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, ease: 'expo.out', clearProps: 'transform,opacity' })
   if (bouclee.value) setTimeout(feter, 700)
 }
 
 onMounted(async () => {
-  installerRessort()
   const fin = consommerFinSeance()
   const couverture = fin ? poserCouverture(fin) : null
   await charger()
@@ -138,10 +175,10 @@ onMounted(async () => {
   if (!s.value) { couverture?.remove(); return }
   anneau(anneauEl.value, fraction.value)
   if (couverture) { consommerRetour(); retourDeSeance(couverture, fin); return }
-  if (consommerRetour()) return // retour d'une page refermée dans sa carte : le dashboard est montré tel quel
+  if (consommerRetour()) { poserMessage(messageActuel()); return } // retour d'une page refermée dans sa carte : le dashboard est montré tel quel
   entree()
 })
-onBeforeUnmount(() => idle.forEach((t) => t.kill()))
+onBeforeUnmount(() => { idle.forEach((t) => t.kill()); if (decoupe) decoupe.revert() })
 
 // --- Ouvrir une page : elle naît de la carte touchée ---
 function ouvrir(chemin, e) {
@@ -162,67 +199,69 @@ const versHero = (e) => {
     </div>
 
     <div v-else-if="s" class="accueil">
-      <header class="a-haut">
-        <p class="jour">{{ s.jour }}</p>
-        <h1 ref="salutEl" v-once class="salut">Bonjour {{ s.prenom }}</h1>
-      </header>
-
-      <div class="bento">
-        <!-- Aujourd'hui -->
-        <button ref="celebration" class="carte hero" :class="{ fait: s.hero.etat === 'fait' || s.hero.etat === 'bouclee' }" type="button"
+      <!-- Aplat jaune : en-tête, message d'accueil, carte du jour. Texte foncé (réglage : html[data-aplat]) -->
+      <div class="aplat" data-teinte="aplat">
+        <div class="aplat-fond" aria-hidden="true"><span v-if="fantome">{{ fantome }}</span></div>
+        <header class="haut"><span class="haut-info">{{ semaineInfo }}</span></header>
+        <div class="salut">
+          <p class="salut-p">{{ s.jour }}</p>
+          <h1 ref="salutEl" class="salut-h" aria-live="polite"></h1>
+        </div>
+        <button ref="celebration" class="carte c-aujourdhui" data-teinte="encre" :class="{ fait: s.hero.etat === 'fait' || s.hero.etat === 'bouclee' }" type="button"
           :aria-label="`${s.hero.etiquette} : ${s.hero.titre}. ${s.hero.sous}`" @click="versHero">
-          <div class="c-lab">{{ s.hero.etiquette }}</div>
-          <span class="hero-w">{{ s.hero.titre }}</span>
-          <span v-if="s.hero.sous" class="hero-sous">{{ s.hero.sous }}</span>
-          <ul v-if="s.hero.meta.length" class="hero-meta"><li v-for="m in s.hero.meta" :key="m">{{ m }}</li></ul>
-          <span class="fleche"><Icone :nom="bouclee ? 'coupe' : 'fleche'" /></span>
+          <span class="c-lab">{{ s.hero.etiquette }}</span>
+          <span class="c-titre">{{ s.hero.titre }}</span>
+          <span v-if="s.hero.sous" class="c-sous">{{ s.hero.sous }}</span>
+          <span class="c-pieds">
+            <span v-if="s.hero.etat === 'fait'" class="chip fait">Fait</span>
+            <span v-for="m in s.hero.meta" :key="m" class="chip">{{ m }}</span>
+            <span v-if="s.hero.etat === 'prevu'" class="chip">À faire</span>
+          </span>
+          <span class="c-go"><Icone :nom="bouclee ? 'coupe' : 'fleche'" /></span>
+        </button>
+      </div>
+
+      <div class="grille">
+        <!-- Cette semaine -->
+        <button class="carte semaine c-semaine" data-teinte="surface" type="button" :aria-label="`Cette semaine : ${s.semaine.faits} sur ${s.semaine.total}`" @click="ouvrir('/programme', $event)">
+          <span class="c-lab">Cette semaine</span>
+          <span class="anneau-s">
+            <svg viewBox="0 0 108 108" aria-hidden="true"><circle class="as-fond" cx="54" cy="54" r="48" /><circle ref="anneauEl" class="as-val" :class="{ plein: bouclee }" cx="54" cy="54" r="48" /></svg>
+            <span class="as-txt"><b ref="compteurSemaine">{{ s.semaine.faits }}</b><i>/{{ s.semaine.total }}</i></span>
+          </span>
+          <span class="c-mini">{{ !s.semaine.total ? 'Aucun workout prévu' : bouclee ? 'Semaine bouclée !' : `${reste} ${reste > 1 ? 'séances' : 'séance'} à faire` }}</span>
         </button>
 
-        <div class="rang2">
-          <!-- Cette semaine -->
-          <button class="carte semaine" type="button" :aria-label="`Cette semaine : ${s.semaine.faits} sur ${s.semaine.total}`" @click="ouvrir('/programme', $event)">
-            <div class="c-lab">Cette semaine</div>
-            <div class="anneau-w">
-              <svg viewBox="0 0 108 108" aria-hidden="true"><circle class="piste-a" cx="54" cy="54" r="48" /><circle ref="anneauEl" class="rempli" :class="{ plein: bouclee }" cx="54" cy="54" r="48" /></svg>
-              <div class="centre"><span><b ref="compteurSemaine" class="n">{{ s.semaine.faits }}</b><small>/{{ s.semaine.total }}</small></span></div>
-            </div>
-          </button>
+        <!-- Prochaine séance de coaching, ou invitation à écrire -->
+        <button v-if="s.coaching" class="carte coaching c-coaching" data-teinte="inverse" type="button" aria-label="Prochaine séance de coaching" @click="ouvrir('/coaching', $event)">
+          <span class="c-lab">Coaching</span>
+          <span class="c-date"><b>{{ s.coaching.num }}</b><i>{{ s.coaching.moisCourt }}</i></span>
+          <span class="c-mini">{{ s.coaching.jourNom }} · {{ s.coaching.heure }}<br>{{ s.coaching.lieu }}</span>
+        </button>
+        <a v-else class="carte coaching c-coaching vide" data-teinte="surface" :href="lienEcrire" target="_blank" rel="noopener">
+          <span class="c-lab">Coaching</span>
+          <span class="c-prog-t">Aucune séance prévue</span>
+          <span class="c-mini">M'écrire <Icone nom="fleche" /></span>
+        </a>
 
-          <!-- Prochaine séance de coaching, ou invitation à écrire -->
-          <button v-if="s.coaching" class="carte coaching" type="button" aria-label="Prochaine séance de coaching" @click="ouvrir('/coaching', $event)">
-            <div class="c-lab">Coaching</div>
-            <div class="co-date">{{ s.coaching.date }}<br>{{ s.coaching.mois }}</div>
-            <div class="co-heure">{{ s.coaching.heure }}</div>
-            <div class="co-lieu">{{ s.coaching.lieu }}</div>
-          </button>
-          <a v-else class="carte coaching vide" :href="lienEcrire" target="_blank" rel="noopener">
-            <div class="c-lab">Coaching</div>
-            <div class="co-date">Aucune séance prévue</div>
-            <div class="co-heure">M'écrire <Icone nom="fleche" /></div>
-          </a>
-        </div>
+        <!-- Mon programme -->
+        <button v-if="s.programme" class="carte prog c-programme" data-teinte="surface" type="button" aria-label="Mon programme" @click="ouvrir('/programme', $event)">
+          <span class="c-lab">Mon programme</span>
+          <span class="c-prog-t">{{ s.programme.nom }}</span>
+          <span class="barres" aria-hidden="true"><i v-for="(on, k) in s.programme.segments" :key="k" :class="{ on }"></i></span>
+        </button>
+        <button v-else class="carte prog c-programme" data-teinte="surface" type="button" aria-label="Mon programme" @click="ouvrir('/programme', $event)">
+          <span class="c-lab">Mon programme</span>
+          <span class="c-prog-t">Pas encore de programme</span>
+          <span class="c-mini">Votre coach le prépare</span>
+        </button>
 
-        <div class="rang3">
-          <!-- Mon programme -->
-          <button v-if="s.programme" class="carte prog" type="button" aria-label="Mon programme" @click="ouvrir('/programme', $event)">
-            <div class="c-lab">Mon programme</div>
-            <div class="pg-nom">{{ s.programme.nom }}</div>
-            <div class="pg-s">{{ s.programme.numero >= 1 ? `Semaine ${s.programme.numero}${s.programme.total ? ` sur ${s.programme.total}` : ''}` : 'Bientôt' }}</div>
-            <div class="segs" aria-hidden="true"><i v-for="(on, k) in s.programme.segments" :key="k" :class="{ on }"></i></div>
-          </button>
-          <button v-else class="carte prog" type="button" aria-label="Mon programme" @click="ouvrir('/programme', $event)">
-            <div class="c-lab">Mon programme</div>
-            <div class="pg-nom">Pas encore de programme</div>
-            <div class="pg-s">Votre coach le prépare</div>
-          </button>
-
-          <!-- Questionnaires : pastille seulement s'il y en a à remplir -->
-          <button class="carte quest" type="button" aria-label="Questionnaires" @click="ouvrir('/questionnaires', $event)">
-            <span v-if="s.questionnaires" class="pastille" :aria-label="`${s.questionnaires} à remplir`">{{ s.questionnaires }}</span>
-            <div class="q-t">Questionnaires</div>
-            <div class="q-s">{{ !s.sante ? 'Données de santé désactivées' : s.questionnaires ? 'À remplir · 2 min' : 'Tout est à jour' }}</div>
-          </button>
-        </div>
+        <!-- Questionnaires : pastille seulement s'il y en a à remplir -->
+        <button class="carte quest c-quest" data-teinte="surface" type="button" aria-label="Questionnaires" @click="ouvrir('/questionnaires', $event)">
+          <span class="c-lab">Questionnaires</span>
+          <span class="c-prog-t">{{ !s.sante ? 'Données de santé désactivées' : s.questionnaires ? 'À remplir · 2 min' : 'Tout est à jour' }}</span>
+          <span v-if="s.questionnaires" class="pastille" :aria-label="`${s.questionnaires} à remplir`">{{ s.questionnaires }}</span>
+        </button>
       </div>
 
       <!-- Accès développement (mode local seulement) : discret -->
