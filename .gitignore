@@ -8,3 +8,4 @@ dist/
 design/**/*.webm
 captures/
 netlify-maquettes/
+docs/**/*.webm
