@@ -592,7 +592,12 @@ function retourHistorique(cible) {
   const retour = route.query.retour
   if (avant && retour && avant === cheminDe(retour) && cheminDe(cible) === cheminDe(retour)) return router.back()
   // fin de séance : on rentre au tableau de bord en sautant le workout si c'est de là qu'on est venu
-  if (cible === '/' && avant && retour && avant === cheminDe(retour) && route.query.depuis === '/') return router.go(-2)
+  // go(-2) suppose [tableau de bord, workout, séance] : on exige 2 entrées derrière nous, puis on vérifie l'arrivée (sinon replace)
+  if (cible === '/' && avant && retour && avant === cheminDe(retour) && route.query.depuis === '/' && (window.history.state?.position ?? 0) >= 2) {
+    router.go(-2)
+    setTimeout(() => { if (router.currentRoute.value.path !== '/') router.replace('/') }, 800)
+    return
+  }
   return router.replace(cible === retour && route.query.depuis ? { path: retour, query: { retour: route.query.depuis } } : cible)
 }
 function sortir() {
