@@ -34,7 +34,13 @@ export function usePageAnimee(retourDefaut) {
     }
     return true
   })
-  const retour = () => router.replace(route.query.retour || retourDefaut)
+  // Vrai retour si la page précédente de l'historique est la cible (pas de copie empilée) ; sinon (adresse ouverte directement) replace.
+  const retour = () => {
+    const cible = route.query.retour || retourDefaut
+    const avant = (window.history.state?.back || '').split('?')[0]
+    if (avant && avant === String(cible).split('?')[0]) return router.back()
+    return router.replace(cible)
+  }
 
   onBeforeUnmount(() => { if (couche.value) nettoyer(couche.value); if (fantome) fantome.remove() })
   return { racine, couche, ouvrir, partir, retour }
