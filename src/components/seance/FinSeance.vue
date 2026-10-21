@@ -75,7 +75,7 @@ function animer() {
     .fromTo($$('.st'), { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.09, ease: 'expo.out', clearProps: 'transform' }, '<.15')
     .add(nombres, '<.1')
     .fromTo($('.fin-bas'), { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, ease: 'expo.out', clearProps: 'transform' }, '<.5')
-    .fromTo($('.st.record'), { scale: 0.9 }, { scale: 1, duration: 0.9, ease: 'elastic.out(1,.5)' }, '<.2')
+    .fromTo($('.st.record'), { scale: 0.9 }, { scale: 1, duration: 0.7, ease: 'back.out(1.7)' }, '<.2')
 }
 
 defineExpose({ racine })

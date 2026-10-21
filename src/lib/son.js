@@ -36,13 +36,16 @@ export function vibre(motif) {
   try { if (navigator.vibrate) navigator.vibrate(motif) } catch { /* iOS ne vibre pas */ }
 }
 
-/** Les trois sons de la maison : tic (3 dernières secondes), go (départ), fin (fin de série / repos / chrono). */
+/** Les sons de la maison (maquette V2) : tic (3 dernières secondes), go (départ), fin (fin de série / repos / chrono), valide, tick, choix, fête. */
 export const SONS = {
   tic: () => { bip(740, 0.09, 0.22); vibre(12) },
   go: () => { bip(1180, 0.22, 0.28); vibre(60) },
   fin: () => { bip(880, 0.5, 0.3); setTimeout(() => bip(880, 0.5, 0.3), 220); vibre([180, 80, 180]) },
   plus: () => bip(1000, 0.06, 0.2),
   tour: () => { bip(1320, 0.07, 0.2); vibre(30) },
-  valide: () => vibre(25),
-  cran: () => vibre(6)
+  valide: () => { bip(660, 0.09, 0.2); vibre(25) },
+  cran: () => vibre(6),                       // roue de valeur : vibration seule (défilement rapide)
+  tick: () => { bip(1900, 0.03, 0.12); vibre(6) }, // curseur, − / + : petit tic
+  choix: () => { bip(1320, 0.07, 0.2); vibre(15) }, // réponse choisie (questionnaire)
+  fete: () => { [660, 880, 1320].forEach((f, i) => setTimeout(() => bip(f, 0.14, 0.22), i * 110)); vibre([40, 60, 40]) }
 }

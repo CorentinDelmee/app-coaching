@@ -231,7 +231,7 @@ function pulseRow(exIdx, k) {
   nextTick(() => {
     const r = racine.value?.querySelector(`.panel[data-i="${exIdx}"] .rang[data-serie="${k}"]`)
     if (!r || mouvementReduit()) return
-    gsap.fromTo(r.querySelector('.rg-e'), { scale: 0.3 }, { scale: 1, duration: 0.8, ease: 'elastic.out(1,.45)', clearProps: 'transform' })
+    gsap.fromTo(r.querySelector('.rg-e'), { scale: 0.75, opacity: 0.4 }, { scale: 1, opacity: 1, duration: 0.6, ease: REBOND.pop, clearProps: 'transform,opacity' })
     gsap.fromTo(r, { scale: 1.03 }, { scale: 1, duration: 0.6, ease: 'expo.out', clearProps: 'transform' })
   })
 }

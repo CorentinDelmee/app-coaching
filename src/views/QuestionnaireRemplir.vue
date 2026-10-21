@@ -8,6 +8,7 @@ import { useRoute } from 'vue-router'
 import { gsap } from 'gsap'
 import Icone from '../components/Icone.vue'
 import CurseurDix from '../components/CurseurDix.vue'
+import ChiffresRoulants from '../components/ChiffresRoulants.vue'
 import RoueValeur from '../components/seance/RoueValeur.vue'
 import { data, mode } from '../data/index.js'
 import { jourLocal } from '../domain/dates.js'
@@ -143,7 +144,7 @@ function annoncerReprise() {
     if (mouvementReduit()) { gsap.fromTo(repriseEl.value, { opacity: 0 }, { opacity: 1, duration: 0.2 }); gsap.to(repriseEl.value, { opacity: 0, delay: 2.4, duration: 0.3, onComplete: () => { reprise.value = false } }); return }
     gsap.timeline({ delay: 1, onComplete: () => { reprise.value = false } })
       .fromTo(repriseEl.value, { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: 'expo.out' })
-      .to(repriseEl.value, { y: -14, opacity: 0, duration: 0.4, ease: 'power2.in' }, '+=2')
+      .to(repriseEl.value, { y: -14, opacity: 0, duration: 0.3, ease: 'power3.out' }, '+=2')
   })
 }
 
@@ -181,27 +182,33 @@ function choisir(valeur) {
   if (occupe.value) return
   const c = q.value
   valeurs[c.cle] = valeur
-  SONS.valide()
+  SONS.choix()
   if (auto.value) { clearTimeout(minuteur); minuteur = setTimeout(() => aller(1), c.type === 'emojis' ? 750 : 650) }
 }
 function basculerChoix(option) {
   const liste = valeurs[q.value.cle]
   valeurs[q.value.cle] = liste.includes(option) ? liste.filter((x) => x !== option) : [...liste, option]
-  SONS.valide()
+  SONS.choix()
 }
+// Humeur (M2) : l'émoji choisi grandit en rebond mesuré, les autres reculent un peu
 function pop(e) {
   if (mouvementReduit()) return
-  const s = e.currentTarget.querySelector('.emo')
-  if (s) gsap.fromTo(s, { scale: 0.5, rotate: -20 }, { scale: 1.35, rotate: 0, duration: 0.7, ease: 'elastic.out(1,.4)' })
+  const bouton = e.currentTarget
+  const tous = bouton.parentElement.querySelectorAll('.emo')
+  tous.forEach((s) => gsap.to(s, { scale: s.parentElement === bouton ? 1.4 : 0.86, y: s.parentElement === bouton ? -8 : 0, duration: 0.55, ease: s.parentElement === bouton ? 'back.out(2)' : 'expo.out' }))
 }
 function choisirEmoji(e, emoji) { choisir(emoji); pop(e) }
 
 function ouvrirRoue(e) {
   roue.value = { config: configNombre(q.value, valeurs[q.value.cle]), src: e.currentTarget }
 }
+const sensNombre = ref(1) // les chiffres de la tuile montent quand la valeur augmente, descendent sinon
 function roueValidee(i) {
-  valeurs[q.value.cle] = roue.value.config.stocke(i)
-  SONS.valide()
+  const nouvelle = roue.value.config.stocke(i)
+  const ancienne = valeurs[q.value.cle]
+  sensNombre.value = typeof ancienne === 'number' && nouvelle < ancienne ? -1 : 1
+  valeurs[q.value.cle] = nouvelle
+  SONS.tick()
 }
 
 async function choisirPhoto(e) {
@@ -245,7 +252,7 @@ async function envoyer() {
   alerte.value = douleurAlertante(vals)
   fin.value = true
   await nextTick()
-  vibre([40, 60, 40])
+  SONS.fete()
   ouvrirCercle(finEl.value, document.querySelector('.qz-bas .gros'), { onFini: celebrer })
   envoi.value = false
 }
@@ -261,7 +268,7 @@ function animerContenuFin(delai) {
   const els = f.querySelectorAll('.rond-ok, .gd, p, .resume span, .gros')
   if (mouvementReduit()) { gsap.fromTo(els, { opacity: 0 }, { opacity: 1, duration: 0.25, clearProps: 'opacity' }); return }
   gsap.fromTo(els, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, ease: 'expo.out', delay: delai, clearProps: 'transform,opacity' })
-  gsap.fromTo(f.querySelector('.rond-ok'), { scale: 0.5 }, { scale: 1, duration: 1, delay: delai + 0.1, ease: 'elastic.out(1,.5)', clearProps: 'transform' })
+  gsap.fromTo(f.querySelector('.rond-ok'), { scale: 0.7 }, { scale: 1, duration: 0.9, delay: delai + 0.1, ease: 'back.out(1.7)', clearProps: 'transform' })
   const trait = f.querySelector('.rond-ok path')
   gsap.fromTo(trait, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.7, delay: delai + 0.4, ease: 'power2.out' })
 }
@@ -333,7 +340,7 @@ const quitter = () => retour()
 
                 <!-- nombre + unité : la tuile ouvre la roue de valeur (même sélecteur que la séance) -->
                 <button v-else-if="q.type === 'nombre'" class="nombre-tuile" type="button" :aria-label="`${q.libelle} : ${valeurs[q.cle] === null ? 'à régler' : nombreFr(valeurs[q.cle]) + ' ' + (q.unite || '')}`" @click="ouvrirRoue">
-                  <span class="nt-val" :class="{ vide: valeurs[q.cle] === null }">{{ valeurs[q.cle] === null ? '—' : nombreFr(valeurs[q.cle]) }}<small v-if="q.unite">{{ q.unite }}</small></span>
+                  <span class="nt-val" :class="{ vide: valeurs[q.cle] === null }"><template v-if="valeurs[q.cle] === null">—</template><ChiffresRoulants v-else :valeur="nombreFr(valeurs[q.cle])" :sens="sensNombre" :duree="0.6" /><small v-if="q.unite">{{ q.unite }}</small></span>
                   <span class="nt-aide">{{ valeurs[q.cle] === null ? 'Touchez pour régler' : 'Touchez pour modifier' }}</span>
                 </button>
 
