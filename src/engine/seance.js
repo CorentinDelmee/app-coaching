@@ -214,13 +214,14 @@ function validerSerie(e, { exIdx, serieIdx }, quand) {
 }
 
 // Après une série ou un circuit : exercice terminé ? séance complète ? sinon avance automatique.
-function apresProgression(e, exIdx, quand, toutFait) {
+// `avancer` faux (circuit) : le résultat reste affiché jusqu'à ce que le client passe lui-même à la suite.
+function apresProgression(e, exIdx, quand, toutFait, avancer = true) {
   const g = groupe(e, exIdx)
   if (!g.every((x) => exerciceComplet(e.exercices[x]))) return
   e.evenements.push({ type: 'exercice-termine', exIdx })
   if (toutFait) return void e.evenements.push({ type: 'seance-complete' })
   const vers = Math.max(...g) + 1
-  if (vers < e.exercices.length) {
+  if (avancer && vers < e.exercices.length) {
     e.avancerAuto = { vers, finLe: quand + DELAI_AVANCE_AUTO }
     e.evenements.push({ type: 'avance-auto-prevue', vers, finLe: e.avancerAuto.finLe })
   }
@@ -321,7 +322,7 @@ const FONCTIONS = {
     if (!it || it.type !== 'circuit') return refuser(e, 'pas-un-circuit')
     it.faite = true
     it.resultat = resultat ?? null
-    apresProgression(e, exIdx, now, e.exercices.every(exerciceComplet))
+    apresProgression(e, exIdx, now, e.exercices.every(exerciceComplet), false)
   },
   passerOption: (e, { exIdx }) => {
     const it = e.exercices[exIdx]

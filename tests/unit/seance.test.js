@@ -286,7 +286,7 @@ describe('circuits dans la séance', () => {
     expect(vue(e, T0)).toMatchObject({ seriesTotal: 2 })
     e = go(e, { type: 'terminerCircuit', exIdx: 0, resultat: { tours: 5, repsEnPlus: 3 } }, 400)
     expect(e.exercices[0]).toMatchObject({ faite: true, resultat: { tours: 5, repsEnPlus: 3 } })
-    expect(e.avancerAuto.vers).toBe(1)
+    expect(e.avancerAuto).toBeFalsy()
     expect(prochaineSerie(e)).toEqual({ exIdx: 1, serieIdx: 0 })
   })
   it('terminerCircuit sur un exercice : refusé', () => {
