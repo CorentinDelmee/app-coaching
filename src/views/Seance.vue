@@ -79,20 +79,28 @@ async function charger() {
       circuit.value = sauvegarde.circuit || null
       realisationId = sauvegarde.realisationId
       programmeId = sauvegarde.programmeId
+      allerAExercice()
     } else {
       etat.value = demarrerSeance({ workout, template, clientId: user.value.id, recordsAvant: meilleuresCharges(historique) }, horloge.now())
       realisationId = globalThis.crypto.randomUUID()
       const programmes = await data.programmes.lister({ clientId: user.value.id })
       const p = programmes.find((x) => (x.workouts || []).includes(id) || (x.semaines || []).flat().includes(id))
       programmeId = p ? p.id : undefined
+      allerAExercice()
       sauver()
-      // `?nouvelle=1` ne doit pas recommencer la séance à chaque rechargement
-      if (route.query.nouvelle) router.replace({ query: { ...route.query, nouvelle: undefined } })
+      // `?nouvelle=1` et `?ex=` ne doivent pas se rejouer à chaque rechargement
+      if (route.query.nouvelle || route.query.ex) router.replace({ query: { ...route.query, nouvelle: undefined, ex: undefined } })
     }
   } catch (e) {
     erreur.value = 'Impossible de charger la séance. Réessayez.'
     console.error(e)
   }
+}
+
+// Arrivée depuis un exercice de l'overview du Workout (`?ex=<id du bloc>`) : la séance s'ouvre directement sur lui.
+function allerAExercice() {
+  const i = etat.value.exercices.findIndex((x) => x.id === route.query.ex)
+  if (i >= 0 && i !== etat.value.courant) etat.value = reduire(etat.value, { type: 'allerA', exIdx: i }, horloge.now())
 }
 
 function sauver() {
@@ -576,12 +584,12 @@ function retourHistorique(cible) {
   if (avant && retour && avant === cheminDe(retour) && cheminDe(cible) === cheminDe(retour)) return router.back()
   // fin de séance : on rentre au tableau de bord en sautant le workout si c'est de là qu'on est venu
   if (cible === '/' && avant && retour && avant === cheminDe(retour) && route.query.depuis === '/') return router.go(-2)
-  return router.replace(cible)
+  return router.replace(cible === retour && route.query.depuis ? { path: retour, query: { retour: route.query.depuis } } : cible)
 }
 function sortir() {
   sortieAutorisee = true
   libererWakeLock()
-  fermerPage(racine.value, null, { onFini: () => (route.query.depuis ? router.replace({ path: route.query.retour, query: { retour: route.query.depuis } }) : retourHistorique(route.query.retour || '/')) })
+  fermerPage(racine.value, null, { onFini: () => retourHistorique(route.query.retour || '/') })
 }
 function abandonner() {
   effacerSeanceEnCours()

@@ -52,6 +52,7 @@
 .ex-liste { display: grid; }
 .ex { position: relative; border-bottom: 1px solid var(--filet); }
 .ex:last-child { border-bottom: 0; }
+.ex-ouvre { cursor: pointer; }
 .ex-go { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; row-gap: 9px; padding: 14px 2px; text-align: left; }
 .ex-code { align-self: center; min-width: calc(var(--e) * 34px); height: calc(var(--e) * 26px); padding: 0 6px; border-radius: 9px; display: grid; place-items: center; background: var(--surface-2); font: 600 calc(var(--e) * 13px) var(--font-texte); color: var(--texte-doux); }
 .ex-nom { padding-right: calc(var(--cible) + 6px); font: 500 calc(var(--e) * 20px)/1.1 var(--font-titre); letter-spacing: -.02em; }

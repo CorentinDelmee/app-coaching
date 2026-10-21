@@ -82,16 +82,17 @@ onBeforeUnmount(() => {
 })
 
 // --- Démarrer : cercle d'accent depuis le bouton, puis la séance (qui lève un rideau de la même couleur) ---
-function demarrer() {
+// `exId` : toucher un exercice de l'overview ouvre la séance DEPUIS cet encart, directement sur cet exercice (M2)
+function demarrer(exId = null, src = null) {
   if (enCoursDeLancement.value || !bouton.value) return
   enCoursDeLancement.value = true
   const nouvelle = bouton.value.action !== 'reprendre'
   const aller = () => {
     marquerLancement()
     partir()
-    router.push({ name: 'seance', params: { workoutId: route.params.workoutId }, query: { ...(nouvelle ? { nouvelle: 1 } : {}), retour: route.path, ...(route.query.retour ? { depuis: route.query.retour } : {}) } })
+    router.push({ name: 'seance', params: { workoutId: route.params.workoutId }, query: { ...(nouvelle ? { nouvelle: 1 } : {}), ...(exId ? { ex: exId } : {}), retour: route.path, ...(route.query.retour ? { depuis: route.query.retour } : {}) } })
   }
-  ouvrirCercle(lancement.value, btn.value, { onFini: aller })
+  ouvrirCercle(lancement.value, src || btn.value, { onFini: aller })
 }
 
 // --- Vidéo intégrée sous la ligne de l'exercice (YouTube) ou lien externe ---
@@ -158,7 +159,8 @@ const sortieVideo = (el, fin) => {
             <!-- Bloc d'exercices ou superset : un encart par exercice -->
             <ol v-if="s.kind !== 'circuit'" class="ex-liste">
               <li v-for="(x, k) in s.exos" :key="x.id" class="ex">
-                <div class="ex-go">
+                <div class="ex-go" :class="{ 'ex-ouvre': !sansDemarrer }" :role="sansDemarrer ? undefined : 'button'" :tabindex="sansDemarrer ? undefined : 0" :aria-label="sansDemarrer ? undefined : `Ouvrir la séance sur ${x.nom}`"
+                  @click="!sansDemarrer && demarrer(x.id, $event.currentTarget)" @keydown.enter="!sansDemarrer && demarrer(x.id, $event.currentTarget)">
                   <span class="ex-code">{{ s.lettre }}{{ k + 1 }}</span>
                   <span class="ex-nom">{{ x.nom }}</span>
                   <span class="ex-presc">
@@ -200,7 +202,7 @@ const sortieVideo = (el, fin) => {
       <!-- Bouton collant : visible pendant tout le défilement ; retour à portée du pouce -->
       <div class="dock-bas" data-c>
         <button class="rond" type="button" aria-label="Retour" @click="retour"><Icone nom="gauche" /></button>
-        <button v-if="!sansDemarrer" ref="btn" class="gros" type="button" :disabled="enCoursDeLancement || !apercu.sections.length" @click="demarrer">{{ bouton.libelle }}<Icone nom="fleche" /></button>
+        <button v-if="!sansDemarrer" ref="btn" class="gros" type="button" :disabled="enCoursDeLancement || !apercu.sections.length" @click="demarrer()">{{ bouton.libelle }}<Icone nom="fleche" /></button>
       </div>
     </section>
 
