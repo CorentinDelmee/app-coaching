@@ -39,9 +39,9 @@ function sort(el, fini) {
 </template>
 
 <style scoped>
-.toast-suite { position: absolute; z-index: 30; left: var(--pad); right: var(--pad); bottom: var(--bas); z-index: 31; background: var(--texte); color: var(--fond); border-radius: 24px; padding: 14px 14px 14px 20px; display: flex; align-items: center; gap: 12px; overflow: hidden; }
+.toast-suite { pointer-events: none; /* le tap traverse le bandeau : le bouton « Exercice suivant » dessous reste cliquable */ position: absolute; z-index: 30; left: var(--pad); right: var(--pad); bottom: var(--bas); z-index: 31; background: var(--texte); color: var(--fond); border-radius: 24px; padding: 14px 14px 14px 20px; display: flex; align-items: center; gap: 12px; overflow: hidden; }
 .tx { flex: 1; font-weight: 600; font-size: calc(var(--e) * 16px); line-height: 1.25; }
 .tx small { display: block; font-weight: 400; opacity: .7; font-size: calc(var(--e) * 14px); }
-button { min-height: calc(var(--e) * 48px); padding: 0 16px; border-radius: 16px; background: var(--fond); color: var(--texte); font-weight: 600; font-size: calc(var(--e) * 15px); }
+button { pointer-events: auto; min-height: calc(var(--e) * 48px); padding: 0 16px; border-radius: 16px; background: var(--fond); color: var(--texte); font-weight: 600; font-size: calc(var(--e) * 15px); }
 .prog { position: absolute; left: 0; bottom: 0; height: 4px; width: 100%; background: var(--accent); transform-origin: left; }
 </style>
