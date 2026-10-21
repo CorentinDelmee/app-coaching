@@ -8,6 +8,7 @@ import Icone from '../Icone.vue'
 import ChiffresRoulants from '../ChiffresRoulants.vue'
 import TempsTotal from './TempsTotal.vue'
 import { ouvrirCercle, fermerCercle, nettoyer, mouvementReduit } from '../../anim/transitions.js'
+import { T } from '../../anim/constantes.js'
 import { formaterChrono } from '../../domain/format.js'
 import { phraseSerie } from '../../domain/phrases.js'
 import { useMaintenant } from '../../composables/useMaintenant.js'
@@ -41,12 +42,13 @@ const texteTemps = computed(() => formaterChrono(restant.value * 1000))
 const decalage = computed(() => C * (1 - fraction.value))
 
 onMounted(() => {
-  ouvrirCercle(racine.value, props.src)
+  // action fréquente (≈ 15 fois par séance) : le cercle part tout de suite du bouton (maquette V2 : 0,5 s expo.out)
+  ouvrirCercle(racine.value, props.src, { duree: T.repos, ease: 'expo.out' })
   // pendant l'ouverture en cercle, le contenu ne reçoit pas de toucher (évite un double toucher sur le bouton d'origine)
   const contenu = racine.value.querySelector('.ch-contenu')
   contenu.style.pointerEvents = 'none'
   setTimeout(() => { contenu.style.pointerEvents = '' }, 300)
-  if (!mouvementReduit()) gsap.fromTo(contenu, { opacity: 0 }, { opacity: 1, duration: 0.3, delay: 0.22, ease: 'power1.out' })
+  if (!mouvementReduit()) gsap.fromTo(contenu, { opacity: 0 }, { opacity: 1, duration: 0.3, delay: 0.15, ease: 'power1.out' })
 })
 onBeforeUnmount(() => { nettoyer(racine.value); gsap.killTweensOf([temps.value, phraseEl.value]) })
 

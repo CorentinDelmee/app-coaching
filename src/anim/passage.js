@@ -54,5 +54,7 @@ export function leverRideau(racine) {
   const rideau = document.createElement('div')
   rideau.style.cssText = 'position:absolute;inset:0;z-index:500;background:var(--accent);pointer-events:none'
   racine.appendChild(rideau)
-  gsap.to(rideau, { opacity: 0, duration: mouvementReduit() ? 0.2 : 0.55, delay: 0.05, ease: 'power2.out', onComplete: () => rideau.remove() })
+  if (mouvementReduit()) { gsap.to(rideau, { opacity: 0, duration: 0.2, onComplete: () => rideau.remove() }); return }
+  // le voile jaune se relève (maquette V2) : un fondu jaune -> fond passerait par une teinte sale en ambiance sombre
+  gsap.fromTo(rideau, { clipPath: 'inset(0% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.62, delay: 0.05, ease: 'expo.inOut', onComplete: () => rideau.remove() })
 }

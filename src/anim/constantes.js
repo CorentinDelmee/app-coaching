@@ -8,7 +8,8 @@ export const T = {
   cercleFerme: 0.46,
   rectOuvre: 0.62,   // ligne -> série, valeur -> roue
   rectFerme: 0.42,
-  slide: 0.75        // glissement entre exercices
+  slide: 0.7,        // glissement entre exercices (maquette V2 : fréquent, 0,7 s)
+  repos: 0.5         // chrono de série / repos : action fréquente, cercle qui part tout de suite du bouton (expo.out)
 }
 export const E = {
   ouvre: 'expo.inOut', sortie: 'expo.out', ferme: 'power4.inOut',

@@ -120,7 +120,7 @@ export function ouvrirCercle(couche, src, opts = {}) {
   const fin = () => { gsap.set(couche, { clearProps: 'clipPath,opacity' }); if (opts.onFini) opts.onFini() }
   if (rm()) { couche._tl = gsap.fromTo(couche, { opacity: 0 }, { opacity: 1, duration: 0.2, onComplete: fin }); return couche._tl }
   couche._tl = gsap.fromTo(couche, { clipPath: cercle(src ? 26 : 0, c.x, c.y) },
-    { clipPath: cercle(R, c.x, c.y), duration: opts.duree || T.cercleOuvre, ease: E.cercle, onComplete: fin })
+    { clipPath: cercle(R, c.x, c.y), duration: opts.duree || T.cercleOuvre, ease: opts.ease || E.cercle, onComplete: fin })
   return couche._tl
 }
 // `vers` : élément (le cercle se referme sur son centre), point { x, y }, ou rien (retour au point d'ouverture).
@@ -132,7 +132,7 @@ export function fermerCercle(couche, vers, opts = {}) {
   const fin = () => { couche.hidden = true; gsap.set(couche, { clearProps: 'clipPath,opacity' }); if (opts.onFini) opts.onFini() }
   if (rm()) { couche._tl = gsap.to(couche, { opacity: 0, duration: 0.18, onComplete: fin }); return couche._tl }
   couche._tl = gsap.fromTo(couche, { clipPath: cercle(R, c.x, c.y) },
-    { clipPath: cercle(26, c.x, c.y), duration: opts.duree || T.cercleFerme, ease: E.ferme, onComplete: fin, immediateRender: false })
+    { clipPath: cercle(26, c.x, c.y), duration: opts.duree || T.cercleFerme, ease: opts.ease || 'power3.out', onComplete: fin, immediateRender: false }) // sortie : réponse immédiate (maquette V2)
   return couche._tl
 }
 

@@ -169,8 +169,14 @@ function glisser(j, avant) {
   // la page quittée recule en s'estompant (M2), celle d'arrivée amène son contenu élément par élément
   const ancien = racine.value.querySelector(`.panel[data-i="${avant}"]`)
   if (ancien) gsap.fromTo(ancien, { scale: 1, opacity: 1 }, { scale: 0.9, opacity: 0.3, duration: T.slide, ease: 'power3.out', clearProps: 'transform,opacity' })
-  const els = racine.value.querySelectorAll(`.panel[data-i="${j}"] [data-c]`)
-  gsap.fromTo(els, { x: 50 * (j >= avant ? 1 : -1), opacity: 0 }, { x: 0, opacity: 1, duration: 0.9, stagger: 0.05, delay: 0.08, ease: 'expo.out', clearProps: 'transform,opacity' })
+  const els = [...racine.value.querySelectorAll(`.panel[data-i="${j}"] [data-c]`)]
+  // titre en ligne masquée (M2) : il monte derrière un masque fixe (clip et translation suivent la même courbe)
+  const nom = els.find((n) => n.classList.contains('p-nom'))
+  if (nom) {
+    els.splice(els.indexOf(nom), 1)
+    gsap.fromTo(nom, { yPercent: 100, clipPath: 'inset(0% 0% 100% 0%)' }, { yPercent: 0, clipPath: 'inset(0% 0% 0% 0%)', duration: 0.8, delay: 0.12, ease: 'expo.out', clearProps: 'transform,clipPath' })
+  }
+  gsap.fromTo(els,{ x: 50 * (j >= avant ? 1 : -1), opacity: 0 }, { x: 0, opacity: 1, duration: 0.9, stagger: 0.05, delay: 0.08, ease: 'expo.out', clearProps: 'transform,opacity' })
 }
 watch(courant, (j, avant) => glisser(j, avant))
 
@@ -239,8 +245,9 @@ function pulseRow(exIdx, k) {
   nextTick(() => {
     const r = racine.value?.querySelector(`.panel[data-i="${exIdx}"] .rang[data-serie="${k}"]`)
     if (!r || mouvementReduit()) return
-    gsap.fromTo(r.querySelector('.rg-e'), { scale: 0.75, opacity: 0.4 }, { scale: 1, opacity: 1, duration: 0.6, ease: REBOND.pop, clearProps: 'transform,opacity' })
-    gsap.fromTo(r, { scale: 1.03 }, { scale: 1, duration: 0.6, ease: 'expo.out', clearProps: 'transform' })
+    // action fréquente : retour bref (maquette V2 : ligne 0,3 s ressort, coche 0,35 s pop)
+    gsap.fromTo(r.querySelector('.rg-e'), { scale: 0.7 }, { scale: 1, duration: 0.35, ease: REBOND.pop, clearProps: 'transform' })
+    gsap.fromTo(r, { scale: 0.97 }, { scale: 1, duration: 0.3, ease: REBOND.ressort, clearProps: 'transform' })
   })
 }
 
