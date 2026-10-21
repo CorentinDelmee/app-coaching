@@ -147,9 +147,10 @@
     {
       "id": "V2.3",
       "titre": "Application de la V2 à l'app (design, ambiances, Grand affichage, séance, circuits, check-in)",
-      "statut": "a_faire",
-      "avancement": 0,
-      "qui": "developpeur"
+      "statut": "en_cours",
+      "avancement": 50,
+      "qui": "developpeur",
+      "note": "Socle fait (ambiances, Grand affichage, menu M5, dashboard, coaching, programme, overview, profil) ; reste séance/circuits/check-in"
     },
     {
       "id": "V2.4",
@@ -479,6 +480,10 @@
     {
       "date": "2026-10-21",
       "texte": "Maquette V2 consolidée prête : design-v2/index.html (panneau de réglages pour comparer)."
+    },
+    {
+      "date": "2026-10-21",
+      "texte": "L'app a son nouveau look V2 hors séance : 3 ambiances et « Grand affichage » dans le profil, menu M5, dashboard jaune. Choix ouverts modifiables dans src/config/apparence.js."
     }
   ],
   "prochaines_etapes": [
