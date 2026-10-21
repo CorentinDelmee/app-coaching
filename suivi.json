@@ -1,9 +1,9 @@
 {
   "titre": "Corentin Delmée Coaching — application (PWA)",
-  "phase": "V1 construite et testée en local — à toi : mise en route Supabase/Netlify",
+  "phase": "V2 en cours (mode absent) : maquette consolidée puis application à l'app",
   "objectif": "Remplacer **My PT Hub (52 €/mois)** par ma propre app de coaching, **0 €/mois**, mobile d'abord, très animée.",
   "date_cible": "2026-10-20",
-  "mis_a_jour": "2026-10-20",
+  "mis_a_jour": "2026-10-21",
   "lots": [
     {
       "id": "0",
@@ -127,6 +127,35 @@
       "avancement": 100,
       "qui": "developpeur",
       "note": "MISE-EN-ROUTE.md (12 étapes), import des 80 exercices, fonction de réinitialisation de code"
+    },
+    {
+      "id": "V2.1",
+      "titre": "Bug : le récap de la semaine ouvre le workout du jour touché",
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "developpeur",
+      "note": "Test tests/unit/workout-du-jour.test.js ; 339 tests verts"
+    },
+    {
+      "id": "V2.2",
+      "titre": "Maquette consolidée V2 (base M5 + M1/M2/M4) avec panneau de réglages",
+      "statut": "en_cours",
+      "avancement": 10,
+      "qui": "frontend-senior"
+    },
+    {
+      "id": "V2.3",
+      "titre": "Application de la V2 à l'app (design, ambiances, Grand affichage, séance, circuits, check-in)",
+      "statut": "a_faire",
+      "avancement": 0,
+      "qui": "developpeur"
+    },
+    {
+      "id": "V2.4",
+      "titre": "Tests mobile + revue finale des animations",
+      "statut": "a_faire",
+      "avancement": 0,
+      "qui": "testeur + frontend-senior"
     }
   ],
   "taches_humaines": [
@@ -341,6 +370,14 @@
     {
       "date": "2026-10-20",
       "texte": "Test mobile complet de toute l app validé (connexion, séance, questionnaires, suivi, coach, hors connexion) ; revue des animations 8,5/10 avec finitions (confettis de fin, retour dans la carte « Cette semaine »)."
+    },
+    {
+      "date": "2026-10-21",
+      "texte": "Tes retours sur les maquettes sont reportés dans le cahier des charges (§7.1 + journal)."
+    },
+    {
+      "date": "2026-10-21",
+      "texte": "Bug corrigé : dans Programme, toucher un autre jour ouvre bien le workout de ce jour-là (fait = réalisé, à venir = prévu)."
     }
   ],
   "prochaines_etapes": [
