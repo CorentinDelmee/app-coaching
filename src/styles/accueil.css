@@ -48,6 +48,8 @@ html[data-grand="oui"] .accueil { overflow-y: auto; overscroll-behavior: contain
 .deco { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
 .deco-n { position: absolute; right: -26px; top: 70px; font: 500 360px/1 var(--font-titre); letter-spacing: -.06em; color: transparent; -webkit-text-stroke: 1.5px var(--filet); }
 .deco-o1, .deco-o2 { position: absolute; border-radius: 50%; }
+/* Ordinateur : la colonne est plus étroite que l'écran, les halos et le grand chiffre s'estompent au bord au lieu d'être coupés net */
+@media (min-width: 600px) { .deco { -webkit-mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent); } }
 .deco-o1 { width: 340px; height: 340px; left: -150px; bottom: 120px; background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 24%, transparent), transparent); }
 .deco-o2 { width: 260px; height: 260px; right: -90px; top: 280px; background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 14%, transparent), transparent); }
 .haut { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; height: 52px; flex: none; }
@@ -100,7 +102,7 @@ html[data-grand="oui"] .anneau-s { margin: 12px 0; }
 .c-programme, .c-quest { justify-content: flex-start; }
 .c-programme .c-mini { margin-top: auto; }
 .barres { display: flex; gap: 3px; margin-top: auto; }
-.barres i { flex: 1; height: 8px; border-radius: 4px; background: var(--filet); }
+.barres i { flex: 1; max-width: calc((100% - 21px) / 8); height: 8px; border-radius: 4px; background: var(--filet); }
 .barres i.on { background: var(--accent); }
 .barres i.cur { background: var(--tf); }
 .pastille { position: absolute; right: 14px; bottom: 14px; min-width: 36px; height: 36px; border-radius: 18px; padding: 0 10px; background: var(--accent); color: var(--accent-texte); font: 700 calc(var(--e) * 17px)/36px var(--font-texte); text-align: center; }

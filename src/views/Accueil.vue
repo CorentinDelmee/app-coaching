@@ -316,7 +316,7 @@ const versHero = (e) => {
         <button class="carte prog c-programme" data-teinte="surface" data-couche="1" type="button" aria-label="Mon programme" @click="ouvrir('/programme', $event)">
           <span class="c-lab">Mon programme</span>
           <template v-if="s.programme">
-            <span class="c-prog-t">{{ s.programme.nom }}</span>
+            <span class="c-prog-t">{{ s.programme.nom.replace(/^Programme\s+/i, '') }}</span>
             <span class="barres" aria-hidden="true"><i v-for="(on, k) in s.programme.segments" :key="k" :class="{ on, cur: k === courante }"></i></span>
           </template>
           <template v-else>
