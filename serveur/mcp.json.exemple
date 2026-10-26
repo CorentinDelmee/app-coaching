@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "coaching-seances": {
+      "command": "node",
+      "args": ["serveur/mcp.mjs"],
+      "env": {
+        "COACH_API_KEY": "REMPLACER_PAR_VOTRE_CLE",
+        "DATA_DIR": "serveur/data"
+      }
+    }
+  }
+}

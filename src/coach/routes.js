@@ -12,6 +12,7 @@ export const routeCoach = {
     { path: 'clients/:id', component: () => import('./views/ClientView.vue'), props: true },
     { path: 'alertes', component: () => import('./views/AlertesView.vue') },
     { path: 'exercices', component: () => import('./views/ExercicesView.vue') },
+    { path: 'bibliotheque', component: () => import('./views/BibliothequeVideosView.vue') },
     { path: 'seances', component: () => import('./views/SeancesView.vue') },
     { path: 'seances/:id', component: () => import('./views/SeanceEditeur.vue'), props: true },
     { path: 'programmes', component: () => import('./views/ProgrammesView.vue') },

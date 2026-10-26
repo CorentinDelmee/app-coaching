@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "icones": "node scripts/icones.mjs",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "serveur": "node serveur/api.mjs",
+    "mcp": "node serveur/mcp.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",
