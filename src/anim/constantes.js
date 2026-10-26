@@ -25,3 +25,10 @@ export const MENU = { x: 0.7, scale: 0.82, rot: -14 }
 // Rebonds M4 « avec mesure » (jamais elastic sur l'interface courante) : ressort des cartes/boutons, pastilles et pop d'apparition.
 export const REBOND = { ressort: 'back.out(1.4)', pop: 'back.out(1.7)' }
 // Jamais d'ease-in sur l'interface : les sorties utilisent power3.out (0,28-0,3 s).
+
+// --- Maquette M5 « Profondeur » (design/m5/assets/app.js : T, E) : valeurs reprises telles quelles pour le tableau de bord et le menu.
+// Mêmes durées que les variables CSS --d-* de src/styles/tokens.css (source unique des tokens ; ici leur miroir pour GSAP).
+export const M5 = {
+  T: { rapide: 0.25, base: 0.5, menu: 0.85, menuFerme: 0.75, page: 0.85, rideau: 0.7, lever: 0.22, avantPage: 0.2, recul: 0.92, retour: 0.72 },
+  E: { sortie: 'expo.out', page: 'expo.inOut', doux: 'power3.out', ressort: 'back.out(1.7)' }
+}
