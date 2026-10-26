@@ -77,7 +77,11 @@ async page => {
   await page.waitForTimeout(1200);
   await page.screenshot({ path: SP + TAG + '-09-bilan.png' });
   await page.getByText('Valider le circuit').first().click({ force: true });
-  await page.waitForTimeout(4500);
+  await page.waitForTimeout(2500);
+  // V2.5 : plus d'avance automatique après un circuit : on passe soi-même à la suite
+  log.push('après le circuit : ' + (await act().textContent()).trim());
+  await act().click(); // « Exercice suivant »
+  await page.waitForTimeout(3000);
   log.push('page suivante : ' + (await act().textContent()).trim() + ' / ' + (await page.locator('.panel:not([inert]) [data-passer]').textContent()).trim());
   await page.screenshot({ path: SP + TAG + '-10-option.png' });
 
@@ -96,10 +100,11 @@ async page => {
   await page.evaluate(() => window.__horloge.regler(1));
   await page.waitForTimeout(1000);
   await page.getByText('Valider le circuit').first().click({ force: true });
-  await page.waitForTimeout(4500);
-  log.push('après l\'option : ' + (await act().textContent()).trim());
-  await act().click();
-  await page.waitForTimeout(2800);
+  await page.waitForTimeout(2500);
+  log.push("après l'option : " + (await act().textContent()).trim());
+  await act().click(); // « Exercice suivant » (plus d'avance automatique)
+  await page.waitForTimeout(3000);
+  if ((await page.locator('.fin:not([hidden])').count()) === 0) { await act().click(); await page.waitForTimeout(2800); }
   await page.screenshot({ path: SP + TAG + '-12-fin.png' });
   log.push('écran de fin : ' + await page.locator('.fin:not([hidden])').count());
   await page.getByText('Valider ma séance').click();

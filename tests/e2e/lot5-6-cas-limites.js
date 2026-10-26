@@ -22,6 +22,15 @@ async page => {
   page.on('pageerror', e => errs.push(String(e)));
   await page.goto('http://localhost:5182/');
   await seed('thomas.bernard');
+  // Thomas a désormais une séance (démo Google Agenda) : on la retire pour tester le cas « aucune séance prévue »
+  await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('cdc-coaching/1'));
+    const t = s.profils.find(p => p.identifiant === 'thomas.bernard').id;
+    s.seancesCoaching = s.seancesCoaching.filter(x => x.clientId !== t);
+    localStorage.setItem('cdc-coaching/1', JSON.stringify(s));
+    // ... et on vide le faux agenda Google (sinon la synchro lui rend sa séance)
+    localStorage.setItem('cdc-coaching/1:agenda', JSON.stringify({ syncToken: 'vide', evenements: {}, derniereSynchro: Date.now() }));
+  });
   await page.goto('http://localhost:5182/');
   await page.waitForTimeout(3000);
   await page.screenshot({ path: SP + 'thomas-d.png' });
