@@ -4,7 +4,7 @@
 // Lancer (depuis la racine du projet) :
 //   node serveur/tests/e2e-seance.mjs              -> MCP + API (rapide, sans navigateur)
 //   node serveur/tests/e2e-seance.mjs --navigateur -> + app sur le port 5406 et captures Chrome headless
-// Ports : API 5405, app 5406, débogage Chrome 5407. Les serveurs lancés sont arrêtés par PID à la fin.
+// Ports par défaut : API 5405, app 5406, débogage Chrome 5407 ; modifiables par E2E_PORT_API, E2E_PORT_APP, E2E_PORT_CHROME.
 import { spawn } from 'node:child_process'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -16,15 +16,18 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 const RACINE = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const NAVIGATEUR = process.argv.includes('--navigateur')
 const CLE = 'cle-e2e-0123456789abcdef'
-const API = 'http://127.0.0.1:5405'
-const APP = 'http://127.0.0.1:5406'
+const PORT_API = process.env.E2E_PORT_API || '5405'
+const PORT_APP = process.env.E2E_PORT_APP || '5406'
+const PORT_CHROME = process.env.E2E_PORT_CHROME || '5407'
+const API = `http://127.0.0.1:${PORT_API}`
+const APP = `http://127.0.0.1:${PORT_APP}`
 const CHROME = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
 const donnees = mkdtempSync(join(tmpdir(), 'e2e-mcp-'))
 const enfants = []
 const verifs = []
 const ok = (cond, msg) => { verifs.push([!!cond, msg]); console.log(`${cond ? 'OK  ' : 'ECHEC'} ${msg}`) }
 const attendre = (ms) => new Promise((r) => setTimeout(r, ms))
-const env = { ...process.env, COACH_API_KEY: CLE, DATA_DIR: donnees, PORT_API: '5405', DEMO_SYNC: '1', CORS_ORIGINS: APP }
+const env = { ...process.env, COACH_API_KEY: CLE, DATA_DIR: donnees, PORT_API, DEMO_SYNC: '1', CORS_ORIGINS: APP }
 
 function lancer(args, options = {}) {
   const p = spawn(process.execPath, args, { cwd: RACINE, env, stdio: 'ignore', ...options })
@@ -113,16 +116,16 @@ async function principal() {
 
 // --- Navigateur : Chrome headless piloté en CDP (WebSocket natif de Node) ---
 async function verifierNavigateur(seanceId) {
-  const vite = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--port', '5406', '--strictPort', '--host', '127.0.0.1'], { cwd: RACINE, env: { ...process.env, VITE_API_URL: API, VITE_API_KEY: CLE }, stdio: 'ignore' })
+  const vite = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--port', PORT_APP, '--strictPort', '--host', '127.0.0.1'], { cwd: RACINE, env: { ...process.env, VITE_API_URL: API, VITE_API_KEY: CLE }, stdio: 'ignore' })
   enfants.push(vite)
   await attendreUrl(APP)
   const dossierCaptures = join(RACINE, 'docs', 'captures-mcp')
   mkdirSync(dossierCaptures, { recursive: true })
   const profil = mkdtempSync(join(tmpdir(), 'e2e-chrome-'))
-  const chrome = spawn(CHROME, ['--headless=new', '--remote-debugging-port=5407', `--user-data-dir=${profil}`, '--window-size=390,844', '--no-first-run', 'about:blank'], { stdio: 'ignore' })
+  const chrome = spawn(CHROME, ['--headless=new', `--remote-debugging-port=${PORT_CHROME}`, `--user-data-dir=${profil}`, '--window-size=390,844', '--no-first-run', 'about:blank'], { stdio: 'ignore' })
   enfants.push(chrome)
-  await attendreUrl('http://127.0.0.1:5407/json/version')
-  const cible = await (await fetch('http://127.0.0.1:5407/json/new?about:blank', { method: 'PUT' })).json()
+  await attendreUrl(`http://127.0.0.1:${PORT_CHROME}/json/version`)
+  const cible = await (await fetch(`http://127.0.0.1:${PORT_CHROME}/json/new?about:blank`, { method: 'PUT' })).json()
   const ws = new WebSocket(cible.webSocketDebuggerUrl)
   await new Promise((r) => ws.addEventListener('open', r))
   let n = 0
