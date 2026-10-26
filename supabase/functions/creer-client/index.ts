@@ -7,7 +7,9 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const CORS = {
-  'Access-Control-Allow-Origin': '*', // l'accès réel est protégé par le JWT du coach, pas par l'origine
+  // Seule l'origine de l'appli (secret APP_ORIGIN) est autorisée ; sans elle, aucune origine web (en plus du JWT coach).
+  'Access-Control-Allow-Origin': Deno.env.get('APP_ORIGIN') ?? 'null',
+  Vary: 'Origin',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS'
 }

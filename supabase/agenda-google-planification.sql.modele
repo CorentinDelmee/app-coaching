@@ -1,6 +1,6 @@
 -- MODÈLE (ne pas exécuter tel quel) : planifie la synchro Google Agenda toutes les 15 minutes avec pg_cron + pg_net.
 -- 1. Dashboard Supabase > Database > Extensions : activer « pg_cron » et « pg_net ».
--- 2. Remplacer <PROJECT_REF> et <CRON_SECRET> (la même valeur que le secret de fonction CRON_SECRET), puis l'exécuter dans le SQL Editor.
+-- 2. Remplacer <PROJECT_REF> et <CRON_SECRET> (la même valeur que le secret de fonction CRON_SECRET, qui ne sert qu'à ce cron), puis l'exécuter dans le SQL Editor.
 -- Le secret voyage dans l'en-tête x-cron-secret (jamais dans l'URL).
 -- Ne jamais committer le fichier une fois rempli.
 
