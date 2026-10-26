@@ -9,13 +9,17 @@
     "preview": "vite preview",
     "icones": "node scripts/icones.mjs",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "serveur": "node serveur/api.mjs",
+    "mcp": "node serveur/mcp.mjs"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "@supabase/supabase-js": "^2.118.0",
     "gsap": "^3.15.0",
     "vue": "^3.5.44",
-    "vue-router": "^5.4.0"
+    "vue-router": "^5.4.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.10",

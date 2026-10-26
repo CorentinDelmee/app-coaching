@@ -15,6 +15,7 @@ const LIENS = [
   { to: '/coach/seances', texte: 'Séances' },
   { to: '/coach/programmes', texte: 'Programmes' },
   { to: '/coach/exercices', texte: 'Exercices' },
+  { to: '/coach/bibliotheque', texte: 'Vidéos' },
   { to: '/coach/questionnaires', texte: 'Questionnaires' },
   { to: '/coach/donnees', texte: 'Import / export' }
 ]
