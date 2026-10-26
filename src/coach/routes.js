@@ -18,6 +18,7 @@ export const routeCoach = {
     { path: 'programmes/:id', component: () => import('./views/ProgrammeEditeur.vue'), props: true },
     { path: 'questionnaires', component: () => import('./views/QuestionnairesView.vue') },
     { path: 'questionnaires/:id', component: () => import('./views/QuestionnaireEditeur.vue'), props: true },
+    { path: 'agenda', component: () => import('./views/AgendaView.vue') },
     { path: 'donnees', component: () => import('./views/DonneesView.vue') }
   ]
 }

@@ -156,6 +156,27 @@ export function creerAdapterSupabase({ url, anonKey, storage = globalThis.localS
         await requete(c.storage.from('photos').remove(chemins))
       }
     },
+    // Google Agenda : la table `seances_agenda` est remplie côté serveur par l'Edge Function `sync-google-agenda`
+    // (jeton Google jamais dans le navigateur). La RLS limite un client à ses séances attribuées.
+    agenda: {
+      async evenements() {
+        const c = await sb()
+        const lignes = await requete(c.from('seances_agenda').select('*'))
+        return lignes.map((r) => ({ ...r.data, id: r.id, statut: r.statut_attribution, clientId: r.client_id ?? undefined })).sort((a, b) => a.debutMs - b.debutMs)
+      },
+      async derniereSynchro() {
+        const c = await sb()
+        const ligne = await requete(c.from('agenda_synchro').select('derniere_synchro').eq('id', 1).maybeSingle())
+        return ligne?.derniere_synchro ? Date.parse(ligne.derniere_synchro) : null
+      },
+      async synchroniser() {
+        const c = await sb()
+        const { data, error } = await c.functions.invoke('sync-google-agenda', { body: {} })
+        if (error) throw await erreurFonction(error, "La synchronisation Google Agenda a échoué")
+        if (data?.erreur) throw new ErreurData('ECHEC', data.erreur)
+        return data.bilan
+      }
+    },
     file: {
       async lire() {
         const brut = storage?.getItem(CLE_FILE)

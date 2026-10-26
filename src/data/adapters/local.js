@@ -4,10 +4,13 @@ import { creerApi } from '../commun.js'
 import { visiblePar } from '../entites.js'
 import { ErreurData, MESSAGES } from '../erreurs.js'
 import { genererDemo } from '../demo/index.js'
+import { creerFauxGoogle, HOMONYMES_DEMO, ALIAS_DEMO } from '../demo/agendaGoogle.js'
+import { etatVide, evaluer, synchroniser } from '../../domain/agendaGoogle.js'
 
 export const CLE_STOCKAGE = 'cdc-coaching/1'
 const CLE_SESSION = `${CLE_STOCKAGE}:session`
 const CLE_FILE = `${CLE_STOCKAGE}:file`
+const CLE_AGENDA = `${CLE_STOCKAGE}:agenda`
 
 /** Stockage en mémoire (tests, ou navigateur sans localStorage). */
 export function stockageMemoire() {
@@ -112,8 +115,34 @@ export function creerAdapterLocal({ storage = globalThis.localStorage || stockag
       storage.removeItem(CLE_STOCKAGE)
       storage.removeItem(CLE_SESSION)
       storage.removeItem(CLE_FILE)
+      storage.removeItem(CLE_AGENDA)
       cache = null
       charger()
+    },
+    // Google Agenda en démo : faux flux d'événements (src/data/demo/agendaGoogle.js), état gardé à part dans localStorage.
+    agenda: {
+      async evenements() {
+        const user = profilCourant()
+        // Démo : la 1re lecture déclenche la 1re synchro (comme si la planification avait déjà tourné) ;
+        // « Synchroniser maintenant » amène ensuite les modifications / suppressions du faux agenda.
+        if (!storage.getItem(CLE_AGENDA)) await backend.agenda.synchroniser()
+        const etat = JSON.parse(storage.getItem(CLE_AGENDA))
+        const clients = [...charger().profils.filter((p) => p.role === 'client' && !p.archive), ...HOMONYMES_DEMO]
+        const noms = Object.fromEntries(clients.map((c) => [c.id, c.nom]))
+        const tous = evaluer(etat, clients, ALIAS_DEMO).map((e) => ({ ...e, clientNom: noms[e.clientId] }))
+        // même règle que la RLS : un client ne voit que ses séances attribuées
+        return !user || user.role === 'coach' ? tous : tous.filter((e) => e.statut === 'attribue' && e.clientId === user.id)
+      },
+      async derniereSynchro() {
+        const brut = storage.getItem(CLE_AGENDA)
+        return brut ? JSON.parse(brut).derniereSynchro : null
+      },
+      async synchroniser() {
+        const brut = storage.getItem(CLE_AGENDA)
+        const { etat, bilan } = await synchroniser(creerFauxGoogle(now()), brut ? JSON.parse(brut) : etatVide(), now())
+        ecrireStockage(CLE_AGENDA, JSON.stringify(etat))
+        return bilan
+      }
     },
     file: {
       async lire() {

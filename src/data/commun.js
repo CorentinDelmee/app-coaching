@@ -11,6 +11,7 @@ import { ErreurData } from './erreurs.js'
 import { identifiantUnique, genererCode, LONGUEUR_CODE_MIN } from '../domain/identifiants.js'
 import { appliquerRealisation } from '../domain/realisations.js'
 import { validerRealisation } from '../domain/modele.js'
+import { alertesAgenda, seancesPourClient } from '../domain/agendaGoogle.js'
 import { exporter, exporterMesDonnees, preparerImport } from '../domain/echange.js'
 
 const uuidParDefaut = () => globalThis.crypto.randomUUID()
@@ -58,6 +59,39 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
       async archiver(id) {
         return api[entite].modifier(id, { archive: true })
       }
+    }
+  }
+
+  // --- Google Agenda -> séances de coaching ---------------------------------------------------------------
+  // Le client voit ses séances « Coaching <son nom> » créées dans l'agenda du coach, mêlées à ses séances habituelles
+  // (futures et prévues, marquées source:'google'). Si l'agenda est injoignable, l'accueil ne casse pas : on n'ajoute rien.
+  if (backend.agenda) {
+    const listerBase = api.seancesCoaching.lister
+    api.seancesCoaching.lister = async (filtre = {}, options) => {
+      const base = await listerBase(filtre, options)
+      const user = await backend.utilisateurCourant()
+      if (user?.role !== 'client' || (filtre.clientId && filtre.clientId !== user.id) || options?.archives) return base
+      if (filtre.statut && filtre.statut !== 'prevue') return base
+      try {
+        return [...base, ...seancesPourClient(await backend.agenda.evenements(), user.id, user.tarif, now())]
+      } catch {
+        return base
+      }
+    }
+  }
+  /** Réservé au coach : panneau « Agenda Google » (dernière synchro, séances, alertes) et synchronisation immédiate. */
+  api.agenda = {
+    disponible: !!backend.agenda,
+    async etat() {
+      if (!backend.agenda) return { derniereSynchro: null, evenements: [], alertes: [] }
+      const evenements = await backend.agenda.evenements()
+      return { derniereSynchro: await backend.agenda.derniereSynchro(), evenements, alertes: alertesAgenda(evenements, now()) }
+    },
+    async synchroniser() {
+      const user = await backend.utilisateurCourant()
+      if (user?.role !== 'coach') throw new ErreurData('NON_AUTORISE', 'Réservé au coach')
+      if (!backend.agenda) throw new ErreurData('ECHEC', "La synchronisation Google Agenda n'est pas disponible")
+      return backend.agenda.synchroniser()
     }
   }
 

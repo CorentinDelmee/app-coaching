@@ -11,6 +11,7 @@ import './coach.css'
 const LIENS = [
   { to: '/coach/clients', texte: 'Clients' },
   { to: '/coach/alertes', texte: 'Alertes', badge: true },
+  { to: '/coach/agenda', texte: 'Agenda Google', badgeAgenda: true },
   { to: '/coach/seances', texte: 'Séances' },
   { to: '/coach/programmes', texte: 'Programmes' },
   { to: '/coach/exercices', texte: 'Exercices' },
@@ -38,6 +39,7 @@ async function deconnecter() {
         <RouterLink v-for="l in LIENS" :key="l.to" :to="l.to" class="c-lien">
           {{ l.texte }}
           <span v-if="l.badge && etat.alertes.length" class="c-badge" :aria-label="`${etat.alertes.length} alertes`">{{ etat.alertes.length }}</span>
+          <span v-if="l.badgeAgenda && etat.alertesAgenda" class="c-badge" :aria-label="`${etat.alertesAgenda} alertes agenda`">{{ etat.alertesAgenda }}</span>
         </RouterLink>
       </nav>
       <button class="c-btn c-deco" type="button" @click="deconnecter">Se déconnecter</button>
