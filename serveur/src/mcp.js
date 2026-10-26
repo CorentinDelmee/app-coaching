@@ -19,8 +19,8 @@ export function creerServeurMcp(app, acteur = 'mcp-stdio') {
 
 export async function lancerStdio(app) {
   // Refus par défaut : sans clé configurée (même variable que l'API REST), le serveur MCP ne démarre pas.
-  if (!app.config.cleApi || app.config.cleApi.length < 16) {
-    console.error('COACH_API_KEY absente ou trop courte (16 caractères minimum) : serveur MCP non démarré. Voir serveur/README.md.')
+  if (!app.config.cleApi || app.config.cleApi.length < 32) {
+    console.error('COACH_API_KEY absente ou trop courte (32 caractères minimum) : serveur MCP non démarré. Voir serveur/README.md.')
     process.exit(1)
   }
   await creerServeurMcp(app).connect(new StdioServerTransport())

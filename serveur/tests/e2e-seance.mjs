@@ -18,7 +18,7 @@ const NAVIGATEUR = process.argv.includes('--navigateur')
 // Par défaut les captures vont dans tmp/ (ignoré par Git) ; --captures-doc met à jour les PNG suivis de docs/
 const CAPTURES_DOC = process.argv.includes('--captures-doc')
 const DOSSIER_CAPTURES_REL = CAPTURES_DOC ? 'docs/captures-mcp' : 'tmp/captures-mcp'
-const CLE = 'cle-e2e-0123456789abcdef'
+const CLE = 'cle-e2e-0123456789abcdef-0123456789abcdef'
 const PORT_API = process.env.E2E_PORT_API || '5405'
 const PORT_APP = process.env.E2E_PORT_APP || '5406'
 const PORT_CHROME = process.env.E2E_PORT_CHROME || '5407'

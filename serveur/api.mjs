@@ -5,6 +5,6 @@ import { creerServeurRest } from './src/rest.js'
 
 chargerEnv()
 const config = lireConfig()
-if (config.cleApi.length < 16) console.warn('Attention : COACH_API_KEY absente ou trop courte : toutes les requêtes protégées seront refusées (401).')
+if (config.cleApi.length < 32) console.warn('Attention : COACH_API_KEY absente ou trop courte : toutes les requêtes protégées seront refusées (401).')
 const app = await assembler(config)
 creerServeurRest(app).listen(config.port, config.hote, () => console.log(`API sur http://${config.hote}:${config.port} (stockage : ${app.backend.mode})`))

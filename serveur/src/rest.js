@@ -14,7 +14,7 @@ function lireCorps(req) {
     const morceaux = []
     req.on('data', (c) => {
       taille += c.length
-      if (taille > TAILLE_MAX) { reject(new ErreurService('Corps de requête trop gros', 'TROP_GROS')) } else morceaux.push(c)
+      if (taille > TAILLE_MAX) { morceaux.length = 0; reject(new ErreurService('Corps de requête trop gros', 'TROP_GROS')) } else if (taille <= TAILLE_MAX) morceaux.push(c)
     })
     req.on('end', () => {
       if (!morceaux.length) return resolve({})
@@ -107,6 +107,8 @@ export function creerServeurRest(app, { now = () => Date.now() } = {}) {
       }
       repondre(res, 404, { erreur: 'Route inconnue', code: 'ROUTE_INCONNUE' }, origine)
     } catch (e) {
+      // Corps trop gros : on répond 413 puis on coupe la connexion (on ne lit pas le reste du flux).
+      if (e.code === 'TROP_GROS') res.once('finish', () => req.destroy())
       repondre(res, STATUT_HTTP[e.code] ?? 500, { erreur: e instanceof ErreurService ? e.message : 'Erreur interne', code: e.code || 'INTERNE' }, origine)
     }
   })

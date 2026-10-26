@@ -365,10 +365,12 @@ export function creerService({ backend, biblio, config = {}, now = () => Date.no
       }
     },
 
-    /** Données lisibles par l'app cliente en mode démo (adaptateur « api ») : jamais de comptes ni de codes. */
+    /** Données lisibles par l'app cliente en mode démo (adaptateur « api ») : jamais de comptes, de codes ni de séances de coaching.
+     *  Uniquement avec le magasin fichier (données fictives) : jamais avec une vraie base. */
     async etatPublicDemo() {
+      if (backend.mode !== 'fichier') throw new ErreurService('Démo indisponible avec une base réelle', 'NON_AUTORISE')
       const out = {}
-      for (const e of ['exercices', 'workouts', 'programmes', 'seancesCoaching']) out[e] = await backend.tout(e)
+      for (const e of ['exercices', 'workouts', 'programmes']) out[e] = await backend.tout(e)
       return out
     }
   }

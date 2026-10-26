@@ -13,7 +13,7 @@ API REST (HTTP) ────┘        validation = celle de l'app (src/data/com
 ## Lancer (démo, sans compte)
 1. Créer `serveur/.env` (ignoré par Git) :
    ```
-   COACH_API_KEY=<une longue phrase secrète d'au moins 16 caractères>
+   COACH_API_KEY=<une longue phrase secrète d'au moins 32 caractères>
    DEMO_SYNC=1
    ```
 2. `npm run serveur` lance l'API sur `http://127.0.0.1:5405` (127.0.0.1 uniquement). Les données démo sont créées dans `serveur/data/` (ignoré par Git).
@@ -26,10 +26,11 @@ API REST (HTTP) ────┘        validation = celle de l'app (src/data/com
 ## Variables d'environnement
 | Variable | Rôle |
 |---|---|
-| `COACH_API_KEY` | **Obligatoire** (16 car. min). Sans elle, tout est refusé (REST 401, MCP ne démarre pas). |
+| `COACH_API_KEY` | **Obligatoire** (32 car. min). Sans elle, tout est refusé (REST 401, MCP ne démarre pas). |
 | `PORT_API` | Port de l'API (5405). |
 | `DATA_DIR` | Dossier des données (`serveur/data`) : `etat.json`, `bibliotheque.json`, `journal.jsonl`. |
-| `DEMO_SYNC` | `1` = expose `GET /demo/etat` sans clé (séances, exercices, programmes, SANS comptes) pour l'app en mode démo. **Jamais en production.** |
+| `DEMO_SYNC` | `1` = expose `GET /demo/etat` sans clé (exercices, séances, programmes fictifs ; ni comptes ni séances de coaching) pour l'app en mode démo. **Le serveur refuse de démarrer si `SUPABASE_URL` est aussi défini.** |
+| `JOURNAL_RETENTION_DAYS` | Durée de conservation du journal `journal.jsonl` (défaut 90 jours ; purge au démarrage). |
 | `CORS_ORIGINS` | Origines autorisées du navigateur (défaut : `localhost:5406`, `5173`). |
 | `YOUTUBE_API_KEY` | Clé API YouTube Data v3 pour la recherche automatique de vidéos (sinon : bibliothèque locale seulement). |
 | `YOUTUBE_CHAINES_RECONNUES` | Chaînes favorisées par le score, séparées par des virgules. |
