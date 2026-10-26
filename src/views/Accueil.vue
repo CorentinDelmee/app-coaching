@@ -231,7 +231,12 @@ function ouvrir(chemin, e) {
   const partir = () => {
     memoriserSource(carte)
     poserDessous(racine.value)
-    router.push(chemin)
+    router.push(chemin).then((echec) => {
+      if (!echec) return // navigation refusée (garde) : la carte se repose, le tableau de bord reste utilisable
+      occupe = false
+      retirerDessous()
+      gsap.to(carte, { '--lev': 0, z: 0, scale: 1, duration: 0.5, ease: M5.E.sortie, clearProps: 'willChange' })
+    })
   }
   if (mouvementReduit()) { partir(); return }
   sortieSurvol()
