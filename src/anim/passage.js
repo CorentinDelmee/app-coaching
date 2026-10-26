@@ -58,3 +58,45 @@ export function leverRideau(racine) {
   // le voile jaune se relève (maquette V2) : un fondu jaune -> fond passerait par une teinte sale en ambiance sombre
   gsap.fromTo(rideau, { clipPath: 'inset(0% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.62, delay: 0.05, ease: 'expo.inOut', onComplete: () => rideau.remove() })
 }
+
+/* Page « dessous » (M5 ouvrirCarte / fermerCarte) : quand une carte du tableau de bord ouvre sa page, une copie inerte du tableau de
+   bord reste derrière la nouvelle page et recule (scale .92) ; au retour elle se rapproche (scale 1) pendant que la page se referme
+   dans sa carte, puis le vrai tableau de bord la remplace (retirerDessous). La copie n'est jamais touchable ni lue (inert). */
+let dessous = null
+let minuterie = 0
+export function poserDessous(ecran) {
+  retirerDessous()
+  if (!ecran) return
+  const c = ecran.cloneNode(true)
+  c.removeAttribute('data-racine')
+  c.className = 'ecran-dessous'
+  c.inert = true
+  c.setAttribute('aria-hidden', 'true')
+  c.querySelectorAll('[id]').forEach((n) => n.removeAttribute('id'))
+  document.body.appendChild(c)
+  dessous = c
+}
+/** La page qui s'ouvre fait reculer la copie (rien si aucune copie, ou mouvement réduit). */
+export function reculerDessous(duree, ease) {
+  if (!dessous || mouvementReduit()) return false
+  gsap.to(dessous, { scale: 0.92, duration: duree, ease })
+  return true
+}
+/** Page refermée dans sa carte : la copie revient (la carte soulevée se repose) ; retirée par le tableau de bord une fois prêt. */
+export function rapprocherDessous(duree, ease) {
+  if (!dessous) return false
+  dessous.style.visibility = ''
+  if (mouvementReduit()) { gsap.set(dessous, { scale: 1 }); return true }
+  gsap.to(dessous, { scale: 1, duration: duree, ease })
+  const carte = dessous.querySelector('.carte[style*="scale"]')
+  if (carte) gsap.to(carte, { '--lev': 0, z: 0, scale: 1, duration: 0.5, delay: 0.3, ease: 'expo.out' })
+  clearTimeout(minuterie)
+  minuterie = setTimeout(retirerDessous, 3000) // filet : si le tableau de bord n'arrive pas, la copie ne reste pas
+  return true
+}
+/** Page ouverte et pleine : la copie, cachée derrière, n'est plus peinte (mais gardée pour le retour). */
+export function cacherDessous() { if (dessous) dessous.style.visibility = 'hidden' }
+export function retirerDessous() {
+  clearTimeout(minuterie)
+  if (dessous) { gsap.killTweensOf(dessous); dessous.remove(); dessous = null }
+}

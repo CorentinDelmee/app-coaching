@@ -1,7 +1,9 @@
-/* Design tokens — maquette V2 consolidée (design-v2/DESIGN.md, base M5 « Profondeur »). SEUL fichier où les couleurs sont écrites en dur.
+/* Design tokens — maquette M5 « Profondeur » + choix V2 (design-v2/DESIGN.md, base M5 « Profondeur »). SEUL fichier où les couleurs sont écrites en dur.
    Les composants n'utilisent que des variables. Réglages posés sur <html> par src/lib/apparence.js :
    data-ambiance = clair (défaut) | sombre | bleu · data-grand = oui | non · data-chrono = barlow | inter | azeret · data-aplat = fonce | blanc.
-   Accent jaune : TOUJOURS du texte foncé posé dessus ; jamais de jaune en texte ni en trait fin sur fond clair (→ --accent-lisible). */
+   Accent jaune : TOUJOURS du texte foncé posé dessus ; jamais de jaune en texte sur fond clair (→ --accent-lisible).
+   Alignement M5 (26/10/2026) : le jaune, la surbrillance, l'échelle typo, les rayons, ombres, durées et courbes viennent de
+   design/m5/assets/style.css + app.js ; ce fichier est la SOURCE UNIQUE des tokens. */
 
 /* Polices auto-hébergées (latin) : précachées par le service worker, donc disponibles hors connexion. */
 @font-face { font-family: 'Syne'; font-style: normal; font-weight: 400 800; font-display: swap; src: url('../assets/fonts/syne-latin-wght-normal.woff2') format('woff2-variations'); }
@@ -12,11 +14,22 @@
 @font-face { font-family: 'Azeret Mono'; font-style: normal; font-weight: 500; font-display: swap; src: url('../assets/fonts/azeret-mono-latin-500-normal.woff2') format('woff2'); }
 
 :root {
+  /* ===== Typographie (M5 : titres Syne 500, jamais > 600 ; texte Albert Sans ; chiffres Syne) ===== */
   --font-titre: 'Syne', system-ui, sans-serif;
   --font-texte: 'Albert Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-chiffres: 'Syne', system-ui, sans-serif;
-  --font-chrono: 'Barlow Semi Condensed', system-ui, sans-serif;   /* remplacée selon data-chrono ; chiffres tabulaires vérifiés */
+  --font-chrono: 'Barlow Semi Condensed', system-ui, sans-serif;   /* V2 (choix ouvert) : remplacée selon data-chrono ; M5 = Azeret Mono */
   --graisse-chrono: 600;
+  /* Échelle M5 (px, multipliée par --e là où le texte doit suivre le Grand affichage) */
+  --t-display: clamp(54px, 16vw, 68px);      /* « Fabien. » du tableau de bord, interligne .98, -0.045em */
+  --t-page: clamp(36px, 10.4vw, 42px);       /* titre de page, interligne 1.02, -0.03em */
+  --t-page-grand: clamp(44px, 13vw, 52px);
+  --t-carte: clamp(38px, 11vw, 46px);        /* titre de la carte du jour, interligne 1, -0.035em */
+  --t-menu: clamp(24px, 6.9vw, 27px);        /* rubrique du menu, interligne 1.05, -0.02em */
+  --t-carte-petit: 21px;                     /* titre des petites cartes, interligne 1.08 */
+  --t-texte: 16px; --t-sous: 17px; --t-mini: 14px; --t-chip: 13px; --t-etiq: 12px;
+  --ls-display: -.045em; --ls-titre: -.03em; --ls-etiq: .14em;
+  --lh-texte: 1.4;
 
   /* Échelle « Grand affichage » : 1 (normal) ou 1.2 (grand) ; chronos 1 ou 1.12 (déjà presque pleine largeur).
      Écrire les tailles qui doivent grossir en calc(var(--e) * 16px), les chronos en calc(var(--e-chrono) * 124px). */
@@ -24,45 +37,60 @@
   --e-chrono: 1;
   --cible: calc(var(--e) * 48px);   /* zone à toucher minimale (≥ 48 px) */
 
-  /* Accent jaune + texte foncé dessus (12,1 : 1) */
-  --jaune: #FFD43B;
-  --encre: #1A1B1E;
+  /* ===== Accent : le jaune EXACT de la maquette M5 (« Jaune pâle », design/m5/assets/app.js) + son texte ===== */
+  --jaune: #F2E27A;
+  --jaune-texte: #26230A;             /* texte posé sur le jaune (M5) : 12 : 1 */
+  --encre: #1A1B1E;                   /* encre des surfaces « encre » (V2 : en-tête du Workout) */
   --creme: #F1F2EF;
+  --encre-doux: #B9BCBF; --encre-filet: rgba(241, 242, 239, .16); --encre-2: #2C2E33; /* déclinaisons sur l'encre (bloc circuit) */
+  /* vignettes du choix d'ambiance (Profil) : mêmes valeurs que les ambiances ci-dessous */
+  --clair-fond: #E3E5E8; --clair-surface: #FFFFFF; --sombre-fond: #202224; --sombre-surface-2: #363A3E; --bleu-fond: #141B33; --bleu-surface-2: #2A3866;
   --couleur: var(--jaune);            /* ancien nom de l'accent, encore lu par l'espace coach et d'anciens composants */
   --accent: var(--jaune);
-  --accent-texte: var(--encre);
-  --on-accent-doux: rgba(26, 27, 30, .68);
-  --aplat-texte: var(--encre);        /* texte de l'aplat du tableau de bord (réglage : data-aplat) */
+  --accent-texte: var(--jaune-texte);
+  --on-accent-doux: rgba(38, 35, 10, .68);
+  --aplat-texte: var(--accent-texte); /* texte d'un aplat d'accent (réglage : data-aplat) */
   --ok: #46D9A8; --ok-texte: #0F2A22; /* validé : fond vert + texte foncé (8,6 : 1) */
 
-  --rayon: 28px;
+  /* ===== Rayons, espacements (M5) ===== */
+  --rayon: 28px;                      /* cartes, pages, plan du menu */
   --r-carte: 28px;
-  --r-btn: 22px;
-  --pad: 16px;
+  --r-btn: 22px;                      /* boutons, lignes de liste, segments */
+  --r-col: 20px; --r-jour: 16px; --r-chip: 15px;
+  --pad: 16px;                        /* marge latérale des pages de l'app (V2) */
+  --pad-dash: 20px;                   /* marge latérale du tableau de bord (M5) */
   --gap: 12px;
+  --haut-safe: max(env(safe-area-inset-top), 16px);   /* M5 */
+  --bas-safe: max(env(safe-area-inset-bottom), 20px); /* M5 */
   --haut: calc(env(safe-area-inset-top, 0px) + 24px);
   --bas: max(env(safe-area-inset-bottom, 0px), 16px);
+
+  /* ===== Mouvement (M5 app.js : T et E). Les animations GSAP lisent les mêmes valeurs dans src/anim/constantes.js ===== */
+  --d-appui: .1s; --d-rapide: .25s; --d-base: .5s; --d-menu: .85s; --d-page: .85s; --d-burger: .45s;
+  --ease-vaul: cubic-bezier(.32, .72, 0, 1);         /* tiroir, bascule, croix du menu */
+  --ease-sortie: cubic-bezier(.16, 1, .3, 1);        /* ≈ expo.out : entrées */
   --ease: cubic-bezier(.23, 1, .32, 1);
-  --ressort: cubic-bezier(.34, 1.45, .64, 1);   /* relâchement d'un bouton : rebond léger (M4), appui 100 ms */
-  --ease-vaul: cubic-bezier(.32, .72, 0, 1);
+  --ressort: cubic-bezier(.34, 1.45, .64, 1);        /* relâchement d'un bouton : rebond léger (M4), appui 100 ms */
   --scrim: rgba(0, 0, 0, .5);
 }
 
+/* Ambiances : valeurs M5 (design/m5/assets/style.css). Seul écart : --texte-doux du clair foncé (#565B62 au lieu de #6A6F76)
+   pour tenir 4,5 : 1 sur le fond perle (M5 : 4,0 : 1). */
 /* Ambiance 1 : clair (défaut) */
 :root, html[data-ambiance="clair"] {
   --fond: #E3E5E8; --fond-profond: #D2D5DA; --surface: #FFFFFF; --surface-2: #EEF0F2;
-  --texte: #1B1D20; --texte-doux: #565B62; --filet: rgba(27, 29, 32, .13);
-  --ombre: rgba(40, 50, 70, .26);
-  --accent-lisible: #1B1D20;          /* accent utilisé comme trait / texte sur le fond : jamais de jaune sur clair */
+  --texte: #1B1D20; --texte-doux: #565B62; --filet: rgba(27, 29, 32, .12);
+  --ombre: rgba(40, 50, 70, .28);
+  --accent-lisible: #1B1D20;          /* accent utilisé comme texte sur le fond : jamais de jaune en texte sur clair */
   --focus: #1B1D20;
   --bien: #17684D;                    /* vert lisible en texte sur clair (5,3 : 1) */
   --repos-bg: #CFE0F2; --repos-fg: #16233D;
   --prep-bg: #1B1D20;  --prep-fg: #F1F2EF;
 }
-/* Ambiance 2 : sombre */
+/* Ambiance 2 : sombre (« Graphite » de M5) */
 html[data-ambiance="sombre"] {
   --fond: #202224; --fond-profond: #16181A; --surface: #2B2E31; --surface-2: #363A3E;
-  --texte: #F1F2EF; --texte-doux: #A4A8AA; --filet: rgba(241, 242, 239, .13);
+  --texte: #F1F2EF; --texte-doux: #A4A8AA; --filet: rgba(241, 242, 239, .12);
   --ombre: rgba(0, 0, 0, .5);
   --accent-lisible: var(--jaune);
   --focus: var(--jaune);
@@ -73,13 +101,27 @@ html[data-ambiance="sombre"] {
 /* Ambiance 3 : bleu profond */
 html[data-ambiance="bleu"] {
   --fond: #141B33; --fond-profond: #0B1024; --surface: #1F2A4D; --surface-2: #2A3866;
-  --texte: #EAF0FF; --texte-doux: #9DAAD0; --filet: rgba(234, 240, 255, .14);
+  --texte: #EAF0FF; --texte-doux: #97A4CC; --filet: rgba(234, 240, 255, .14);
   --ombre: rgba(2, 5, 20, .6);
   --accent-lisible: var(--jaune);
   --focus: var(--jaune);
   --bien: var(--ok);
   --repos-bg: #31508F; --repos-fg: #F2F6FF;
   --prep-bg: #EAF0FF;  --prep-fg: #141B33;
+}
+
+/* Surbrillance (M5) : fond mis en avant derrière l'élément actif — accent 22 % dans la surface (ligne « aujourd'hui »),
+   cerclé de 2 px d'accent ; plus léger (16 %) pour une plage (semaine dans le mois), 14 % pour une série en cours. */
+:root {
+  --surbrillance: color-mix(in srgb, var(--accent) 22%, var(--surface));
+  --surbrillance-trait: var(--accent);
+  --surbrillance-legere: color-mix(in srgb, var(--accent) 16%, var(--surface));
+  --surbrillance-serie: color-mix(in srgb, var(--accent) 14%, var(--surface-2));
+  --accent-doux: var(--surbrillance); /* nom M5 */
+  /* Ombres (M5) */
+  --ombre-carte: 0 34px 60px var(--ombre);   /* carte soulevée (opacité pilotée par --lev) */
+  --ombre-plan: -30px 0 60px var(--ombre);   /* page qui recule derrière le menu */
+  --ombre-col: 0 24px 40px var(--ombre);
 }
 
 /* Alias des phases de chrono (anciens noms, lus par la séance) : préparation, travail (jaune + encre), repos */
