@@ -5,7 +5,7 @@ import { toutesLesAlertes } from '../domain/alertes.js'
 
 export const COMPTE_COACH_LOCAL = { identifiant: 'corentin', code: 'COACH2026' }
 
-export const etat = reactive({ alertes: [], clients: [], erreur: '' })
+export const etat = reactive({ alertes: [], alertesAgenda: 0, clients: [], erreur: '' })
 
 export const maintenant = () => Date.now()
 export const uuid = () => globalThis.crypto.randomUUID()
@@ -35,6 +35,7 @@ export async function rafraichir() {
   const clients = profils.filter((p) => p.role === 'client').sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
   const de = (liste, id) => liste.filter((x) => x.clientId === id)
   etat.clients = clients
+  etat.alertesAgenda = await data.agenda.etat().then((a) => a.alertes.length, () => 0)
   etat.alertes = toutesLesAlertes(
     clients.map((profil) => ({ profil, reponses: de(reponses, profil.id), douleurs: de(douleurs, profil.id), realisations: de(realisations, profil.id) })),
     alertesVues, maintenant()
