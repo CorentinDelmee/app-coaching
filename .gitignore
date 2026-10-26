@@ -9,3 +9,5 @@ design/**/*.webm
 captures/
 netlify-maquettes/
 docs/**/*.webm
+serveur/data/
+serveur/.env

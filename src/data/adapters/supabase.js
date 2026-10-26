@@ -29,8 +29,8 @@ const ligneDepuisProfil = (p) => ({
   consentement_le: p.consentementLe ?? null, cree_le: p.creeLe
 })
 // Autres tables : id, client_id (pour les règles RLS) et l'objet complet dans `data`.
-const depuisLigne = (entite, r) => (entite === 'profils' ? profilDepuisLigne(r) : r.data)
-const versLigne = (entite, o) => (entite === 'profils' ? ligneDepuisProfil(o) : { id: o.id, client_id: clientDe(entite, o), data: o })
+export const depuisLigne = (entite, r) => (entite === 'profils' ? profilDepuisLigne(r) : r.data)
+export const versLigne = (entite, o) => (entite === 'profils' ? ligneDepuisProfil(o) : { id: o.id, client_id: clientDe(entite, o), data: o })
 
 export function creerAdapterSupabase({ url, anonKey, storage = globalThis.localStorage, now, uuid } = {}) {
   if (!url || !anonKey) throw new Error('Supabase : VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY sont requis')
