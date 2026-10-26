@@ -39,7 +39,7 @@
 
   /* ===== Accent : le jaune EXACT de la maquette M5 (« Jaune pâle », design/m5/assets/app.js) + son texte ===== */
   --jaune: #F2E27A;
-  --jaune-texte: #26230A;             /* texte posé sur le jaune (M5) : 11,9 : 1 */
+  --jaune-texte: #26230A;             /* texte posé sur le jaune (M5) : 12 : 1 */
   --encre: #1A1B1E;                   /* encre des surfaces « encre » (V2 : en-tête du Workout) */
   --creme: #F1F2EF;
   --encre-doux: #B9BCBF; --encre-filet: rgba(241, 242, 239, .16); --encre-2: #2C2E33; /* déclinaisons sur l'encre (bloc circuit) */

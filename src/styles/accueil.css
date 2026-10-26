@@ -25,7 +25,7 @@ html.menu-ouvert .burger i:last-child { transform: translateY(-5px) rotate(-45de
 .m-item:focus-visible { outline-offset: 2px; border-radius: 12px; }
 .m-item .n { width: 22px; font: 500 calc(var(--e) * 12px) var(--font-texte); letter-spacing: .08em; color: var(--texte-doux); }
 .m-item .t { font: 500 calc(var(--e) * var(--t-menu))/1.05 var(--font-titre); letter-spacing: -.02em; }
-/* rubrique active (M5) : titre en accent. En ambiance claire, le jaune serait illisible en texte (1,2 : 1, règle de Corentin) :
+/* rubrique active (M5) : titre en accent. En ambiance claire, le jaune serait illisible en texte (1,1 : 1, règle de Corentin) :
    le numéro passe sur une pastille d'accent à la place. */
 .m-item.on .t { color: var(--accent); }
 html:not([data-ambiance]) .m-item.on .t, html[data-ambiance="clair"] .m-item.on .t { color: var(--texte); }
