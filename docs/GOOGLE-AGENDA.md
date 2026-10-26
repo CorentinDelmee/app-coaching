@@ -1,5 +1,18 @@
 # Synchronisation Google Agenda -> appli client
 
+> **Ce que REX peut faire pour toi le jour J**
+> Tu n'as que 3 choses à faire toi-même : (1) créer le projet Google et copier l'ID client + le secret (étapes 2 à 4 ci-dessous, clics dans la console Google),
+> (2) cliquer « Autoriser » une fois avec ton compte Google (étape 7), (3) coller ces deux valeurs à REX. Tout le reste, REX le lance avec la CLI Supabase
+> (connectée une fois par `supabase login` puis `supabase link --project-ref <PROJECT_REF>`) :
+> ```
+> supabase db push                                                        # tables + règles de sécurité (ou coller la migration dans le SQL Editor)
+> supabase secrets set GOOGLE_CLIENT_ID=... GOOGLE_CLIENT_SECRET=... CRON_SECRET=... GOOGLE_REDIRECT_URI=https://<PROJECT_REF>.supabase.co/functions/v1/google-agenda-connexion
+> supabase functions deploy sync-google-agenda --no-verify-jwt
+> supabase functions deploy google-agenda-connexion --no-verify-jwt
+> curl -s -X POST -H "x-cron-secret: <CRON_SECRET>" "https://<PROJECT_REF>.supabase.co/functions/v1/google-agenda-connexion?action=demarrer"   # donne {"url": "..."} à ouvrir
+> ```
+> Puis REX exécute le modèle de planification (étape 8). Les valeurs réelles ne sont jamais écrites dans Git.
+
 Principe : dans **votre** Google Agenda, vous créez un événement intitulé `Coaching Fabien Vincent`. Dans les 15 minutes,
 la séance apparaît dans la case **Coaching** de l'appli de Fabien (jour, heure, lieu). Modifier l'heure, changer le titre
 ou supprimer l'événement met l'appli à jour de la même façon.
@@ -68,17 +81,21 @@ supabase functions deploy sync-google-agenda --no-verify-jwt
 supabase functions deploy google-agenda-connexion --no-verify-jwt
 ```
 `--no-verify-jwt` : Google et pg_cron n'envoient pas de jeton Supabase ; `sync-google-agenda` vérifie elle-même le secret ou la session du coach.
-`sync-google-agenda` importe les règles testées `src/domain/agendaGoogle.js` par chemin relatif : lancez la commande **depuis la racine du projet**.
-(Si le bundler refuse ce chemin, copiez ce fichier dans `supabase/functions/_shared/` et corrigez l'import.)
+`sync-google-agenda` importe `supabase/functions/_shared/agendaGoogle.js`, **copie exacte** de `src/domain/agendaGoogle.js` (le bundler Supabase ne sort pas de `supabase/`).
+Un test Vitest échoue si les deux fichiers diffèrent : après toute modification des règles, `cp src/domain/agendaGoogle.js supabase/functions/_shared/agendaGoogle.js`.
 
 ### 7. Connecter votre compte Google (une seule fois)
-Ouvrez dans votre navigateur : `https://<PROJECT_REF>.supabase.co/functions/v1/google-agenda-connexion?action=demarrer&cle=<CRON_SECRET>`,
+Le secret ne passe jamais dans une adresse web, seulement dans un en-tête. Demandez l'adresse de consentement :
+```
+curl -s -X POST -H "x-cron-secret: <CRON_SECRET>" "https://<PROJECT_REF>.supabase.co/functions/v1/google-agenda-connexion?action=demarrer"
+```
+La réponse `{"url":"https://accounts.google.com/..."}` : ouvrez cette adresse dans votre navigateur (valable 15 min),
 choisissez votre compte, acceptez l'accès **en lecture seule**. Le message « Google Agenda est connecté » confirme que le jeton de rafraîchissement
 est rangé dans `google_agenda_secret` (serveur uniquement).
 
 ### 8. Planification toutes les 15 minutes (pg_cron)
 Activez les extensions `pg_cron` et `pg_net` (Database > Extensions), puis exécutez le modèle `supabase/agenda-google-planification.sql.modele`
-après y avoir mis votre `<PROJECT_REF>` et votre `<CRON_SECRET>` (ne pas committer la version remplie).
+après y avoir mis votre `<PROJECT_REF>` et votre `<CRON_SECRET>` (ne pas committer la version remplie). Le secret part dans l'en-tête `x-cron-secret`.
 
 ### 9. Option : notifications push (quasi instantané)
 Google peut appeler la fonction dès qu'un événement change (`events.watch`). Une requête POST à
@@ -99,8 +116,8 @@ c'est pourquoi la planification (étape 8) reste le mécanisme de base, le push 
 - Pour tout effacer : `truncate seances_agenda;`.
 
 ## Comment ça marche (technique)
-- `src/domain/agendaGoogle.js` : règles pures et testées (`tests/unit/agenda-google.test.js`) : titre, attribution, fusion création/modif/suppression
+- `src/domain/agendaGoogle.js` (copie dans `supabase/functions/_shared/`) : règles pures et testées (`tests/unit/agenda-google.test.js`) : titre, attribution, fusion création/modif/suppression
   (identifiant d'événement + `etag`/`updated`), boucle `syncToken` avec reprise complète sur **410 Gone**.
 - L'attribution est recalculée à la lecture : renommer un client ou ajouter un identifiant court corrige les alertes sans attendre.
 - Local : `src/data/demo/agendaGoogle.js` (faux Google) ; Supabase : table `seances_agenda` remplie par l'Edge Function.
-- Côté client, `data.seancesCoaching.lister` ajoute les séances Google futures (`source: 'google'`) à celles de l'appli : aucune vue client modifiée.
+- Côté client, `data.seancesCoaching.lister` ajoute les séances Google futures (`source: 'google'`) à celles de l'appli : aucune vue client modifiée. Une séance native et une séance Google du même client à ±15 min ne comptent qu'une fois (la native est gardée, `googleId` ajouté). Un événement « toute la journée » s'affiche « journée », sans heure.
