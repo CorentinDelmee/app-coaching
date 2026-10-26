@@ -112,8 +112,8 @@ html[data-grand="oui"] .anneau-s { margin: 12px 0; }
 .carte.coaching.vide .c-mini { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; opacity: 1; margin-top: auto; }
 .carte.coaching.vide .c-mini svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
 /* liens de démonstration (mode local) : hors maquette, superposés au bas de l'écran sans prendre de place */
-.acces-dev { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; display: flex; justify-content: center; gap: 18px; font-size: 11px; color: var(--texte-doux); pointer-events: none; }
-.acces-dev a { pointer-events: auto; text-decoration: none; display: inline-flex; align-items: center; min-height: 20px; padding: 0 8px; opacity: .8; }
+.acces-dev { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; display: flex; justify-content: center; gap: 18px; font-size: 12px; color: var(--texte); pointer-events: none; }
+.acces-dev a { pointer-events: auto; text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 8px; }
 /* copie inerte du tableau de bord laissée derrière une page ouverte depuis une carte (src/anim/passage.js) */
 .ecran-dessous { position: fixed; inset: 0; margin: 0 auto; max-width: 520px; z-index: -1; overflow: hidden; border-radius: var(--rayon); background: var(--fond); color: var(--texte); pointer-events: none; }
 

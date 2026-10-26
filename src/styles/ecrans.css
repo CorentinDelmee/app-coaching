@@ -118,7 +118,7 @@
 .col .vide { flex: 1; width: 2px; background: repeating-linear-gradient(var(--filet) 0 5px, transparent 5px 11px); border-radius: 1px; opacity: .8; }
 
 .a-faire { margin-top: 20px; }
-.a-faire h3 { font-family: var(--font-titre); font-weight: 400; font-size: 17px; letter-spacing: -.03em; margin-bottom: 12px; }
+.a-faire h2 { font-family: var(--font-titre); font-weight: 400; font-size: 17px; letter-spacing: -.03em; margin-bottom: 12px; }
 .ligne-w { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; background: var(--surface); border-radius: 22px; padding: 14px 16px; min-height: calc(var(--e) * 76px); margin-bottom: 10px; transition: transform .32s var(--ressort); }
 .ligne-w:active { transform: scale(.98); transition-duration: .1s; }
 .ligne-w .wn { width: 48px; height: 48px; border-radius: 16px; background: var(--surface-2); display: grid; place-items: center; font-family: var(--font-chiffres); font-size: 16px; flex: none; }
@@ -132,6 +132,7 @@
 .ligne-w .fl svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 /* ligne mise en avant (aujourd'hui / à faire en premier) : surbrillance M5 — fond accent 22 % dans la surface, cerclé d'accent */
 .ligne-w.en-avant { background: var(--surbrillance); color: var(--texte); box-shadow: inset 0 0 0 2px var(--surbrillance-trait); }
+.ligne-w.en-avant .wt small, .ligne-w.en-avant .etat:not(.ok) { color: var(--texte); opacity: .8; }
 .ligne-w.en-avant .fl { background: var(--accent); color: var(--accent-texte); }
 .ligne-w.fait .wn { background: var(--ok); color: var(--ok-texte); }
 .ligne-w.fait .etat { font-family: var(--font-chiffres); }

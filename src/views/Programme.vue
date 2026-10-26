@@ -332,7 +332,7 @@ const aller = (id, e, jour = null) => ouvrirWorkout(id, e.currentTarget, jour)
                 </div>
 
                 <div v-if="aFaire.length" class="a-faire" data-s>
-                  <h3>À faire cette semaine</h3>
+                  <h2>À faire cette semaine</h2>
                   <button v-for="(l, i) in aFaire" :key="l.workoutId" type="button" class="ligne-w cliquable" :class="{ 'en-avant': enCours && i === 0 }" @click="aller(l.workoutId, $event, l.jour)">
                     <span class="wn">{{ l.code }}</span>
                     <span class="wt">{{ l.titre }}<small>{{ l.sous ? `${l.sous} · ` : '' }}{{ l.texte }}</small></span>
@@ -341,7 +341,7 @@ const aller = (id, e, jour = null) => ouvrirWorkout(id, e.currentTarget, jour)
                 </div>
 
                 <div v-if="faits.length" class="a-faire" data-s>
-                  <h3>Fait</h3>
+                  <h2>Fait</h2>
                   <button v-for="l in faits" :key="l.workoutId" type="button" class="ligne-w cliquable fait" @click="aller(l.workoutId, $event, l.jour)">
                     <span class="wn"><Icone nom="coche" /></span>
                     <span class="wt">{{ l.titre }}<small>{{ l.sous ? `${l.sous} · ` : '' }}{{ l.texte }}</small></span>
@@ -352,7 +352,7 @@ const aller = (id, e, jour = null) => ouvrirWorkout(id, e.currentTarget, jour)
 
               <!-- Historique des semaines passées -->
               <div v-if="historique.length" class="a-faire histo" data-s>
-                <h3>Historique</h3>
+                <h2>Historique</h2>
                 <button v-for="s in historique" :key="s.lundi" type="button" class="ligne-w cliquable hist" :class="{ choisie: s.lundi === lundi }" @click="allerSemaine(s.lundi, -1)">
                   <span class="wn">S{{ s.numero }}</span>
                   <span class="wt">Semaine {{ s.numero }}<small>{{ libelleSemaine(s.lundi) }}</small></span>

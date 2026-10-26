@@ -277,7 +277,7 @@ const versHero = (e) => {
       <div class="grille">
         <!-- Aujourd'hui : carte d'accent sur toute la largeur, « W2 » détouré, flèche ronde inversée -->
         <button ref="celebration" class="carte c-aujourdhui" data-teinte="accent" data-couche="3" :class="{ fait: s.hero.etat === 'fait' || s.hero.etat === 'bouclee' }" type="button"
-          :aria-label="`${s.hero.etiquette} : ${s.hero.titre}. ${s.hero.sous}`" @click="versHero">
+          @click="versHero">
           <span v-if="fantome" class="ghost" aria-hidden="true">{{ fantome }}</span>
           <span class="c-lab">{{ s.hero.etiquette }}</span>
           <span class="c-titre">{{ s.hero.titre }}</span>
@@ -291,7 +291,7 @@ const versHero = (e) => {
         </button>
 
         <!-- Cette semaine -->
-        <button class="carte semaine c-semaine" data-teinte="surface" data-couche="2" type="button" :aria-label="`Cette semaine : ${s.semaine.faits} sur ${s.semaine.total}`" @click="ouvrir('/programme', $event)">
+        <button class="carte semaine c-semaine" data-teinte="surface" data-couche="2" type="button" @click="ouvrir('/programme', $event)">
           <span class="c-lab">Cette semaine</span>
           <span class="anneau-s">
             <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="as-fond" cx="60" cy="60" r="50" /><circle ref="anneauEl" class="as-val" :class="{ plein: bouclee }" cx="60" cy="60" r="50" transform="rotate(-90 60 60)" /></svg>
@@ -301,7 +301,7 @@ const versHero = (e) => {
         </button>
 
         <!-- Prochaine séance de coaching (teinte inverse), ou invitation à écrire -->
-        <button v-if="s.coaching" class="carte coaching c-coaching" data-teinte="inverse" data-couche="2" type="button" aria-label="Prochaine séance de coaching" @click="ouvrir('/coaching', $event)">
+        <button v-if="s.coaching" class="carte coaching c-coaching" data-teinte="inverse" data-couche="2" type="button" @click="ouvrir('/coaching', $event)">
           <span class="c-lab">Coaching</span>
           <span class="c-date"><b>{{ s.coaching.num }}</b><i>{{ s.coaching.moisCourt }}</i></span>
           <span class="c-mini">{{ s.coaching.jourNom }} · {{ s.coaching.heure }}<br>{{ s.coaching.lieu }}</span>
@@ -313,7 +313,7 @@ const versHero = (e) => {
         </a>
 
         <!-- Mon programme : barres des semaines (passées en accent, en cours en couleur du texte) -->
-        <button class="carte prog c-programme" data-teinte="surface" data-couche="1" type="button" aria-label="Mon programme" @click="ouvrir('/programme', $event)">
+        <button class="carte prog c-programme" data-teinte="surface" data-couche="1" type="button" @click="ouvrir('/programme', $event)">
           <span class="c-lab">Mon programme</span>
           <template v-if="s.programme">
             <span class="c-prog-t">{{ s.programme.nom.replace(/^Programme\s+/i, '') }}</span>
@@ -326,7 +326,7 @@ const versHero = (e) => {
         </button>
 
         <!-- Questionnaires : pastille seulement s'il y en a à remplir -->
-        <button class="carte quest c-quest" data-teinte="surface" data-couche="1" type="button" aria-label="Questionnaires" @click="ouvrir('/questionnaires', $event)">
+        <button class="carte quest c-quest" data-teinte="surface" data-couche="1" type="button" @click="ouvrir('/questionnaires', $event)">
           <span class="c-lab">Questionnaires</span>
           <span class="c-prog-t">{{ !s.sante ? 'Données de santé désactivées' : s.questionnaires ? 'À remplir · 2 min' : 'Tout est à jour' }}</span>
           <span v-if="s.questionnaires" class="pastille" :aria-label="`${s.questionnaires} à remplir`">{{ s.questionnaires }}</span>

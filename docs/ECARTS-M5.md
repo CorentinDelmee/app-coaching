@@ -65,3 +65,7 @@ Tous ces tokens sont désormais dans **`src/styles/tokens.css`** (source unique)
   1 s (x 273, scale .820 des deux côtés) ; copie du tableau de bord à scale .926 à 600 ms puis .92, revenue à 1 au retour.
 - Mouvement réduit : menu = simple glissement (scale 1), entrée en fondu, pas de lever ni de recul de carte.
 - Clavier : Entrée ouvre le menu, Échap ferme et rend le focus au bouton de la page, `aria-expanded` suit l'état.
+
+## Accessibilité (26/10, audit perf/a11y)
+- Texte secondaire sur la ligne en surbrillance (`.ligne-w.en-avant`, Programme) : `--texte` à 80 % d'opacité au lieu de
+  `--texte-doux` (3,1:1 en sombre/bleu, requis 4,5:1). Surbrillance et jaune `#F2E27A` inchangés ; seul le texte posé dessus change.
