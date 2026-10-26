@@ -3,7 +3,7 @@
 import { gsap } from 'gsap'
 import { mouvementReduit } from './transitions.js'
 
-const COULEURS = ['var(--accent-texte)', '#ffffff', 'var(--accent-texte)']
+const COULEURS = ['var(--accent-texte)', 'var(--creme)', 'var(--accent-texte)']
 
 /** `conteneur` : élément positionné (absolute/relative) ; `haut` : hauteur de départ en % ; `couleurs` : sur l'accent par défaut. */
 export function confettis(conteneur, { haut = 34, nombre = 26, delai = 0.6, couleurs = COULEURS } = {}) {
