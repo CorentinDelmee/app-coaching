@@ -12,6 +12,7 @@ import { identifiantUnique, genererCode, LONGUEUR_CODE_MIN } from '../domain/ide
 import { appliquerRealisation } from '../domain/realisations.js'
 import { validerRealisation } from '../domain/modele.js'
 import { alertesAgenda, seancesPourClient } from '../domain/agendaGoogle.js'
+import { fusionnerSeances } from '../domain/fusionSeances.js'
 import { exporter, exporterMesDonnees, preparerImport } from '../domain/echange.js'
 
 const uuidParDefaut = () => globalThis.crypto.randomUUID()
@@ -73,7 +74,7 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
       if (user?.role !== 'client' || (filtre.clientId && filtre.clientId !== user.id) || options?.archives) return base
       if (filtre.statut && filtre.statut !== 'prevue') return base
       try {
-        return [...base, ...seancesPourClient(await backend.agenda.evenements(), user.id, user.tarif, now())]
+        return fusionnerSeances(base, seancesPourClient(await backend.agenda.evenements(), user.id, user.tarif, now()))
       } catch {
         return base
       }

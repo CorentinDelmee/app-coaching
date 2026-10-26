@@ -184,7 +184,7 @@ export function seancesPourClient(evenementsEvalues, clientId, tarif, now) {
   return evenementsEvalues
     .filter((e) => e.statut === 'attribue' && e.clientId === clientId && e.debutMs >= now)
     .map((e) => ({
-      id: `gcal-${e.id}`, clientId, date: e.date, heure: e.heure, lieu: e.lieu, statut: 'prevue', tarif: tarif ?? 0,
+      id: `gcal-${e.id}`, clientId, date: e.date, heure: e.journee ? '' : e.heure, journee: e.journee, lieu: e.lieu, statut: 'prevue', tarif: tarif ?? 0,
       source: 'google', titre: e.titre
     }))
 }

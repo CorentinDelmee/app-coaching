@@ -40,3 +40,27 @@ describe('Google Agenda en démo (adaptateur local)', () => {
     expect(Object.keys(r.etat.evenements)).toHaveLength(7)
   })
 })
+
+import { fusionnerSeances } from '../../src/domain/fusionSeances.js'
+import { formaterHeure, prochaineSeance } from '../../src/domain/coaching.js'
+
+describe('fusion natives + Google', () => {
+  const nat = { id: 'n1', clientId: 'c', date: '2026-11-03', heure: '18:30', statut: 'prevue' }
+  const goo = (heure, extra = {}) => ({ id: 'gcal-x', clientId: 'c', date: '2026-11-03', heure, statut: 'prevue', source: 'google', ...extra })
+  it('même créneau (±15 min) : une seule entrée, la native enrichie', () => {
+    const r = fusionnerSeances([nat], [goo('18:45')])
+    expect(r).toHaveLength(1)
+    expect(r[0]).toMatchObject({ id: 'n1', googleId: 'gcal-x' })
+  })
+  it('créneau différent, autre client, native annulée : les deux restent', () => {
+    expect(fusionnerSeances([nat], [goo('19:00')])).toHaveLength(2)
+    expect(fusionnerSeances([nat], [goo('18:30', { clientId: 'd' })])).toHaveLength(2)
+    expect(fusionnerSeances([{ ...nat, statut: 'annulee' }], [goo('18:30')])).toHaveLength(2)
+  })
+  it('journée entière : jamais fusionnée, affichée « journée », reste à venir toute la journée', () => {
+    const j = goo('', { journee: true })
+    expect(fusionnerSeances([nat], [j])).toHaveLength(2)
+    expect(formaterHeure('')).toBe('journée')
+    expect(prochaineSeance([j], Date.parse('2026-11-03T20:00:00'))).toBe(j)
+  })
+})

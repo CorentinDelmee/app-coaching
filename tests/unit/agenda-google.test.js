@@ -146,3 +146,11 @@ describe('lecture', () => {
     expect(seancesPourClient(evalues, 'c2', 35, NOW)).toEqual([])
   })
 })
+
+import { readFileSync } from 'node:fs'
+describe('copie pour l\'Edge Function', () => {
+  it('supabase/functions/_shared/agendaGoogle.js est identique à src/domain/agendaGoogle.js', () => {
+    const lire = (p) => readFileSync(new URL(p, import.meta.url), 'utf8').replace(/\r\n/g, '\n')
+    expect(lire('../../supabase/functions/_shared/agendaGoogle.js')).toBe(lire('../../src/domain/agendaGoogle.js'))
+  })
+})

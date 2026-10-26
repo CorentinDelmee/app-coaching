@@ -3,7 +3,8 @@ import { horodatage, jourLocal, lundiDe, ajouterJours, moisDe } from './dates.js
 import { formaterEuros, ordinalFeminin, pluriel } from './format.js'
 
 const HEURE_MS = 3600000
-const quand = (s) => horodatage(s.date, s.heure)
+// séance « toute la journée » (Google Agenda, heure vide) : valable jusqu'à la fin du jour
+const quand = (s) => horodatage(s.date, s.heure || '23:59')
 const parDate = (a, b) => quand(a) - quand(b)
 
 /** Prochaine séance « prévue » à venir, sinon null. */
@@ -61,6 +62,7 @@ const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 
 
 /** '18:30' -> « 18 h 30 », '09:00' -> « 9 h ». */
 export function formaterHeure(heure) {
+  if (!heure) return 'journée'
   const [h, m] = heure.split(':')
   return m === '00' ? `${Number(h)} h` : `${Number(h)} h ${m}`
 }

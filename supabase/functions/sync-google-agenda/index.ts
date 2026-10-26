@@ -5,7 +5,7 @@
 // Le jeton de rafraîchissement est lu dans google_agenda_secret (table inaccessible aux utilisateurs).
 // Les règles (correspondance, fusion, syncToken/410) viennent du module pur testé par Vitest : src/domain/agendaGoogle.js.
 import { createClient } from 'npm:@supabase/supabase-js@2'
-import { etatVide, evaluer, synchroniser } from '../../../src/domain/agendaGoogle.js'
+import { etatVide, evaluer, synchroniser } from '../_shared/agendaGoogle.js'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*', // l'accès réel est protégé par le JWT du coach / le secret, pas par l'origine

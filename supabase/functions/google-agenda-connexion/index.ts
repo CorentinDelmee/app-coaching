@@ -1,5 +1,6 @@
 // Edge Function Supabase : connexion unique du compte Google du coach (OAuth 2.0, lecture seule).
-//   GET  ?action=demarrer&cle=<CRON_SECRET>  -> redirige vers l'écran de consentement Google
+//   POST ?action=demarrer + en-tête x-cron-secret: <CRON_SECRET>  -> renvoie { url } : l'adresse de l'écran de consentement Google
+//                                              (le secret n'est jamais dans une URL)
 //   GET  ?code=...&state=...                 -> retour de Google : échange le code, range le jeton de rafraîchissement
 //                                              dans google_agenda_secret (table serveur uniquement), puis affiche « Connecté ».
 // Déployer avec --no-verify-jwt (Google appelle sans jeton Supabase). Variables : GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
@@ -7,6 +8,16 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const env = (k: string) => Deno.env.get(k) ?? ''
+// « state » anti-falsification : horodatage signé (HMAC-SHA256 avec CRON_SECRET), valable 15 minutes.
+async function signer(texte: string) {
+  const cle = await crypto.subtle.importKey('raw', new TextEncoder().encode(env('CRON_SECRET')), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
+  const sig = await crypto.subtle.sign('HMAC', cle, new TextEncoder().encode(texte))
+  return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, '0')).join('')
+}
+async function etatValide(state: string | null) {
+  const [ts, sig] = (state ?? '').split('.')
+  return !!ts && !!sig && Date.now() - Number(ts) < 15 * 60000 && sig === (await signer(ts))
+}
 const page = (texte: string, status = 200) =>
   new Response(`<!doctype html><meta charset="utf-8"><title>Google Agenda</title><body style="font:18px system-ui;padding:2rem"><p>${texte}</p>`, {
     status, headers: { 'Content-Type': 'text/html; charset=utf-8' }
@@ -16,19 +27,22 @@ Deno.serve(async (req) => {
   const url = new URL(req.url)
 
   if (url.searchParams.get('action') === 'demarrer') {
-    if (url.searchParams.get('cle') !== env('CRON_SECRET') || !env('CRON_SECRET')) return page('Clé invalide.', 403)
+    const secret = env('CRON_SECRET')
+    const recu = req.headers.get('x-cron-secret') ?? ''
+    if (req.method !== 'POST' || !secret || recu.length !== secret.length || recu !== secret) return new Response(JSON.stringify({ erreur: 'Clé invalide' }), { status: 403 })
+    const ts = String(Date.now())
     const auth = new URL('https://accounts.google.com/o/oauth2/v2/auth')
     auth.search = new URLSearchParams({
       client_id: env('GOOGLE_CLIENT_ID'), redirect_uri: env('GOOGLE_REDIRECT_URI'), response_type: 'code',
       scope: 'https://www.googleapis.com/auth/calendar.events.readonly', // lecture seule des événements
       access_type: 'offline', prompt: 'consent',                           // « offline » = jeton de rafraîchissement
-      state: env('CRON_SECRET')
+      state: `${ts}.${await signer(ts)}`
     }).toString()
-    return Response.redirect(auth.toString(), 302)
+    return new Response(JSON.stringify({ url: auth.toString() }), { headers: { 'Content-Type': 'application/json' } })
   }
 
   const code = url.searchParams.get('code')
-  if (!code || url.searchParams.get('state') !== env('CRON_SECRET')) return page('Demande invalide.', 400)
+  if (!code || !(await etatValide(url.searchParams.get('state')))) return page('Demande invalide.', 400)
   const res = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
