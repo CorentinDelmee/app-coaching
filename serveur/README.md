@@ -20,6 +20,7 @@ API REST (HTTP) ────┘        validation = celle de l'app (src/data/com
 3. App reliée au serveur : dans `.env` de l'app, `VITE_API_URL=http://127.0.0.1:5405` (et `VITE_API_KEY=<même clé>` pour l'écran coach « Vidéos »), puis `npm run dev`.
    Connecte-toi en tant que Fabien : la séance créée par Claude apparaît dans son programme (l'app recopie l'état du serveur, `src/data/synchro-api.js`).
 4. Test de bout en bout : `node serveur/tests/e2e-seance.mjs` (MCP + API) ou `… --navigateur` (+ app sur 5406 et captures `docs/captures-mcp/`).
+   Ports modifiables : variables `E2E_PORT_API`, `E2E_PORT_APP`, `E2E_PORT_CHROME` (défauts 5405, 5406, 5407).
    Tests unitaires : `npx vitest run`.
 
 ## Variables d'environnement
