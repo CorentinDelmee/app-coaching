@@ -66,7 +66,9 @@ Recherche automatique (`chercher_video_exercice`, et à la création de séance 
 - Écoute **127.0.0.1 uniquement** ; limitation de débit (120/min) ; corps limité à 256 Ko ; validation zod stricte de tous les arguments ; liens vidéo : YouTube seulement.
 - Journal `serveur/data/journal.jsonl` : une ligne par action (quand, acteur `rest`/`mcp-stdio`, outil, client, résultat) ; ne contient jamais la clé.
 - Suppression : confirmation obligatoire par jeton à usage unique.
-- Limite connue (démo) : la clé `VITE_API_KEY` de l'écran « Vidéos » est visible dans le navigateur. En production, remplacer par une session coach (Edge Function / JWT Supabase).
+- Limite connue (démo) : la clé `VITE_API_KEY` de l'écran « Vidéos » est visible dans le navigateur (toute variable `VITE_*` est copiée en clair dans le bundle).
+  Garde-fou : `npm run build` (production) **échoue** si `VITE_API_KEY` est défini. Utiliser pour la démo une clé **distincte** de celle de production, uniquement en `npm run dev`.
+  Cible production (à faire, non implémenté) : l'écran « Vidéos » appelle une Edge Function Supabase avec le JWT de la session du coach ; la fonction vérifie `role = 'coach'` (comme `sync-google-agenda`) puis agit avec la clé service côté serveur, sans jamais exposer de clé.
 
 ## Passage en production (Supabase)
 1. Appliquer `supabase/schema.sql` (tables de l'app).

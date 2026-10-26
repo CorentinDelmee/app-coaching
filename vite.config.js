@@ -1,11 +1,13 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
+import { garderCleApi } from './scripts/garde-cle-api.mjs'
 
 // base '/' : l'app est servie à la racine du sous-domaine Netlify (*.netlify.app).
 export default defineConfig({
   base: '/',
   plugins: [
+    garderCleApi(), // bloque un build de production qui embarquerait VITE_API_KEY
     vue(),
     VitePWA({
       // « prompt » : la mise à jour n'est appliquée qu'à une navigation hors séance (voir src/lib/pwa.js), jamais en pleine séance.
