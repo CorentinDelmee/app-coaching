@@ -1,6 +1,6 @@
 {
   "titre": "Corentin Delmée Coaching — application (PWA)",
-  "phase": "V2 + mission 26/10 (M5, Google Agenda démo, serveur MCP) — à toi : configurer Google, valider les vidéos, essai sur téléphone",
+  "phase": "V2 + mission 26/10 + 2e vague : 436 tests verts, audits sécurité et accessibilité corrigés — à toi : secrets et Google, valider les vidéos, essai sur téléphone",
   "objectif": "Remplacer **My PT Hub (52 €/mois)** par ma propre app de coaching, **0 €/mois**, mobile d'abord, très animée.",
   "date_cible": "2026-10-20",
   "mis_a_jour": "2026-10-26",
@@ -190,6 +190,22 @@
       "statut": "fait",
       "avancement": 100,
       "qui": "developpeur"
+    },
+    {
+      "id": "Sec",
+      "titre": "Audit sécurité : 2 critiques (démo) et 8 importants corrigés, fusionnés",
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "auditeur-securite + developpeur",
+      "note": "Nonce + PKCE, 3 secrets distincts, jeton Google dans le Vault Supabase, CORS limité à APP_ORIGIN, clé API 32 caractères, build refusé si VITE_API_KEY. 436 tests verts."
+    },
+    {
+      "id": "Perf",
+      "titre": "Audit performance et accessibilité",
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "performance-accessibilite",
+      "note": "Lighthouse mobile : performance 90, PWA OK. Correctifs d'accessibilité fusionnés (1d07c26). Aucune branche en attente."
     }
   ],
   "taches_humaines": [
@@ -215,7 +231,7 @@
       "echeance": "",
       "duree": "25 min",
       "statut": "a_faire",
-      "comment": "MISE-EN-ROUTE.md étapes 9-10. Action publique : à faire par toi."
+      "comment": "MISE-EN-ROUTE.md étapes 9-10. Action publique : à faire par toi. Ne pas définir VITE_API_KEY pour la mise en ligne : le build de production est refusé."
     },
     {
       "titre": "Déployer les 2 fonctions serveur (création de client, nouveau code) et désactiver les inscriptions publiques",
@@ -286,15 +302,15 @@
       "echeance": "",
       "duree": "30 min (estimation)",
       "statut": "a_faire",
-      "comment": "docs/GOOGLE-AGENDA.md, encadré « jour J ». Ensuite tu colles ID et secret à REX : il lance le reste avec la CLI Supabase."
+      "comment": "docs/GOOGLE-AGENDA.md, encadré « jour J ». Les valeurs se saisissent dans Supabase (supabase secrets set), pas dans le chat. Ensuite, dis à REX « Google est configuré »."
     },
     {
-      "titre": "Créer COACH_API_KEY (16 caractères min.) dans serveur/.env et .mcp.json",
+      "titre": "Créer COACH_API_KEY (32 caractères min.) dans serveur/.env et .mcp.json",
       "qui": "Corentin",
       "echeance": "",
       "duree": "10 min",
       "statut": "a_faire",
-      "comment": "Modèle : serveur/mcp.json.exemple. REX n'écrit ni .env ni clé."
+      "comment": "Modèle : serveur/mcp.json.exemple. REX n'écrit ni .env ni clé. Le guide disait 16 caractères : la correction de sécurité a relevé à 32."
     },
     {
       "titre": "Clé YouTube Data v3 (facultative) pour la recherche automatique de vidéos",
@@ -319,6 +335,14 @@
       "duree": "20 min",
       "statut": "a_faire",
       "comment": "Jamais testé sur un vrai appareil."
+    },
+    {
+      "titre": "Créer les secrets Supabase CRON_SECRET, STATE_SECRET, APP_ORIGIN (et WEBHOOK_SECRET, facultatif)",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "10 min",
+      "statut": "a_faire",
+      "comment": "Trois valeurs aléatoires, toutes différentes. APP_ORIGIN = URL de l'app. Guide : docs/GOOGLE-AGENDA.md. Aucune valeur dans le code ni dans Git."
     }
   ],
   "decisions": [
@@ -617,12 +641,20 @@
     {
       "date": "2026-10-26",
       "texte": "Testeur indépendant : agenda et serveur validés, aucun bloquant. 421 tests verts annoncés."
+    },
+    {
+      "date": "2026-10-26",
+      "texte": "Audit sécurité : 2 critiques (démo) et 8 importants corrigés et fusionnés ; 436 tests verts."
+    },
+    {
+      "date": "2026-10-26",
+      "texte": "Audit performance et accessibilité : performance 90 sur mobile, PWA OK ; correctifs d'accessibilité fusionnés."
     }
   ],
   "prochaines_etapes": [
     "Valider ou remplacer les 51 vidéos (écran coach « Vidéos »)",
-    "Configurer Google Cloud (docs/GOOGLE-AGENDA.md, encadré jour J) puis donner l'ID client et le secret à REX",
-    "Créer COACH_API_KEY dans serveur/.env et .mcp.json",
+    "Configurer Google Cloud (docs/GOOGLE-AGENDA.md, encadré jour J) et saisir les secrets dans Supabase, pas dans le chat",
+    "Créer COACH_API_KEY (32 caractères min.) dans serveur/.env et .mcp.json",
     "Essai sur ton téléphone : accueil M5 et V2",
     "Mise en route Supabase puis Netlify (MISE-EN-ROUTE.md)"
   ],

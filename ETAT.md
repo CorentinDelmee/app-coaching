@@ -1,5 +1,11 @@
 # ÉTAT — app-coaching
 
+## 2e vague 26/10 (19 h 25 → 20 h) — sécurité et accessibilité
+- **Audit sécurité** : 2 critiques (démo) et 8 importants corrigés, fusionnés dans `main` : nonce et PKCE pour Google, 3 secrets distincts (`CRON_SECRET`, `WEBHOOK_SECRET`, `STATE_SECRET`), `APP_ORIGIN` pour le CORS, jeton Google dans le Vault Supabase (migration), clé API de 32 caractères minimum. Build de production refusé si `VITE_API_KEY` est défini.
+- **Audit performance et accessibilité** : performance 90 (Lighthouse mobile), PWA OK ; correctifs d'accessibilité fusionnés (`1d07c26`). Aucune branche non fusionnée.
+- **Tests** : 436 verts (journal de mission, 19 h 33). Remplace les 421 annoncés plus haut.
+- **Secrets à créer** (humain, jamais dans le code ni le chat) : voir `docs/GOOGLE-AGENDA.md` et `TABLEAU-DE-BORD.html`.
+
 ## Mission 26/10/2026 (mode absent) — fait, testé en démo
 - **Alignement M5** : accueil, menu, jaune `#F2E27A` (texte `#26230A`), surbrillance, tokens. Écarts volontaires : `docs/ECARTS-M5.md`. Comparaison : `docs/captures-m5/comparaison.html`.
 - **Google Agenda → app client** (démo) : espace coach `/coach` → « Agenda Google » → « Synchroniser maintenant » ; la séance « Coaching Fabien Vincent » apparaît dans la case Coaching de Fabien. Guide : `docs/GOOGLE-AGENDA.md` (encadré jour J).
