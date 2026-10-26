@@ -78,7 +78,7 @@ function aller(id, e) {
         <p v-if="!groupes.length" class="w-vide" data-c>Aucun questionnaire pour l'instant. Votre coach vous en proposera bientôt.</p>
 
         <section v-for="g in groupes" :key="g.frequence" class="q-groupe" data-c>
-          <h3>{{ g.titre }}</h3>
+          <h2>{{ g.titre }}</h2>
           <button
             v-for="(l, i) in g.lignes" :key="l.questionnaire.id" type="button" class="ligne-w cliquable"
             :class="{ 'en-avant': !l.fait && i === 0 && g.frequence === 'quotidien', fait: l.fait }" @click="aller(l.questionnaire.id, $event)"
