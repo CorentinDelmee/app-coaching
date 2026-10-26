@@ -1,0 +1,415 @@
+{
+  "format": "bibliotheque-videos/1",
+  "genereLe": "2026-10-26",
+  "note": "Toutes les URL ont été vérifiées par oEmbed YouTube le 2026-10-26 (titre + chaîne renvoyés). duree_s est null partout : la durée n'est pas récupérable avec les outils disponibles (à compléter à l'import ou à la lecture). Les ids suivent la convention ex-<slug> de l'app ; l'import doit rapprocher par nom/alias si le slug diffère.",
+  "exercices": [
+    {
+      "id": "ex-squat", "nom": "Squat", "alias": ["Squat au poids du corps", "Air squat", "Bodyweight squat"],
+      "muscles": ["quadriceps", "fessiers", "ischio-jambiers"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=EXFBExFRTBY", "titre": "Comment bien faire des squats I ELLE Fitness", "chaine": "ELLE", "duree_s": null, "langue": "fr"},
+      "justification": "Tutoriel en français d'un média fitness reconnu, orienté grand public et débutants.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=Ipd9a5VjBLw", "titre": "Comment bien faire un squat?", "chaine": "Vitaliplay"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-squat-gobelet", "nom": "Squat gobelet", "alias": ["Goblet squat"],
+      "muscles": ["quadriceps", "fessiers", "tronc"], "materiel": ["haltère ou kettlebell"],
+      "video": {"url": "https://www.youtube.com/watch?v=mKREc_xl_j8", "titre": "Comment Faire Un Goblet Squat", "chaine": "Your House Fitness", "duree_s": null, "langue": "fr"},
+      "justification": "Démonstration directe en français de l'exercice exact, chaîne spécialisée en démonstrations de mouvements.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=qdfyNNXX8l0", "titre": "Goblet Squat : un des meilleurs exercices jambes & fessiers avec haltère (Tuto complet)", "chaine": "Gabriel Augusto"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-squat-bulgare", "nom": "Squat bulgare", "alias": ["Split squat bulgare", "Fente bulgare", "Bulgarian split squat"],
+      "muscles": ["quadriceps", "fessiers"], "materiel": ["banc", "haltères (optionnel)"],
+      "video": {"url": "https://www.youtube.com/watch?v=eCJxHKDXBqk", "titre": "Split squat bulgare : Technique et variantes", "chaine": "Olymp'Fit", "duree_s": null, "langue": "fr"},
+      "justification": "Technique et variantes expliquées en français par une chaîne de coachs de musculation établie.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=zGq42z1fYco", "titre": "Bulgarian Squat avec et sans poids", "chaine": "Femme Fitness"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-fentes-avant", "nom": "Fentes avant", "alias": ["Fente avant", "Forward lunge"],
+      "muscles": ["quadriceps", "fessiers"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=osWJEjE4gb0", "titre": "Comment bien faire des fentes I ELLE Fitness", "chaine": "ELLE", "duree_s": null, "langue": "fr"},
+      "justification": "Tutoriel en français grand public sur la fente de base, même chaîne que le squat pour une cohérence de style.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=HH9FQpjXw7A", "titre": "Comment faire les FENTES : Technique et erreurs à éviter", "chaine": "Olymp'Fit"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-fentes-marchees", "nom": "Fentes marchées", "alias": ["Fentes marchées", "Fentes en marchant", "Walking lunges"],
+      "muscles": ["quadriceps", "fessiers", "équilibre"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=Frfms16Fv4I", "titre": "Les fentes marchées", "chaine": "endur activ", "duree_s": null, "langue": "fr"},
+      "justification": "Vidéo en français centrée précisément sur la fente marchée ; chaîne moins connue, à valider visuellement par Corentin.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=kzDXFiKqwy8", "titre": "Marche avec fente", "chaine": "Lepape"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-fentes-arriere", "nom": "Fentes arrière", "alias": ["Fente arrière", "Reverse lunge"],
+      "muscles": ["fessiers", "quadriceps"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=Zz8DrsAUIZo", "titre": "Comment faire une fente arrière correctement ?", "chaine": "NATURAZONE", "duree_s": null, "langue": "fr"},
+      "justification": "Explication en français de l'exécution correcte de la fente arrière, titre orienté technique.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=nwXoQIidGO8", "titre": "Exercice fitness FENTES ARRIERES", "chaine": "holifit"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-pont-fessier", "nom": "Pont fessier", "alias": ["Glute bridge", "Pont"],
+      "muscles": ["fessiers", "ischio-jambiers", "lombaires"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=2ICbrXLD80A", "titre": "Pont fessier (Glute Bridge)", "chaine": "Lina Hammouche", "duree_s": null, "langue": "fr"},
+      "justification": "Démonstration en français, titre sans fioriture, exercice simple à reproduire.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=XnGd3zkt80k", "titre": "Glute Bridge I Pont fessier", "chaine": "Flow Motion"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-hip-thrust", "nom": "Hip thrust", "alias": ["Poussée de hanches", "Hip thrust haltère"],
+      "muscles": ["fessiers", "ischio-jambiers"], "materiel": ["banc", "haltère ou barre"],
+      "video": {"url": "https://www.youtube.com/watch?v=UmY5lVwpycE", "titre": "How to Do the Hip Thrust For Beginners | Build Stronger Glutes", "chaine": "Dr. Carl Baird", "duree_s": null, "langue": "en"},
+      "justification": "Pas de vidéo française satisfaisante trouvée ; tutoriel anglais pas à pas pour débutants par un kinésithérapeute/docteur (profil à confirmer).",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=29OfN4ztW_g", "titre": "Dumbbell Hip Thrust (FULL TUTORIAL) - Glute Exercises for Beginners", "chaine": "Mike | J2FIT Strength & Conditioning"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-souleve-de-terre-jambes-tendues", "nom": "Soulevé de terre jambes tendues", "alias": ["Soulevé de terre roumain", "RDL", "Romanian deadlift", "Stiff-leg deadlift"],
+      "muscles": ["ischio-jambiers", "fessiers", "érecteurs du rachis"], "materiel": ["haltères ou barre"],
+      "video": {"url": "https://www.youtube.com/watch?v=pf2rQT3LvIQ", "titre": "Comment faire un Soulevé de Terre Jambes Tendues Roumain", "chaine": "Your House Fitness", "duree_s": null, "langue": "fr"},
+      "justification": "Démonstration en français de la version roumaine (jambes légèrement fléchies), la plus adaptée aux clients particuliers.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=9ATuKMCWKkY", "titre": "TUTO complet: Soulevé de terre roumain", "chaine": "How To Be"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-souleve-de-terre", "nom": "Soulevé de terre", "alias": ["Deadlift"],
+      "muscles": ["ischio-jambiers", "fessiers", "dos", "tronc"], "materiel": ["barre ou kettlebell"],
+      "video": {"url": "https://www.youtube.com/watch?v=uCWKWTP_Htw", "titre": "FFForce - Tutoriel vidéo du Soulevé de Terre", "chaine": "FFForce", "duree_s": null, "langue": "fr"},
+      "justification": "Tutoriel de la Fédération Française de Force, source institutionnelle ; durée non vérifiée (peut dépasser 2 min).",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=q9DX5IyIJbs", "titre": "Comment Faire le Deadlift ? | La bonne technique pour le soulevé de terre", "chaine": "Coach Dino"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-chaise-murale", "nom": "Chaise murale", "alias": ["Wall sit", "Chaise au mur"],
+      "muscles": ["quadriceps", "fessiers"], "materiel": ["mur"],
+      "video": {"url": "https://www.youtube.com/watch?v=cWTZ8Am1Ee0", "titre": "How to Do a Wall Sit Exercise | 30 Seconds | MedBridge", "chaine": "Medbridge", "duree_s": null, "langue": "en"},
+      "justification": "Démonstration anglaise très courte (30 s annoncées dans le titre) par une plateforme de kinésithérapie reconnue ; pas de FR satisfaisant trouvé.",
+      "alternatives": [],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-squat-saute", "nom": "Squat sauté", "alias": ["Jump squat", "Squat jump"],
+      "muscles": ["quadriceps", "fessiers", "mollets"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=K_a0DHvVfaE", "titre": "Squat jump (Squat sauté)", "chaine": "Femme Fitness", "duree_s": null, "langue": "fr"},
+      "justification": "Démonstration en français, titre précis sur l'exercice.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=XOLA7WSM7Vs", "titre": "Réussir le squat sauté", "chaine": "Kencoaching"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-pompes", "nom": "Pompes", "alias": ["Pompe", "Push-up"],
+      "muscles": ["pectoraux", "triceps", "épaules", "tronc"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=hR6_6IdiYv4", "titre": "TUTO 1 : Comment faire une POMPE", "chaine": "MUST COACH - My Urban Sport Trainer", "duree_s": null, "langue": "fr"},
+      "justification": "Tutoriel français d'une chaîne de coachs, série de tutos de base cohérente (même chaîne pour planche et burpees).",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=HCKJIX7evzo", "titre": "TUTO pompe débutant 100 % FACILE et EFFICACE", "chaine": "Objectif Training"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-pompes-sur-les-genoux", "nom": "Pompes sur les genoux", "alias": ["Pompes genoux", "Knee push-up"],
+      "muscles": ["pectoraux", "triceps", "épaules"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=SWUw2epT8P4", "titre": "Pompe sur les genoux : Démonstration, explication et conseils", "chaine": "15-Minute Challenge", "duree_s": null, "langue": "fr"},
+      "justification": "Démonstration et conseils en français, orientée débutants.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=IL-tom7SYy8", "titre": "exercice fitness : pompe à genoux", "chaine": "holifit"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-developpe-couche", "nom": "Développé couché", "alias": ["Développé couché haltères", "Bench press", "Dumbbell press"],
+      "muscles": ["pectoraux", "triceps", "épaules"], "materiel": ["banc", "haltères ou barre"],
+      "video": {"url": "https://www.youtube.com/watch?v=HBXn_SAlPw0", "titre": "Comment faire Développé Couché Haltères (bonne technique placement erreurs musculation pectoraux)", "chaine": "Olymp'Fit", "duree_s": null, "langue": "fr"},
+      "justification": "Placement et erreurs courantes expliqués en français, version haltères adaptée aux particuliers.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=oq3njY_LcBI", "titre": "Développé couché haltères : l'exercice ultime pour des pecs puissants (Tuto complet)", "chaine": "Gabriel Augusto"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-developpe-epaules", "nom": "Développé épaules", "alias": ["Développé militaire haltères", "Shoulder press", "Overhead press"],
+      "muscles": ["épaules", "triceps"], "materiel": ["haltères"],
+      "video": {"url": "https://www.youtube.com/watch?v=CE9KiCPFw0E", "titre": "Technique du développé épaules aux haltères [ASSIS ou DEBOUT]", "chaine": "Olymp'Fit", "duree_s": null, "langue": "fr"},
+      "justification": "Couvre les versions assise et debout en français, chaîne cohérente avec les autres exercices de force.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=K5V7xyzVqUw", "titre": "Développé militaire haltères : épaules massives à la maison (Tuto assis ou à genoux)", "chaine": "Gabriel Augusto"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-elevations-laterales", "nom": "Élévations latérales", "alias": ["Lateral raise"],
+      "muscles": ["deltoïdes (faisceau latéral)"], "materiel": ["haltères légers"],
+      "video": {"url": "https://www.youtube.com/watch?v=q_DYeb_daeY", "titre": "Élévations Latérales : Technique et astuces (musculation des épaules avec haltères)", "chaine": "Olymp'Fit", "duree_s": null, "langue": "fr"},
+      "justification": "Technique et astuces en français pour limiter la triche avec les trapèzes.",
+      "alternatives": [],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-dips-sur-banc", "nom": "Dips sur banc", "alias": ["Dips banc", "Bench dips"],
+      "muscles": ["triceps", "épaules", "pectoraux"], "materiel": ["banc ou chaise"],
+      "video": {"url": "https://www.youtube.com/watch?v=iBZvlLlWONY", "titre": "Dips sur banc", "chaine": "P4P Français", "duree_s": null, "langue": "fr"},
+      "justification": "Démonstration française directe ; attention à l'amplitude pour les épaules sensibles (conseil du coach à ajouter).",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=7eTqtxh9IZI", "titre": "Tutoriel dips sur un banc", "chaine": "Debo hardtrainer"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-tractions", "nom": "Tractions", "alias": ["Traction", "Pull-up", "Chin-up"],
+      "muscles": ["grand dorsal", "biceps", "avant-bras"], "materiel": ["barre de traction"],
+      "video": {"url": "https://www.youtube.com/watch?v=z7CCVwDfn0I", "titre": "Comment faire des TRACTIONS CORRECTEMENT ? Technique + erreurs à éviter (musculation grands dorsaux)", "chaine": "Olymp'Fit", "duree_s": null, "langue": "fr"},
+      "justification": "Technique et erreurs à éviter en français, utile avant de progresser.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=Wom9dn6u7us", "titre": "COMMENT faire des TRACTIONS - Réussir sa première traction stricte !", "chaine": "Jack Vanbergen"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-rowing-haltere-un-bras", "nom": "Rowing haltère un bras", "alias": ["Tirage bûcheron", "One-arm dumbbell row"],
+      "muscles": ["grand dorsal", "rhomboïdes", "biceps"], "materiel": ["haltère", "banc"],
+      "video": {"url": "https://www.youtube.com/watch?v=2P2TyrYyTmU", "titre": "Rowing Haltère : Technique et erreurs à éviter (musculation du dos rowing bucheron)", "chaine": "Olymp'Fit", "duree_s": null, "langue": "fr"},
+      "justification": "Technique et erreurs en français, version classique sur banc.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=I6jgqLon-ng", "titre": "Le Rowing Haltère à un bras", "chaine": "ProTrainer"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-rowing-elastique", "nom": "Rowing élastique", "alias": ["Tirage élastique", "Tirage horizontal élastique", "Band row"],
+      "muscles": ["dos", "rhomboïdes", "biceps"], "materiel": ["élastique"],
+      "video": {"url": "https://www.youtube.com/watch?v=8A7YKYByzwE", "titre": "Rowing avec Élastique (Sous les Pieds) : Renforce ton Dos et Améliore ta Posture !", "chaine": "Drey.coaching", "duree_s": null, "langue": "fr"},
+      "justification": "Version à l'élastique sous les pieds, facile à faire à domicile ; chaîne de coach indépendant.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=1STkosynxO4", "titre": "Exercice douleurs lombaires - Rowing à l'élastique - BOBO SPORT", "chaine": "BOBO SPORT"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-face-pull", "nom": "Face pull", "alias": ["Tirage visage", "Face pull élastique"],
+      "muscles": ["deltoïdes postérieurs", "coiffe des rotateurs", "trapèzes"], "materiel": ["élastique ou poulie"],
+      "video": {"url": "https://www.youtube.com/watch?v=JiMQk5X9-q8", "titre": "Face pull élastique", "chaine": "Maxime Clergeau - Coach transformations physiques", "duree_s": null, "langue": "fr"},
+      "justification": "Version élastique, transposable à domicile, présentée par un coach.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=4FAiPDzKRUw", "titre": "[TUTO] Face Pulls", "chaine": "BeComplete"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-curl-biceps-halteres", "nom": "Curl biceps haltères", "alias": ["Curl haltères", "Dumbbell curl"],
+      "muscles": ["biceps"], "materiel": ["haltères"],
+      "video": {"url": "https://www.youtube.com/watch?v=u9gpe8CHfjU", "titre": "Curl biceps avec haltères : la bonne technique", "chaine": "FizzUp", "duree_s": null, "langue": "fr"},
+      "justification": "Chaîne d'application de fitness française connue, titre centré sur la technique.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=8wvflicHXXw", "titre": "Biceps Curl haltères : l'exercice indispensable pour des bras musclés (Technique + erreurs)", "chaine": "Gabriel Augusto"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-planche", "nom": "Planche", "alias": ["Gainage frontal", "Plank"],
+      "muscles": ["transverse", "grand droit", "épaules"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=qRUioGwKRCY", "titre": "TUTO 2 : Comment faire la Planche", "chaine": "MUST COACH - My Urban Sport Trainer", "duree_s": null, "langue": "fr"},
+      "justification": "Même série de tutos que les pompes, tutoriel français de base.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=QHcdvc1WO2g", "titre": "Comment faire le Gainage frontal / planche", "chaine": "Coach Me App"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-planche-laterale", "nom": "Planche latérale", "alias": ["Gainage latéral", "Side plank"],
+      "muscles": ["obliques", "moyen fessier", "épaules"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=_H9lCamSHR0", "titre": "Comment bien faire son gainage latéral ? Tutoriel complet et progression par kiné !", "chaine": "Casa Del Mouv'", "duree_s": null, "langue": "fr"},
+      "justification": "Tutoriel par un kinésithérapeute avec progression, utile pour adapter selon le niveau.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=7WSeMsvEfZ8", "titre": "Comment faire le gainage latéral", "chaine": "FitMove"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-dead-bug", "nom": "Dead bug", "alias": ["Insecte mort", "Deadbug"],
+      "muscles": ["transverse", "grand droit", "fléchisseurs de hanche"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=bxn9FBrt4-A", "titre": "How to do a Dead Bug | Proper Form & Technique | NASM", "chaine": "National Academy of Sports Medicine (NASM)", "duree_s": null, "langue": "en"},
+      "justification": "Organisme de certification reconnu, démonstration anglaise de la forme correcte.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=gZtAwS79jJw", "titre": "Dead Bug : 1 min pour renforcer tes abdos profonds et prendre soin de ton dos", "chaine": "AT.Prévention: TMS, RPS, Addictions"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-bird-dog", "nom": "Bird dog", "alias": ["Chien d'oiseau", "Quadrupédie bras-jambe opposés"],
+      "muscles": ["érecteurs du rachis", "fessiers", "transverse"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=ZdAHe9_HeEw", "titre": "How to do a Bird Dog | Proper Form & Technique | NASM", "chaine": "National Academy of Sports Medicine (NASM)", "duree_s": null, "langue": "en"},
+      "justification": "Même source de référence que le dead bug ; pas de vidéo française vérifiée.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=KA0ekfSePrQ", "titre": "How to do a Bird Dog Exercise", "chaine": "Tone and Tighten"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-crunch", "nom": "Crunch", "alias": ["Crunch abdominal", "Abdos crunch"],
+      "muscles": ["grand droit"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=CdDGyI9l0R0", "titre": "TUTO - Travailler ses abdos avec le crunch ! | Decathlon", "chaine": "Decathlon FR", "duree_s": null, "langue": "fr"},
+      "justification": "Tutoriel d'une enseigne sportive grand public, en français.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=LEb7Juw9tMo", "titre": "Comment bien faire les crunchs pour les abdos", "chaine": "XL-S Medical Academy"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-russian-twist", "nom": "Russian twist", "alias": ["Rotation russe", "Rotations assises"],
+      "muscles": ["obliques", "grand droit"], "materiel": ["poids ou ballon (optionnel)"],
+      "video": {"url": "https://www.youtube.com/watch?v=wkD8rjkodUI", "titre": "How to Do a Russian Twist | Ab Workout", "chaine": "Howcast", "duree_s": null, "langue": "en"},
+      "justification": "Chaîne de tutoriels connue, format démonstratif court typique ; pas de FR satisfaisant trouvé.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=C_OjLWMNcqM", "titre": "How to Do Russian Twists (Beginner Tutorial)", "chaine": "Angie Escalona"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-mountain-climbers", "nom": "Mountain climbers", "alias": ["Grimpeurs", "Alpinistes"],
+      "muscles": ["tronc", "épaules", "fléchisseurs de hanche"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=PBDd7YjBv5I", "titre": "Mountain Climbers Tutorial | The Correct Way | 4 Variations Covered", "chaine": "Gymless Fitness", "duree_s": null, "langue": "en"},
+      "justification": "Tutoriel anglais clair avec variantes ; pas de FR vérifié.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=bJgN9jGYEV0", "titre": "Mountain Climbers Exercise: How To, Benefits & Muscles Worked", "chaine": "Fitnessdy"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-pallof-press", "nom": "Pallof press", "alias": ["Press Pallof", "Anti-rotation"],
+      "muscles": ["obliques", "transverse"], "materiel": ["élastique ou poulie"],
+      "video": {"url": "https://www.youtube.com/watch?v=Pz95Wgyt9MA", "titre": "PALLOF PRESS : Exercice d'anti-rotation pour abdominaux et obliques dans le plan transverse", "chaine": "Olymp'Fit", "duree_s": null, "langue": "fr"},
+      "justification": "Explication française de l'anti-rotation, rare en FR sur cet exercice.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=LA6Uc5yIV1c", "titre": "How To Do a Pallof Press | Band & Cable Anti-Rotation Core Exercise", "chaine": "FITBODY with Julie Lohre"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-hollow-body", "nom": "Hollow body", "alias": ["Gainage creux", "Banane", "Hollow hold"],
+      "muscles": ["grand droit", "transverse", "fléchisseurs de hanche"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=EJjsvXVZU54", "titre": "Comment faire le Hollow body (banane statique)", "chaine": "Coach Me App", "duree_s": null, "langue": "fr"},
+      "justification": "Démonstration française de la version statique, même chaîne que la planche.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=oEaRgZXVkIM", "titre": "Hollow body", "chaine": "Antoine MH"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-burpees", "nom": "Burpees", "alias": ["Burpee"],
+      "muscles": ["corps entier", "cardio"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=4YPWd8z090A", "titre": "Comment faire des Burpees - Les Fitness Basics", "chaine": "Doctissimo", "duree_s": null, "langue": "fr"},
+      "justification": "Tutoriel français d'un média santé grand public, série « Fitness Basics ».",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=pUlEXvanmA4", "titre": "TUTO 6 : Comment faire un Burpee", "chaine": "MUST COACH - My Urban Sport Trainer"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-jumping-jacks", "nom": "Jumping jacks", "alias": ["Sauts étoile", "Polichinelles"],
+      "muscles": ["corps entier", "cardio"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=RKwqhOcHLbE", "titre": "How To Do: JUMPING JACKS", "chaine": "Global Fitness Club", "duree_s": null, "langue": "en"},
+      "justification": "Démonstration anglaise de l'exercice simple ; pas de FR de qualité trouvé, chaîne peu connue (à valider).",
+      "alternatives": [],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-corde-a-sauter", "nom": "Corde à sauter", "alias": ["Saut à la corde", "Jump rope"],
+      "muscles": ["mollets", "cardio", "coordination"], "materiel": ["corde à sauter"],
+      "video": {"url": "https://www.youtube.com/watch?v=8hS-HD19qjA", "titre": "Corde à sauter pour débutant : réglage + séance guidée de 5 min", "chaine": "JB Jumpingggg", "duree_s": null, "langue": "fr"},
+      "justification": "Montre le réglage de la corde et le saut de base pour débutants ; inclut une séance guidée de 5 min (plus long qu'une démo).",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=WMqHUCWuX7U", "titre": "SAUT A LA CORDE - APPRENDRE A BIEN SAUTER A LA CORDE", "chaine": "Boxing Academy France"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-kettlebell-swing", "nom": "Kettlebell swing", "alias": ["Swing", "Balancé de kettlebell"],
+      "muscles": ["fessiers", "ischio-jambiers", "lombaires", "cardio"], "materiel": ["kettlebell"],
+      "video": {"url": "https://www.youtube.com/watch?v=RkcZ1BzYl_M", "titre": "Les 2 techniques pour Maîtriser le Kettlebell Swing en WOD ! || Skill of the Week (Tuto CrossFit)", "chaine": "Jack Vanbergen", "duree_s": null, "langue": "fr"},
+      "justification": "Tutoriel français de coach CrossFit, couvre les deux variantes (russe et américaine) ; peut dépasser 2 min.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=bDCeXbMJVNs", "titre": "How To Kettlebell Swing (in 3 minutes)", "chaine": "Zack Henderson"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-box-jump", "nom": "Box jump", "alias": ["Saut sur box", "Saut sur plyo box"],
+      "muscles": ["quadriceps", "fessiers", "mollets"], "materiel": ["box"],
+      "video": {"url": "https://www.youtube.com/watch?v=5pN5N2AOo1Y", "titre": "Box jump technique CrossFit Tutorial", "chaine": "The Progrm", "duree_s": null, "langue": "en"},
+      "justification": "Tutoriel anglais orienté CrossFit sur la technique ; pas de FR trouvé.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=3INzGHuk23U", "titre": "How to Do a Box Jump (Proper Form & Technique)", "chaine": "KJ - Support Team"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-thruster", "nom": "Thruster", "alias": ["Thrusters", "Squat devant + développé"],
+      "muscles": ["quadriceps", "fessiers", "épaules", "cardio"], "materiel": ["haltères ou barre"],
+      "video": {"url": "https://www.youtube.com/watch?v=RfPBzUcMluE", "titre": "Tutoriel thruster", "chaine": "Lucien Faber", "duree_s": null, "langue": "fr"},
+      "justification": "Tutoriel français dédié ; chaîne peu connue (à valider visuellement).",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=mieC65cBFEk", "titre": "Crossfit: Thruster Technique", "chaine": "OneHowto"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-wall-ball", "nom": "Wall ball", "alias": ["Wall ball shot", "Lancer de médecine-ball au mur"],
+      "muscles": ["quadriceps", "fessiers", "épaules", "cardio"], "materiel": ["medecine ball", "mur"],
+      "video": {"url": "https://www.youtube.com/watch?v=Z7RDxaxY_QU", "titre": "Wall Ball Shot : Enchaînez mieux les reps ! || Skill of the Week (Tutoriel et WOD CrossFit)", "chaine": "Jack Vanbergen", "duree_s": null, "langue": "fr"},
+      "justification": "Tutoriel français de coach CrossFit, même chaîne que le swing.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=U_wNNwNXKr8", "titre": "Wall Ball - CrossFit Exercise Guide", "chaine": "ShapeFit"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-cat-cow", "nom": "Cat-cow", "alias": ["Chat-vache", "Dos rond dos creux"],
+      "muscles": ["colonne vertébrale", "tronc"], "materiel": ["tapis"],
+      "video": {"url": "https://www.youtube.com/watch?v=r43PNCct6Yw", "titre": "MOBILITÉ CHAT-VACHE : Mouvement Colonne Vertébrale | Assouplit et Détend le Dos", "chaine": "Gabriel Augusto", "duree_s": null, "langue": "fr"},
+      "justification": "Démonstration française centrée mobilité de la colonne.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=VrQgO4APZ20", "titre": "Etirement chat-vache – Assouplir la colonne vertébrale", "chaine": "Jo Deluk"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-rotation-thoracique", "nom": "Rotation thoracique", "alias": ["Mobilité thoracique", "Thoracic rotation"],
+      "muscles": ["colonne thoracique", "obliques"], "materiel": ["tapis"],
+      "video": {"url": "https://www.youtube.com/watch?v=1v-50J-OzEk", "titre": "rotation thoracique au sol", "chaine": "PhysioVichy", "duree_s": null, "langue": "fr"},
+      "justification": "Démonstration française par une chaîne de kinésithérapeutes, format court.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=YgOMsGarLPI", "titre": "Exercice thoracique/côtes : mobilité en rotation thoracique assis", "chaine": "Physio Atlas"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-etirement-des-flechisseurs-de-hanche", "nom": "Étirement des fléchisseurs de hanche", "alias": ["Étirement du psoas", "Hip flexor stretch"],
+      "muscles": ["psoas-iliaque", "droit fémoral"], "materiel": ["tapis"],
+      "video": {"url": "https://www.youtube.com/watch?v=WtTAT6lSm3E", "titre": "Comment étirer ses fléchisseurs de hanche", "chaine": "Clinique Physio Guindon", "duree_s": null, "langue": "fr"},
+      "justification": "Explication française par une clinique de physiothérapie.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=BJnObCqaUUI", "titre": "Comment ENFIN étirer ton PSOAS ! (et soulager tes lombaires)", "chaine": "Human Patterns"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-etirement-des-ischio-jambiers", "nom": "Étirement des ischio-jambiers", "alias": ["Étirement arrière de cuisse", "Hamstring stretch"],
+      "muscles": ["ischio-jambiers"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=wEuAv8wOPVo", "titre": "28 - Masseo - Étirement des Ischio-jambiers debout", "chaine": "Clinique Masseo Québec", "duree_s": null, "langue": "fr"},
+      "justification": "Étirement debout démontré par une clinique, simple et sans matériel.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=g3f1yhwBOGs", "titre": "ÉTIREMENT ISCHIO-JAMBIERS : Technique Debout Toucher Pieds", "chaine": "Gabriel Augusto"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-pigeon", "nom": "Pigeon", "alias": ["Posture du pigeon", "Étirement fessiers", "Pigeon pose"],
+      "muscles": ["fessiers", "piriforme", "hanches"], "materiel": ["tapis"],
+      "video": {"url": "https://www.youtube.com/watch?v=fWQHAYfMTCQ", "titre": "ÉTIREMENT FESSIERS : Technique Pigeon au Sol | Libère les Tensions des Hanches Profondes", "chaine": "Gabriel Augusto", "duree_s": null, "langue": "fr"},
+      "justification": "Présente la posture comme étirement des fessiers, adaptée à un public non yogi.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=YqNO0ImMtEY", "titre": "Posture du Pigeon - Yoga by Decathlon", "chaine": "Kimjaly"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-mobilite-de-cheville-au-mur", "nom": "Mobilité de cheville au mur", "alias": ["Dorsiflexion au mur", "Knee-to-wall"],
+      "muscles": ["mollets", "cheville"], "materiel": ["mur"],
+      "video": {"url": "https://www.youtube.com/watch?v=AICUctv5Ufg", "titre": "TRAVAIL DE DORSIFLEXION AU MUR - RK", "chaine": "Romain Katchavenda", "duree_s": null, "langue": "fr"},
+      "justification": "Exercice exact au mur, en français, par un préparateur physique.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=VzKQ6HxwmG0", "titre": "3 exercices pour améliorer sa mobilité de cheville", "chaine": "Adrien Barboza Coaching Sportif"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-chien-tete-en-bas", "nom": "Chien tête en bas", "alias": ["Downward dog", "Adho Mukha Svanasana"],
+      "muscles": ["épaules", "ischio-jambiers", "mollets", "dos"], "materiel": ["tapis"],
+      "video": {"url": "https://www.youtube.com/watch?v=w92w5LONfrk", "titre": "Les 5 points clés de la posture du Chien Tête en Bas", "chaine": "YOGALINE by Stéphanie", "duree_s": null, "langue": "fr"},
+      "justification": "Cinq points clés d'alignement, en français.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=8C74-mZ0PAY", "titre": "Apprendre la posture du chien tête en bas - Adho Mukha Svanasana", "chaine": "SIKANA Français"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-posture-de-l-enfant", "nom": "Posture de l'enfant", "alias": ["Balasana", "Child's pose"],
+      "muscles": ["dos", "hanches", "chevilles"], "materiel": ["tapis"],
+      "video": {"url": "https://www.youtube.com/watch?v=W2hM6cqI6fs", "titre": "Apprendre la posture de l'enfant - Balasana", "chaine": "SIKANA Français", "duree_s": null, "langue": "fr"},
+      "justification": "Apprentissage pas à pas en français, chaîne éducative reconnue.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=8kGL8IghPbo", "titre": "Yoga : Posture de l'enfant - Balasana", "chaine": "Maypopp Santé"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-montees-sur-banc", "nom": "Montées sur banc", "alias": ["Step-up", "Montée de banc"],
+      "muscles": ["quadriceps", "fessiers"], "materiel": ["banc ou box", "haltères (optionnel)"],
+      "video": {"url": "https://www.youtube.com/watch?v=sSOz4NMosWA", "titre": "Démonstration du mouvement : Le Step Up Exercise (Montée sur banc)", "chaine": "Your House Fitness", "duree_s": null, "langue": "fr"},
+      "justification": "Démonstration française, même chaîne que le goblet squat.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=lVSTPn5DWqY", "titre": "Montée de banc - Front step up", "chaine": "Janic Lessard Forcier, naturopathe et kinésiologue"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-tirage-vertical", "nom": "Tirage vertical", "alias": ["Tirage poitrine", "Lat pulldown", "Tirage poulie haute"],
+      "muscles": ["grand dorsal", "biceps"], "materiel": ["poulie haute"],
+      "video": {"url": "https://www.youtube.com/watch?v=dOukQ7QBSQs", "titre": "[TUTO] Tirage Vertical à la Poulie Haute", "chaine": "BeComplete", "duree_s": null, "langue": "fr"},
+      "justification": "Tutoriel français dédié à la poulie haute.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=qgkKyENeK7o", "titre": "Tirage vertical : RESSENTIR ENFIN SON DOS ! Conseils + Variantes pour dorsaux et grand rond", "chaine": "Olymp'Fit"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-position-du-squat-profond", "nom": "Position du squat profond", "alias": ["Deep squat hold", "Squat profond"],
+      "muscles": ["hanches", "chevilles", "adducteurs"], "materiel": [],
+      "video": {"url": "https://www.youtube.com/watch?v=2d2XFkbhpI0", "titre": "MOBILITE DU SQUAT : Ces exercices changent tout !", "chaine": "Jack's Team - Strongfit & TMS", "duree_s": null, "langue": "fr"},
+      "justification": "Exercices de mobilité pour atteindre le squat profond, en français ; ne montre pas uniquement la position tenue (à valider).",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=7N0bZvI7teE", "titre": "Routine de Mobilité des Hanches - Squat Profond et Rotations Interne/Externe", "chaine": "Florent SCHIMBERG Thérapeute Holistique Ostéopathe"}],
+      "statut": "propose"
+    },
+    {
+      "id": "ex-rameur", "nom": "Rameur", "alias": ["Rameur indoor", "Rowing machine", "Ergomètre"],
+      "muscles": ["corps entier", "cardio"], "materiel": ["rameur"],
+      "video": {"url": "https://www.youtube.com/watch?v=GG_z7CnOWMI", "titre": "TECHNIQUE RAMEUR : Les 4 POSITIONS de BASE ! - COMMENT RAMER EFFICACEMENT", "chaine": "Jack Vanbergen", "duree_s": null, "langue": "fr"},
+      "justification": "Les 4 positions de base du coup de rame, en français.",
+      "alternatives": [{"url": "https://www.youtube.com/watch?v=y-JIyd_4Mpg", "titre": "RAMEUR (Partie 1/3) - Comment Ramer : Réglages, Posture et Technique", "chaine": "Jack Vanbergen"}],
+      "statut": "propose"
+    }
+  ]
+}
