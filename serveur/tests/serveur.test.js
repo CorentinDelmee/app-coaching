@@ -11,7 +11,7 @@ import { creerServeurRest } from '../src/rest.js'
 import { scorerVideo, dureeIso, chercherYoutube } from '../src/youtube.js'
 import { validerWorkout } from '../../src/domain/modele.js'
 
-const CLE = 'cle-de-test-0123456789abcdef'
+const CLE = 'cle-de-test-0123456789abcdef-0123456789'
 const VIDEO = 'https://www.youtube.com/watch?v=abcdefghijk'
 let dossier
 let app

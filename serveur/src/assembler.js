@@ -18,6 +18,7 @@ export async function assembler(config, { now = () => Date.now(), fetchFn } = {}
   const importDepart = join(RACINE_SERVEUR, 'donnees', 'bibliotheque-videos.json')
   if (!existsSync(join(dossier, 'bibliotheque.json')) && existsSync(importDepart)) biblio.importer(JSON.parse(readFileSync(importDepart, 'utf8')))
   const journal = creerJournal(join(dossier, 'journal.jsonl'), now)
+  journal.purger(config.journalJours)
   const service = creerService({ backend, biblio, config, now, fetchFn })
   const outils = creerOutils(service)
   return { config, backend, biblio, journal, service, outils }

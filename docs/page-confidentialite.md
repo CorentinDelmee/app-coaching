@@ -23,6 +23,8 @@ Cette application ne sert pas à un suivi médical. N'y indiquez pas de diagnost
 ## 3. Qui voit vos données ?
 - Vous, et votre coach Corentin Delmée.
 - Nos prestataires techniques (sous-traitants) : **Supabase** (base de données et stockage, serveurs dans l'Union européenne : région [À COMPLÉTER — ex. Francfort]) et **Netlify** (hébergement de l'application).
+- **Google Agenda** : l'agenda de votre coach est lu (lecture seule) pour afficher vos séances de coaching ; seuls le titre, l'horaire et le lieu des séances « Coaching » sont conservés, jamais la description ni les invités.
+- **Claude (Anthropic)** : pour préparer vos séances, votre coach utilise un assistant IA qui peut lire votre nom, vos séances et votre programme ; il ne reçoit ni code d'accès ni données de suivi de santé.
 - Aucune vente, aucune publicité, aucune statistique par un service tiers.
 - Si vous utilisez WhatsApp depuis l'application (modifier/annuler une séance), le message est envoyé via votre propre WhatsApp (Meta) ; il ne contient pas de données de santé.
 
