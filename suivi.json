@@ -1,9 +1,9 @@
 {
   "titre": "Corentin Delmée Coaching — application (PWA)",
-  "phase": "V2 appliquée et testée en local — à toi : essayer sur téléphone et trancher D4-D7",
+  "phase": "V2 + mission 26/10 (M5, Google Agenda démo, serveur MCP) — à toi : configurer Google, valider les vidéos, essai sur téléphone",
   "objectif": "Remplacer **My PT Hub (52 €/mois)** par ma propre app de coaching, **0 €/mois**, mobile d'abord, très animée.",
   "date_cible": "2026-10-20",
-  "mis_a_jour": "2026-10-21",
+  "mis_a_jour": "2026-10-26",
   "lots": [
     {
       "id": "0",
@@ -159,6 +159,37 @@
       "avancement": 100,
       "qui": "testeur + frontend-senior",
       "note": "Testeur : validé, 0 bloquant ; revue animations 9,5/10 ; 8 mineurs corrigés (370 tests verts)"
+    },
+    {
+      "id": "M5",
+      "titre": "Alignement sur la maquette M5 (accueil, menu, jaune #F2E27A, surbrillance, tokens)",
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "developpeur + testeur",
+      "note": "Écarts assumés listés : docs/ECARTS-M5.md"
+    },
+    {
+      "id": "A",
+      "titre": "Synchro Google Agenda → app client",
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "developpeur + testeur",
+      "note": "Testé en démo ; jamais contre un vrai Google (configuration = tâche humaine)"
+    },
+    {
+      "id": "S",
+      "titre": "Back-end API + serveur MCP + bibliothèque vidéos (51 exercices)",
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "developpeur + testeur",
+      "note": "Agenda et serveur validés par le testeur ; vidéos proposées, à valider par toi"
+    },
+    {
+      "id": "Mi",
+      "titre": "Mineurs du test final (doublons Google, journée entière, scripts e2e, écran Vidéos, carte programme)",
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "developpeur"
     }
   ],
   "taches_humaines": [
@@ -248,6 +279,46 @@
       "duree": "2 min",
       "statut": "a_faire",
       "comment": "REX n a pas le droit d écrire dans les fichiers .env. Sans numéro, les boutons WhatsApp ouvrent WhatsApp sans destinataire."
+    },
+    {
+      "titre": "Google Cloud + OAuth : créer le projet, copier ID client et secret, autoriser une fois",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "30 min (estimation)",
+      "statut": "a_faire",
+      "comment": "docs/GOOGLE-AGENDA.md, encadré « jour J ». Ensuite tu colles ID et secret à REX : il lance le reste avec la CLI Supabase."
+    },
+    {
+      "titre": "Créer COACH_API_KEY (16 caractères min.) dans serveur/.env et .mcp.json",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "10 min",
+      "statut": "a_faire",
+      "comment": "Modèle : serveur/mcp.json.exemple. REX n'écrit ni .env ni clé."
+    },
+    {
+      "titre": "Clé YouTube Data v3 (facultative) pour la recherche automatique de vidéos",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "15 min",
+      "statut": "a_faire",
+      "comment": "Variable YOUTUBE_API_KEY. Sans elle : bibliothèque locale seulement."
+    },
+    {
+      "titre": "Valider ou remplacer les 51 vidéos proposées",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "1 h (estimation)",
+      "statut": "a_faire",
+      "comment": "Écran coach « Vidéos ». Liste : livraison-26-10/bibliotheque-videos.md. Vidéos non visionnées par REX ; chaînes peu connues à regarder en premier."
+    },
+    {
+      "titre": "Essayer l'accueil M5 et la séance créée par Claude sur ton téléphone",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "20 min",
+      "statut": "a_faire",
+      "comment": "Jamais testé sur un vrai appareil."
     }
   ],
   "decisions": [
@@ -283,8 +354,8 @@
       "si_pas_de_reponse": "L app est construite sur M1 ; les autres restent dans design/.",
       "echeance": "",
       "statut": "tranchee",
-      "reponse": "M1 Atelier",
-      "provisoire": true
+      "reponse": "M5 comme base (RETOURS-MAQUETTES-V1 : « Base : M5 », confirmé par Corentin le 26/10 : app exactement comme M5 sur accueil, menu, jaune, surbrillance)",
+      "provisoire": false
     },
     {
       "id": "D1",
@@ -431,6 +502,31 @@
       "statut": "tranchee",
       "reponse": "Sans liseré",
       "provisoire": true
+    },
+    {
+      "id": "D8",
+      "categorie": "Design M5",
+      "question": "Garder les écarts avec la maquette M5 listés, ou tout aligner ?",
+      "contexte": "8 écarts assumés (ex. jaune en texte sur fond clair, texte doux plus foncé, bouton du menu). Tableau : docs/ECARTS-M5.md.",
+      "options": [
+        {
+          "nom": "Garder les écarts",
+          "resume": "Lisibilité et refus déjà donnés préservés",
+          "lien": "docs/ECARTS-M5.md"
+        },
+        {
+          "nom": "Tout aligner sur M5",
+          "resume": "Jaune en texte sur fond clair (1,1:1), gris plus pâle (4,0:1)",
+          "lien": "docs/captures-m5/comparaison.html"
+        }
+      ],
+      "recommandation": "Garder les écarts",
+      "pourquoi": "Lisibilité, et tu as déjà refusé le jaune en texte sur fond clair.",
+      "si_pas_de_reponse": "Écarts gardés (appliqué en provisoire).",
+      "echeance": "",
+      "statut": "ouverte",
+      "reponse": "",
+      "provisoire": false
     }
   ],
   "avancees": [
@@ -501,11 +597,33 @@
     {
       "date": "2026-10-21",
       "texte": "V2 testée (validée, aucun bug bloquant), animations revues, 8 petits défauts corrigés. Captures : docs/captures-v2/final/."
+    },
+    {
+      "date": "2026-10-26",
+      "texte": "Accueil, menu, jaune #F2E27A et surbrillance alignés sur la maquette M5 ; écarts assumés listés, comparaison côte à côte disponible."
+    },
+    {
+      "date": "2026-10-26",
+      "texte": "Google Agenda : en démo, après « Synchroniser maintenant » côté coach, la séance « Coaching » de Fabien apparaît. La connexion au vrai Google reste à faire."
+    },
+    {
+      "date": "2026-10-26",
+      "texte": "Serveur coach : Claude peut créer une séance pour un client, avec une vidéo par exercice ; test de bout en bout passé."
+    },
+    {
+      "date": "2026-10-26",
+      "texte": "Bibliothèque : 51 exercices avec vidéos YouTube proposées, à valider par toi."
+    },
+    {
+      "date": "2026-10-26",
+      "texte": "Testeur indépendant : agenda et serveur validés, aucun bloquant. 421 tests verts annoncés."
     }
   ],
   "prochaines_etapes": [
-    "Ouvrir l'app (lancer.cmd) et la maquette V2 (design-v2/index.html) ; trancher D4-D7 dans DECISIONS.html (modifiable dans src/config/apparence.js)",
-    "Essai sur ton téléphone : sons, vibrations, fluidité, Grand affichage, ambiances",
+    "Valider ou remplacer les 51 vidéos (écran coach « Vidéos »)",
+    "Configurer Google Cloud (docs/GOOGLE-AGENDA.md, encadré jour J) puis donner l'ID client et le secret à REX",
+    "Créer COACH_API_KEY dans serveur/.env et .mcp.json",
+    "Essai sur ton téléphone : accueil M5 et V2",
     "Mise en route Supabase puis Netlify (MISE-EN-ROUTE.md)"
   ],
   "risques": [
@@ -520,6 +638,18 @@
     {
       "niveau": "bas",
       "texte": "Textes juridiques à compléter et à faire relire (HDS)."
+    },
+    {
+      "niveau": "moyen",
+      "texte": "Google Agenda et serveur jamais testés contre un vrai Google ni un vrai Supabase : aucune synchro réelle avant la configuration."
+    },
+    {
+      "niveau": "moyen",
+      "texte": "Vidéos proposées non visionnées (chaînes peu connues) : elles peuvent être supprimées ou passées en privé."
+    },
+    {
+      "niveau": "bas",
+      "texte": "Séance Google affichée seulement si aucune séance plus proche n'existe (limite connue)."
     }
   ],
   "liens": [
@@ -546,6 +676,26 @@
     {
       "texte": "Captures finales V2",
       "href": "docs/captures-v2/final/"
+    },
+    {
+      "texte": "Livraison 26/10 (synthèse)",
+      "href": "livraison-26-10/README.md"
+    },
+    {
+      "texte": "Comparaison M5 avant / après",
+      "href": "docs/captures-m5/comparaison.html"
+    },
+    {
+      "texte": "Google Agenda (jour J)",
+      "href": "docs/GOOGLE-AGENDA.md"
+    },
+    {
+      "texte": "Serveur coach et MCP",
+      "href": "serveur/README.md"
+    },
+    {
+      "texte": "Bibliothèque vidéos",
+      "href": "livraison-26-10/bibliotheque-videos.md"
     }
   ]
 }

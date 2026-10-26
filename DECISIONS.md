@@ -90,3 +90,15 @@
 - 2026-10-21 Revue finale des animations (review-animations) — Alignement sur la maquette V2 : repos/chrono de série en cercle 0,5 s `expo.out` (fermeture `power3.out`), glissement 0,7 s avec nom d'exercice sous masque, rideau jaune du démarrage qui se relève (plus de fondu), section circuit/option qui naît du bouton et se referme dans le bouton d'action (balayage gardé en secours), apparitions jamais sous `scale(.7)`. Jaune en clair : 1,1-1,4 : 1 contre le fond (forme seulement, libellés encre 12,1 : 1) : conservé comme décidé en V2. Vidéos `docs/**/*.webm` exclues de Git.
 
 - Lot V2.5 : un circuit terminé n'arme plus l'avance automatique (le résultat reste affiché jusqu'à « Exercice suivant », comme la maquette) ; liens de dev du pied d'accueil gardés mais en `--texte-doux` sans opacité ; sortie go(-2) gardée par `history.state.position >= 2` + repli replace.
+
+## Mission 26/10/2026 (mode absent)
+- 2026-10-26 Mission — Jaune de l'accent = `#F2E27A` (« Jaune pâle » de la M5), texte posé dessus `#26230A` : choix de Corentin dans `RETOURS-MAQUETTES-V1.md`.
+- 2026-10-26 Mission — M5 prime sur V2 pour accueil, menu, jaune, surbrillance et tokens ; V2 reste pour séance, chronos, circuits, ambiances et Grand affichage. Écarts gardés listés dans `docs/ECARTS-M5.md` (contraste, refus antérieurs).
+- 2026-10-26 Mission — Google Agenda : séances Google mêlées à la lecture, sans écriture en base. Titre « Coaching » + nom du client, sans tenir compte des majuscules ni des accents. Homonymes, noms inconnus et séances sans nom remontent en alerte.
+- 2026-10-26 Mission — Fuseau Europe/Paris pour les dates de séance Google. Dédoublonnage natif/Google à ±15 min ; événements toute la journée gérés.
+- 2026-10-26 Mission — Serveur en `node:http`, sans Express. Écoute 127.0.0.1 uniquement.
+- 2026-10-26 Mission — Suppression d'une séance en deux temps : jeton valable 5 min (deux temps avant effacement).
+- 2026-10-26 Mission — Vidéo choisie par Claude = statut « proposée ». Elle ne remplace jamais une vidéo « validée » par Corentin.
+- 2026-10-26 Mission — `DEMO_SYNC=1` expose `GET /demo/etat` sans clé, sans comptes, pour l'app en mode démo. Jamais en production.
+- 2026-10-26 Mission — Bibliothèque en démo locale (fichier JSON + localStorage, avec bandeau). Pas de clé YouTube requise : recherche automatique facultative (`YOUTUBE_API_KEY`).
+- 2026-10-26 Mission — Préfixe « Programme » retiré à l'affichage des noms de programme.

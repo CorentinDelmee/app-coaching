@@ -44,15 +44,22 @@ a{color:var(--accent)}
 @media (max-width:640px){td,th{padding:8px 6px}.masquer-mobile{display:none}}
 </style></head>
 <body><div class="page">
-<header class="tete"><div><div class="surtitre">Décisions · app-coaching</div><h1>Aucune décision en attente</h1>
+<header class="tete"><div><div class="surtitre">Décisions · app-coaching</div><h1>1 décision à prendre</h1>
 <p class="sous">Coche ton choix (la recommandation de REX est pré-cochée), ajoute un mot si besoin, puis <strong>Copier mes réponses</strong> et colle-les dans REX.</p></div>
 <a class="btn clair" href="TABLEAU-DE-BORD.html">← Tableau de bord</a></header>
 <form id="f">
-
-
+<article class="carte decision" data-id="D8"><div class="surtitre">D8 · Design M5</div>
+<h3>Garder les écarts avec la maquette M5 listés, ou tout aligner ?</h3><p class="muted">8 écarts assumés (ex. jaune en texte sur fond clair, texte doux plus foncé, bouton du menu). Tableau : docs/ECARTS-M5.md.</p>
+<div class="options"><label class="option"><input type="radio" name="D8" value="Garder les écarts" checked>
+<span class="nom">Garder les écarts</span><span class="reco">Recommandé</span><div class="petit muted">Lisibilité et refus déjà donnés préservés</div><div class="petit"><a href="docs/ECARTS-M5.md" target="_blank" rel="noopener">Voir</a></div></label><label class="option"><input type="radio" name="D8" value="Tout aligner sur M5" >
+<span class="nom">Tout aligner sur M5</span><div class="petit muted">Jaune en texte sur fond clair (1,1:1), gris plus pâle (4,0:1)</div><div class="petit"><a href="docs/captures-m5/comparaison.html" target="_blank" rel="noopener">Voir</a></div></label></div>
+<p class="petit"><strong>Pourquoi REX recommande Garder les écarts :</strong> Lisibilité, et tu as déjà refusé le jaune en texte sur fond clair.</p>
+<textarea name="D8-note" placeholder="Une précision ? (facultatif)"></textarea>
+<p class="defaut">Sans réponse : Écarts gardés (appliqué en provisoire).</p></article>
+<div class="flottant"><button type="button" class="btn" id="copier">Copier mes réponses</button></div>
 </form>
-<section class="carte"><h2>Déjà tranché</h2><table><tbody><tr><td><strong>D3</strong> · Quelle maquette pour l app client ?</td><td>M1 Atelier <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D1</strong> · Combien de temps garder les données de santé après la fin du coaching ?</td><td>3 mois <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D2</strong> · Accepter des clients mineurs dans l app ?</td><td>Majeurs seulement <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D4</strong> · Police des chiffres du chrono ?</td><td>Barlow Semi Condensed <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D5</strong> · Message d&#39;accueil du dashboard ?</td><td>« Prêt, Fabien ? » <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D6</strong> · Texte sur l&#39;aplat jaune ?</td><td>Foncé <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D7</strong> · Bouton jaune en ambiance claire : ajouter un liseré ?</td><td>Sans liseré <span class="badge attente">provisoire</span></td></tr></tbody></table></section>
-<footer>Généré par REX · 21/10/2026 14:49:21 · Pour un PDF : Imprimer → Enregistrer au format PDF</footer></div><script>
+<section class="carte"><h2>Déjà tranché</h2><table><tbody><tr><td><strong>D3</strong> · Quelle maquette pour l app client ?</td><td>M5 comme base (RETOURS-MAQUETTES-V1 : « Base : M5 », confirmé par Corentin le 26/10 : app exactement comme M5 sur accueil, menu, jaune, surbrillance)</td></tr><tr><td><strong>D1</strong> · Combien de temps garder les données de santé après la fin du coaching ?</td><td>3 mois <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D2</strong> · Accepter des clients mineurs dans l app ?</td><td>Majeurs seulement <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D4</strong> · Police des chiffres du chrono ?</td><td>Barlow Semi Condensed <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D5</strong> · Message d&#39;accueil du dashboard ?</td><td>« Prêt, Fabien ? » <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D6</strong> · Texte sur l&#39;aplat jaune ?</td><td>Foncé <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D7</strong> · Bouton jaune en ambiance claire : ajouter un liseré ?</td><td>Sans liseré <span class="badge attente">provisoire</span></td></tr></tbody></table></section>
+<footer>Généré par REX · 26/10/2026 18:22:31 · Pour un PDF : Imprimer → Enregistrer au format PDF</footer></div><script>
 document.getElementById("copier")?.addEventListener("click",async()=>{
  const lignes=["Réponses aux décisions (app-coaching) :"];
  document.querySelectorAll("article.decision").forEach(a=>{const id=a.dataset.id;const c=a.querySelector("input:checked");const n=a.querySelector("textarea").value.trim();
