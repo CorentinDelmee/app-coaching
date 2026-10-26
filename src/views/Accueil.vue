@@ -15,7 +15,7 @@ import { messageAccueil } from '../domain/messageAccueil.js'
 import { CHOIX } from '../config/apparence.js'
 import { lienCoach } from '../lib/coach.js'
 import { horloge } from '../lib/horloge.js'
-import { basculerMenu } from '../lib/menu.js'
+import { basculerMenu, etatMenu } from '../lib/menu.js'
 import { utilisateurCourant } from '../lib/session.js'
 import { compter, fermerPage, mouvementReduit } from '../anim/transitions.js'
 import { anneau, animerAnneau } from '../anim/titres.js'
@@ -80,12 +80,17 @@ function poserMessage(msg) {
   const grandes = deux ? msg.lignes.slice(1) : msg.lignes
   grandes.forEach((l, i) => { if (i) h.appendChild(document.createElement('br')); h.appendChild(document.createTextNode(l)) })
   h.classList.toggle('long', msg.long)
+  // M5 n'a que « Fabien. » (7 signes) à côté de la date : plus long, le titre prend toute la largeur (la date passe dessous),
+  // au-delà de 10 signes il rapetisse un peu ; jamais de mot coupé.
+  const n = Math.max(...grandes.map((l) => l.length))
+  h.classList.toggle('etroit', !msg.long && n > 7)
+  h.classList.toggle('moyen', !msg.long && n > 10)
 }
 const messageActuel = () => messageAccueil({ variante: CHOIX.accueil, prenom: s.value.prenom, etat: s.value.hero.etat, reste: reste.value })
 function animerMessage(delai = 0) {
   const h = salutEl.value
   if (mouvementReduit()) { gsap.fromTo(h, { opacity: 0 }, { opacity: 1, duration: 0.3, clearProps: 'opacity' }); return }
-  decoupe = SplitText.create(h, { type: 'chars', charsClass: 'car' })
+  decoupe = SplitText.create(h, { type: 'words,chars', wordsClass: 'mot-s', charsClass: 'car' })
   gsap.fromTo(decoupe.chars, { opacity: 0, z: -360, y: 70, rotationX: -80 }, { opacity: 1, z: 0, y: 0, rotationX: 0, duration: 1.1, stagger: 0.055, ease: M5.E.sortie, delay: delai, clearProps: 'transform,opacity' })
 }
 
@@ -118,7 +123,7 @@ function entree() {
   })
   // l'anneau se remplit et le chiffre compte (M5 : à 0,5 s)
   animerAnneau(anneauEl.value, 0, fraction.value, { duree: 1.4, delay: 0.5 })
-  compter(compteurSemaine.value, 0, s.value.semaine.faits, { duree: 1.1, delay: 0.5, ease: 'expo.out' })
+  tl.add(() => compter(compteurSemaine.value, 0, s.value.semaine.faits, { duree: 1.1, ease: 'expo.out' }), 0.5) // M5 : le chiffre final reste affiché jusqu'au départ du compteur
   const pastille = r.querySelector('.pastille')
   if (pastille) tl.fromTo(pastille, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: M5.E.ressort, clearProps: 'transform,opacity' }, 1.1)
   if (bouclee.value) setTimeout(feter, 1100)
@@ -255,7 +260,7 @@ const versHero = (e) => {
       </div>
       <header class="haut" data-couche="2">
         <!-- Bouton du menu (M5 : dans la page, à gauche) : il recule avec elle et devient une croix. Le menu lui-même : MenuApp. -->
-        <button class="btn-nav" data-nav type="button" aria-label="Menu" aria-controls="menu-app" @click="basculerMenu"><span class="burger"><i></i><i></i></span></button>
+        <button class="btn-nav" data-nav type="button" :aria-label="etatMenu.ouvert ? 'Fermer le menu' : 'Ouvrir le menu'" :aria-expanded="etatMenu.ouvert" aria-controls="menu-app" @click="basculerMenu"><span class="burger"><i></i><i></i></span></button>
         <span class="haut-info">{{ semaineInfo }}</span>
       </header>
       <div class="salut" data-couche="1">

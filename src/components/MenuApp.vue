@@ -13,7 +13,7 @@ import { questionnairesDus } from '../domain/questionnairesDus.js'
 import { accesSante } from '../domain/consentement.js'
 import { jourLocal } from '../domain/dates.js'
 import { numeroSemaine } from '../domain/programme.js'
-import { EVT_MENU } from '../lib/menu.js'
+import { EVT_MENU, etatMenu } from '../lib/menu.js'
 import { horloge } from '../lib/horloge.js'
 import { utilisateurCourant } from '../lib/session.js'
 import { mouvementReduit } from '../anim/transitions.js'
@@ -80,7 +80,7 @@ const rubriques = () => Array.from(menu.value.querySelectorAll('.m-item'))
 const autres = () => Array.from(menu.value.querySelectorAll('.m-sur, .m-pied'))
 const rm = mouvementReduit
 // Croix du bouton : en CSS (M5), sur la classe html.menu-ouvert ; sert aussi à la parallaxe du tableau de bord (coupée menu ouvert).
-const burger = (ouvre) => { document.documentElement.classList.toggle('menu-ouvert', ouvre) }
+const burger = (ouvre) => { document.documentElement.classList.toggle('menu-ouvert', ouvre); etatMenu.ouvert = ouvre }
 // le bouton à reprendre en main : le flottant, ou celui de la page (tableau de bord)
 const bouton = () => btn.value || plan()?.querySelector('[data-nav]') || null
 // Le bouton suit le plan : il se pose en haut à gauche de la page reculée, comme dans la maquette (la croix reste « sur » la page).

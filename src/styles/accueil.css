@@ -57,6 +57,10 @@ html[data-grand="oui"] .accueil { overflow-y: auto; overscroll-behavior: contain
 .salut-h { font: 500 calc(var(--e) * var(--t-display))/.98 var(--font-titre); letter-spacing: var(--ls-display); overflow: visible; min-height: .98em; }
 .salut-h.long { font-size: calc(var(--e) * clamp(28px, 8vw, 34px)); line-height: 1.04; letter-spacing: -.035em; }
 .salut-h .car { display: inline-block; }
+.salut-h .mot-s { white-space: nowrap; }
+.salut-h.etroit { grid-column: 1 / -1; }
+.salut-h.moyen { font-size: calc(var(--e) * clamp(40px, 12vw, 50px)); }
+.salut-h.etroit + .salut-date { grid-column: 1 / -1; padding: 4px 0 0; }
 .salut-date { font: 500 calc(var(--e) * 14px) var(--font-texte); color: var(--texte-doux); padding-bottom: 10px; text-align: right; }
 .grille { position: relative; z-index: 2; flex: 1; min-height: 0; display: grid; gap: var(--gap); perspective: 1100px;
   grid-template-columns: 1fr 1fr; grid-template-rows: 1.4fr 1.15fr .72fr; }
@@ -102,6 +106,7 @@ html[data-grand="oui"] .anneau-s { margin: 12px 0; }
 .pastille { position: absolute; right: 14px; bottom: 14px; min-width: 36px; height: 36px; border-radius: 18px; padding: 0 10px; background: var(--accent); color: var(--accent-texte); font: 700 calc(var(--e) * 17px)/36px var(--font-texte); text-align: center; }
 [data-teinte="accent"] .pastille { background: var(--tf); color: var(--tb); }
 .carte.coaching.vide { box-shadow: inset 0 0 0 2px var(--filet); background: transparent; color: var(--texte); }
+.carte.coaching.vide .c-prog-t { -webkit-line-clamp: 3; line-clamp: 3; }
 .carte.coaching.vide .c-mini { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; opacity: 1; margin-top: auto; }
 .carte.coaching.vide .c-mini svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
 /* liens de démonstration (mode local) : hors maquette, superposés au bas de l'écran sans prendre de place */

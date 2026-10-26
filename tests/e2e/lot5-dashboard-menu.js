@@ -30,17 +30,17 @@ async page => {
   await page.screenshot({ path: SP + 'd-1.png' });
   log.push(await page.evaluate(() => { const a = document.querySelector('.accueil'); return 'scroll ' + a.scrollHeight + '/' + a.clientHeight; }));
   // menu
-  await page.click('.btn-menu');
+  await page.click('.ecran [data-nav]'); // M5 : bouton du menu dans la page d'accueil
   await page.waitForTimeout(350);
   await page.screenshot({ path: SP + 'm-1.png' });
   await page.waitForTimeout(1200);
   await page.screenshot({ path: SP + 'm-2.png' });
-  log.push('expanded ' + await page.getAttribute('.btn-menu', 'aria-expanded'));
+  log.push('expanded ' + await page.getAttribute('.ecran [data-nav]', 'aria-expanded'));
   await page.keyboard.press('Escape');
   await page.waitForTimeout(900);
   log.push('after esc hidden=' + await page.evaluate(() => document.querySelector('.menu-app').hidden));
   // menu -> Coaching
-  await page.click('.btn-menu');
+  await page.click('.ecran [data-nav]'); // M5 : bouton du menu dans la page d'accueil
   await page.waitForTimeout(1300);
   await page.click('.m-item:has-text("Coaching")');
   await page.waitForTimeout(500);
