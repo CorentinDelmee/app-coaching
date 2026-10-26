@@ -102,3 +102,4 @@
 - 2026-10-26 Mission — `DEMO_SYNC=1` expose `GET /demo/etat` sans clé, sans comptes, pour l'app en mode démo. Jamais en production.
 - 2026-10-26 Mission — Bibliothèque en démo locale (fichier JSON + localStorage, avec bandeau). Pas de clé YouTube requise : recherche automatique facultative (`YOUTUBE_API_KEY`).
 - 2026-10-26 Mission — Préfixe « Programme » retiré à l'affichage des noms de programme.
+- 2026-10-26 [securite-26-10] Audit sécurité : /demo/etat sans seancesCoaching + garde DEMO_SYNC/SUPABASE_URL ; build prod bloqué si VITE_API_KEY ; OAuth Google avec nonce en table + PKCE ; secrets séparés (CRON/WEBHOOK/STATE ; « démarrer » protégé par STATE_SECRET) ; Vault pour le jeton Google ; CORS = APP_ORIGIN ; clé API 32 car. ; journal purgé à 90 j.
