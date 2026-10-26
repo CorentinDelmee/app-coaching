@@ -1,5 +1,5 @@
 // Test de bout en bout : « Claude » reçoit une séance en texte, appelle le VRAI serveur MCP (client MCP SDK, transport stdio),
-// puis on vérifie que la séance apparaît côté client (API REST, puis navigateur : captures dans docs/captures-mcp/).
+// puis on vérifie que la séance apparaît côté client (API REST, puis navigateur : captures dans tmp/captures-mcp/, ignoré par Git ; --captures-doc : dans docs/captures-mcp/).
 //
 // Lancer (depuis la racine du projet) :
 //   node serveur/tests/e2e-seance.mjs              -> MCP + API (rapide, sans navigateur)
@@ -15,6 +15,9 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 
 const RACINE = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const NAVIGATEUR = process.argv.includes('--navigateur')
+// Par défaut les captures vont dans tmp/ (ignoré par Git) ; --captures-doc met à jour les PNG suivis de docs/
+const CAPTURES_DOC = process.argv.includes('--captures-doc')
+const DOSSIER_CAPTURES_REL = CAPTURES_DOC ? 'docs/captures-mcp' : 'tmp/captures-mcp'
 const CLE = 'cle-e2e-0123456789abcdef'
 const PORT_API = process.env.E2E_PORT_API || '5405'
 const PORT_APP = process.env.E2E_PORT_APP || '5406'
@@ -119,7 +122,7 @@ async function verifierNavigateur(seanceId) {
   const vite = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--port', PORT_APP, '--strictPort', '--host', '127.0.0.1'], { cwd: RACINE, env: { ...process.env, VITE_API_URL: API, VITE_API_KEY: CLE }, stdio: 'ignore' })
   enfants.push(vite)
   await attendreUrl(APP)
-  const dossierCaptures = join(RACINE, 'docs', 'captures-mcp')
+  const dossierCaptures = join(RACINE, ...DOSSIER_CAPTURES_REL.split('/'))
   mkdirSync(dossierCaptures, { recursive: true })
   const profil = mkdtempSync(join(tmpdir(), 'e2e-chrome-'))
   const chrome = spawn(CHROME, ['--headless=new', `--remote-debugging-port=${PORT_CHROME}`, `--user-data-dir=${profil}`, '--window-size=390,844', '--no-first-run', 'about:blank'], { stdio: 'ignore' })
@@ -134,7 +137,7 @@ async function verifierNavigateur(seanceId) {
   const cdp = (method, params = {}) => new Promise((r) => { const i = ++n; attentes.set(i, r); ws.send(JSON.stringify({ id: i, method, params })) })
   const evalue = async (expression) => (await cdp('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true })).result?.result?.value
   const aller = async (url, ms = 2500) => { await cdp('Page.navigate', { url }); await attendre(ms) }
-  const capture = async (nom) => { const r = await cdp('Page.captureScreenshot', { format: 'png' }); writeFileSync(join(dossierCaptures, nom), Buffer.from(r.result.data, 'base64')); console.log(`     capture : docs/captures-mcp/${nom}`) }
+  const capture = async (nom) => { const r = await cdp('Page.captureScreenshot', { format: 'png' }); writeFileSync(join(dossierCaptures, nom), Buffer.from(r.result.data, 'base64')); console.log(`     capture : ${DOSSIER_CAPTURES_REL}/${nom}`) }
   await cdp('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true })
   await cdp('Page.enable')
 

@@ -3,9 +3,13 @@
 // Parle au serveur (VITE_API_URL, clé VITE_API_KEY : démo locale uniquement ; en production passer par une session coach, voir serveur/README.md).
 import { computed, onMounted, ref } from 'vue'
 import { idYoutube } from '../../domain/video.js'
+import { creerBibliothequeLocale } from '../../data/demo/bibliothequeLocale.js'
 
 const URL_API = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
 const CLE_API = import.meta.env.VITE_API_KEY || ''
+// Sans VITE_API_URL : mode démo, bibliothèque importée et actions gardées dans le navigateur
+const DEMO = !URL_API
+const locale = DEMO ? creerBibliothequeLocale() : null
 const entrees = ref([])
 const erreur = ref('')
 const recherche = ref('')
@@ -30,7 +34,8 @@ async function appel(chemin, options = {}) {
 
 async function charger() {
   erreur.value = ''
-  if (!URL_API || !CLE_API) { erreur.value = 'Serveur non configuré : définis VITE_API_URL et VITE_API_KEY (voir serveur/README.md).'; return }
+  if (DEMO) { entrees.value = await locale.lister(); return }
+  if (!CLE_API) { erreur.value = 'Serveur non configuré : définis VITE_API_URL et VITE_API_KEY (voir serveur/README.md).'; return }
   chargement.value = true
   try { entrees.value = await appel('/api/bibliotheque') } catch (e) { erreur.value = `Serveur injoignable ou clé refusée (${e.message}).` } finally { chargement.value = false }
 }
@@ -38,13 +43,13 @@ onMounted(charger)
 
 async function valider(e) {
   erreur.value = ''
-  try { await appel(`/api/bibliotheque/${encodeURIComponent(e.id)}/valider`, { method: 'POST', body: '{}' }); await charger() } catch (err) { erreur.value = err.message }
+  try { if (DEMO) await locale.valider(e.id); else await appel(`/api/bibliotheque/${encodeURIComponent(e.id)}/valider`, { method: 'POST', body: '{}' }); await charger() } catch (err) { erreur.value = err.message }
 }
 async function remplacer(e) {
   erreur.value = ''
   const url = (nouveauLien.value[e.id] || '').trim()
   if (!idYoutube(url)) { erreur.value = 'Colle un lien YouTube valide (youtube.com/watch?v=… ou youtu.be/…).'; return }
-  try { await appel(`/api/bibliotheque/${encodeURIComponent(e.id)}/remplacer`, { method: 'POST', body: JSON.stringify({ url }) }); nouveauLien.value[e.id] = ''; await charger() } catch (err) { erreur.value = err.message }
+  try { if (DEMO) await locale.remplacer(e.id, url); else await appel(`/api/bibliotheque/${encodeURIComponent(e.id)}/remplacer`, { method: 'POST', body: JSON.stringify({ url }) }); nouveauLien.value[e.id] = ''; await charger() } catch (err) { erreur.value = err.message }
 }
 const duree = (s) => (s ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}` : 'durée inconnue')
 </script>
@@ -57,6 +62,7 @@ const duree = (s) => (s ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0
         <p class="c-sous">Vidéos de démonstration proposées pour chaque exercice : valide-les ou remplace-les.</p>
       </div>
     </div>
+    <p v-if="DEMO" class="c-doux" role="status" data-demo><strong>Mode démo</strong> : bibliothèque importée, vos validations restent dans ce navigateur (aucun serveur).</p>
     <p v-if="erreur" class="c-erreur" role="alert">{{ erreur }}</p>
 
     <div class="c-ligne" style="margin-bottom: 12px">
