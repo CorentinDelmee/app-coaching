@@ -20,6 +20,7 @@ export const routeCoach = {
     { path: 'questionnaires', component: () => import('./views/QuestionnairesView.vue') },
     { path: 'questionnaires/:id', component: () => import('./views/QuestionnaireEditeur.vue'), props: true },
     { path: 'agenda', component: () => import('./views/AgendaView.vue') },
+    { path: 'reservations', component: () => import('./views/ReservationsView.vue') },
     { path: 'donnees', component: () => import('./views/DonneesView.vue') }
   ]
 }

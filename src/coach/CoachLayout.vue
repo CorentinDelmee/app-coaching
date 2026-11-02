@@ -12,6 +12,7 @@ const LIENS = [
   { to: '/coach/clients', texte: 'Clients' },
   { to: '/coach/alertes', texte: 'Alertes', badge: true },
   { to: '/coach/agenda', texte: 'Agenda Google', badgeAgenda: true },
+  { to: '/coach/reservations', texte: 'Réservations' },
   { to: '/coach/seances', texte: 'Séances' },
   { to: '/coach/programmes', texte: 'Programmes' },
   { to: '/coach/exercices', texte: 'Exercices' },
