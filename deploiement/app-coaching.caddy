@@ -1,0 +1,45 @@
+# /etc/caddy/sites/app-coaching.caddy — App coaching (importé par le Caddyfile de pc-seniors : import /etc/caddy/sites/*.caddy)
+# CECI EST UN MODÈLE : deployer.sh le copie dans /etc/caddy/sites/ en remplaçant A_REMPLACER_DOMAINE par le domaine
+# (APP_ORIGIN=https://app.<domaine> dans /etc/app-coaching.env) et vérifie la config (caddy validate) avant de recharger.
+# Ne pas modifier /etc/caddy/sites/app-coaching.caddy à la main : il est réécrit à chaque déploiement.
+
+app.A_REMPLACER_DOMAINE {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+		X-Frame-Options "DENY"
+		X-Robots-Tag "noindex, nofollow"
+		# CSP = celle de public/_headers sans Supabase : tout en 'self' (polices et scripts auto-hébergés, API en même origine),
+		# images data:/blob: (aperçus de photos), YouTube sans cookie en iframe (vidéos d'exercices), service worker.
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; frame-src https://www.youtube-nocookie.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+		-Server
+	}
+
+	# API de l'app → Node (service app-coaching)
+	handle /api/app/* {
+		header Cache-Control "no-store"
+		request_body {
+			max_size 6MB
+		}
+		reverse_proxy 127.0.0.1:5405 {
+			header_up X-Forwarded-For {remote_host}
+		}
+	}
+
+	# Le reste → PWA statique avec repli SPA
+	handle {
+		root * /var/www/app-coaching/site
+		# Fichiers à empreinte (assets/) : cache d'un an
+		@versionnes path /assets/*
+		header @versionnes Cache-Control "public, max-age=31536000, immutable"
+		# Point d'entrée et service worker : toujours revalidés (mises à jour de la PWA)
+		@vivants path / /index.html /sw.js /registerSW.js /manifest.webmanifest /workbox-*.js
+		header @vivants Cache-Control "no-cache"
+		try_files {path} /index.html
+		file_server
+	}
+}

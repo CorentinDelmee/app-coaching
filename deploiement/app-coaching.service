@@ -1,0 +1,48 @@
+# /etc/systemd/system/app-coaching.service
+# Serveur de l'app-coaching (Node 24, écoute seulement 127.0.0.1:5405 ; Caddy fait le reste).
+[Unit]
+Description=App coaching - serveur (Node, SQLite)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=appcoaching
+Group=appcoaching
+WorkingDirectory=/var/www/app-coaching/depot
+ExecStart=/usr/bin/node serveur/api.mjs
+# Secrets (SESSION_SECRET, COACH_API_KEY, RESA_ADMIN_KEY…) : fichier root, chmod 600, lu par systemd avant de passer la main à appcoaching
+EnvironmentFile=/etc/app-coaching.env
+Environment=NODE_ENV=production
+Restart=on-failure
+RestartSec=3
+MemoryMax=384M
+TasksMax=64
+
+# Données : /var/lib/app-coaching (app.db + fichiers/), créé par systemd, propriété de appcoaching.
+StateDirectory=app-coaching
+StateDirectoryMode=0700
+ReadWritePaths=/var/lib/app-coaching
+
+# Durcissement
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+SystemCallArchitecture=native
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

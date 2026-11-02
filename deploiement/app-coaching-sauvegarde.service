@@ -1,0 +1,7 @@
+# /etc/systemd/system/app-coaching-sauvegarde.service — voir sauvegarder.sh
+[Unit]
+Description=App coaching - sauvegarde de app.db et des fichiers
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /var/www/app-coaching/depot/deploiement/sauvegarder.sh
