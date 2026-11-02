@@ -1,5 +1,13 @@
 # ÉTAT — app-coaching
 
+## 2026-11-02 (REPRENDRE ICI) — back-end sur le VPS (SQLite), Supabase retiré
+- Décision de Corentin : back-end sur le VPS commun de pc-seniors, SQLite + cookie de session comme pc-seniors ; écran coach « Réservations » pour les réservations du site coaching-domicile. Contrat : docs/CONTRAT-VPS.md. D9 ouverte : héberger les données santé sur un VPS à Corentin seul (reco).
+- 3 agents (serveur, adaptateur front, écran Réservations) + déploiement lancés, arrêtés à l'échéance : état précis ci-dessous / dans les commits du 2026-11-02. Ensuite : finir, testeur + auditeur (contrôle d'accès client A/B en priorité).
+- Serveur (commit f1e76f0) : FAIT schema.sql + magasin-sqlite.js (30 tests verts, e2e MCP 10/10). PAS FAIT : auth (cookie, scrypt, limite, coach:creer), endpoints /api/app/*, règles d'accès RLS côté serveur (attention : alertesVues réservé au coach), CSRF, fichiers, relais réservations, refus de démarrer, DB_FILE dans npm run serveur. À trancher : limiteur 120/min par IP à écarter pour /api/app (IP réelle via X-Forwarded-For) ; format des réponses à aligner avec src/data/adapters/api.js.
+- Front données (commit a80de57) : FAIT adaptateur api, data.reservations (démo locale), Supabase retiré ; 450 tests verts. À aligner : formes de réponse supposées (listes = tableaux ou {items}…, POST /comptes → {id}) avec le serveur ; AgendaView doit afficher b.message en mode api.
+- Écran Réservations (src/coach/views/ReservationsView.vue, route /coach/reservations) : écrit, 5 tests, build OK, JAMAIS VU À L'ÉCRAN (se connecter corentin / COACH2026). À aligner : l'API réservation renvoie synchro_etat = a_creer|cree|a_supprimer|supprime (l'écran lit a_ajouter/a_retirer) ; formes de réponse des 3 côtés (contrat à compléter).
+- Déploiement (commit 1b91226) : deploiement/ prêt (service, caddy, installer, deployer, sauvegarde) ; suppose coach:creer et GET /api/app/moi.
+
 ## 2e vague 26/10 (19 h 25 → 20 h) — sécurité et accessibilité
 - **Audit sécurité** : 2 critiques (démo) et 8 importants corrigés, fusionnés dans `main` : nonce et PKCE pour Google, 3 secrets distincts (`CRON_SECRET`, `WEBHOOK_SECRET`, `STATE_SECRET`), `APP_ORIGIN` pour le CORS, jeton Google dans le Vault Supabase (migration), clé API de 32 caractères minimum. Build de production refusé si `VITE_API_KEY` est défini.
 - **Audit performance et accessibilité** : performance 90 (Lighthouse mobile), PWA OK ; correctifs d'accessibilité fusionnés (`1d07c26`). Aucune branche non fusionnée.
