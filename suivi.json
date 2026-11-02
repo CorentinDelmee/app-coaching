@@ -3,7 +3,7 @@
   "phase": "V2 + mission 26/10 + 2e vague : 436 tests verts, audits sécurité et accessibilité corrigés — à toi : secrets et Google, valider les vidéos, essai sur téléphone",
   "objectif": "Remplacer **My PT Hub (52 €/mois)** par ma propre app de coaching, **0 €/mois**, mobile d'abord, très animée.",
   "date_cible": "2026-10-20",
-  "mis_a_jour": "2026-10-26",
+  "mis_a_jour": "2026-11-02",
   "lots": [
     {
       "id": "0",
@@ -551,6 +551,28 @@
       "statut": "ouverte",
       "reponse": "",
       "provisoire": false
+    },
+    {
+      "id": "D9",
+      "categorie": "Hébergement",
+      "question": "Où héberger les données des clients d'app-coaching (douleurs, mesures, nutrition) ?",
+      "contexte": "Le back-end passe de Supabase au VPS commun de pc-seniors (SQLite), décidé par Corentin le 2026-11-02. Charles et Léandre ont l'accès root à ce VPS.",
+      "options": [
+        {
+          "nom": "VPS commun + accord écrit des associés",
+          "resume": "0 €, en place"
+        },
+        {
+          "nom": "Petit VPS à Corentin seul",
+          "resume": "≈ 5 €/mois, même installation déplacée telle quelle"
+        }
+      ],
+      "recommandation": "Petit VPS à Corentin seul",
+      "pourquoi": "Données proches de la santé : personne d'autre ne devrait pouvoir les lire. Pas bloquant tant qu'on teste avec des données de démo.",
+      "si_pas_de_reponse": "On construit et teste sur le VPS commun avec des données de démo, aucun vrai client.",
+      "statut": "ouverte",
+      "reponse": "",
+      "provisoire": true
     }
   ],
   "avancees": [
