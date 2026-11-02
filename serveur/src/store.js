@@ -6,7 +6,7 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { genererDemo } from '../../src/data/demo/index.js'
-import { depuisLigne, versLigne } from '../../src/data/adapters/supabase.js'
+// (adaptateur Supabase retiré du front : chargé seulement si le mode Supabase est utilisé)
 import { ENTITES } from '../../src/data/entites.js'
 
 export function creerStoreFichier(fichier, now = () => Date.now()) {
@@ -44,6 +44,7 @@ export function creerStoreFichier(fichier, now = () => Date.now()) {
 /** Production : mêmes tables que l'app (supabase/schema.sql), accès par clé service. Non testé sans projet Supabase réel. */
 export async function creerStoreSupabase({ url, cleService }) {
   const { createClient } = await import('@supabase/supabase-js')
+  const { depuisLigne, versLigne } = await import('../../src/data/adapters/supabase.js')
   const sb = createClient(url, cleService, { auth: { persistSession: false } })
   const verif = ({ data, error }) => { if (error) throw new Error(`Supabase : ${error.message}`); return data }
   return {
