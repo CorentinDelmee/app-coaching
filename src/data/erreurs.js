@@ -1,5 +1,5 @@
 // Erreur typée de la couche de données. `code` : STOCKAGE_PLEIN | VALIDATION | EXISTE | INTROUVABLE |
-// IDENTIFIANTS | NON_CONNECTE | CODE_TROP_COURT | FORMAT | RESEAU | NON_SUPPORTE
+// IDENTIFIANTS | NON_CONNECTE | INTERDIT | CODE_TROP_COURT | FORMAT | RESEAU | NON_SUPPORTE
 export class ErreurData extends Error {
   constructor(code, message) {
     super(message || code)

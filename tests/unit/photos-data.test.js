@@ -8,7 +8,7 @@ function backendAvecPhotos() {
   return {
     envoyes, supprimes, lignes,
     backend: {
-      mode: 'supabase',
+      mode: 'api',
       utilisateurCourant: async () => ({ id: 'c1', role: 'client' }),
       tout: async (e) => lignes[e] || [],
       supprimer: async (e, id) => { lignes[e] = lignes[e].filter((l) => l.id !== id) },
@@ -18,13 +18,13 @@ function backendAvecPhotos() {
 }
 const PIXEL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/yQALCAABAAEBAREA/8wABgAQEAX/2gAIAQEAAD8A0s8g/9k='
 
-describe('photos : démo et Supabase', () => {
+describe('photos : démo et api', () => {
   it('démo : la photo reste en data URL', async () => {
     const api = creerAdapterLocal({ storage: stockageMemoire() })
     expect(await api.photos.enregistrer('c1', PIXEL)).toBe(PIXEL)
     expect(await api.photos.url(PIXEL)).toBe(PIXEL)
   })
-  it('Supabase : envoi dans <client>/<uuid>.jpg, référence + URL signée', async () => {
+  it('API : envoi dans <client>/<uuid>.jpg, référence + URL signée', async () => {
     const { backend, envoyes } = backendAvecPhotos()
     const api = creerApi(backend, { uuid: () => 'u-1' })
     const ref = await api.photos.enregistrer('c1', PIXEL)

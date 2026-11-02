@@ -10,7 +10,7 @@ Sans fichier `.env`, l'app tourne en **mode local** avec des données de démo (
 
 Comptes de démo : client `fabien.vincent` / `DEMO2024` ; coach `corentin` / `COACH2026` (espace coach : `/coach`).
 Pour revoir le consentement ou repartir de zéro : vider les données du site dans le navigateur.
-Pour Supabase : copier `.env.example` en `.env` et remplir les clés (voir `MISE-EN-ROUTE.md`).
+Back-end : sur le VPS, voir `docs/CONTRAT-VPS.md` (`VITE_BACKEND=api` dans `.env`).
 
 ## Maquettes
 `design/index.html` (5 maquettes, M1 « Atelier » retenue en provisoire), vidéo du parcours final : `design/app-finale/`.

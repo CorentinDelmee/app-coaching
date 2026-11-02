@@ -1,17 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
 import { readFileSync } from 'node:fs'
 
-// Espion : si le SDK Supabase est évalué, le drapeau passe à vrai.
-const sdk = vi.hoisted(() => ({ charge: false }))
-vi.mock('@supabase/supabase-js', () => {
-  sdk.charge = true
-  return { createClient: () => ({}) }
-})
-
 import { creerApi } from '../../src/data/commun.js'
 import { creerData } from '../../src/data/index.js'
 import { creerAdapterLocal, stockageMemoire, CLE_STOCKAGE } from '../../src/data/adapters/local.js'
-import { creerAdapterSupabase } from '../../src/data/adapters/supabase.js'
+import { creerAdapterApi } from '../../src/data/adapters/api.js'
 import { NOMS_ENTITES } from '../../src/data/entites.js'
 import { ErreurData } from '../../src/data/erreurs.js'
 import { genererDemo } from '../../src/data/demo/index.js'
@@ -222,21 +215,11 @@ describe('adaptateur local', () => {
   it('sans .env : mode local', () => {
     const d = creerData({}, { storage: stockageMemoire() })
     expect(d.mode).toBe('local')
-    expect(creerData({ VITE_SUPABASE_URL: '', VITE_SUPABASE_ANON_KEY: '' }, { storage: stockageMemoire() }).mode).toBe('local')
-    expect(creerData({ VITE_SUPABASE_URL: 'https://x.supabase.co' }, { storage: stockageMemoire() }).mode).toBe('local') // clé manquante
+    expect(creerData({ VITE_BACKEND: '' }, { storage: stockageMemoire() }).mode).toBe('local')
   })
 
-  it('avec les deux variables : mode supabase (sans appel réseau à la création)', () => {
-    const d = creerData({ VITE_SUPABASE_URL: 'https://x.supabase.co', VITE_SUPABASE_ANON_KEY: 'cle-anonyme' })
-    expect(d.mode).toBe('supabase')
-  })
-
-  it('aucun import de Supabase n\'est exécuté en mode local', async () => {
-    sdk.charge = false
-    const d = creerData({}, { storage: stockageMemoire(), now: () => NOW })
-    await d.exercices.lister()
-    await d.connecter('corentin', 'COACH2026')
-    expect(sdk.charge).toBe(false)
+  it('VITE_BACKEND=api : mode api (sans appel réseau à la création)', () => {
+    expect(creerData({ VITE_BACKEND: 'api' }, { storage: stockageMemoire() }).mode).toBe('api')
   })
 
   it('données persistées entre deux instanciations', async () => {
@@ -287,36 +270,22 @@ describe('adaptateur local', () => {
   })
 })
 
-describe('adaptateur Supabase', () => {
-  const sb = () => creerAdapterSupabase({ url: 'https://x.supabase.co', anonKey: 'cle-anonyme', storage: stockageMemoire() })
+describe('adaptateur api', () => {
+  const sb = () => creerAdapterApi({ fetchFn: async () => new Response('{}'), storage: stockageMemoire() })
 
-  it('expose exactement les mêmes méthodes que l\'adaptateur local', () => {
+  it("expose exactement les mêmes méthodes que l'adaptateur local", () => {
     const local = creerAdapterLocal({ storage: stockageMemoire() })
     const distant = sb()
     expect(Object.keys(distant).sort()).toEqual(Object.keys(local).sort())
     for (const entite of NOMS_ENTITES) expect(Object.keys(distant[entite]).sort()).toEqual(Object.keys(local[entite]).sort())
-    expect(distant.mode).toBe('supabase')
+    expect(Object.keys(distant.reservations).sort()).toEqual(Object.keys(local.reservations).sort())
+    expect(distant.mode).toBe('api')
     expect(local.mode).toBe('local')
   })
 
-  it('refuse de démarrer sans url ni clé', () => {
-    expect(() => creerAdapterSupabase({})).toThrow(/VITE_SUPABASE_URL/)
+  it('aucun import de supabase dans le code source', () => {
+    for (const f of ['src/data/index.js', 'src/data/adapters/api.js', 'src/data/adapters/local.js']) expect(readFileSync(f, 'utf8'), f).not.toMatch(/supabase/i)
   })
-
-  it('aucune clé ni URL réelle dans le code source', () => {
-    for (const f of ['src/data/adapters/supabase.js', 'src/data/index.js', 'src/data/adapters/local.js']) {
-      const code = readFileSync(f, 'utf8')
-      expect(code, f).not.toMatch(/eyJ[A-Za-z0-9_-]{20,}/)
-      expect(code, f).not.toMatch(/https:\/\/[a-z0-9]+\.supabase\.co/)
-    }
-  })
-
-  it('le SDK n\'est chargé qu\'à la première requête (import dynamique)', () => {
-    const code = readFileSync('src/data/adapters/supabase.js', 'utf8')
-    expect(code).not.toMatch(/^import .* from '@supabase\/supabase-js'/m)
-    expect(code).toMatch(/await import\('@supabase\/supabase-js'\)/)
-  })
-
 })
 
 describe("file d'attente hors connexion", () => {
@@ -441,7 +410,7 @@ describe('garde-fou de configuration', () => {
     const { configManquante } = await import('../../src/lib/configuration.js')
     expect(configManquante({ PROD: true }, 'local')).toBe(true)
     expect(configManquante({ PROD: true, VITE_MODE_DEMO: '1' }, 'local')).toBe(false)
-    expect(configManquante({ PROD: true }, 'supabase')).toBe(false)
+    expect(configManquante({ PROD: true }, 'api')).toBe(false)
     expect(configManquante({ PROD: false }, 'local')).toBe(false)
   })
 })

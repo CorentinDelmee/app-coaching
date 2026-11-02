@@ -41,7 +41,7 @@ export function genererCode(longueur = LONGUEUR_CODE, crypto = globalThis.crypto
   return code
 }
 
-/** E-mail technique utilisé par Supabase Auth. */
+/** E-mail technique utilisé par l'ancien Supabase Auth (archive). */
 export const emailTechnique = (identifiant) => `${identifiant}@clients.cdc-coaching.invalid`
 
 /** Contrôle d'un nouveau code saisi deux fois : renvoie le message d'erreur à afficher, ou null si tout va bien. */

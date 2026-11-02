@@ -71,7 +71,7 @@ async function recharger() {
   mesures.value = m
   douleurs.value = d
   nutrition.value = n
-  // photos de repas : en mode Supabase, adresses signées de courte durée (jamais d'URL publique)
+  // photos de repas : en mode api, adresses protégées par la session (jamais d'URL publique)
   const refs = [...new Set(n.map((e) => e.valeur?.photo).filter(Boolean))]
   urlsPhotos.value = Object.fromEntries(await Promise.all(refs.map(async (r) => [r, await data.photos.url(r).catch(() => '')])))
 }

@@ -19,7 +19,7 @@ import ConfigManquante from './views/ConfigManquante.vue'
 demarrerApparence() // ambiance + Grand affichage mémorisés (le profil du client les remet à jour à la connexion)
 
 if (configManquante(import.meta.env, data.mode)) {
-  createApp(ConfigManquante).mount('#app') // production sans Supabase : ni comptes de démo, ni service worker
+  createApp(ConfigManquante).mount('#app') // production sans back-end : ni comptes de démo, ni service worker
 } else {
   ecouterInstallation() // capte `beforeinstallprompt` avant l'affichage de la page
   createApp(App).use(router).mount('#app')

@@ -1,12 +1,12 @@
 <script setup>
-// Écran affiché à la place de l'app quand un build de production n'a pas de configuration Supabase.
+// Écran affiché à la place de l'app quand un build de production n'a pas de back-end (VITE_BACKEND=api).
 </script>
 
 <template>
   <main class="config-manquante">
     <h1>Configuration manquante</h1>
-    <p>Cette version de l'application n'est pas reliée à sa base de données. Elle ne doit pas être utilisée.</p>
-    <p>Si vous êtes le coach : refaites la construction (<code>npm run build</code>) avec le fichier <code>.env</code> rempli, puis republiez.</p>
+    <p>Cette version de l'application n'est pas reliée à son serveur. Elle ne doit pas être utilisée.</p>
+    <p>Si vous êtes le coach : refaites la construction (<code>npm run build</code>) avec <code>VITE_BACKEND=api</code>, puis republiez.</p>
   </main>
 </template>
 

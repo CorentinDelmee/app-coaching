@@ -1,3 +1,4 @@
+-- archive : remplacé par serveur/schema.sql (2026-11-02)
 -- Corentin Delmée Coaching — schéma Supabase + règles RLS.
 -- À exécuter UNE fois, en entier, dans l'éditeur SQL de Supabase (région UE).
 -- Ordre : tables -> fonctions is_coach()/est_actif() -> RLS activée -> policies -> storage.

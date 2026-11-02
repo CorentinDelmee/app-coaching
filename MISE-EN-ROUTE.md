@@ -1,5 +1,7 @@
 # Mise en route — Corentin Delmée Coaching (PWA)
 
+> **Obsolète (2026-11-02) : Supabase est remplacé par un back-end sur le VPS, voir `docs/CONTRAT-VPS.md`.** Les étapes Supabase ci-dessous sont gardées pour archive.
+
 > Document écrit pour Corentin, à suivre dans l'ordre. Durée totale : environ 2 h 30 la première fois (voir le récapitulatif à la fin).
 > Rien n'a été créé, publié ou payé à ta place : tous les comptes et toutes les mises en ligne sont à toi.
 > Les noms de menus Supabase et Netlify sont ceux connus à la date d'écriture (20/10/2026) : leurs sites bougent de temps en temps. Si un libellé a changé, cherche le mot-clé en gras.

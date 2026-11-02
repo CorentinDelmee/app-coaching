@@ -1,4 +1,4 @@
-// Registre des entités : nom de collection -> validateur, portée (qui peut les lire) et table Supabase.
+// Registre des entités : nom de collection -> validateur, portée (qui peut les lire) et table SQL.
 import * as M from '../domain/modele.js'
 
 /**

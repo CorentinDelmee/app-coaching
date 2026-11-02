@@ -229,7 +229,7 @@ async function envoyer() {
   const vals = valeursAEnregistrer(questionnaire.value, valeurs)
   const rep = { id: idReponse(user.value.id, questionnaire.value.id, aujourdhui), clientId: user.value.id, questionnaireId: questionnaire.value.id, frequence: questionnaire.value.frequence, date: aujourdhui, valeurs: vals }
   try {
-    // photos : envoyées dans le stockage privé (Supabase) ; en démo elles restent en data URL (data.photos s'en charge)
+    // photos : envoyées dans le stockage privé (serveur) ; en démo elles restent en data URL (data.photos s'en charge)
     for (const c of questionnaire.value.questions) {
       if (c.type === 'photo' && typeof vals[c.cle] === 'string' && vals[c.cle].startsWith('data:')) {
         if (!refsPhotos.has(vals[c.cle])) refsPhotos.set(vals[c.cle], await data.photos.enregistrer(user.value.id, vals[c.cle]))

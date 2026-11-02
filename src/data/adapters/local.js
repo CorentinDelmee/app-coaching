@@ -5,6 +5,7 @@ import { visiblePar } from '../entites.js'
 import { ErreurData, MESSAGES } from '../erreurs.js'
 import { genererDemo } from '../demo/index.js'
 import { creerFauxGoogle, HOMONYMES_DEMO, ALIAS_DEMO } from '../demo/agendaGoogle.js'
+import { creerReservationsDemo } from '../reservations-demo.js'
 import { etatVide, evaluer, synchroniser } from '../../domain/agendaGoogle.js'
 
 export const CLE_STOCKAGE = 'cdc-coaching/1'
@@ -144,6 +145,8 @@ export function creerAdapterLocal({ storage = globalThis.localStorage || stockag
         return bilan
       }
     },
+    // Réservations du site vitrine : données factices en mémoire (non persistées).
+    reservations: creerReservationsDemo({ now, uuid }),
     file: {
       async lire() {
         const brut = storage.getItem(CLE_FILE)

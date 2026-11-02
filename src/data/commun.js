@@ -3,7 +3,7 @@
 // Un « backend » fournit :
 //   mode, tout(entite), un(entite, id), ecrire(entite, obj)            -> lecture / écriture brutes (async)
 //   connecter, deconnecter, utilisateurCourant, changerCode, creerCompte(identifiant, code, profil) -> session
-//   (profilCreeParCompte = true si creerCompte crée aussi la ligne de profil, comme l'Edge Function Supabase)
+//   (profilCreeParCompte = true si creerCompte crée aussi la ligne de profil, comme le serveur de l'adaptateur api)
 //   reinitialiserDemo(), file { lire(), ecrire(liste) }                  -> démo et file d'attente hors connexion
 // Tout le reste (validation, archivage, import/export, enregistrement de séance…) est ici, donc testé une seule fois.
 import { ENTITES, NOMS_ENTITES, clientDe } from './entites.js'
@@ -96,6 +96,9 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
     }
   }
 
+  /** Réservations du site vitrine (coach) : liste, annuler, blocages, règles. Fournies telles quelles par le backend. */
+  api.reservations = backend.reservations
+
   // --- Session ---------------------------------------------------------------------------------
   api.connecter = (identifiant, code) => backend.connecter(identifiant.trim().toLowerCase(), code)
   // À la déconnexion, la file hors connexion (séances non envoyées) est vidée : pas de données de santé qui restent sur un appareil partagé (audit M6).
@@ -117,7 +120,7 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
     const donnees = { role: 'client', identifiant, nom, tarif, lieuDefaut, modules, preferences: { son: true, vibration: true, unite: 'kg' }, consentementLe: null }
     verifier('profils', { ...donnees, id: 'a-creer', archive: false, creeLe: now() }) // refuse un nom/tarif invalide avant de créer un compte
     const id = await backend.creerCompte(identifiant, code, { ...donnees, creeLe: now() })
-    // Supabase : l'Edge Function a déjà créé le profil avec le compte ; sinon (local) on l'écrit ici.
+    // API : le serveur a déjà créé le profil avec le compte ; sinon (local) on l'écrit ici.
     const profil = backend.profilCreeParCompte ? await backend.un('profils', id) : await api.profils.creer({ ...donnees, id })
     return { profil, identifiant, code }
   }
@@ -211,8 +214,8 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
   }
 
   // --- Photos (questionnaires, repas) ------------------------------------------------------------------------------
-  // Mode démo (backend sans `photos`) : la photo reste en data URL dans la ligne. Supabase : envoi dans le bucket privé `photos`
-  // au chemin `<client_id>/<uuid>.jpg`, la ligne ne garde que la référence « photo:<chemin> » ; affichage par URL signée courte.
+  // Mode démo (backend sans `photos`) : la photo reste en data URL dans la ligne. API : envoi dans le stockage privé du serveur
+  // au chemin `<client_id>/<uuid>.jpg`, la ligne ne garde que la référence « photo:<chemin> » ; affichage par adresse protégée par la session.
   const REF_PHOTO = 'photo:'
   const cheminDe = (ref) => (typeof ref === 'string' && ref.startsWith(REF_PHOTO) ? ref.slice(REF_PHOTO.length) : null)
   api.photos = {

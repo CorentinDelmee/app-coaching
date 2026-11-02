@@ -16,7 +16,7 @@ const props = defineProps({
   occupe: { type: String, default: '' },       // repas en cours de traitement (photo)
   erreur: { type: String, default: '' },
   liste: { type: Array, default: () => [] },   // habitudes définies par le coach (vide = liste par défaut)
-  urls: { type: Object, default: () => ({}) }  // photo enregistrée -> adresse affichable (URL signée en mode Supabase)
+  urls: { type: Object, default: () => ({}) }  // photo enregistrée -> adresse affichable (adresse protégée par la session en mode api)
 })
 const emit = defineEmits(['habitude', 'photo', 'calories'])
 

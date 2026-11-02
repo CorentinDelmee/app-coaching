@@ -1,5 +1,5 @@
 // Synchronisation Google Agenda -> séances de coaching : règles pures (aucun réseau, aucune horloge, aucun Vue).
-// Partagé par l'adaptateur local (démo) et par l'Edge Function Supabase (supabase/functions/sync-google-agenda).
+// Partagé par l'adaptateur local (démo) et aussi par le serveur (archive : supabase/functions/sync-google-agenda).
 // Un événement « Coaching Fabien Vincent » (ou « Coaching - Vincent Fabien #fv2 ») est attribué au client correspondant.
 
 export const FUSEAU_COACH = 'Europe/Paris'
