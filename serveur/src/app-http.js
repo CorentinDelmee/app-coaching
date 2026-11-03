@@ -336,7 +336,8 @@ export function creerAppHttp({ db, store, config, now = () => Date.now(), fetchF
       }
       throw new Erreur(404, 'route_inconnue')
     } catch (e) {
-      if (e?.code === 'trop_gros') res.once('finish', () => req.destroy())
+      // Corps trop gros : réponse 413 avec « Connection: close » (le client ne réutilise pas la connexion), puis coupure.
+      if (e?.code === 'trop_gros') { res.once('finish', () => req.destroy()); return envoyer(res, 413, { erreur: e.code }, { Connection: 'close' }), true }
       if (e instanceof Erreur) envoyer(res, e.statut, { erreur: e.code })
       else envoyer(res, 500, { erreur: 'interne' })
       return true
