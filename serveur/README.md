@@ -41,8 +41,10 @@ API REST (HTTP) ────┘        validation = celle de l'app (src/data/com
 | `APP_ORIGIN` | Origine exacte de l'app (ex. `https://app.domaine.fr`) : exigée en `Origin` sur toute requête non-GET (CSRF). |
 | `FICHIERS_DIR` | Dossier des photos/PDF (`/var/lib/app-coaching/fichiers`). |
 | `RESA_API_URL`, `RESA_ADMIN_KEY` | API réservation (`http://127.0.0.1:5311`) et sa clé admin (≥ 32 car.). |
-| `CONFIANCE_PROXY` | `1` derrière Caddy : IP réelle = dernière valeur de `X-Forwarded-For` (limites de connexion). |
-| `NODE_ENV=production` | Refus de démarrer si `DB_FILE`, `FICHIERS_DIR`, `APP_ORIGIN`, `RESA_API_URL`, `COACH_API_KEY`, `SESSION_SECRET`, `RESA_ADMIN_KEY` manque. |
+| `PROXY_KEY` | ≥ 32 car. (hex). Caddy l'envoie en `X-Proxy-Cle` ; seulement alors l'IP réelle = dernière valeur de `X-Forwarded-For` (limites de connexion). Sinon : adresse de connexion. |
+| `NODE_ENV=production` | Refus de démarrer si `DB_FILE`, `FICHIERS_DIR`, `APP_ORIGIN`, `RESA_API_URL`, `COACH_API_KEY`, `SESSION_SECRET`, `RESA_ADMIN_KEY`, `PROXY_KEY` manque. |
+
+Plafonds par client : 5000 lignes, 64 Ko par ligne (coach compris), 200 fichiers et 200 Mo → 413 `quota`. Connexion : seuls les échecs comptent (IP+compte 5, compte 50, IP 30 / 15 min), journalisés avec une empreinte de l'identifiant. Cookie `__Host-sid` en production.
 
 Premier compte coach : `DB_FILE=… npm run coach:creer <identifiant>` (saisie masquée ; relancer = changer le code et révoquer les sessions).
 | `VITE_API_URL`, `VITE_API_KEY` | Côté app (démo) : adresse du serveur ; clé pour l'écran coach « Vidéos ». |
