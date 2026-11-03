@@ -68,3 +68,21 @@ Chacun ne touche que ses fichiers ; `git add <chemins>` + `git commit -- <chemin
 Ports de test : API réservation 5321 · serveur app 5425 · app Vite 5426 · testeurs 5431-5439. Arrêter ses processus par PID.
 Scripts temporaires : `/private/tmp/claude-501/-Users-corentindelmee-Documents-REXV2/d3561a92-4377-4a37-8032-00cfef8af835/scratchpad/<agent>/`.
 Commit en français terminé par `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`. Rapport ≤ 15 lignes + tokens et durée.
+
+## Formes JSON exactes (ajout REX 2026-11-03, font foi pour les 3 côtés)
+**API réservation `/api/resa/admin/*` (déjà codée, lib/app.mjs)** :
+- Réservation : `{id, debut, fin, prenom, nom, email, telephone, adresse, commune, statut: "a_venir"|"annulee", cree_le, annulee_le, google_event_id, synchro_etat: "a_creer"|"cree"|"a_supprimer"|"supprime"}` (debut/fin ISO avec décalage Paris, cree_le/annulee_le ISO UTC ou null).
+- Blocage : `{id, debut, fin, motif}`.
+- `GET reservations?statut=…` → `{reservations:[…]}` · `POST reservations/:id/annuler` → `{ok:true, reservation}` ·
+  `GET blocages` → `{blocages:[…]}` · `POST blocages {debut, fin, motif}` → 201 `{ok:true, blocage}` · `DELETE blocages/:id` → `{ok:true}` ·
+  `GET regles` → objet règles · `PUT regles` → objet règles nettoyé.
+- Le relais app-coaching n'envoie **jamais** `X-Forwarded-For`, `Forwarded`, `X-Real-IP` (refusé par l'API).
+
+**Serveur app-coaching `/api/app/*`** : le relais renvoie le corps de l'API réservation **tel quel** (mêmes formes ci-dessus).
+- `GET /api/app/moi`, `POST /api/app/connexion` → `{utilisateur:{id, identifiant, role, profil_id}}`.
+- `GET /api/app/e/:entite` → `{items:[…]}` · `GET /api/app/e/:entite/:id` → `{item}` · `PUT` → `{item}` · `DELETE` → `{ok:true}`.
+- `POST /api/app/comptes` → 201 `{id}` · `POST /api/app/comptes/:identifiant/code` → `{ok:true}` · `POST /api/app/code` → `{ok:true}`.
+- `GET /api/app/agenda/evenements` → `{evenements:[…]}` · `GET /api/app/agenda/derniere-synchro` → `{derniereSynchro: ISO|null}` ·
+  `POST /api/app/agenda/synchroniser` → 202 `{message}`.
+- Erreurs : `{erreur: "<code>"}` avec le statut HTTP.
+**Écran Réservations** : lit `synchro_etat` (a_creer → « sera ajouté ce soir à 20 h », cree → « dans l'agenda », a_supprimer → « sera retiré ce soir », supprime → rien).
