@@ -3,7 +3,7 @@
   "phase": "V2 + mission 26/10 + 2e vague : 436 tests verts, audits sécurité et accessibilité corrigés — à toi : secrets et Google, valider les vidéos, essai sur téléphone",
   "objectif": "Remplacer **My PT Hub (52 €/mois)** par ma propre app de coaching, **0 €/mois**, mobile d'abord, très animée.",
   "date_cible": "2026-10-20",
-  "mis_a_jour": "2026-11-02",
+  "mis_a_jour": "2026-11-03",
   "lots": [
     {
       "id": "0",
@@ -343,6 +343,34 @@
       "duree": "10 min",
       "statut": "a_faire",
       "comment": "Trois valeurs aléatoires, toutes différentes. APP_ORIGIN = URL de l'app. Guide : docs/GOOGLE-AGENDA.md. Aucune valeur dans le code ni dans Git."
+    },
+    {
+      "titre": "Créer ta clé de chiffrement des sauvegardes (age) sur ton Mac",
+      "qui": "Corentin",
+      "duree": "5 min",
+      "statut": "a_faire",
+      "comment": "deploiement/LISEZMOI.md ; la clé privée ne va jamais sur le VPS."
+    },
+    {
+      "titre": "Copier régulièrement les sauvegardes hors du VPS",
+      "qui": "Corentin",
+      "duree": "10 min",
+      "statut": "a_faire",
+      "comment": "deploiement/LISEZMOI.md"
+    },
+    {
+      "titre": "DNS : sous-domaine app. vers le VPS, puis installation (blocs à coller)",
+      "qui": "Corentin",
+      "duree": "20 min",
+      "statut": "a_faire",
+      "comment": "deploiement/LISEZMOI.md"
+    },
+    {
+      "titre": "Créer ton compte coach sur le VPS (npm run coach:creer, en terminal)",
+      "qui": "Corentin",
+      "duree": "2 min",
+      "statut": "a_faire",
+      "comment": "deploiement/LISEZMOI.md"
     }
   ],
   "decisions": [

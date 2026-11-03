@@ -1,6 +1,10 @@
 # ÉTAT — app-coaching
 
-## 2026-11-02 (REPRENDRE ICI) — back-end sur le VPS (SQLite), Supabase retiré
+## 2026-11-03 (REPRENDRE ICI) — back-end VPS TERMINÉ côté code
+- Serveur SQLite + auth (cookie __Host-sid, échecs seuls comptés, X-Proxy-Cle) + /api/app/* avec règles RLS côté serveur + quotas + relais réservations + fichiers + agenda ; 481 tests, e2e MCP 10/10 ; audit (0 critique) + correctifs + contre-audit ; test de bout en bout avec le site validé. Front aligné, écran Réservations vu à l'écran (docs/captures-reservations/).
+- Reste : D9 (données santé : VPS à Corentin seul, reco) ; tâches de Corentin dans deploiement/LISEZMOI.md (clé age sur le Mac, copie des sauvegardes hors VPS, DNS app., installation) ; coach:creer ne marche qu'en vrai terminal (pas en stdin redirigé) ; vérifier sur le VPS systemd-analyze verify, UnsetEnvironment, header_up Caddy.
+
+## 2026-11-02 — back-end sur le VPS (SQLite), Supabase retiré
 - Décision de Corentin : back-end sur le VPS commun de pc-seniors, SQLite + cookie de session comme pc-seniors ; écran coach « Réservations » pour les réservations du site coaching-domicile. Contrat : docs/CONTRAT-VPS.md. D9 ouverte : héberger les données santé sur un VPS à Corentin seul (reco).
 - 3 agents (serveur, adaptateur front, écran Réservations) + déploiement lancés, arrêtés à l'échéance : état précis ci-dessous / dans les commits du 2026-11-02. Ensuite : finir, testeur + auditeur (contrôle d'accès client A/B en priorité).
 - Serveur (commit f1e76f0) : FAIT schema.sql + magasin-sqlite.js (30 tests verts, e2e MCP 10/10). PAS FAIT : auth (cookie, scrypt, limite, coach:creer), endpoints /api/app/*, règles d'accès RLS côté serveur (attention : alertesVues réservé au coach), CSRF, fichiers, relais réservations, refus de démarrer, DB_FILE dans npm run serveur. À trancher : limiteur 120/min par IP à écarter pour /api/app (IP réelle via X-Forwarded-For) ; format des réponses à aligner avec src/data/adapters/api.js.
