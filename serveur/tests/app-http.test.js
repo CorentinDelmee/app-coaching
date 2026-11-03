@@ -1,0 +1,240 @@
+// API de l'app /api/app/* : sessions, règles d'accès (policies RLS), CSRF, relais réservations, fichiers, agenda.
+import { createServer } from 'node:http'
+import { mkdtempSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { creerAppHttp, hacherCode, ipReelle, cheminFichier, signerSession } from '../src/app-http.js'
+import { creerStoreSqlite, ouvrirBase } from '../src/magasin-sqlite.js'
+import { creerServeurRest } from '../src/rest.js'
+import { lireConfig, variablesManquantes } from '../src/config.js'
+
+const ORIGINE = 'https://app.exemple.fr'
+const SECRET = 's'.repeat(40)
+const profilClient = (id, identifiant) => ({ id, role: 'client', identifiant, nom: identifiant, tarif: 40, lieuDefaut: 'domicile', modules: { calories: false }, archive: false, creeLe: 1 })
+let base, serveur, resa, resaRecu, resaPanne = false, db, dossier
+
+async function appel(methode, chemin, { corps, cookie, origine = ORIGINE, brut, type, entetes = {} } = {}) {
+  const headers = { ...entetes }
+  if (origine && methode !== 'GET') headers.Origin = origine
+  if (cookie) headers.Cookie = cookie
+  let body
+  if (brut) { body = brut; headers['Content-Type'] = type } else if (corps !== undefined) { body = JSON.stringify(corps); headers['Content-Type'] = 'application/json' }
+  const r = await fetch(base + chemin, { method: methode, headers, body })
+  const texte = await r.text()
+  let json = null
+  try { json = JSON.parse(texte) } catch { /* binaire */ }
+  return { statut: r.status, json, texte, cookie: (r.headers.get('set-cookie') || '').split(';')[0], setCookie: r.headers.get('set-cookie') || '' }
+}
+const connecter = async (identifiant, code, ip) => (await appel('POST', '/api/app/connexion', { corps: { identifiant, code }, entetes: ip ? { 'X-Forwarded-For': ip } : {} }))
+
+let coach, clientA, clientB
+beforeAll(async () => {
+  dossier = mkdtempSync(join(tmpdir(), 'app-http-'))
+  db = ouvrirBase(':memory:')
+  const store = creerStoreSqlite(db)
+  await store.ecrire('profils', { id: 'pc', role: 'coach', identifiant: 'coach', nom: 'Coach', archive: false, creeLe: 1 })
+  await store.ecrire('profils', profilClient('pa', 'alice'))
+  await store.ecrire('profils', profilClient('pb', 'bob'))
+  for (const [i, r, p] of [['coach', 'coach', 'pc'], ['alice', 'client', 'pa'], ['bob', 'client', 'pb']]) {
+    db.prepare('INSERT INTO comptes (identifiant, hash, role, profil_id) VALUES (?, ?, ?, ?)').run(i, await hacherCode('code-secret-123'), r, p)
+  }
+  // Une ligne de B dans chaque entité à client_id.
+  await store.ecrire('mesures', { id: 'mb', clientId: 'pb', date: 1, poids: 80 })
+  db.prepare("INSERT INTO seances_agenda (id, client_id, statut_attribution, data) VALUES ('ea', 'pa', 'attribue', '{\"id\":\"ea\"}'), ('eb', 'pb', 'attribue', '{\"id\":\"eb\"}')").run()
+  db.prepare('UPDATE agenda_synchro SET derniere_synchro = ? WHERE id = 1').run(Date.UTC(2026, 10, 2, 19))
+
+  // Faux service de réservation : enregistre les en-têtes reçus.
+  resa = createServer((req, res) => {
+    resaRecu = { url: req.url, methode: req.method, headers: req.headers }
+    if (resaPanne) { res.writeHead(500); return res.end('{}') }
+    res.writeHead(req.url.startsWith('/api/resa/admin/blocages') && req.method === 'POST' ? 201 : 200, { 'Content-Type': 'application/json' })
+    res.end(req.url.startsWith('/api/resa/admin/reservations?') ? '{"reservations":[{"id":"r1","synchro_etat":"cree"}]}' : '{"ok":true}')
+  })
+  await new Promise((r) => resa.listen(0, '127.0.0.1', r))
+
+  const config = { ...lireConfig({}), sessionSecret: SECRET, appOrigin: ORIGINE, resaUrl: `http://127.0.0.1:${resa.address().port}`, resaCle: 'k'.repeat(40), fichiersDir: dossier, confianceProxy: true }
+  const appHttp = creerAppHttp({ db, store, config })
+  serveur = creerServeurRest({ config, appHttp, outils: {}, journal: { ecrire() {} }, service: {}, biblio: {} })
+  await new Promise((r) => serveur.listen(0, '127.0.0.1', r))
+  base = `http://127.0.0.1:${serveur.address().port}`
+  coach = (await connecter('coach', 'code-secret-123', '10.0.0.1')).cookie
+  clientA = (await connecter('alice', 'code-secret-123', '10.0.0.2')).cookie
+  clientB = (await connecter('bob', 'code-secret-123', '10.0.0.3')).cookie
+})
+afterAll(() => { serveur?.close(); resa?.close(); rmSync(dossier, { recursive: true, force: true }) })
+
+describe('session', () => {
+  it('connexion : forme du contrat, cookie HttpOnly SameSite=Strict 12 h', async () => {
+    const r = await connecter('alice', 'code-secret-123', '10.0.1.1')
+    expect(r.statut).toBe(200)
+    expect(r.json).toEqual({ utilisateur: { id: 'pa', identifiant: 'alice', role: 'client', profil_id: 'pa' } })
+    expect(r.setCookie).toMatch(/HttpOnly/); expect(r.setCookie).toMatch(/SameSite=Strict/); expect(r.setCookie).toMatch(/Max-Age=43200/)
+    expect((await appel('GET', '/api/app/moi', { cookie: r.cookie })).json.utilisateur.identifiant).toBe('alice')
+  })
+  it('mauvais code : 401 générique ; sans cookie : 401', async () => {
+    expect((await connecter('alice', 'faux', '10.0.1.2')).json).toEqual({ erreur: 'identifiants' })
+    expect((await connecter('inconnu', 'faux', '10.0.1.2')).json).toEqual({ erreur: 'identifiants' })
+    expect((await appel('GET', '/api/app/moi')).statut).toBe(401)
+  })
+  it('cookie falsifié refusé', async () => {
+    const faux = `sid=${encodeURIComponent(signerSession('coach', 0, 'x'.repeat(40)))}`
+    expect((await appel('GET', '/api/app/moi', { cookie: faux })).statut).toBe(401)
+    const modifie = clientA.replace('alice', 'coach')
+    expect((await appel('GET', '/api/app/moi', { cookie: modifie })).statut).toBe(401)
+  })
+  it('limite 5 essais / 15 min par IP réelle + identifiant (X-Forwarded-For : dernière valeur)', async () => {
+    for (let i = 0; i < 5; i++) expect((await connecter('bob', 'faux', '1.1.1.1, 10.9.9.9')).statut).toBe(401)
+    expect((await connecter('bob', 'code-secret-123', '2.2.2.2, 10.9.9.9')).statut).toBe(429)
+    expect((await connecter('bob', 'code-secret-123', '10.9.9.8')).statut).toBe(200) // autre IP réelle : pas bloquée
+  })
+  it('IP réelle : X-Forwarded-For ignoré sans CONFIANCE_PROXY', () => {
+    const req = { headers: { 'x-forwarded-for': '1.2.3.4, 5.6.7.8' }, socket: { remoteAddress: '127.0.0.1' } }
+    expect(ipReelle(req, true)).toBe('5.6.7.8')
+    expect(ipReelle(req, false)).toBe('127.0.0.1')
+  })
+  it('le limiteur global de 120/min ne s\'applique pas à /api/app', async () => {
+    const rs = await Promise.all(Array.from({ length: 130 }, () => appel('GET', '/api/app/moi', { cookie: coach })))
+    expect(rs.every((r) => r.statut === 200)).toBe(true)
+  })
+  it('déconnexion et changement de code révoquent les sessions', async () => {
+    const c1 = (await connecter('alice', 'code-secret-123', '10.0.2.1')).cookie
+    const c2 = (await connecter('alice', 'code-secret-123', '10.0.2.1')).cookie
+    const r = await appel('POST', '/api/app/code', { cookie: c1, corps: { ancien: 'code-secret-123', nouveau: 'nouveau-code-456' } })
+    expect(r.json).toEqual({ ok: true })
+    expect((await appel('GET', '/api/app/moi', { cookie: c2 })).statut).toBe(401)
+    expect((await appel('GET', '/api/app/moi', { cookie: r.cookie })).statut).toBe(200)
+    await appel('POST', '/api/app/deconnexion', { cookie: r.cookie })
+    expect((await appel('GET', '/api/app/moi', { cookie: r.cookie })).statut).toBe(401)
+    expect((await appel('POST', '/api/app/comptes/alice/code', { cookie: coach, corps: { code: 'code-secret-123' } })).json).toEqual({ ok: true })
+    clientA = (await connecter('alice', 'code-secret-123', '10.0.2.2')).cookie
+  })
+  it('comptes : coach seulement, 201 {id}', async () => {
+    const corps = { identifiant: 'carla', code: 'code-carla-1', profil: profilClient('pcarla', 'carla') }
+    expect((await appel('POST', '/api/app/comptes', { cookie: clientA, corps })).statut).toBe(403)
+    const r = await appel('POST', '/api/app/comptes', { cookie: coach, corps })
+    expect(r.statut).toBe(201); expect(r.json).toEqual({ id: 'pcarla' })
+    expect((await connecter('carla', 'code-carla-1', '10.0.3.1')).statut).toBe(200)
+    expect((await appel('POST', '/api/app/comptes', { cookie: coach, corps })).statut).toBe(409)
+  })
+})
+
+describe('CSRF et taille', () => {
+  it('non-GET sans Origin ou avec une autre Origin : 403', async () => {
+    expect((await appel('POST', '/api/app/connexion', { origine: null, corps: { identifiant: 'alice', code: 'x' } })).statut).toBe(403)
+    expect((await appel('PUT', '/api/app/e/mesures/m1', { cookie: clientA, origine: 'https://pirate.fr', corps: { id: 'm1', clientId: 'pa', date: 1 } })).statut).toBe(403)
+  })
+  it('corps JSON > 1 Mo : 413', async () => {
+    const r = await appel('PUT', '/api/app/e/mesures/m1', { cookie: clientA, corps: { id: 'm1', clientId: 'pa', x: 'a'.repeat(1100000) } }).catch(() => ({ statut: 413 }))
+    expect(r.statut).toBe(413)
+  })
+})
+
+describe('entités (policies RLS)', () => {
+  it('entité inconnue : 404 ; liste blanche', async () => {
+    expect((await appel('GET', '/api/app/e/comptes', { cookie: coach })).statut).toBe(404)
+  })
+  it('le client A ne lit ni n\'écrit les lignes de B, pour chaque entité à client_id', async () => {
+    const PROPRES = ['realisations', 'reponses', 'mesures', 'douleurs', 'nutrition', 'workouts', 'programmes', 'seancesCoaching', 'motsDuCoach', 'questionnaires']
+    for (const e of PROPRES) {
+      const liste = await appel('GET', `/api/app/e/${e}`, { cookie: clientA })
+      expect(liste.statut).toBe(200)
+      expect(liste.json.items.every((o) => !o.clientId || o.clientId === 'pa')).toBe(true)
+      const w = await appel('PUT', `/api/app/e/${e}/x-${e}`, { cookie: clientA, corps: { id: `x-${e}`, clientId: 'pb' } })
+      expect([400, 403]).toContain(w.statut)
+    }
+    expect((await appel('GET', '/api/app/e/templates/pb', { cookie: clientA })).statut).toBe(404)
+    expect((await appel('GET', '/api/app/e/mesures/mb', { cookie: clientA })).statut).toBe(404)
+    expect((await appel('GET', '/api/app/e/mesures', { cookie: clientA })).json.items).toEqual([])
+    expect((await appel('DELETE', '/api/app/e/mesures/mb', { cookie: clientA })).statut).toBe(403)
+    expect((await appel('GET', '/api/app/e/mesures/mb', { cookie: clientB })).json.item.poids).toBe(80)
+    expect((await appel('GET', '/api/app/e/profils', { cookie: clientA })).json.items.map((p) => p.id)).toEqual(['pa'])
+  })
+  it('le client ne réattribue pas une ligne de B à lui-même', async () => {
+    const r = await appel('PUT', '/api/app/e/mesures/mb', { cookie: clientA, corps: { id: 'mb', clientId: 'pa', date: '2026-11-01', poids: 1 } })
+    expect(r.statut).toBe(403)
+  })
+  it('le client écrit ses lignes (forme {item}) mais pas les entités du coach', async () => {
+    const m = { id: 'ma', clientId: 'pa', date: '2026-11-02', poids: 70 }
+    const r = await appel('PUT', '/api/app/e/mesures/ma', { cookie: clientA, corps: m })
+    expect(r.statut).toBe(200); expect(r.json).toEqual({ item: m })
+    expect((await appel('DELETE', '/api/app/e/mesures/ma', { cookie: clientA })).json).toEqual({ ok: true })
+    expect((await appel('PUT', '/api/app/e/exercices/e1', { cookie: clientA, corps: { id: 'e1', nom: 'Squat', categories: [] } })).statut).toBe(403)
+  })
+  it('le client ne change ni rôle, ni tarif, ni modules ; il peut changer ses préférences', async () => {
+    const p = profilClient('pa', 'alice')
+    for (const modif of [{ role: 'coach' }, { tarif: 0 }, { modules: { calories: true } }, { archive: true }]) {
+      expect((await appel('PUT', '/api/app/e/profils/pa', { cookie: clientA, corps: { ...p, ...modif } })).statut).toBe(403)
+    }
+    expect((await appel('PUT', '/api/app/e/profils/pa', { cookie: clientA, corps: { ...p, preferences: { theme: 'sombre' } } })).statut).toBe(200)
+    expect((await appel('PUT', '/api/app/e/profils/pb', { cookie: clientA, corps: profilClient('pb', 'bob') })).statut).toBe(403)
+  })
+  it('alertesVues : coach seulement', async () => {
+    expect((await appel('GET', '/api/app/e/alertesVues', { cookie: clientA })).statut).toBe(403)
+    expect((await appel('GET', '/api/app/e/alertesVues', { cookie: coach })).statut).toBe(200)
+  })
+  it('le coach lit et écrit tout', async () => {
+    expect((await appel('GET', '/api/app/e/mesures/mb', { cookie: coach })).statut).toBe(200)
+    expect((await appel('PUT', '/api/app/e/exercices/e1', { cookie: coach, corps: { id: 'e1', nom: 'Squat', categories: [] } })).statut).toBe(200)
+  })
+})
+
+describe('relais réservations', () => {
+  it('coach : corps renvoyé tel quel, clé envoyée, aucun en-tête de proxy transmis', async () => {
+    const r = await appel('GET', '/api/app/reservations?statut=a_venir', { cookie: coach, entetes: { 'X-Forwarded-For': '9.9.9.9', 'X-Real-IP': '9.9.9.9', Forwarded: 'for=9.9.9.9' } })
+    expect(r.statut).toBe(200)
+    expect(r.texte).toBe('{"reservations":[{"id":"r1","synchro_etat":"cree"}]}')
+    expect(resaRecu.url).toBe('/api/resa/admin/reservations?statut=a_venir')
+    expect(resaRecu.headers['x-resa-admin-key']).toBe('k'.repeat(40))
+    for (const h of ['x-forwarded-for', 'x-real-ip', 'forwarded', 'cookie']) expect(resaRecu.headers[h]).toBeUndefined()
+    const b = await appel('POST', '/api/app/reservations/blocages', { cookie: coach, corps: { debut: 'a', fin: 'b', motif: 'c' } })
+    expect(b.statut).toBe(201); expect(resaRecu.url).toBe('/api/resa/admin/blocages')
+    await appel('POST', '/api/app/reservations/r1/annuler', { cookie: coach })
+    expect(resaRecu.url).toBe('/api/resa/admin/reservations/r1/annuler')
+  })
+  it('client : 403', async () => {
+    expect((await appel('GET', '/api/app/reservations?statut=a_venir', { cookie: clientA })).statut).toBe(403)
+  })
+  it('API en panne ou injoignable : 502 reservation_indisponible', async () => {
+    resaPanne = true
+    const r = await appel('GET', '/api/app/reservations/regles', { cookie: coach })
+    resaPanne = false
+    expect(r.statut).toBe(502); expect(r.json).toEqual({ erreur: 'reservation_indisponible' })
+  })
+})
+
+describe('agenda', () => {
+  it('événements filtrés par client, dernière synchro, synchroniser 202', async () => {
+    expect((await appel('GET', '/api/app/agenda/evenements', { cookie: clientA })).json).toEqual({ evenements: [{ id: 'ea' }] })
+    expect((await appel('GET', '/api/app/agenda/evenements', { cookie: coach })).json.evenements).toHaveLength(2)
+    expect((await appel('GET', '/api/app/agenda/derniere-synchro', { cookie: coach })).json).toEqual({ derniereSynchro: '2026-11-02T19:00:00.000Z' })
+    const s = await appel('POST', '/api/app/agenda/synchroniser', { cookie: coach })
+    expect(s.statut).toBe(202); expect(s.json.message).toMatch(/20 h/)
+  })
+})
+
+describe('fichiers', () => {
+  const PNG = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(20)])
+  it('chemins normalisés', () => {
+    expect(cheminFichier('pa/photo.png')).toBeTruthy()
+    for (const c of ['../pa/x.png', 'pa/../pb/x.png', '/pa/x.png', 'pa/x.exe', 'pa//x.png', 'pa/sub/x.png']) expect(cheminFichier(c)).toBeNull()
+  })
+  it('propriétaire : envoi, lecture, suppression ; autre client : 403 ; signature vérifiée', async () => {
+    expect((await appel('POST', '/api/app/fichiers?chemin=pa/p1.png', { cookie: clientA, brut: PNG, type: 'image/png' })).statut).toBe(201)
+    expect((await appel('GET', '/api/app/fichiers?chemin=pa/p1.png', { cookie: clientA })).statut).toBe(200)
+    expect((await appel('GET', '/api/app/fichiers?chemin=pa/p1.png', { cookie: clientB })).statut).toBe(403)
+    expect((await appel('GET', '/api/app/fichiers?chemin=pa/p1.png', { cookie: coach })).statut).toBe(200)
+    expect((await appel('POST', '/api/app/fichiers?chemin=pa/p2.png', { cookie: clientA, brut: Buffer.from('<html>'), type: 'image/png' })).statut).toBe(415)
+    expect((await appel('POST', '/api/app/fichiers?chemin=pb/p1.png', { cookie: clientA, brut: PNG, type: 'image/png' })).statut).toBe(403)
+    expect((await appel('POST', '/api/app/fichiers?chemin=..%2Fx.png', { cookie: clientA, brut: PNG, type: 'image/png' })).statut).toBe(400)
+    expect((await appel('DELETE', '/api/app/fichiers?chemin=pa/p1.png', { cookie: clientA })).json).toEqual({ ok: true })
+    expect((await appel('GET', '/api/app/fichiers?chemin=pa/p1.png', { cookie: clientA })).statut).toBe(404)
+  })
+})
+
+describe('démarrage en production', () => {
+  it('liste les variables manquantes', () => {
+    expect(variablesManquantes({ NODE_ENV: 'development' })).toEqual([])
+    expect(variablesManquantes({ NODE_ENV: 'production', SESSION_SECRET: 'court' })).toEqual(expect.arrayContaining(['DB_FILE', 'SESSION_SECRET', 'RESA_ADMIN_KEY', 'APP_ORIGIN']))
+  })
+})

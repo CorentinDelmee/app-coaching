@@ -59,6 +59,8 @@ export function creerServeurRest(app, { now = () => Date.now() } = {}) {
     const o = req.headers.origin
     const origine = o && config.originesCors.includes(o) ? o : null
     try {
+      // API de l'app (cookie de session) : traitée à part, avec son propre limiteur par IP réelle (pas celui-ci : derrière Caddy, toutes les requêtes viennent de 127.0.0.1).
+      if (app.appHttp && chemin.startsWith('/api/app/')) return void (await app.appHttp(req, res))
       if (req.method === 'OPTIONS') {
         res.writeHead(origine ? 204 : 403, origine ? { 'Access-Control-Allow-Origin': origine, 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE', Vary: 'Origin' } : {})
         return res.end()

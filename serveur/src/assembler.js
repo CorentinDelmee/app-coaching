@@ -7,12 +7,17 @@ import { creerOutils } from './outils.js'
 import { creerService } from './service.js'
 import { creerStoreFichier, creerStoreSupabase } from './store.js'
 import { RACINE_SERVEUR } from './config.js'
+import { creerStoreSqlite, ouvrirBase } from './magasin-sqlite.js'
+import { creerAppHttp } from './app-http.js'
 
 export async function assembler(config, { now = () => Date.now(), fetchFn } = {}) {
   const dossier = config.dossierDonnees
-  const backend = config.supabaseUrl && config.supabaseCleService
-    ? await creerStoreSupabase({ url: config.supabaseUrl, cleService: config.supabaseCleService })
-    : creerStoreFichier(join(dossier, 'etat.json'), now)
+  // DB_FILE défini -> SQLite (production VPS) ; sinon fichier JSON (démo/tests).
+  const backend = config.dbFile
+    ? creerStoreSqlite(ouvrirBase(config.dbFile))
+    : config.supabaseUrl && config.supabaseCleService
+      ? await creerStoreSupabase({ url: config.supabaseUrl, cleService: config.supabaseCleService })
+      : creerStoreFichier(join(dossier, 'etat.json'), now)
   const biblio = creerBibliotheque(join(dossier, 'bibliotheque.json'), { now })
   // Premier lancement : importe la sélection de vidéos préparée (serveur/donnees/bibliotheque-videos.json) si elle existe.
   const importDepart = join(RACINE_SERVEUR, 'donnees', 'bibliotheque-videos.json')
@@ -21,5 +26,7 @@ export async function assembler(config, { now = () => Date.now(), fetchFn } = {}
   journal.purger(config.journalJours)
   const service = creerService({ backend, biblio, config, now, fetchFn })
   const outils = creerOutils(service)
-  return { config, backend, biblio, journal, service, outils }
+  // API de l'app (/api/app/*) : seulement avec SQLite et un secret de session.
+  const appHttp = backend.mode === 'sqlite' && config.sessionSecret ? creerAppHttp({ db: backend.db, store: backend, config, now, fetchFn }) : null
+  return { config, backend, biblio, journal, service, outils, appHttp }
 }
