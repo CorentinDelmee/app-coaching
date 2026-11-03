@@ -111,6 +111,13 @@ describe('session', () => {
     expect(l.resultat.compte).toMatch(/^[0-9a-f]{12}$/)
     expect(JSON.stringify(journalApp)).not.toMatch(/10\.4\.4|faux-code|alice/)
   })
+  it('attaque distribuée : 60 IP inconnues échouent -> IP connue + bon code passe, IP inconnue reste en 429', async () => {
+    expect((await connecter('coach', 'code-secret-123', '10.8.8.8')).statut).toBe(200) // IP connue
+    for (let i = 0; i < 60; i++) await connecter('coach', 'faux', `198.51.100.${i}`)
+    expect((await connecter('coach', 'code-secret-123', '198.51.100.200')).statut).toBe(429)
+    expect((await connecter('coach', 'code-secret-123', '10.8.8.8')).statut).toBe(200)
+    expect(JSON.stringify(db.prepare('SELECT * FROM ips_connues').all())).not.toMatch(/10\.8\.8\.8/) // IP jamais en clair
+  })
   it('corps null ou %xx mal formé : 400', async () => {
     const r = await fetch(base + '/api/app/connexion', { method: 'POST', headers: { Origin: ORIGINE, 'Content-Type': 'application/json' }, body: 'null' })
     expect(r.status).toBe(400)

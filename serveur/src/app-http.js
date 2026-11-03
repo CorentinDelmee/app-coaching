@@ -142,6 +142,15 @@ export function creerAppHttp({ db, store, config, journal = null, now = () => Da
   const RE_COOKIE = new RegExp(`(?:^|;\\s*)${NOM_COOKIE}=([^;]+)`)
   // Connexion : seuls les ÉCHECS comptent. IP+compte 5 / 15 min ; compte seul 50 (un tiers ne verrouille pas le compte) ; IP seule 30.
   const parIp = creerLimiteurEssais(30), parCompte = creerLimiteurEssais(50), parCouple = creerLimiteurEssais(5)
+  // IP « connues » d'un compte (connexion réussie < 30 jours) : le plafond par compte seul ne s'y applique pas,
+  // sinon un attaquant distribué bloquerait le coach en boucle. IP stockée en empreinte HMAC, jamais en clair.
+  db.exec('CREATE TABLE IF NOT EXISTS ips_connues (identifiant TEXT NOT NULL, ip TEXT NOT NULL, vu_le INTEGER NOT NULL, PRIMARY KEY (identifiant, ip))')
+  const empreinteIp = (ip) => createHmac('sha256', config.sessionSecret).update(`ip:${ip}`).digest('hex').slice(0, 32)
+  const ipConnue = (id, ip) => !!db.prepare('SELECT 1 FROM ips_connues WHERE identifiant = ? AND ip = ? AND vu_le > ?').get(id, empreinteIp(ip), now() - 30 * 864e5)
+  const retenirIp = (id, ip) => {
+    db.prepare('INSERT INTO ips_connues (identifiant, ip, vu_le) VALUES (?, ?, ?) ON CONFLICT DO UPDATE SET vu_le = excluded.vu_le').run(id, empreinteIp(ip), now())
+    db.prepare('DELETE FROM ips_connues WHERE vu_le <= ?').run(now() - 30 * 864e5)
+  }
   const empreinteCompte = (id) => createHmac('sha256', config.sessionSecret).update(`compte:${id}`).digest('hex').slice(0, 12)
   const debitIp = creerLimiteurEssais(600, 60e3) // garde-fou général par IP réelle (pas celle de Caddy)
   const compte = (identifiant) => db.prepare('SELECT * FROM comptes WHERE identifiant = ?').get(identifiant)
@@ -171,7 +180,8 @@ export function creerAppHttp({ db, store, config, journal = null, now = () => Da
     const corps = await lireJson(req)
     const identifiant = String(corps.identifiant ?? '').toLowerCase().trim().slice(0, 50)
     const t = now()
-    const cles = [[parIp, ip], [parCompte, identifiant], [parCouple, `${ip}|${identifiant}`]]
+    const connue = RE_IDENTIFIANT.test(identifiant) && ipConnue(identifiant, ip)
+    const cles = connue ? [[parCouple, `${ip}|${identifiant}`]] : [[parIp, ip], [parCompte, identifiant], [parCouple, `${ip}|${identifiant}`]]
     if (cles.some(([l, k]) => l.bloque(k, t))) return envoyer(res, 429, { erreur: 'trop_d_essais' })
     cles.forEach(([l, k]) => l.compter(k, t)) // compté AVANT le hachage (essais parallèles), annulé si la connexion réussit
     const c = RE_IDENTIFIANT.test(identifiant) ? compte(identifiant) : null
@@ -182,7 +192,9 @@ export function creerAppHttp({ db, store, config, journal = null, now = () => Da
       journal?.ecrire({ acteur: 'app', outil: 'connexion', ok: false, erreur: 'echec', resultat: { compte: empreinteCompte(identifiant) } })
       return envoyer(res, 401, { erreur: 'identifiants' })
     }
-    parCouple.effacer(`${ip}|${identifiant}`); parCompte.annuler(identifiant); parIp.annuler(ip)
+    parCouple.effacer(`${ip}|${identifiant}`)
+    if (!connue) { parCompte.annuler(identifiant); parIp.annuler(ip) }
+    retenirIp(identifiant, ip)
     envoyer(res, 200, { utilisateur: utilisateurPublic(c) }, { 'Set-Cookie': cookieSession(c) })
   }
 
