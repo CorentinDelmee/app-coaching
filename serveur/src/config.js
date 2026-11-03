@@ -37,7 +37,7 @@ export function lireConfig(env = process.env) {
     appOrigin: env.APP_ORIGIN || '',
     resaUrl: (env.RESA_API_URL || 'http://127.0.0.1:5311').replace(/\/$/, ''),
     resaCle: env.RESA_ADMIN_KEY || '',
-    confianceProxy: env.CONFIANCE_PROXY === '1' // X-Forwarded-For (Caddy) lu seulement si 1
+    proxyCle: env.PROXY_KEY || '' // X-Forwarded-For cru seulement si la requête porte X-Proxy-Cle = PROXY_KEY (ajouté par Caddy)
   }
 }
 
@@ -45,6 +45,6 @@ export function lireConfig(env = process.env) {
 export function variablesManquantes(env = process.env) {
   if (env.NODE_ENV !== 'production') return []
   const manque = ['DB_FILE', 'FICHIERS_DIR', 'APP_ORIGIN', 'RESA_API_URL', 'COACH_API_KEY'].filter((k) => !env[k])
-  for (const k of ['SESSION_SECRET', 'RESA_ADMIN_KEY']) if (!env[k] || env[k].length < 32) manque.push(k)
+  for (const k of ['SESSION_SECRET', 'RESA_ADMIN_KEY', 'PROXY_KEY']) if (!env[k] || env[k].length < 32) manque.push(k)
   return manque
 }

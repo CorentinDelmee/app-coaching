@@ -1,7 +1,7 @@
 // API de l'app (navigateur) : /api/app/*. Session par cookie signé, règles d'accès = policies RLS de supabase/schema.sql.
 // Contrat : docs/CONTRAT-VPS.md (« Formes JSON exactes » fait foi). Magasin : SQLite (magasin-sqlite.js).
-import { createHmac, randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
-import { mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { createHash, createHmac, randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
+import { mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { join, posix } from 'node:path'
 import { ENTITES, clientDe, visiblePar } from '../../src/data/entites.js'
 import { LONGUEUR_CODE_MIN } from '../../src/domain/identifiants.js'
@@ -10,6 +10,8 @@ const SESSION_MS = 12 * 3600e3
 const JSON_MAX = 1024 * 1024
 const FICHIER_MAX = 5 * 1024 * 1024
 const RE_IDENTIFIANT = /^[a-z0-9][a-z0-9._-]{1,39}$/
+// Plafonds par client (un compte client compromis ne remplit pas le disque). Le coach n'a que la limite par ligne.
+export const QUOTAS = { lignes: 5000, octetsLigne: 64 * 1024, fichiers: 200, octetsFichiers: 200 * 1024 * 1024 }
 
 // ---------- Mots de passe (scrypt « sel:hash ») et session signée ----------
 const scryptAsync = (pw, sel) => new Promise((ok, ko) => scrypt(pw, sel, 64, (e, k) => (e ? ko(e) : ok(k))))
@@ -43,17 +45,29 @@ export function lireSession(valeur, secret, now = Date.now()) {
 export function creerLimiteurEssais(max, fenetreMs = 15 * 60e3) {
   const essais = new Map()
   const frais = (k, t) => (essais.get(k) || []).filter((x) => t - x < fenetreMs)
+  // Purge des clés sans essai récent (au lieu de tout vider : un attaquant ne remet pas les compteurs à zéro).
+  const purger = (t) => { for (const k of [...essais.keys()]) { const f = frais(k, t); if (f.length) essais.set(k, f); else essais.delete(k) } }
   return {
     bloque: (k, t) => frais(k, t).length >= max,
-    compter: (k, t) => { essais.set(k, [...frais(k, t), t]); if (essais.size > 10000) essais.clear() },
-    effacer: (k) => essais.delete(k)
+    compter: (k, t) => { essais.set(k, [...frais(k, t), t]); if (essais.size > 10000) purger(t) },
+    annuler: (k) => { const a = essais.get(k); if (a?.length > 1) essais.set(k, a.slice(0, -1)); else essais.delete(k) },
+    effacer: (k) => essais.delete(k),
+    taille: () => essais.size,
+    purger
   }
 }
 
-/** IP réelle : dernière valeur de X-Forwarded-For (posée par Caddy) seulement si on fait confiance au proxy. */
-export function ipReelle(req, confianceProxy) {
+const empreinte = (v) => createHash('sha256').update(String(v)).digest()
+/** La requête vient-elle de Caddy ? En-tête X-Proxy-Cle = PROXY_KEY (≥ 32 car.), comparé en temps constant. */
+export function vientDuProxy(req, proxyCle) {
+  const v = req.headers['x-proxy-cle']
+  if (!proxyCle || proxyCle.length < 32 || typeof v !== 'string') return false
+  return timingSafeEqual(empreinte(v), empreinte(proxyCle))
+}
+/** IP réelle : dernière valeur de X-Forwarded-For seulement si la requête porte la clé du proxy ; sinon l'adresse de connexion. */
+export function ipReelle(req, proxyCle) {
   const xff = req.headers['x-forwarded-for']
-  if (confianceProxy && xff) {
+  if (xff && vientDuProxy(req, proxyCle)) {
     const v = String(xff).split(',').map((s) => s.trim()).filter(Boolean).pop()
     if (v) return v
   }
@@ -91,6 +105,8 @@ const ROUTES_RESA = [
   ['GET', /^\/regles$/], ['PUT', /^\/regles$/]
 ]
 
+// Corps JSON : seulement un objet (null, tableau ou valeur simple -> 400).
+const estObjet = (v) => v !== null && typeof v === 'object' && !Array.isArray(v)
 class Erreur extends Error { constructor(statut, code) { super(code); this.statut = statut; this.code = code } }
 
 function lireBrut(req, max) {
@@ -108,18 +124,25 @@ function lireBrut(req, max) {
 async function lireJson(req) {
   const b = await lireBrut(req, JSON_MAX)
   if (!b.length) return {}
-  try { return JSON.parse(b.toString('utf8')) } catch { throw new Erreur(400, 'json_invalide') }
+  let v
+  try { v = JSON.parse(b.toString('utf8')) } catch { throw new Erreur(400, 'json_invalide') }
+  if (!estObjet(v)) throw new Erreur(400, 'json_invalide')
+  return v
 }
 
 /**
  * Crée le gestionnaire des routes /api/app/*. Retourne (req, res) => Promise<boolean> (vrai si la route est traitée).
  * config : { production, sessionSecret, appOrigin, resaUrl, resaCle, fichiersDir, confianceProxy }
  */
-export function creerAppHttp({ db, store, config, now = () => Date.now(), fetchFn = (...a) => globalThis.fetch(...a) }) {
+export function creerAppHttp({ db, store, config, journal = null, now = () => Date.now(), fetchFn = (...a) => globalThis.fetch(...a) }) {
   if (!config.sessionSecret || config.sessionSecret.length < 32) throw new Error('SESSION_SECRET manquant ou trop court (32 caractères minimum)')
   const secure = !!config.production
   const optsCookie = `HttpOnly; SameSite=Strict; Path=/${secure ? '; Secure' : ''}`
-  const parIp = creerLimiteurEssais(20), parCompte = creerLimiteurEssais(10), parCouple = creerLimiteurEssais(5)
+  const NOM_COOKIE = secure ? '__Host-sid' : 'sid' // __Host- : Secure, Path=/, sans Domain (non posable par un sous-domaine)
+  const RE_COOKIE = new RegExp(`(?:^|;\\s*)${NOM_COOKIE}=([^;]+)`)
+  // Connexion : seuls les ÉCHECS comptent. IP+compte 5 / 15 min ; compte seul 50 (un tiers ne verrouille pas le compte) ; IP seule 30.
+  const parIp = creerLimiteurEssais(30), parCompte = creerLimiteurEssais(50), parCouple = creerLimiteurEssais(5)
+  const empreinteCompte = (id) => createHmac('sha256', config.sessionSecret).update(`compte:${id}`).digest('hex').slice(0, 12)
   const debitIp = creerLimiteurEssais(600, 60e3) // garde-fou général par IP réelle (pas celle de Caddy)
   const compte = (identifiant) => db.prepare('SELECT * FROM comptes WHERE identifiant = ?').get(identifiant)
   const utilisateurPublic = (c) => ({ id: c.profil_id, identifiant: c.identifiant, role: c.role, profil_id: c.profil_id })
@@ -128,11 +151,11 @@ export function creerAppHttp({ db, store, config, now = () => Date.now(), fetchF
     res.writeHead(statut, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', ...enTetes })
     res.end(JSON.stringify(corps))
   }
-  const cookieSession = (c) => `sid=${encodeURIComponent(signerSession(c.identifiant, c.sv, config.sessionSecret, now()))}; Max-Age=${SESSION_MS / 1000}; ${optsCookie}`
+  const cookieSession = (c) => `${NOM_COOKIE}=${encodeURIComponent(signerSession(c.identifiant, c.sv, config.sessionSecret, now()))}; Max-Age=${SESSION_MS / 1000}; ${optsCookie}`
 
   // Utilisateur de la requête : cookie valide, compte actif, version de session à jour, profil non archivé.
   async function utilisateurDe(req) {
-    const m = /(?:^|;\s*)sid=([^;]+)/.exec(req.headers.cookie || '')
+    const m = RE_COOKIE.exec(req.headers.cookie || '')
     if (!m) return null
     let v
     try { v = decodeURIComponent(m[1]) } catch { return null }
@@ -150,12 +173,16 @@ export function creerAppHttp({ db, store, config, now = () => Date.now(), fetchF
     const t = now()
     const cles = [[parIp, ip], [parCompte, identifiant], [parCouple, `${ip}|${identifiant}`]]
     if (cles.some(([l, k]) => l.bloque(k, t))) return envoyer(res, 429, { erreur: 'trop_d_essais' })
-    cles.forEach(([l, k]) => l.compter(k, t)) // compté AVANT le hachage : des essais en parallèle ne passent pas sous le plafond
+    cles.forEach(([l, k]) => l.compter(k, t)) // compté AVANT le hachage (essais parallèles), annulé si la connexion réussit
     const c = RE_IDENTIFIANT.test(identifiant) ? compte(identifiant) : null
     const ok = (await verifierCode(String(corps.code ?? '').slice(0, 200), c?.hash || 'x:y')) && c && !c.archive
     const p = ok ? await store.un('profils', c.profil_id) : null
-    if (!ok || !p || p.archive) return envoyer(res, 401, { erreur: 'identifiants' })
-    parCouple.effacer(`${ip}|${identifiant}`)
+    if (!ok || !p || p.archive) {
+      // Journal : date et empreinte courte de l'identifiant ; ni IP en clair, ni code.
+      journal?.ecrire({ acteur: 'app', outil: 'connexion', ok: false, erreur: 'echec', resultat: { compte: empreinteCompte(identifiant) } })
+      return envoyer(res, 401, { erreur: 'identifiants' })
+    }
+    parCouple.effacer(`${ip}|${identifiant}`); parCompte.annuler(identifiant); parIp.annuler(ip)
     envoyer(res, 200, { utilisateur: utilisateurPublic(c) }, { 'Set-Cookie': cookieSession(c) })
   }
 
@@ -183,6 +210,7 @@ export function creerAppHttp({ db, store, config, now = () => Date.now(), fetchF
       const obj = await lireJson(req)
       if (!obj || typeof obj !== 'object' || Array.isArray(obj) || obj.id !== id) throw new Erreur(400, 'invalide')
       if (!ENTITES[entite].valider(obj).ok) throw new Erreur(400, 'invalide')
+      if (Buffer.byteLength(JSON.stringify(obj)) > QUOTAS.octetsLigne) throw new Erreur(413, 'quota')
       if (!coach) {
         if (entite === 'profils') {
           // Un client modifie seulement son profil, sans toucher aux champs sensibles.
@@ -192,9 +220,12 @@ export function creerAppHttp({ db, store, config, now = () => Date.now(), fetchF
           if (!ECRITURE_CLIENT.has(entite)) throw new Erreur(403, 'interdit')
           if (clientDe(entite, obj) !== u.profil_id) throw new Erreur(403, 'interdit')
           if (existant && clientDe(entite, existant) !== u.profil_id) throw new Erreur(403, 'interdit')
+          if (!existant && lignesDuClient(u.profil_id) >= QUOTAS.lignes) throw new Erreur(413, 'quota')
         }
-      } else if (entite === 'profils' && existant && obj.identifiant !== existant.identifiant) {
-        throw new Erreur(400, 'identifiant_non_modifiable') // le compte de connexion porte l'identifiant
+      } else if (entite === 'profils' && existant && (obj.identifiant !== existant.identifiant || obj.role !== existant.role)) {
+        // Le compte de connexion porte l'identifiant et le rôle : on refuse de les changer (plus sûr que synchroniser).
+        // L'archivage, lui, est lu sur le profil à chaque requête (session et connexion) : effet immédiat.
+        throw new Erreur(400, 'identifiant_ou_role_non_modifiable')
       }
       try { await store.ecrire(entite, obj) } catch { throw new Erreur(400, 'invalide') } // ex. client_id inexistant
       return envoyer(res, 200, { item: obj })
@@ -206,6 +237,14 @@ export function creerAppHttp({ db, store, config, now = () => Date.now(), fetchF
       return envoyer(res, 200, { ok: true })
     }
     throw new Erreur(405, 'methode')
+  }
+
+  const TABLES_CLIENT = [...new Set(Object.entries(ENTITES).filter(([e]) => e !== 'profils').map(([, d]) => d.table))]
+  const lignesDuClient = (id) => TABLES_CLIENT.reduce((n, t) => n + db.prepare(`SELECT count(*) AS n FROM ${t} WHERE client_id = ?`).get(id).n, 0)
+  function usageFichiers(dossier) {
+    let n = 0, octets = 0
+    try { for (const f of readdirSync(dossier)) { n++; octets += statSync(join(dossier, f)).size } } catch { /* dossier absent */ }
+    return { n, octets }
   }
 
   // ---------- Relais réservations (coach) ----------
@@ -240,6 +279,11 @@ export function creerAppHttp({ db, store, config, now = () => Date.now(), fetchF
       if (!TYPES_FICHIER[type]?.includes(f.ext)) throw new Erreur(415, 'type_refuse')
       const buf = await lireBrut(req, FICHIER_MAX)
       if (!signatureOk(type, buf)) throw new Erreur(415, 'type_refuse')
+      // Plafonds par client (dossier du propriétaire), quel que soit l'auteur de l'envoi.
+      const usage = usageFichiers(join(config.fichiersDir, f.proprietaire))
+      let deja = 0
+      try { deja = statSync(disque).size } catch { /* nouveau fichier */ }
+      if ((!deja && usage.n >= QUOTAS.fichiers) || usage.octets - deja + buf.length > QUOTAS.octetsFichiers) throw new Erreur(413, 'quota')
       mkdirSync(join(config.fichiersDir, f.proprietaire), { recursive: true })
       writeFileSync(disque, buf)
       return envoyer(res, 201, { ok: true })
@@ -276,7 +320,7 @@ export function creerAppHttp({ db, store, config, now = () => Date.now(), fetchF
     const chemin = url.pathname
     if (!chemin.startsWith('/api/app/')) return false
     const route = chemin.slice('/api/app'.length)
-    const ip = ipReelle(req, config.confianceProxy)
+    const ip = ipReelle(req, config.proxyCle)
     try {
       if (debitIp.bloque(ip, now())) throw new Erreur(429, 'trop_de_requetes')
       debitIp.compter(ip, now())
@@ -286,7 +330,7 @@ export function creerAppHttp({ db, store, config, now = () => Date.now(), fetchF
       if (req.method === 'POST' && route === '/deconnexion') {
         const u = await utilisateurDe(req)
         if (u) db.prepare('UPDATE comptes SET sv = sv + 1 WHERE identifiant = ?').run(u.identifiant) // révoque aussi un cookie copié
-        envoyer(res, 200, { ok: true }, { 'Set-Cookie': `sid=; Max-Age=0; ${optsCookie}` })
+        envoyer(res, 200, { ok: true }, { 'Set-Cookie': `${NOM_COOKIE}=; Max-Age=0; ${optsCookie}` })
         return true
       }
       const u = await utilisateurDe(req)
@@ -338,7 +382,8 @@ export function creerAppHttp({ db, store, config, now = () => Date.now(), fetchF
     } catch (e) {
       // Corps trop gros : réponse 413 avec « Connection: close » (le client ne réutilise pas la connexion), puis coupure.
       if (e?.code === 'trop_gros') { res.once('finish', () => req.destroy()); return envoyer(res, 413, { erreur: e.code }, { Connection: 'close' }), true }
-      if (e instanceof Erreur) envoyer(res, e.statut, { erreur: e.code })
+      if (e instanceof URIError) envoyer(res, 400, { erreur: 'invalide' }) // %xx mal formé dans l'adresse
+      else if (e instanceof Erreur) envoyer(res, e.statut, { erreur: e.code })
       else envoyer(res, 500, { erreur: 'interne' })
       return true
     }

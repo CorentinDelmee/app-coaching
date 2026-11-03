@@ -4,13 +4,15 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { creerAppHttp, hacherCode, ipReelle, cheminFichier, signerSession } from '../src/app-http.js'
+import { creerAppHttp, hacherCode, ipReelle, cheminFichier, signerSession, QUOTAS } from '../src/app-http.js'
 import { creerStoreSqlite, ouvrirBase } from '../src/magasin-sqlite.js'
 import { creerServeurRest } from '../src/rest.js'
 import { lireConfig, variablesManquantes } from '../src/config.js'
 
 const ORIGINE = 'https://app.exemple.fr'
 const SECRET = 's'.repeat(40)
+const PROXY = 'p'.repeat(40)
+const journalApp = []
 const profilClient = (id, identifiant) => ({ id, role: 'client', identifiant, nom: identifiant, tarif: 40, lieuDefaut: 'domicile', modules: { calories: false }, archive: false, creeLe: 1 })
 let base, serveur, resa, resaRecu, resaPanne = false, db, dossier
 
@@ -26,7 +28,7 @@ async function appel(methode, chemin, { corps, cookie, origine = ORIGINE, brut, 
   try { json = JSON.parse(texte) } catch { /* binaire */ }
   return { statut: r.status, json, texte, cookie: (r.headers.get('set-cookie') || '').split(';')[0], setCookie: r.headers.get('set-cookie') || '' }
 }
-const connecter = async (identifiant, code, ip) => (await appel('POST', '/api/app/connexion', { corps: { identifiant, code }, entetes: ip ? { 'X-Forwarded-For': ip } : {} }))
+const connecter = async (identifiant, code, ip, cle = PROXY) => (await appel('POST', '/api/app/connexion', { corps: { identifiant, code }, entetes: ip ? { 'X-Forwarded-For': ip, 'X-Proxy-Cle': cle } : {} }))
 
 let coach, clientA, clientB
 beforeAll(async () => {
@@ -53,8 +55,8 @@ beforeAll(async () => {
   })
   await new Promise((r) => resa.listen(0, '127.0.0.1', r))
 
-  const config = { ...lireConfig({}), sessionSecret: SECRET, appOrigin: ORIGINE, resaUrl: `http://127.0.0.1:${resa.address().port}`, resaCle: 'k'.repeat(40), fichiersDir: dossier, confianceProxy: true }
-  const appHttp = creerAppHttp({ db, store, config })
+  const config = { ...lireConfig({}), sessionSecret: SECRET, appOrigin: ORIGINE, resaUrl: `http://127.0.0.1:${resa.address().port}`, resaCle: 'k'.repeat(40), fichiersDir: dossier, proxyCle: PROXY }
+  const appHttp = creerAppHttp({ db, store, config, journal: { ecrire: (l) => journalApp.push(l) } })
   serveur = creerServeurRest({ config, appHttp, outils: {}, journal: { ecrire() {} }, service: {}, biblio: {} })
   await new Promise((r) => serveur.listen(0, '127.0.0.1', r))
   base = `http://127.0.0.1:${serveur.address().port}`
@@ -88,10 +90,31 @@ describe('session', () => {
     expect((await connecter('bob', 'code-secret-123', '2.2.2.2, 10.9.9.9')).statut).toBe(429)
     expect((await connecter('bob', 'code-secret-123', '10.9.9.8')).statut).toBe(200) // autre IP réelle : pas bloquée
   })
-  it('IP réelle : X-Forwarded-For ignoré sans CONFIANCE_PROXY', () => {
-    const req = { headers: { 'x-forwarded-for': '1.2.3.4, 5.6.7.8' }, socket: { remoteAddress: '127.0.0.1' } }
-    expect(ipReelle(req, true)).toBe('5.6.7.8')
-    expect(ipReelle(req, false)).toBe('127.0.0.1')
+  it('IP réelle : X-Forwarded-For cru seulement avec X-Proxy-Cle = PROXY_KEY', () => {
+    const req = (cle) => ({ headers: { 'x-forwarded-for': '1.2.3.4, 5.6.7.8', ...(cle ? { 'x-proxy-cle': cle } : {}) }, socket: { remoteAddress: '127.0.0.1' } })
+    expect(ipReelle(req(PROXY), PROXY)).toBe('5.6.7.8')
+    expect(ipReelle(req(), PROXY)).toBe('127.0.0.1')
+    expect(ipReelle(req('faux'), PROXY)).toBe('127.0.0.1')
+    expect(ipReelle(req('court'), 'court')).toBe('127.0.0.1') // clé < 32 car. : jamais crue
+  })
+  it('X-Forwarded-For forgé sans la clé du proxy : toujours bloqué au 6e essai', async () => {
+    for (let i = 0; i < 5; i++) expect((await connecter('dan', 'faux', `7.7.7.${i}`, 'mauvaise-cle')).statut).toBe(401)
+    expect((await connecter('dan', 'faux', '7.7.7.99', 'mauvaise-cle')).statut).toBe(429)
+  })
+  it('seuls les échecs comptent ; succès = remise à zéro ; échecs journalisés sans IP ni code', async () => {
+    for (let i = 0; i < 7; i++) expect((await connecter('alice', 'code-secret-123', '10.4.4.4')).statut).toBe(200)
+    for (let i = 0; i < 4; i++) await connecter('alice', 'faux-code-xyz', '10.4.4.5')
+    expect((await connecter('alice', 'code-secret-123', '10.4.4.5')).statut).toBe(200)
+    for (let i = 0; i < 4; i++) expect((await connecter('alice', 'faux-code-xyz', '10.4.4.5')).statut).toBe(401) // compteur remis à zéro
+    const l = journalApp.at(-1)
+    expect(l).toMatchObject({ outil: 'connexion', ok: false })
+    expect(l.resultat.compte).toMatch(/^[0-9a-f]{12}$/)
+    expect(JSON.stringify(journalApp)).not.toMatch(/10\.4\.4|faux-code|alice/)
+  })
+  it('corps null ou %xx mal formé : 400', async () => {
+    const r = await fetch(base + '/api/app/connexion', { method: 'POST', headers: { Origin: ORIGINE, 'Content-Type': 'application/json' }, body: 'null' })
+    expect(r.status).toBe(400)
+    expect((await appel('GET', '/api/app/e/mesures/%E0%A4%A', { cookie: coach })).statut).toBe(400)
   })
   it('le limiteur global de 120/min ne s\'applique pas à /api/app', async () => {
     const rs = await Promise.all(Array.from({ length: 130 }, () => appel('GET', '/api/app/moi', { cookie: coach })))
@@ -173,6 +196,22 @@ describe('entités (policies RLS)', () => {
     expect((await appel('GET', '/api/app/e/alertesVues', { cookie: clientA })).statut).toBe(403)
     expect((await appel('GET', '/api/app/e/alertesVues', { cookie: coach })).statut).toBe(200)
   })
+  it('quotas : 413 quota au-delà des lignes par client et de 64 Ko par ligne (coach compris)', async () => {
+    const avant = QUOTAS.lignes
+    QUOTAS.lignes = 1
+    try {
+      expect((await appel('PUT', '/api/app/e/douleurs/d1', { cookie: clientA, corps: { id: 'd1', clientId: 'pa', zone: 'dos', intensite: 2, date: '2026-11-01' } })).statut).toBe(200)
+      const r = await appel('PUT', '/api/app/e/douleurs/d2', { cookie: clientA, corps: { id: 'd2', clientId: 'pa', zone: 'dos', intensite: 2, date: '2026-11-01' } })
+      expect(r.statut).toBe(413); expect(r.json).toEqual({ erreur: 'quota' })
+      expect((await appel('PUT', '/api/app/e/douleurs/d1', { cookie: clientA, corps: { id: 'd1', clientId: 'pa', zone: 'genou', intensite: 3, date: '2026-11-01' } })).statut).toBe(200) // mise à jour permise
+      expect((await appel('PUT', '/api/app/e/douleurs/d3', { cookie: coach, corps: { id: 'd3', clientId: 'pa', zone: 'dos', intensite: 2, date: '2026-11-01' } })).statut).toBe(200) // coach exempté
+    } finally { QUOTAS.lignes = avant }
+    const gros = { id: 'e2', nom: 'x', categories: [], description: 'a'.repeat(70 * 1024) }
+    expect((await appel('PUT', '/api/app/e/exercices/e2', { cookie: coach, corps: gros })).statut).toBe(413)
+  })
+  it('coach : changer le rôle d\'un profil est refusé (le compte porte le rôle)', async () => {
+    expect((await appel('PUT', '/api/app/e/profils/pb', { cookie: coach, corps: { ...profilClient('pb', 'bob'), role: 'coach' } })).statut).toBe(400)
+  })
   it('le coach lit et écrit tout', async () => {
     expect((await appel('GET', '/api/app/e/mesures/mb', { cookie: coach })).statut).toBe(200)
     expect((await appel('PUT', '/api/app/e/exercices/e1', { cookie: coach, corps: { id: 'e1', nom: 'Squat', categories: [] } })).statut).toBe(200)
@@ -215,6 +254,15 @@ describe('agenda', () => {
 
 describe('fichiers', () => {
   const PNG = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(20)])
+  it('quota de fichiers par client : 413', async () => {
+    const avant = QUOTAS.fichiers
+    QUOTAS.fichiers = 1
+    try {
+      expect((await appel('POST', '/api/app/fichiers?chemin=pb/q1.png', { cookie: clientB, brut: PNG, type: 'image/png' })).statut).toBe(201)
+      expect((await appel('POST', '/api/app/fichiers?chemin=pb/q1.png', { cookie: clientB, brut: PNG, type: 'image/png' })).statut).toBe(201) // remplacement permis
+      expect((await appel('POST', '/api/app/fichiers?chemin=pb/q2.png', { cookie: clientB, brut: PNG, type: 'image/png' })).json).toEqual({ erreur: 'quota' })
+    } finally { QUOTAS.fichiers = avant }
+  })
   it('chemins normalisés', () => {
     expect(cheminFichier('pa/photo.png')).toBeTruthy()
     for (const c of ['../pa/x.png', 'pa/../pb/x.png', '/pa/x.png', 'pa/x.exe', 'pa//x.png', 'pa/sub/x.png']) expect(cheminFichier(c)).toBeNull()
@@ -233,8 +281,21 @@ describe('fichiers', () => {
 })
 
 describe('démarrage en production', () => {
+  it('cookie __Host-sid Secure en production', async () => {
+    const config = { ...lireConfig({}), production: true, sessionSecret: SECRET, appOrigin: ORIGINE, fichiersDir: dossier, proxyCle: PROXY }
+    const h = creerAppHttp({ db, store: creerStoreSqlite(db), config })
+    const srv = createServer((req, res) => h(req, res))
+    await new Promise((r) => srv.listen(0, '127.0.0.1', r))
+    try {
+      const r = await fetch(`http://127.0.0.1:${srv.address().port}/api/app/connexion`, { method: 'POST', headers: { Origin: ORIGINE, 'Content-Type': 'application/json' }, body: JSON.stringify({ identifiant: 'coach', code: 'code-secret-123' }) })
+      const c = r.headers.get('set-cookie')
+      expect(c).toMatch(/^__Host-sid=/); expect(c).toMatch(/; Secure/); expect(c).toMatch(/Path=\//); expect(c).not.toMatch(/Domain/i)
+      const moi = await fetch(`http://127.0.0.1:${srv.address().port}/api/app/moi`, { headers: { Cookie: c.split(';')[0] } })
+      expect(moi.status).toBe(200)
+    } finally { srv.close() }
+  })
   it('liste les variables manquantes', () => {
     expect(variablesManquantes({ NODE_ENV: 'development' })).toEqual([])
-    expect(variablesManquantes({ NODE_ENV: 'production', SESSION_SECRET: 'court' })).toEqual(expect.arrayContaining(['DB_FILE', 'SESSION_SECRET', 'RESA_ADMIN_KEY', 'APP_ORIGIN']))
+    expect(variablesManquantes({ NODE_ENV: 'production', SESSION_SECRET: 'court' })).toEqual(expect.arrayContaining(['DB_FILE', 'SESSION_SECRET', 'RESA_ADMIN_KEY', 'APP_ORIGIN', 'PROXY_KEY']))
   })
 })
