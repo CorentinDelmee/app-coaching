@@ -35,7 +35,16 @@ API REST (HTTP) ────┘        validation = celle de l'app (src/data/com
 | `YOUTUBE_API_KEY` | Clé API YouTube Data v3 pour la recherche automatique de vidéos (sinon : bibliothèque locale seulement). |
 | `YOUTUBE_CHAINES_RECONNUES` | Chaînes favorisées par le score, séparées par des virgules. |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` | Production : stockage Supabase avec la clé **service** (côté serveur seulement). |
-| `RATE_LIMIT_PER_MIN` | Requêtes par minute (120). |
+| `RATE_LIMIT_PER_MIN` | Requêtes par minute (120) de l'API à clé ; ne s'applique pas à `/api/app/*` (limiteur propre par IP réelle). |
+| `DB_FILE` | Base SQLite (VPS). Défini -> magasin SQLite + API de l'app `/api/app/*` (avec `SESSION_SECRET`). Interdit avec `DEMO_SYNC=1`. |
+| `SESSION_SECRET` | ≥ 32 car. : signature HMAC du cookie de session (12 h). |
+| `APP_ORIGIN` | Origine exacte de l'app (ex. `https://app.domaine.fr`) : exigée en `Origin` sur toute requête non-GET (CSRF). |
+| `FICHIERS_DIR` | Dossier des photos/PDF (`/var/lib/app-coaching/fichiers`). |
+| `RESA_API_URL`, `RESA_ADMIN_KEY` | API réservation (`http://127.0.0.1:5311`) et sa clé admin (≥ 32 car.). |
+| `CONFIANCE_PROXY` | `1` derrière Caddy : IP réelle = dernière valeur de `X-Forwarded-For` (limites de connexion). |
+| `NODE_ENV=production` | Refus de démarrer si `DB_FILE`, `FICHIERS_DIR`, `APP_ORIGIN`, `RESA_API_URL`, `COACH_API_KEY`, `SESSION_SECRET`, `RESA_ADMIN_KEY` manque. |
+
+Premier compte coach : `DB_FILE=… npm run coach:creer <identifiant>` (saisie masquée ; relancer = changer le code et révoquer les sessions).
 | `VITE_API_URL`, `VITE_API_KEY` | Côté app (démo) : adresse du serveur ; clé pour l'écran coach « Vidéos ». |
 
 ## Brancher Claude

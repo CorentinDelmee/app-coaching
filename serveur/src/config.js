@@ -14,6 +14,7 @@ export function chargerEnv() {
 export function lireConfig(env = process.env) {
   // Garde : /demo/etat est public ; avec une vraie base (Supabase) ce serait une fuite de données clients.
   if (env.DEMO_SYNC === '1' && env.SUPABASE_URL) throw new Error('DEMO_SYNC=1 est interdit quand SUPABASE_URL est défini (fuite de données réelles) : retirez l’un des deux.')
+  if (env.DEMO_SYNC === '1' && env.DB_FILE) throw new Error('DEMO_SYNC=1 est interdit quand DB_FILE est défini (fuite de données réelles) : retirez l’un des deux.')
   const liste = (v, defaut) => (v ? v.split(',').map((x) => x.trim()).filter(Boolean) : defaut)
   return {
     hote: '127.0.0.1', // jamais autre chose : le serveur n'écoute pas le réseau
