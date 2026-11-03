@@ -598,9 +598,9 @@
       "recommandation": "Petit VPS à Corentin seul",
       "pourquoi": "Données proches de la santé : personne d'autre ne devrait pouvoir les lire. Pas bloquant tant qu'on teste avec des données de démo.",
       "si_pas_de_reponse": "On construit et teste sur le VPS commun avec des données de démo, aucun vrai client.",
-      "statut": "ouverte",
-      "reponse": "",
-      "provisoire": true
+      "statut": "tranchee",
+      "reponse": "VPS commun (Corentin, 2026-11-03 : trop de frais sinon) ; risque accepté : les associés root peuvent techniquement lire les données.",
+      "provisoire": false
     }
   ],
   "avancees": [

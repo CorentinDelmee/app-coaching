@@ -104,3 +104,4 @@
 - 2026-10-26 Mission — Préfixe « Programme » retiré à l'affichage des noms de programme.
 - 2026-10-26 [securite-26-10] Audit sécurité : /demo/etat sans seancesCoaching + garde DEMO_SYNC/SUPABASE_URL ; build prod bloqué si VITE_API_KEY ; OAuth Google avec nonce en table + PKCE ; secrets séparés (CRON/WEBHOOK/STATE ; « démarrer » protégé par STATE_SECRET) ; Vault pour le jeton Google ; CORS = APP_ORIGIN ; clé API 32 car. ; journal purgé à 90 j.
 - 2026-11-02 Back-end : Supabase abandonné pour le VPS commun de pc-seniors, SQLite + cookie de session comme pc-seniors (choix de Corentin) ; contrat docs/CONTRAT-VPS.md ; écran coach « Réservations » relié au site coaching-domicile. Hébergement des données santé : décision ouverte (recommandation : VPS à Corentin seul).
+- 2026-11-03 D9 tranchée par Corentin : données des clients sur le VPS commun (coût), risque accepté (accès root des associés).
