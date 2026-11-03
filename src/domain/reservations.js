@@ -61,9 +61,9 @@ export function normaliserReservation(r) {
 }
 
 export const LIB_SYNCHRO = {
-  a_creer: 'Sera ajouté ce soir à 20 h',
-  cree: 'Dans l’agenda',
-  a_supprimer: 'Sera retiré ce soir',
+  a_creer: 'Ajout à votre agenda en cours',
+  cree: 'Dans votre agenda',
+  a_supprimer: 'Retrait de l’agenda en cours',
   supprime: ''
 }
 

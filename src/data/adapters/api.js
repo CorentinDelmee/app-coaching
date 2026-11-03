@@ -137,7 +137,7 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
         if (v == null) return null
         return typeof v === 'number' ? v : (Date.parse(v) || null)
       },
-      // 202 : la synchro se fait chaque soir ; on renvoie le message du serveur pour l'afficher.
+      // 202 : la synchro est immédiate ; on renvoie le message du serveur pour l'afficher.
       async synchroniser() {
         const r = await appel('POST', '/agenda/synchroniser')
         return { message: r?.message || '' }

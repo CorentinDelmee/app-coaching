@@ -50,7 +50,7 @@ const VIDES = { a_venir: 'Aucune réservation à venir.', passees: 'Aucune rése
 async function annuler(id) {
   try {
     await data.reservations.annuler(id)
-    message.value = 'Réservation annulée. Le client recevra l’annulation Google ce soir à 20 h.'
+    message.value = 'Réservation annulée. Le client reçoit l’annulation Google tout de suite.'
     await charger()
   } catch (e) { erreur.value = msgErreur(e) }
 }
@@ -93,7 +93,7 @@ async function enregistrer() {
     <div class="c-entete">
       <div>
         <h1>Réservations</h1>
-        <p class="c-sous">Les rendez-vous pris sur le site. L’agenda Google est mis à jour chaque soir à 20 h.</p>
+        <p class="c-sous">Les rendez-vous pris sur le site. L’agenda Google est mis à jour tout de suite.</p>
       </div>
     </div>
 
@@ -125,7 +125,7 @@ async function enregistrer() {
           <div v-if="onglet === 'a_venir'" class="c-ligne">
             <button v-if="aConfirmer !== r.id" class="c-btn c-mini c-danger" type="button" @click="aConfirmer = r.id">Annuler ce rendez-vous</button>
             <template v-else>
-              <span class="c-petit">Le client recevra l’annulation Google ce soir à 20 h.</span>
+              <span class="c-petit">Le client reçoit l’annulation Google tout de suite.</span>
               <button class="c-btn c-mini c-danger" type="button" @click="annuler(r.id)">Confirmer l’annulation</button>
               <button class="c-btn c-mini" type="button" @click="aConfirmer = null">Garder</button>
             </template>

@@ -52,7 +52,7 @@ describe('adaptateur api', () => {
     const { api } = faux({
       'GET /api/app/agenda/evenements': [200, { evenements: [{ id: 'b', debutMs: 2 }, { id: 'a', debutMs: 1 }] }],
       'GET /api/app/agenda/derniere-synchro': [200, { derniereSynchro: 5 }],
-      'POST /api/app/agenda/synchroniser': [202, { message: 'Chaque soir à 20 h.' }]
+      'POST /api/app/agenda/synchroniser': [202, { message: 'Tout de suite.' }]
     })
     const etat = await api.agenda.etat()
     expect(etat.evenements.map((e) => e.id)).toEqual(['a', 'b'])
