@@ -14,7 +14,7 @@ navigateur (app PWA, app.<domaine>) ──/api/app/*──> serveur app-coaching
                                                      ├─ MCP (inchangé, même couche service)
                                                      └─ /api/app/reservations/* ──(clé RESA_ADMIN_KEY, 127.0.0.1)──> API réservation 127.0.0.1:5311 /api/resa/admin/*
 site vitrine (domaine) ──/api/resa/{creneaux,reserver}──> API réservation (publique via Caddy)
-routine Claude 20 h ──/api/resa/synchro/* (clé SYNC_KEY, HTTPS)──> API réservation
+API réservation ──(OAuth Google, compte du coach)──> Google Agenda (occupé en direct, événement créé à la réservation)
 ```
 
 ## Serveur app-coaching (`serveur/`)
@@ -58,9 +58,9 @@ routine Claude 20 h ──/api/resa/synchro/* (clé SYNC_KEY, HTTPS)──> API 
   fermetures), tout au style existant de l'app (tokens, DESIGN.md retenu).
 
 ## API réservation (dépôt coaching-domicile, `reservation/`) — voir son CONTRAT.md mis à jour
-- Plus de Google côté serveur. SQLite `/var/lib/coaching-resa/resa.db` : réservations, blocages, occupé (importé par la routine), règles.
+- Google en direct (mis à jour le 2026-11-03) : occupé lu par freebusy (cache 60 s, dernier état gardé 6 h), événement créé dès la réservation (invitation envoyée), rattrapage toutes les 5 min si Google ne répond pas. SQLite `/var/lib/coaching-resa/resa.db` : réservations, blocages, occupé, règles.
 - `/api/resa/admin/*` : header `X-Resa-Admin-Key` = `RESA_ADMIN_KEY`, **jamais exposé par Caddy** (404 public), appelé seulement depuis 127.0.0.1.
-- `/api/resa/synchro/*` : header `Authorization: Bearer <SYNC_KEY>`, exposé via Caddy (la routine est dans le cloud).
+- Plus de routine ni de routes `/api/resa/synchro/*` (404, bloquées par Caddy), plus de `SYNC_KEY`.
 - Notification ntfy à chaque réservation : `NTFY_URL` (sujet secret long), texte sans nom ni téléphone.
 
 ## Règles de travail
@@ -85,4 +85,4 @@ Commit en français terminé par `Co-Authored-By: Claude Opus 5.5 <noreply@anthr
 - `GET /api/app/agenda/evenements` → `{evenements:[…]}` · `GET /api/app/agenda/derniere-synchro` → `{derniereSynchro: ISO|null}` ·
   `POST /api/app/agenda/synchroniser` → 202 `{message}`.
 - Erreurs : `{erreur: "<code>"}` avec le statut HTTP.
-**Écran Réservations** : lit `synchro_etat` (a_creer → « sera ajouté ce soir à 20 h », cree → « dans l'agenda », a_supprimer → « sera retiré ce soir », supprime → rien).
+**Écran Réservations** : lit `synchro_etat` (a_creer → « Ajout à votre agenda en cours », cree → « Dans votre agenda », a_supprimer → « Retrait de l'agenda en cours », supprime → rien).
