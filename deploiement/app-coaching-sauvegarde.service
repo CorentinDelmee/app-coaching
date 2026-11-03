@@ -4,4 +4,32 @@ Description=App coaching - sauvegarde de app.db et des fichiers
 
 [Service]
 Type=oneshot
+User=appcoaching
+Group=appcoaching
 ExecStart=/bin/bash /var/www/app-coaching/depot/deploiement/sauvegarder.sh
+# Seule BACKUP_AGE_RECIPIENT (clé publique) est utile ici : les secrets du serveur sont retirés de l'environnement.
+EnvironmentFile=/etc/app-coaching.env
+UnsetEnvironment=SESSION_SECRET COACH_API_KEY RESA_ADMIN_KEY PROXY_KEY
+UMask=0077
+ReadWritePaths=/var/lib/app-coaching
+
+# Durcissement (comme app-coaching.service)
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+PrivateNetwork=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX
+SystemCallArchitecture=native

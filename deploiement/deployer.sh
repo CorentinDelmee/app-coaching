@@ -19,7 +19,14 @@ CADDY_BLOC=/etc/caddy/sites/app-coaching.caddy
 
 # Lecture d'une valeur du fichier de secrets sans l'exécuter (jamais de « source » sur des secrets)
 lire() { sed -n "s/^$1=//p" "$ENV_FILE" | tail -n 1 | tr -d '"'"'"'\r'; }
-for V in SESSION_SECRET COACH_API_KEY RESA_API_URL RESA_ADMIN_KEY APP_ORIGIN DB_FILE FICHIERS_DIR; do
+# PROXY_KEY : ajoutée aux installations existantes (anciennes versions d'installer.sh)
+if [ -z "$(lire PROXY_KEY)" ]; then
+  ( umask 077; printf '\nPROXY_KEY=%s\n' "$(openssl rand -hex 32)" >> "$ENV_FILE" )
+  echo "PROXY_KEY ajoutée à $ENV_FILE."
+fi
+case "$(lire PROXY_KEY)" in *[!0-9a-f]*) echo "PROXY_KEY doit être en hexadécimal (openssl rand -hex 32)."; exit 1;; esac
+[ "$(lire PROXY_KEY | wc -c)" -gt 32 ] || { echo "PROXY_KEY trop courte (32 caractères minimum)."; exit 1; }
+for V in PROXY_KEY SESSION_SECRET COACH_API_KEY RESA_API_URL RESA_ADMIN_KEY APP_ORIGIN DB_FILE FICHIERS_DIR; do
   [ -n "$(lire "$V")" ] || { echo "$V est vide dans $ENV_FILE : le remplir (nano $ENV_FILE)."; exit 1; }
 done
 case "$(lire APP_ORIGIN)" in https://app.*) ;; *) echo "APP_ORIGIN doit être https://app.<domaine>."; exit 1;; esac
@@ -65,11 +72,12 @@ mv "$NEUF" "$APP_DIR/site"
 
 # 4. Bloc Caddy : validé avec toute la config avant rechargement, sinon on garde l'ancien
 CADDY_TMP=$(mktemp)
-sed "s/A_REMPLACER_DOMAINE/$DOMAINE/g" "$DEPOT/deploiement/app-coaching.caddy" > "$CADDY_TMP"
+sed -e "s/A_REMPLACER_DOMAINE/$DOMAINE/g" -e "s/A_REMPLACER_PROXY_KEY/$(lire PROXY_KEY)/g" "$DEPOT/deploiement/app-coaching.caddy" > "$CADDY_TMP"
 mkdir -p "$(dirname "$CADDY_BLOC")"
 rm -f "$CADDY_BLOC.ancien"
 cp -a "$CADDY_BLOC" "$CADDY_BLOC.ancien" 2>/dev/null || true
-install -m 0644 "$CADDY_TMP" "$CADDY_BLOC"
+# 0640 root:caddy : le bloc contient PROXY_KEY (lisible par Caddy seulement)
+install -m 0640 -o root -g caddy "$CADDY_TMP" "$CADDY_BLOC"
 rm -f "$CADDY_TMP"
 if caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1; then
   systemctl reload caddy
@@ -77,7 +85,7 @@ if caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2
     || echo "ATTENTION : /etc/caddy/Caddyfile n'importe pas encore /etc/caddy/sites/*.caddy."
 else
   echo "ATTENTION : config Caddy invalide, ancien bloc remis (caddy validate --config /etc/caddy/Caddyfile pour voir l'erreur)."
-  if [ -f "$CADDY_BLOC.ancien" ]; then install -m 0644 "$CADDY_BLOC.ancien" "$CADDY_BLOC"; else rm -f "$CADDY_BLOC"; fi
+  if [ -f "$CADDY_BLOC.ancien" ]; then install -m 0640 -o root -g caddy "$CADDY_BLOC.ancien" "$CADDY_BLOC"; else rm -f "$CADDY_BLOC"; fi
 fi
 rm -f "$CADDY_BLOC.ancien"
 
@@ -85,6 +93,8 @@ rm -f "$CADDY_BLOC.ancien"
 D=$DEPOT/deploiement
 install -m 0644 "$D/app-coaching.service" "$D/app-coaching-sauvegarde.service" "$D/app-coaching-sauvegarde.timer" /etc/systemd/system/
 systemctl daemon-reload
+# La sauvegarde tourne désormais en appcoaching : reprendre les fichiers créés par l'ancienne version (root)
+chown -R "$APP_USER:$APP_USER" /var/lib/app-coaching/sauvegardes /var/lib/app-coaching/derniere-sauvegarde.txt 2>/dev/null || true
 systemctl enable app-coaching >/dev/null
 systemctl enable --now app-coaching-sauvegarde.timer >/dev/null
 systemctl restart app-coaching

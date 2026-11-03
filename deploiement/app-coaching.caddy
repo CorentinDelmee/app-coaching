@@ -27,6 +27,9 @@ app.A_REMPLACER_DOMAINE {
 		}
 		reverse_proxy 127.0.0.1:5405 {
 			header_up X-Forwarded-For {remote_host}
+			# Preuve que la requête vient de Caddy : sans elle, le serveur ignore X-Forwarded-For (IP = adresse de connexion).
+			# A_REMPLACER_PROXY_KEY est remplacé par PROXY_KEY de /etc/app-coaching.env (deployer.sh ; fichier 0640 root:caddy).
+			header_up X-Proxy-Cle A_REMPLACER_PROXY_KEY
 		}
 	}
 

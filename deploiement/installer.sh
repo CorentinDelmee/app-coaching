@@ -71,6 +71,10 @@ FICHIERS_DIR=/var/lib/app-coaching/fichiers
 APP_ORIGIN=https://app.$DOMAINE
 SESSION_SECRET=$(openssl rand -base64 48 | tr -d '\n')
 COACH_API_KEY=$(openssl rand -base64 48 | tr -d '\n')
+# Clé ajoutée par Caddy (X-Proxy-Cle) : seule preuve que X-Forwarded-For est fiable. Hexadécimal (sûr dans sed).
+PROXY_KEY=$(openssl rand -hex 32)
+# Clé PUBLIQUE age des sauvegardes (age1…), générée sur le Mac de Corentin : voir LISEZMOI. Vide = sauvegardes non chiffrées.
+BACKUP_AGE_RECIPIENT=
 RESA_API_URL=http://127.0.0.1:5311
 # Doit être IDENTIQUE à RESA_ADMIN_KEY de /etc/coaching-resa.env
 RESA_ADMIN_KEY=$RESA_KEY

@@ -50,12 +50,27 @@ Si le site vitrine est déjà installé, l'utilisateur et Caddy existent : rien 
 ## 5. Vérifications
 - `ssh root@IP "curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:5405/api/app/moi"` → `401` (serveur vivant, non connecté).
 - Les vidéos d'exercices (YouTube) s'affichent dans une séance ; une photo envoyée s'affiche (CSP : `img-src blob:`).
-- Sauvegarde : `ssh root@IP "systemctl start app-coaching-sauvegarde && cat /var/lib/app-coaching/derniere-sauvegarde.txt"` → `OK …`.
+- Sauvegarde : `ssh root@IP "systemctl start app-coaching-sauvegarde && cat /var/lib/app-coaching/derniere-sauvegarde.txt"` → `OK … · chiffrée …`.
+- IP réelle (X-Forwarded-For forgé ignoré) : depuis le VPS, 6 essais ratés avec une fausse IP différente à chaque fois, le 6e doit répondre `429` :
+  ```
+  ssh root@IP 'for i in 1 2 3 4 5 6; do curl -s -o /dev/null -w "%{http_code}\n" -X POST http://127.0.0.1:5405/api/app/connexion -H "Origin: $(sed -n "s/^APP_ORIGIN=//p" /etc/app-coaching.env)" -H "Content-Type: application/json" -H "X-Forwarded-For: 203.0.113.$i" -d "{\"identifiant\":\"essai-proxy\",\"code\":\"faux\"}"; done'
+  ```
+  → `401` ×5 puis `429` (sans la clé `X-Proxy-Cle`, toutes ces requêtes comptent pour la même IP). Attendre 15 min avant de réessayer avec ce même identifiant.
 - 🤖 Dis « c'est en ligne » à REX : il vérifie pages, HTTPS et mobile avec un navigateur automatique.
 
 ## 6. Mises à jour et restauration
 Après un push : relancer la commande 4.1. Pas de mise à jour automatique (production réelle).
-Restaurer : `systemctl stop app-coaching; gunzip -c /var/lib/app-coaching/sauvegardes/app-AAAA-MM-JJ.db.gz > /var/lib/app-coaching/app.db; tar -xzf /var/lib/app-coaching/sauvegardes/fichiers-AAAA-MM-JJ.tar.gz -C /var/lib/app-coaching; chown -R appcoaching:appcoaching /var/lib/app-coaching; systemctl start app-coaching`.
+### Sauvegardes chiffrées (à faire une fois)
+1. ✋ Sur ton Mac : `brew install age` puis `age-keygen -o ~/cle-sauvegarde-coaching.txt`. La commande affiche la clé **publique** (`age1…`).
+   La clé **privée** (le fichier) ne quitte jamais ton Mac : ni le VPS, ni Git, ni un cloud partagé. Garde-en une copie hors ligne (clé USB) : sans elle, les sauvegardes sont illisibles.
+2. ✋ Sur le VPS : `ssh root@IP "apt install -y age"` puis `nano /etc/app-coaching.env` → `BACKUP_AGE_RECIPIENT=age1…` (la clé publique).
+3. ✋ Vérifier : la commande « Sauvegarde » du § 5 doit afficher `chiffrée`. Sans clé, le journal affiche `ATTENTION : sauvegardes NON chiffrées`.
+4. ✋ Copie hors VPS (toi, pas d'envoi automatique vers un service tiers), par exemple chaque semaine depuis le Mac :
+   `scp root@IP:/var/lib/app-coaching/sauvegardes/*.age ~/Sauvegardes-coaching/`
+
+Restaurer une sauvegarde chiffrée : sur le Mac, `age -d -i ~/cle-sauvegarde-coaching.txt app-AAAA-MM-JJ.db.gz.age | gunzip > app.db`
+(et `age -d -i ~/cle-sauvegarde-coaching.txt fichiers-AAAA-MM-JJ.tar.gz.age > fichiers.tar.gz`), puis `scp` vers le VPS et suivre la ligne ci-dessous.
+Restaurer (fichiers en clair) : `systemctl stop app-coaching; gunzip -c /var/lib/app-coaching/sauvegardes/app-AAAA-MM-JJ.db.gz > /var/lib/app-coaching/app.db; tar -xzf /var/lib/app-coaching/sauvegardes/fichiers-AAAA-MM-JJ.tar.gz -C /var/lib/app-coaching; chown -R appcoaching:appcoaching /var/lib/app-coaching; systemctl start app-coaching`.
 
 ## 7. Dépannage
 | Problème | Que faire |
@@ -68,4 +83,4 @@ Restaurer : `systemctl stop app-coaching; gunzip -c /var/lib/app-coaching/sauveg
 | Ancienne version affichée sur le téléphone | La PWA propose « mettre à jour » ; fermer et rouvrir l'app. |
 
 ## 8. À savoir (sécurité)
-Toute personne root sur le VPS (tes associés) peut lire `/etc/app-coaching.env`, la base et les fichiers de tes clients (séances, mesures, photos). À assumer avec eux avant d'y mettre de vraies données clients. Sauvegarde : uniquement sur le VPS (pas de copie hors serveur pour l'instant).
+Toute personne root sur le VPS (tes associés) peut lire `/etc/app-coaching.env`, la base et les fichiers de tes clients (séances, mesures, photos). À assumer avec eux avant d'y mettre de vraies données clients. Sauvegardes : chiffrées avec ta clé publique dès que `BACKUP_AGE_RECIPIENT` est rempli (un root du VPS ne peut alors pas les lire, mais il peut toujours lire la base en direct) ; la copie hors serveur est à faire par toi (§ 6).
