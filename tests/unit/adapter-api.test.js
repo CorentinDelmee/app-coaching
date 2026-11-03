@@ -35,7 +35,7 @@ describe('adaptateur api', () => {
   })
   it('entités : lire, écrire (PUT), supprimer, 404 -> null', async () => {
     const ex = { id: 'e1', nom: 'Squat', categories: [] }
-    const { api, appels } = faux({ 'GET /api/app/e/exercices': [200, [ex]], 'GET /api/app/e/exercices/e1': [200, ex], 'PUT /api/app/e/exercices/e1': [200, {}], 'DELETE /api/app/e/exercices/e1': [204] })
+    const { api, appels } = faux({ 'GET /api/app/e/exercices': [200, { items: [ex] }], 'GET /api/app/e/exercices/e1': [200, { item: ex }], 'PUT /api/app/e/exercices/e1': [200, {}], 'DELETE /api/app/e/exercices/e1': [204] })
     expect(await api.exercices.lister()).toHaveLength(1)
     expect((await api.exercices.lire('e1')).nom).toBe('Squat')
     expect(await api.exercices.lire('nope')).toBeNull()
@@ -50,7 +50,7 @@ describe('adaptateur api', () => {
   })
   it('agenda : evenements triés, derniere synchro, synchroniser (202) renvoie le message', async () => {
     const { api } = faux({
-      'GET /api/app/agenda/evenements': [200, [{ id: 'b', debutMs: 2 }, { id: 'a', debutMs: 1 }]],
+      'GET /api/app/agenda/evenements': [200, { evenements: [{ id: 'b', debutMs: 2 }, { id: 'a', debutMs: 1 }] }],
       'GET /api/app/agenda/derniere-synchro': [200, { derniereSynchro: 5 }],
       'POST /api/app/agenda/synchroniser': [202, { message: 'Chaque soir à 20 h.' }]
     })
@@ -60,9 +60,9 @@ describe('adaptateur api', () => {
   })
   it('réservations : chaque méthode vise le bon endpoint', async () => {
     const { api, appels } = faux({
-      'GET /api/app/reservations?statut=annulees': [200, [{ id: 'r1' }]], 'POST /api/app/reservations/r1/annuler': [200, {}],
-      'GET /api/app/reservations/blocages': [200, []], 'POST /api/app/reservations/blocages': [201, { id: 'b1' }],
-      'DELETE /api/app/reservations/blocages/b1': [204], 'GET /api/app/reservations/regles': [200, { dureeMin: 60 }], 'PUT /api/app/reservations/regles': [200, { dureeMin: 45 }]
+      'GET /api/app/reservations?statut=annulees': [200, { reservations: [{ id: 'r1' }] }], 'POST /api/app/reservations/r1/annuler': [200, { ok: true, reservation: { id: 'r1' } }],
+      'GET /api/app/reservations/blocages': [200, { blocages: [] }], 'POST /api/app/reservations/blocages': [201, { ok: true, blocage: { id: 'b1' } }],
+      'DELETE /api/app/reservations/blocages/b1': [200, { ok: true }], 'GET /api/app/reservations/regles': [200, { dureeMin: 60 }], 'PUT /api/app/reservations/regles': [200, { dureeMin: 45 }]
     })
     expect(await api.reservations.liste('annulees')).toHaveLength(1)
     await api.reservations.annuler('r1')

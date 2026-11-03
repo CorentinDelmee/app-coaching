@@ -49,11 +49,11 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
     mode: 'api',
     async tout(entite) {
       const r = await appel('GET', `/e/${enc(entite)}`)
-      return Array.isArray(r) ? r : (r?.items ?? [])
+      return r?.items ?? []
     },
     async un(entite, id) {
       try {
-        return await appel('GET', `/e/${enc(entite)}/${enc(id)}`)
+        return (await appel('GET', `/e/${enc(entite)}/${enc(id)}`))?.item ?? null
       } catch (e) {
         if (e.code === 'INTROUVABLE') return null
         throw e
@@ -129,12 +129,11 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
     agenda: {
       async evenements() {
         const r = await appel('GET', '/agenda/evenements')
-        const liste = Array.isArray(r) ? r : (r?.evenements ?? [])
-        return [...liste].sort((a, b) => a.debutMs - b.debutMs)
+        return [...(r?.evenements ?? [])].sort((a, b) => a.debutMs - b.debutMs)
       },
       async derniereSynchro() {
         const r = await appel('GET', '/agenda/derniere-synchro')
-        const v = r !== null && typeof r === 'object' ? r.derniereSynchro : r
+        const v = r?.derniereSynchro
         if (v == null) return null
         return typeof v === 'number' ? v : (Date.parse(v) || null)
       },
@@ -148,17 +147,17 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
     reservations: {
       async liste(statut = 'a_venir') {
         const r = await appel('GET', `/reservations?statut=${enc(statut)}`)
-        return Array.isArray(r) ? r : (r?.reservations ?? [])
+        return r?.reservations ?? []
       },
       async annuler(id) {
         await appel('POST', `/reservations/${enc(id)}/annuler`)
       },
       async blocages() {
         const r = await appel('GET', '/reservations/blocages')
-        return Array.isArray(r) ? r : (r?.blocages ?? [])
+        return r?.blocages ?? []
       },
       async bloquer(debut, fin, motif = '') {
-        return appel('POST', '/reservations/blocages', { corps: { debut, fin, motif } })
+        return (await appel('POST', '/reservations/blocages', { corps: { debut, fin, motif } }))?.blocage
       },
       async debloquer(id) {
         await appel('DELETE', `/reservations/blocages/${enc(id)}`)

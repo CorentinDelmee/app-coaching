@@ -12,23 +12,25 @@ const JOUR = 86400000
 const HEURE = 3600000
 const iso = (ms) => new Date(ms).toISOString()
 
-// Jeu d'essai relatif à `now` : 4 à venir, 2 passées, 2 annulées ; 2 blocages.
+// Jeu d'essai relatif à `now` : 4 à venir, 2 passées (statut a_venir, date révolue, comme l'API), 2 annulées ; 2 blocages.
 function jeuDeDonnees(now) {
   const base = Math.floor(now / JOUR) * JOUR + 9 * HEURE // 9 h UTC du jour courant
-  const r = (id, jours, h, prenom, nom, commune, adresse, telephone, email, statut) => ({
+  const r = (id, jours, h, prenom, nom, commune, adresse, telephone, email, statut, synchro_etat) => ({
     id, debut: iso(base + jours * JOUR + (h - 9) * HEURE), fin: iso(base + jours * JOUR + (h - 8) * HEURE),
-    prenom, nom, commune, adresse, telephone, email, statut
+    prenom, nom, email, telephone, adresse, commune, statut,
+    cree_le: iso(base + (jours - 5) * JOUR), annulee_le: statut === 'annulee' ? iso(base + (jours - 2) * JOUR) : null,
+    google_event_id: synchro_etat === 'cree' || synchro_etat === 'a_supprimer' ? `evt-${id}` : null, synchro_etat
   })
   return {
     reservations: [
-      r('rs-1', 2, 10, 'Camille', 'MARTIN', 'Tours', '12 rue des Lilas', '0612345678', 'camille.martin@exemple.fr', 'a_venir'),
-      r('rs-2', 3, 14, 'Julien', 'BERNARD', 'Joué-lès-Tours', '4 allée du Parc', '0623456789', 'julien.bernard@exemple.fr', 'a_venir'),
-      r('rs-3', 5, 9, 'Sophie', 'DUPONT', 'Saint-Cyr-sur-Loire', '25 avenue de la Gare', '0634567890', 'sophie.dupont@exemple.fr', 'a_venir'),
-      r('rs-4', 8, 17, 'Marc', 'LEROY', 'Tours', '8 place Jean-Jaurès', '0645678901', 'marc.leroy@exemple.fr', 'a_venir'),
-      r('rs-5', -3, 11, 'Inès', 'PETIT', 'Tours', '3 rue Colbert', '0656789012', 'ines.petit@exemple.fr', 'passee'),
-      r('rs-6', -9, 16, 'Paul', 'ROUX', 'Chambray-lès-Tours', '17 rue du Moulin', '0667890123', 'paul.roux@exemple.fr', 'passee'),
-      r('rs-7', 4, 15, 'Emma', 'FABRE', 'Tours', '9 rue Nationale', '0678901234', 'emma.fabre@exemple.fr', 'annulee'),
-      r('rs-8', -1, 18, 'Hugo', 'MOREAU', 'Tours', '21 boulevard Béranger', '0689012345', 'hugo.moreau@exemple.fr', 'annulee')
+      r('rs-1', 2, 10, 'Camille', 'MARTIN', 'Tours', '12 rue des Lilas', '0612345678', 'camille.martin@exemple.fr', 'a_venir', 'a_creer'),
+      r('rs-2', 3, 14, 'Julien', 'BERNARD', 'Joué-lès-Tours', '4 allée du Parc', '0623456789', 'julien.bernard@exemple.fr', 'a_venir', 'cree'),
+      r('rs-3', 5, 9, 'Sophie', 'DUPONT', 'Saint-Cyr-sur-Loire', '25 avenue de la Gare', '0634567890', 'sophie.dupont@exemple.fr', 'a_venir', 'cree'),
+      r('rs-4', 8, 17, 'Marc', 'LEROY', 'Tours', '8 place Jean-Jaurès', '0645678901', 'marc.leroy@exemple.fr', 'a_venir', 'a_creer'),
+      r('rs-5', -3, 11, 'Inès', 'PETIT', 'Tours', '3 rue Colbert', '0656789012', 'ines.petit@exemple.fr', 'a_venir', 'cree'),
+      r('rs-6', -9, 16, 'Paul', 'ROUX', 'Chambray-lès-Tours', '17 rue du Moulin', '0667890123', 'paul.roux@exemple.fr', 'a_venir', 'cree'),
+      r('rs-7', 4, 15, 'Emma', 'FABRE', 'Tours', '9 rue Nationale', '0678901234', 'emma.fabre@exemple.fr', 'annulee', 'a_supprimer'),
+      r('rs-8', -1, 18, 'Hugo', 'MOREAU', 'Tours', '21 boulevard Béranger', '0689012345', 'hugo.moreau@exemple.fr', 'annulee', 'supprime')
     ],
     blocages: [
       { id: 'bl-1', debut: iso(base + 6 * JOUR), fin: iso(base + 6 * JOUR + 10 * HEURE), motif: 'Journée de formation' },
@@ -38,7 +40,6 @@ function jeuDeDonnees(now) {
 }
 
 const STATUTS = ['a_venir', 'passees', 'annulees']
-const STATUT_DE = { a_venir: 'a_venir', passees: 'passee', annulees: 'annulee' }
 
 export function creerReservationsDemo({ now = () => Date.now(), uuid = () => globalThis.crypto.randomUUID() } = {}) {
   const etat = jeuDeDonnees(now())
@@ -47,13 +48,18 @@ export function creerReservationsDemo({ now = () => Date.now(), uuid = () => glo
   return {
     async liste(statut = 'a_venir') {
       if (!STATUTS.includes(statut)) throw new ErreurData('VALIDATION', 'Statut inconnu')
-      return copie(etat.reservations.filter((r) => r.statut === STATUT_DE[statut]).sort((a, b) => (statut === 'a_venir' ? a.debut.localeCompare(b.debut) : b.debut.localeCompare(a.debut))))
+      const futur = (r) => Date.parse(r.fin) > now()
+      const garde = { a_venir: (r) => r.statut === 'a_venir' && futur(r), passees: (r) => r.statut === 'a_venir' && !futur(r), annulees: (r) => r.statut === 'annulee' }[statut]
+      return copie(etat.reservations.filter(garde).sort((a, b) => (statut === 'a_venir' ? a.debut.localeCompare(b.debut) : b.debut.localeCompare(a.debut))))
     },
     async annuler(id) {
       const r = etat.reservations.find((x) => x.id === id)
       if (!r) throw new ErreurData('INTROUVABLE', 'Réservation introuvable')
-      if (r.statut !== 'a_venir') throw new ErreurData('VALIDATION', 'Seule une réservation à venir peut être annulée')
+      if (r.statut !== 'a_venir' || Date.parse(r.fin) <= now()) throw new ErreurData('VALIDATION', 'Seule une réservation à venir peut être annulée')
       r.statut = 'annulee'
+      r.annulee_le = new Date(now()).toISOString()
+      r.synchro_etat = r.synchro_etat === 'cree' ? 'a_supprimer' : 'supprime'
+      return copie(r)
     },
     async blocages() {
       return copie([...etat.blocages].sort((a, b) => a.debut.localeCompare(b.debut)))

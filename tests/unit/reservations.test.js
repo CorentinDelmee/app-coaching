@@ -8,13 +8,13 @@ describe('réservations', () => {
   })
   it('regroupe par jour, trie, convertit en heure de Paris', () => {
     const g = grouperParJour([
-      { id: 'b', debut: '2026-11-10T14:00:00+01:00', prenom: 'B', nom: 'X', synchro: 'a_ajouter' },
+      { id: 'b', debut: '2026-11-10T14:00:00+01:00', prenom: 'B', nom: 'X', synchro_etat: 'a_creer' },
       { id: 'a', debut: '2026-11-10T09:00:00+01:00', prenom: 'A', nom: 'Y' },
       { id: 'c', debut: '2026-11-12T08:30:00Z', prenom: 'C', nom: 'Z' }
     ])
     expect(g.map((x) => x.libelle)).toEqual(['mardi 10 novembre', 'jeudi 12 novembre'])
     expect(g[0].items.map((i) => i.id)).toEqual(['a', 'b'])
-    expect(g[0].items[1].synchro).toBe('a_ajouter')
+    expect(g[0].items[1].synchro).toBe('a_creer')
     expect(g[1].items[0].heure).toBe('09:30')
     expect(grouperParJour([{ debut: '2026-11-10T09:00:00+01:00' }, { debut: '2026-11-12T09:00:00+01:00' }], 'desc')[0].date).toBe('2026-11-12')
   })

@@ -48,14 +48,11 @@ export function decalageParis(date, heure) {
 }
 export const versIso = (date, heure) => `${date}T${heure}:00${decalageParis(date, heure)}`
 
-/** Normalise une réservation reçue (tolère les variantes de noms de champs). */
+/** Normalise une réservation reçue (formes du contrat : debut, fin, synchro_etat…). */
 export function normaliserReservation(r) {
   const p = partiesParis(r.debut) || { date: '', heure: '' }
   const f = r.fin ? partiesParis(r.fin) : null
-  const brut = String(r.synchro ?? r.synchro_google ?? r.google ?? '')
-  let synchro = 'dans_agenda'
-  if (/retir|suppr|annul/.test(brut) && r.statut !== 'annulee_synchronisee') synchro = 'a_retirer'
-  else if (/ajout|attente|nouveau|a_creer|pending/.test(brut)) synchro = 'a_ajouter'
+  const synchro = r.synchro_etat || 'cree'
   return {
     id: r.id, date: p.date, heure: p.heure, heureFin: f?.heure || '',
     prenom: r.prenom || '', nom: r.nom || '', commune: r.commune || '', adresse: r.adresse || '',
@@ -64,9 +61,10 @@ export function normaliserReservation(r) {
 }
 
 export const LIB_SYNCHRO = {
-  dans_agenda: 'Dans l’agenda',
-  a_ajouter: 'Sera ajouté ce soir à 20 h',
-  a_retirer: 'Sera retiré ce soir'
+  a_creer: 'Sera ajouté ce soir à 20 h',
+  cree: 'Dans l’agenda',
+  a_supprimer: 'Sera retiré ce soir',
+  supprime: ''
 }
 
 /** Groupe par jour. `ordre` = 'asc' (à venir) ou 'desc' (passées, annulées). */

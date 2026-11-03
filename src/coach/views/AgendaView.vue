@@ -46,7 +46,7 @@ async function synchroniser() {
   try {
     const b = await data.agenda.synchroniser()
     const parties = [b.ajoutes && `${b.ajoutes} ajoutée(s)`, b.modifies && `${b.modifies} modifiée(s)`, b.supprimes && `${b.supprimes} supprimée(s)`].filter(Boolean)
-    message.value = parties.length ? `Synchronisé : ${parties.join(', ')}.` : 'Synchronisé : rien de nouveau.'
+    message.value = b.message || (parties.length ? `Synchronisé : ${parties.join(', ')}.` : 'Synchronisé : rien de nouveau.')
     await charger()
     await rafraichir()
   } catch (e) {

@@ -115,7 +115,7 @@ async function enregistrer() {
             <strong>{{ r.prenom }} {{ r.nom.toUpperCase() }}</strong>
             <span class="c-doux">{{ r.commune }}</span>
             <span class="c-espace"></span>
-            <span v-if="onglet !== 'passees'" class="c-pastille" :class="r.synchro === 'dans_agenda' ? 'c-bien' : 'c-alerte'">{{ LIB_SYNCHRO[r.synchro] }}</span>
+            <span v-if="onglet !== 'passees' && LIB_SYNCHRO[r.synchro]" class="c-pastille" :class="r.synchro === 'cree' ? 'c-bien' : 'c-alerte'">{{ LIB_SYNCHRO[r.synchro] }}</span>
           </div>
           <ul class="c-contacts">
             <li v-if="r.adresse"><a :href="lienCarte(r.adresse, r.commune)" target="_blank" rel="noopener">{{ r.adresse }}</a></li>
