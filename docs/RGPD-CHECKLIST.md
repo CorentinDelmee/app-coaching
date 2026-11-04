@@ -10,7 +10,7 @@
 - Responsable de traitement : Corentin Delmée, micro-entrepreneur (il décide des finalités et des moyens). [FAIT]
 - 10-15 clients, tous adultes à priori [HYP.]. Données : identité, identifiant/code, séances, poids, mensurations, douleurs (zone + intensité), nutrition (habitudes, calories, photos de repas), commentaires libres, réponses aux questionnaires.
 - Douleurs, poids, nutrition liés à un individu = **données concernant la santé** → catégorie particulière, art. 9 RGPD. [FAIT pour douleurs ; poids/nutrition : à traiter par prudence comme santé] 
-- Sous-traitants : Hostinger (VPS : base SQLite, fichiers, application ; lieu du serveur A_REMPLACER_LIEU_SERVEUR, à confirmer). Tiers : WhatsApp (liens `wa.me`, messages envoyés par le client lui-même). [Supabase et Netlify retirés le 2026-11-02]
+- Sous-traitants : Hostinger (VPS : base SQLite, fichiers, application ; serveur en France, confirmé par Corentin le 2026-11-04). Tiers : WhatsApp (liens `wa.me`, messages envoyés par le client lui-même). [Supabase et Netlify retirés le 2026-11-02]
 
 ## 1. Base légale et consentement (art. 6, 7, 9)
 | Point | Niveau | Détail |
@@ -54,7 +54,7 @@ Aucune durée légale propre à un coach pour ces données : **proposition [HYP.
 - Recommandé : un petit journal des demandes (date, réponse).
 
 ## 6. Sous-traitants et DPA (art. 28)
-- **Hostinger** : contrat de sous-traitance (DPA) à récupérer et archiver (date + version) ; vérifier le lieu du serveur (A_REMPLACER_LIEU_SERVEUR). [Tâche humaine] — *Supabase : archive, retiré le 2026-11-02.*
+- **Hostinger** : contrat de sous-traitance (DPA) à récupérer et archiver (date + version) ; serveur en France (confirmé le 2026-11-04). [Tâche humaine] — *Supabase : archive, retiré le 2026-11-02.*
 - *Netlify : archive, retiré le 2026-11-02 (plus de CDN tiers).*
 - Noter le lieu du serveur Hostinger dans le registre. [Tâche humaine]
 - Lister Hostinger comme destinataire dans la page Confidentialité. [FAIT]

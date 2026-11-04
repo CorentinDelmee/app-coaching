@@ -377,8 +377,8 @@
       "qui": "Corentin",
       "echeance": "",
       "duree": "5 min",
-      "statut": "a_faire",
-      "comment": "Remplacer A_REMPLACER_LIEU_SERVEUR dans docs/page-confidentialite.md (page Confidentialité de l'app) et docs/RGPD-CHECKLIST.md."
+      "statut": "fait",
+      "comment": "Serveur en France (Corentin, 2026-11-04) ; pages mises à jour."
     }
   ],
   "decisions": [

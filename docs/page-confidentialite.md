@@ -22,14 +22,14 @@ Cette application ne sert pas à un suivi médical. N'y indiquez pas de diagnost
 
 ## 3. Qui voit vos données ?
 - Vous, et votre coach Corentin Delmée.
-- Notre hébergeur technique (sous-traitant) : **Hostinger**, qui fournit le serveur (VPS) où sont stockées vos données et d'où l'application est servie. Lieu du serveur : A_REMPLACER_LIEU_SERVEUR.
+- Notre hébergeur technique (sous-traitant) : **Hostinger**, qui fournit le serveur (VPS) où sont stockées vos données et d'où l'application est servie. Le serveur est situé en France.
 - **Google Agenda** : l'agenda de votre coach est lu (lecture seule) pour afficher vos séances de coaching ; seuls le titre, l'horaire et le lieu des séances « Coaching » sont conservés, jamais la description ni les invités.
 - **Claude (Anthropic)** : pour préparer vos séances, votre coach utilise un assistant IA qui peut lire votre nom, vos séances et votre programme ; il ne reçoit ni code d'accès ni données de suivi de santé.
 - Aucune vente, aucune publicité, aucune statistique par un service tiers.
 - Si vous utilisez WhatsApp depuis l'application (modifier/annuler une séance), le message est envoyé via votre propre WhatsApp (Meta) ; il ne contient pas de données de santé.
 
 ## 4. Transferts hors Union européenne
-Vos données sont hébergées sur un serveur Hostinger (lieu : A_REMPLACER_LIEU_SERVEUR). Si ce serveur est situé dans l'Union européenne, il n'y a pas de transfert hors UE pour vos données de santé. Hostinger est le seul sous-traitant d'hébergement ; aucun service de diffusion tiers (CDN) n'est utilisé.
+Vos données sont hébergées sur un serveur Hostinger situé en France : il n'y a pas de transfert hors de l'Union européenne pour vos données de santé. Hostinger est le seul sous-traitant d'hébergement ; aucun service de diffusion tiers (CDN) n'est utilisé.
 
 ## 5. Combien de temps ?
 - Pendant la durée de votre coaching.
