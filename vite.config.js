@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
 import { garderCleApi } from './scripts/garde-cle-api.mjs'
 
-// base '/' : l'app est servie à la racine du sous-domaine app.corentindelmee.fr (VPS, Caddy).
+// base '/' : l'app est servie à la racine du sous-domaine app.delmeecorentin.fr (VPS, Caddy).
 export default defineConfig({
   base: '/',
   plugins: [

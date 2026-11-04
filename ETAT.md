@@ -1,6 +1,6 @@
 # ÉTAT — app-coaching
 
-## 2026-11-04 — domaine réel aligné (corentindelmee.fr)
+## 2026-11-04 — domaine réel aligné (delmeecorentin.fr)
 - deploiement/ (installer par défaut, LISEZMOI), vite.config, consentement (plus de mention Supabase), suivi.json (4 tâches Supabase/Netlify abandonnées), public/_headers (Netlify) supprimé : Caddy porte les en-têtes.
 
 ## 2026-11-03 (REPRENDRE ICI) — back-end VPS TERMINÉ côté code

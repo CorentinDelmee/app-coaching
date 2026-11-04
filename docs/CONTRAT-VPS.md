@@ -66,7 +66,7 @@ API réservation ──(OAuth Google, compte du coach)──> Google Agenda (occ
 ## Règles de travail
 Chacun ne touche que ses fichiers ; `git add <chemins>` + `git commit -- <chemins>` ; jamais amend, stash, push, reset.
 Ports de test : API réservation 5321 · serveur app 5425 · app Vite 5426 · testeurs 5431-5439. Arrêter ses processus par PID.
-Scripts temporaires : `/private/tmp/claude-501/-Users-corentindelmee-Documents-REXV2/d3561a92-4377-4a37-8032-00cfef8af835/scratchpad/<agent>/`.
+Scripts temporaires : `/private/tmp/claude-501/-Users-delmeecorentin-Documents-REXV2/d3561a92-4377-4a37-8032-00cfef8af835/scratchpad/<agent>/`.
 Commit en français terminé par `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`. Rapport ≤ 15 lignes + tokens et durée.
 
 ## Formes JSON exactes (ajout REX 2026-11-03, font foi pour les 3 côtés)
