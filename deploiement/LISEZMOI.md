@@ -1,7 +1,7 @@
 # Mettre en ligne l'app-coaching sur le VPS (guide de Corentin)
 
 ✋ = c'est toi qui le fais · 🤖 = c'est le script qui le fait · Durée ≈ 25 min (hors attente DNS).
-Contrat technique : `docs/CONTRAT-VPS.md`. L'app sera sur `https://app.mon-domaine.fr` (même VPS que le site vitrine et pc-seniors).
+Contrat technique : `docs/CONTRAT-VPS.md`. L'app sera sur `https://app.corentindelmee.fr` (même VPS que le site vitrine et pc-seniors).
 
 | Fichier | Rôle |
 |---|---|
@@ -12,18 +12,18 @@ Contrat technique : `docs/CONTRAT-VPS.md`. L'app sera sur `https://app.mon-domai
 | `sauvegarder.sh` + `app-coaching-sauvegarde.{service,timer}` | Chaque nuit à 4 h : `app.db` + `fichiers/`, 14 jours conservés. |
 
 ## 1. DNS (≈ 5 min + propagation)
-✋ Hostinger → Domaines → ton domaine → DNS : ajoute `A` · `app` → l'IP du VPS (la même que `@`), et `AAAA` · `app` seulement si `@` en a une.
-Vérifie : `dig +short app.mon-domaine.fr` = IP du VPS. (Caddy obtient le certificat HTTPS tout seul une fois le DNS propagé.)
+✋ Hostinger → Domaines → corentindelmee.fr → DNS : ajoute `A` · `app` → l'IP du VPS (la même que `@`), et `AAAA` · `app` seulement si `@` en a une.
+Vérifie : `dig +short app.corentindelmee.fr` = IP du VPS. (Caddy obtient le certificat HTTPS tout seul une fois le DNS propagé.)
 
 ## 2. Installer (≈ 10 min)
 Si le site vitrine est déjà installé, l'utilisateur et Caddy existent : rien d'autre à préparer. Sinon, voir `coaching-domicile/reservation/deploiement/LISEZMOI.md` (accord des associés inclus).
 1. ✋ Envoie et lance (remplace `IP` ; le domaine est le domaine **de base**, sans `app.`) :
    ```
    scp ~/Documents/REXV2/Projets/app-coaching/deploiement/installer.sh root@IP:/root/installer-app.sh
-   ssh root@IP "bash /root/installer-app.sh mon-domaine.fr"
+   ssh root@IP "bash /root/installer-app.sh corentindelmee.fr"
    ```
    🤖 Crée `appcoaching` et **affiche une clé** `ssh-ed25519 …`.
-2. ✋ GitHub → dépôt **app-coaching** → Settings → **Deploy keys** → Add deploy key → titre `VPS`, colle la clé, **ne coche pas** « Allow write access ». Relance la même commande `ssh … installer-app.sh mon-domaine.fr`.
+2. ✋ GitHub → dépôt **app-coaching** → Settings → **Deploy keys** → Add deploy key → titre `VPS`, colle la clé, **ne coche pas** « Allow write access ». Relance la même commande `ssh … installer-app.sh corentindelmee.fr`.
    🤖 Clone, dépendances, génère `/etc/app-coaching.env` (root, chmod 600) avec `SESSION_SECRET` et `COACH_API_KEY` aléatoires, reprend `RESA_ADMIN_KEY` de `/etc/coaching-resa.env` si elle existe, active le service et la sauvegarde.
 
 ## 3. Variables d'environnement (`/etc/app-coaching.env`)
@@ -31,9 +31,9 @@ Si le site vitrine est déjà installé, l'utilisateur et Caddy existent : rien 
 |---|---|
 | `NODE_ENV` `PORT` `HOST` | `production` · `5405` · `127.0.0.1` (déjà écrits) |
 | `DB_FILE` · `FICHIERS_DIR` | `/var/lib/app-coaching/app.db` · `/var/lib/app-coaching/fichiers` |
-| `APP_ORIGIN` | `https://app.mon-domaine.fr` (contrôle CSRF : doit être exact) |
+| `APP_ORIGIN` | `https://app.corentindelmee.fr` (contrôle CSRF : doit être exact) |
 | `SESSION_SECRET` · `COACH_API_KEY` | générés par l'installeur (≥ 32 car.) ; `COACH_API_KEY` sert au MCP/REST |
-| `RESA_API_URL` | `http://127.0.0.1:5311` |
+| `RESA_API_URL` | `http://127.0.0.1:5311` (même VPS : l'API publique du site est `https://corentindelmee.fr/api/resa`, l'app l'appelle en local) |
 | `RESA_ADMIN_KEY` | **identique** à celle de `/etc/coaching-resa.env`. Si elle est vide : `grep RESA_ADMIN_KEY /etc/coaching-resa.env`, puis `nano /etc/app-coaching.env` (`Ctrl+O`, `Entrée`, `Ctrl+X`). Jamais dans une conversation. |
 `deployer.sh` refuse de continuer si une variable est vide, et signale si les deux `RESA_ADMIN_KEY` diffèrent.
 
@@ -44,7 +44,7 @@ Si le site vitrine est déjà installé, l'utilisateur et Caddy existent : rien 
    ssh -t root@IP "cd /var/www/app-coaching/depot && sudo -u appcoaching env DB_FILE=/var/lib/app-coaching/app.db FICHIERS_DIR=/var/lib/app-coaching/fichiers npm run coach:creer corentin"
    ```
    (`env` est nécessaire car le fichier de secrets est illisible par `appcoaching` ; seules ces deux variables sont utiles à la commande.)
-3. ✋ Ouvre `https://app.mon-domaine.fr`, connecte-toi (`corentin` + ton code), va dans l'espace coach → **Réservations**.
+3. ✋ Ouvre `https://app.corentindelmee.fr`, connecte-toi (`corentin` + ton code), va dans l'espace coach → **Réservations**.
 4. ✋ Installe l'app sur ton téléphone (« Ajouter à l'écran d'accueil »).
 
 ## 5. Vérifications

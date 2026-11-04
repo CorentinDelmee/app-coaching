@@ -13,7 +13,7 @@ Pour suivre votre entraînement, cette application enregistre :
 - vos séances, charges et répétitions ;
 - des **données de santé** : douleurs, poids, mensurations, habitudes alimentaires, photos de repas, vos réponses aux questionnaires.
 
-Elles sont visibles par vous et par votre coach, **Corentin Delmée**, uniquement pour adapter votre programme. Elles sont stockées sur des serveurs situés dans l'Union européenne (Supabase). Elles ne sont ni vendues, ni utilisées pour de la publicité.
+Elles sont visibles par vous et par votre coach, **Corentin Delmée**, uniquement pour adapter votre programme. Elles sont stockées sur un serveur sécurisé hébergé par Corentin Delmée (accès protégé par mot de passe). Elles ne sont ni vendues, ni utilisées pour de la publicité.
 
 Vous pouvez à tout moment, depuis **Profil** : voir ou exporter vos données, retirer votre consentement, les supprimer.
 

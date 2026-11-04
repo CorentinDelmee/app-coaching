@@ -1,5 +1,8 @@
 # ÉTAT — app-coaching
 
+## 2026-11-04 — domaine réel aligné (corentindelmee.fr)
+- deploiement/ (installer par défaut, LISEZMOI), vite.config, consentement (plus de mention Supabase), suivi.json (4 tâches Supabase/Netlify abandonnées), public/_headers (Netlify) supprimé : Caddy porte les en-têtes.
+
 ## 2026-11-03 (REPRENDRE ICI) — back-end VPS TERMINÉ côté code
 - Serveur SQLite + auth (cookie __Host-sid, échecs seuls comptés, X-Proxy-Cle) + /api/app/* avec règles RLS côté serveur + quotas + relais réservations + fichiers + agenda ; 481 tests, e2e MCP 10/10 ; audit (0 critique) + correctifs + contre-audit ; test de bout en bout avec le site validé. Front aligné, écran Réservations vu à l'écran (docs/captures-reservations/).
 - 2026-11-03 après-midi : D9 tranchée par Corentin (VPS commun, coût) ; l'API réservation crée l'événement Google en direct (plus de routine 20 h) : libellés de l'écran Réservations, démo et docs/CONTRAT-VPS.md alignés ; 482 tests ; re-test de bout en bout avec le site validé.

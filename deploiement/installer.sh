@@ -2,7 +2,7 @@
 # Installation de l'app-coaching sur le VPS commun (pc-seniors), lancé en root.
 # Prérequis : installer-vps.sh de pc-seniors déjà passé (Node 24, Caddy, pare-feu).
 # Peut être relancé sans risque : chaque étape vérifie ce qui existe déjà.
-# Usage : bash installer.sh mon-domaine.fr        (l'app sera sur https://app.mon-domaine.fr)
+# Usage : bash installer.sh corentindelmee.fr        (l'app sera sur https://app.corentindelmee.fr)
 #   1er passage : crée l'utilisateur et la clé GitHub, affiche la clé à ajouter sur GitHub, puis s'arrête.
 #   2e passage (clé ajoutée) : clone, dépendances, service, fichier de secrets, timer de sauvegarde.
 main() {
@@ -13,7 +13,7 @@ APP_HOME=/var/lib/appcoaching
 APP_DIR=/var/www/app-coaching
 DEPOT=git@github.com:CorentinDelmee/app-coaching.git
 ENV_FILE=/etc/app-coaching.env
-DOMAINE=${1:-}
+DOMAINE=${1:-corentindelmee.fr}
 
 etape() { printf '\n\033[1;33m==> %s\033[0m\n' "$1"; }
 
@@ -44,7 +44,7 @@ if ! sudo -u "$APP_USER" git ls-remote -q "$DEPOT" >/dev/null 2>&1; then
   echo
   cat "$KEY.pub"
   echo
-  echo "Puis relancer : bash installer.sh ${DOMAINE:-mon-domaine.fr}"
+  echo "Puis relancer : bash installer.sh ${DOMAINE:-corentindelmee.fr}"
   return 0
 fi
 
@@ -57,7 +57,7 @@ sudo -u "$APP_USER" npm ci --omit=dev --no-audit --no-fund --loglevel=error
 
 etape "5/6 Fichier de secrets $ENV_FILE (root, chmod 600)"
 if [ ! -f "$ENV_FILE" ]; then
-  [ -n "$DOMAINE" ] || { echo "Donner le domaine : bash installer.sh mon-domaine.fr"; exit 1; }
+  [ -n "$DOMAINE" ] || { echo "Donner le domaine : bash installer.sh corentindelmee.fr"; exit 1; }
   # RESA_ADMIN_KEY : reprise de l'API réservation si elle est déjà installée (doit être identique des deux côtés)
   RESA_KEY=$(sed -n 's/^RESA_ADMIN_KEY=//p' /etc/coaching-resa.env 2>/dev/null | tail -n 1 | tr -d '"'"'"'\r' || true)
   ( umask 077

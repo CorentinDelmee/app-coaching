@@ -222,24 +222,24 @@
       "qui": "Corentin",
       "echeance": "",
       "duree": "1 h",
-      "statut": "a_faire",
-      "comment": "MISE-EN-ROUTE.md étapes 1 à 8."
+      "statut": "abandonnee",
+      "comment": "MISE-EN-ROUTE.md étapes 1 à 8. — Abandonnée : remplacée par le VPS le 2026-11-02."
     },
     {
       "titre": "Mise en ligne Netlify Drop + installation sur ton téléphone",
       "qui": "Corentin",
       "echeance": "",
       "duree": "25 min",
-      "statut": "a_faire",
-      "comment": "MISE-EN-ROUTE.md étapes 9-10. Action publique : à faire par toi. Ne pas définir VITE_API_KEY pour la mise en ligne : le build de production est refusé."
+      "statut": "abandonnee",
+      "comment": "MISE-EN-ROUTE.md étapes 9-10. Action publique : à faire par toi. Ne pas définir VITE_API_KEY pour la mise en ligne : le build de production est refusé. — Abandonnée : remplacée par le VPS le 2026-11-02."
     },
     {
       "titre": "Déployer les 2 fonctions serveur (création de client, nouveau code) et désactiver les inscriptions publiques",
       "qui": "Corentin",
       "echeance": "",
       "duree": "25 min",
-      "statut": "a_faire",
-      "comment": "MISE-EN-ROUTE.md. Indispensable avant de créer un vrai client."
+      "statut": "abandonnee",
+      "comment": "MISE-EN-ROUTE.md. Indispensable avant de créer un vrai client. — Abandonnée : remplacée par le VPS le 2026-11-02."
     },
     {
       "titre": "Recette en ligne avec 2 comptes (isolation, hors connexion) AVANT tout vrai client",
@@ -341,8 +341,8 @@
       "qui": "Corentin",
       "echeance": "",
       "duree": "10 min",
-      "statut": "a_faire",
-      "comment": "Trois valeurs aléatoires, toutes différentes. APP_ORIGIN = URL de l'app. Guide : docs/GOOGLE-AGENDA.md. Aucune valeur dans le code ni dans Git."
+      "statut": "abandonnee",
+      "comment": "Trois valeurs aléatoires, toutes différentes. APP_ORIGIN = URL de l'app. Guide : docs/GOOGLE-AGENDA.md. Aucune valeur dans le code ni dans Git. — Abandonnée : remplacée par le VPS le 2026-11-02."
     },
     {
       "titre": "Créer ta clé de chiffrement des sauvegardes (age) sur ton Mac",
