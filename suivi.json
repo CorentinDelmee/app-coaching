@@ -371,6 +371,14 @@
       "duree": "2 min",
       "statut": "a_faire",
       "comment": "deploiement/LISEZMOI.md"
+    },
+    {
+      "titre": "Confirmer le pays du serveur VPS (Hostinger) pour le texte de consentement",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "5 min",
+      "statut": "a_faire",
+      "comment": "Remplacer A_REMPLACER_LIEU_SERVEUR dans docs/page-confidentialite.md (page Confidentialité de l'app) et docs/RGPD-CHECKLIST.md."
     }
   ],
   "decisions": [

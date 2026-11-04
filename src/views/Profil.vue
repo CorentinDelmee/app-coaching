@@ -229,6 +229,7 @@ async function deconnecter() {
             <button v-else class="petit-btn plein" type="button" @click="donner">{{ consentement ? 'Donner mon consentement' : 'Répondre' }}</button>
             <button class="petit-btn" type="button" @click="exporter">Exporter mes données (JSON)</button>
             <RouterLink class="petit-btn" to="/confidentialite?retour=/profil">Confidentialité</RouterLink>
+            <a class="petit-btn" href="https://corentindelmee.fr" target="_blank" rel="noopener">Le site</a>
             <button v-if="!confirmerSuppression" class="petit-btn danger" type="button" @click="confirmerSuppression = true">Supprimer mes données de santé</button>
           </div>
           <div v-if="confirmerSuppression" class="pf-confirme" role="alertdialog" aria-label="Confirmer la suppression">

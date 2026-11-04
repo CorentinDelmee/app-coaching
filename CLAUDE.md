@@ -12,7 +12,7 @@ Numéro WhatsApp du coach : variable `VITE_COACH_WHATSAPP` (format international
 ## Commandes (préfixer `export PATH="/c/Program Files/nodejs:$PATH";` si `npm` est introuvable)
 - Lancer : `npm run dev` (port 5173) — ou double-clic `lancer.cmd`
 - Tests unitaires : `npx vitest run`
-- Build : `npm run build` → `dist/` (Netlify Drop) ; aperçu : `npm run preview`
+- Build : `npm run build` → `dist/` ; mise en ligne sur le VPS (Hostinger) par `deploiement/deployer.sh` (voir `deploiement/LISEZMOI.md`) ; aperçu : `npm run preview`
 - Serveur coach (API REST, port 5405) : `npm run serveur` (clé `COACH_API_KEY` dans `serveur/.env`)
 - Serveur MCP (Claude crée les séances) : `npm run mcp` (config : `serveur/mcp.json.exemple`)
 - Test de bout en bout serveur + app : `node serveur/tests/e2e-seance.mjs --navigateur`

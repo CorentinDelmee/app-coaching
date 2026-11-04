@@ -1,3 +1,5 @@
+> **Archive : remplacé par le VPS le 2026-11-02** (voir `docs/CONTRAT-VPS.md` et `deploiement/LISEZMOI.md`). Conservé pour mémoire, ne plus suivre.
+
 # Mise en route — Corentin Delmée Coaching (PWA)
 
 > **Obsolète (2026-11-02) : Supabase est remplacé par un back-end sur le VPS, voir `docs/CONTRAT-VPS.md`.** Les étapes Supabase ci-dessous sont gardées pour archive.

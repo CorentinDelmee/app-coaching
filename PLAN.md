@@ -228,6 +228,8 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 - *Acceptation* : rapports sans point bloquant ouvert ; `npx vitest run` et `npm run build` verts.
 
 ## Lot 12 — Mise en route
+
+> **Archive : remplacé par le VPS le 2026-11-02** (Supabase/Netlify abandonnés ; mise en route = `deploiement/LISEZMOI.md`).
 **Dépendances** : lot 11.
 - [ ] `MISE-EN-ROUTE.md` : créer le projet Supabase (région UE), exécuter `schema.sql`, désactiver la confirmation e-mail, créer le compte coach,
   remplir `.env`, build, Netlify Drop (`dist/`), variables d'environnement ; `lancer.cmd` vérifié ; tâches humaines ajoutées au suivi.

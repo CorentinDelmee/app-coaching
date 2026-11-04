@@ -10,7 +10,7 @@
 - Responsable de traitement : Corentin Delmée, micro-entrepreneur (il décide des finalités et des moyens). [FAIT]
 - 10-15 clients, tous adultes à priori [HYP.]. Données : identité, identifiant/code, séances, poids, mensurations, douleurs (zone + intensité), nutrition (habitudes, calories, photos de repas), commentaires libres, réponses aux questionnaires.
 - Douleurs, poids, nutrition liés à un individu = **données concernant la santé** → catégorie particulière, art. 9 RGPD. [FAIT pour douleurs ; poids/nutrition : à traiter par prudence comme santé] 
-- Sous-traitants : Supabase (base + stockage, région UE), Netlify (hébergement du code statique). Tiers : WhatsApp (liens `wa.me`, messages envoyés par le client lui-même).
+- Sous-traitants : Hostinger (VPS : base SQLite, fichiers, application ; lieu du serveur A_REMPLACER_LIEU_SERVEUR, à confirmer). Tiers : WhatsApp (liens `wa.me`, messages envoyés par le client lui-même). [Supabase et Netlify retirés le 2026-11-02]
 
 ## 1. Base légale et consentement (art. 6, 7, 9)
 | Point | Niveau | Détail |
@@ -23,7 +23,7 @@
 | Re-consentement | Recommandé | Si le texte ou les finalités changent : nouvel écran avec nouvelle version. |
 
 ## 2. Information des personnes (art. 12-14)
-- Obligatoire : identité du responsable, finalités, bases légales, destinataires (Supabase, Netlify), transferts éventuels, durées, droits, droit de réclamation CNIL, caractère facultatif/obligatoire des données. → `page-confidentialite.md` (brouillon).
+- Obligatoire : identité du responsable, finalités, bases légales, destinataires (Hostinger), transferts éventuels, durées, droits, droit de réclamation CNIL, caractère facultatif/obligatoire des données. → `page-confidentialite.md` (brouillon).
 - Obligatoire : accessible **avant** la collecte (lien sur l'écran de consentement) et depuis Profil + page d'accueil publique.
 - Recommandé : même information remise en main propre / WhatsApp lors de la création du compte.
 
@@ -54,32 +54,32 @@ Aucune durée légale propre à un coach pour ces données : **proposition [HYP.
 - Recommandé : un petit journal des demandes (date, réponse).
 
 ## 6. Sous-traitants et DPA (art. 28)
-- **Supabase** : contrat de sous-traitance (DPA) obligatoire. Supabase publie un DPA en ligne (à chercher sur supabase.com/legal) ; **vérifier qu'il s'applique à l'offre gratuite et le conserver (date + version)**. [À VÉRIFIER, non confirmé cette session]
-- **Netlify** : idem (DPA sur netlify.com/legal). Netlify sert surtout des fichiers statiques ; les données de santé ne passent normalement pas par ses serveurs (elles vont directement navigateur → Supabase), mais ses journaux peuvent contenir adresses IP. [HYP., à confirmer avec l'architecture finale]
-- Choisir la région UE à la création du projet Supabase (non modifiable ensuite) et la noter dans le registre. [Tâche humaine]
-- Lister Supabase et Netlify comme destinataires dans la page Confidentialité.
-- Supabase plan gratuit : pas de sauvegarde automatique garantie, projet mis en pause après une période d'inactivité. [FAIT à revérifier] → impact sur la disponibilité/intégrité (art. 32) : prévoir un export régulier chiffré du coach (voir §8).
+- **Hostinger** : contrat de sous-traitance (DPA) à récupérer et archiver (date + version) ; vérifier le lieu du serveur (A_REMPLACER_LIEU_SERVEUR). [Tâche humaine] — *Supabase : archive, retiré le 2026-11-02.*
+- *Netlify : archive, retiré le 2026-11-02 (plus de CDN tiers).*
+- Noter le lieu du serveur Hostinger dans le registre. [Tâche humaine]
+- Lister Hostinger comme destinataire dans la page Confidentialité. [FAIT]
+- Sauvegardes : chaque nuit, chiffrées (`age`), 14 jours conservés ; copie hors VPS à faire par Corentin (voir `deploiement/LISEZMOI.md` §6).
 
 ## 7. Transferts hors UE (chap. V, art. 44 et s.)
-- Supabase et Netlify sont des sociétés américaines : même avec données stockées en UE, un accès depuis les États-Unis (support, administration) ou un CDN mondial peut constituer un transfert. Mécanisme à vérifier dans leur DPA : clauses contractuelles types et/ou certification Data Privacy Framework (à confirmer sur la liste officielle, https://www.dataprivacyframework.gov). [À FAIRE VÉRIFIER]
-- Netlify CDN : le code de l'app (non personnel) peut être servi depuis des nœuds hors UE, et l'IP du visiteur y est vue. À mentionner dans la page Confidentialité.
+- Hostinger : vérifier dans son DPA le lieu du serveur et tout transfert hors UE (support, administration). [À FAIRE]
+- Plus de CDN tiers : l'application est servie directement par le VPS (Caddy).
 - **Aucune donnée de santé dans les liens WhatsApp** (le message pré-rempli ne doit contenir que date/heure/lieu de séance, jamais douleur, poids, etc.) : WhatsApp (Meta) est un tiers choisi par le client. [Dans l'app]
 - **Polices et librairies : les héberger soi-même** (pas de Google Fonts/CDN externes) pour éviter d'envoyer l'IP des clients à des tiers. [Dans l'app]
 - Pas d'outil d'analyse/statistiques tiers en V1.
 
 ## 8. Sécurité (art. 32)
 Dans l'app :
-- RLS Supabase activé sur **toutes** les tables et le stockage : un client ne lit/écrit que ses lignes ; le coach seul voit tout. Tester avec un compte client (audit sécurité prévu).
+- Règles d'accès côté serveur (équivalent des anciennes RLS) : un client ne lit/écrit que ses lignes ; le coach seul voit tout. Testé (tests serveur) ; à recetter avec 2 comptes.
 - Clé `anon` publique acceptable **uniquement** si RLS est correct ; clé `service_role` jamais dans le code ni dans Git.
 - **Code de 6 caractères = faible** : limiter les tentatives (blocage/délai), ne pas utiliser de codes devinables, forcer/inciter au changement dans Profil, expiration du code initial. [Recommandé fort]
-- HTTPS uniquement (Netlify le fournit) ; bucket photos **privé**, URLs signées de courte durée.
+- HTTPS uniquement (Caddy le fournit) ; bucket photos **privé**, URLs signées de courte durée.
 - Pas de données de santé dans les journaux, URL, titres de notifications ou messages WhatsApp.
 - Session persistante : déconnexion disponible ; rappeler de verrouiller son téléphone.
 - Données locales hors connexion (séance en cours) : limiter à l'utile et les effacer après synchronisation et à la déconnexion.
 - Photos de repas : retirer les métadonnées (EXIF/GPS) à l'envoi ; consigne « ne photographiez pas de personnes ».
 - Mode local/données factices : jamais de vraies données de clients dedans.
 Hors app (Corentin) :
-- Mot de passe fort + double authentification sur les comptes Supabase, Netlify, e-mail, GitHub.
+- Mot de passe fort + double authentification sur les comptes Hostinger, e-mail, GitHub.
 - Appareil du coach protégé (mot de passe, chiffrement disque) ; pas d'export JSON qui traîne.
 - Export/sauvegarde périodique de la base (fréquence suggérée : mensuelle) stocké chiffré.
 
@@ -112,11 +112,11 @@ Hors app (Corentin) :
 |---|---|---|
 | 1 | Lire et valider/ajuster les durées de conservation (§4) | 15 min |
 | 2 | Compléter le brouillon `page-confidentialite.md` ([À COMPLÉTER]) | 30 min |
-| 3 | Créer le projet Supabase en **région UE** (Francfort/Paris) ; noter la région | 10 min |
-| 4 | Récupérer, lire et archiver les DPA Supabase et Netlify (date + version) ; vérifier le mécanisme de transfert | 45 min |
+| 3 | Noter le lieu du serveur Hostinger (VPS) dans le registre et la page Confidentialité | 10 min |
+| 4 | Récupérer, lire et archiver le DPA Hostinger (date + version) ; vérifier le mécanisme de transfert | 45 min |
 | 5 | Remplir le registre des traitements (modèle CNIL, 1 fiche) | 45 min |
 | 6 | Rédiger la procédure « violation de données » (1 page) + mini-analyse de risques | 45 min |
-| 7 | Activer la double authentification (Supabase, Netlify, e-mail, GitHub) | 20 min |
+| 7 | Activer la double authentification (Hostinger, e-mail, GitHub) | 20 min |
 | 8 | Faire relire page Confidentialité + texte de consentement + question HDS par un juriste/avocat ou service d'aide (ex. CCI, permanence juridique, ou CNIL pour questions générales) | 1-2 h + délai/coût à demander |
 | 9 | Décider de la politique mineurs (V1 = majeurs ?) | 10 min |
 | 10 | Informer chaque client à la création du compte (remise du lien Confidentialité) et garder trace | 5 min/client |
