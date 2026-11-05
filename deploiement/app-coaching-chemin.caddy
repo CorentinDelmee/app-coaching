@@ -57,7 +57,7 @@ handle A_REMPLACER_PREFIXE/* {
 		X-Frame-Options "DENY"
 		X-Robots-Tag "noindex, nofollow"
 		# Même CSP que l'app sur son propre domaine (app-coaching.caddy) : une seule CSP, aucune du site.
-		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; frame-src https://www.youtube-nocookie.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://i.ytimg.com; font-src 'self' data:; connect-src 'self'; frame-src https://www.youtube-nocookie.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 		-Server
 	}
 	# Les en-têtes passent avant « uri » (ordre des directives Caddy) : les chemins ci-dessous gardent le préfixe.
