@@ -12,3 +12,4 @@ docs/**/*.webm
 serveur/data/
 serveur/.env
 tmp/
+.worktrees/
