@@ -19,7 +19,9 @@ export default defineConfig({
     VitePWA({
       // « prompt » : la mise à jour n'est appliquée qu'à une navigation hors séance (voir src/lib/pwa.js), jamais en pleine séance.
       registerType: 'prompt',
-      includeAssets: ['favicon.svg', 'icone.svg', 'icons/apple-touch-icon.png'],
+      // svg et png sont déjà précachés par globPatterns : les relister créait des doublons (Cache.put: Entry already exists)
+      includeAssets: [],
+      includeManifestIcons: false,
       manifest: {
         name: 'Corentin Delmée Coaching',
         short_name: 'CD Coaching',
