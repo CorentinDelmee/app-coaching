@@ -43,6 +43,9 @@ API réservation ──(OAuth Google, compte du coach)──> Google Agenda (occ
 - Variables : `NODE_ENV`, `PORT=5405`, `HOST=127.0.0.1`, `DB_FILE`, `FICHIERS_DIR`, `SESSION_SECRET` (≥ 32 car.),
   `APP_ORIGIN`, `COACH_API_KEY` (MCP/REST existants), `RESA_API_URL=http://127.0.0.1:5311`, `RESA_ADMIN_KEY` (≥ 32 car.).
   Refus de démarrer en production si l'une manque.
+- Adresse réglable (2026-11-05) : `APP_BASE` (`/` = domaine propre, `/app/` = sous-chemin du site) et `APP_SCOPE` (portée du manifeste,
+  défaut APP_BASE) sont lues au build par deployer.sh (voir deploiement/LISEZMOI.md § 3 bis). `APP_ORIGIN` reste l'origine exacte (CSRF) ;
+  les URL absolues de l'app = APP_ORIGIN + APP_BASE. API toujours en `/api/app/*`, cookie `__Host-sid` en Path=/.
 
 ## Front app-coaching (`src/`)
 - Nouvel adaptateur `src/data/adapters/api.js` : même interface que `adapters/supabase.js` (tout, un, ecrire, supprimer,

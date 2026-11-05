@@ -1,4 +1,5 @@
 # ÉTAT — app-coaching
+- **2026-11-05 — adresse réglable (APP_BASE/APP_SCOPE)** : build, manifeste, SW (allowlist limitée à APP_BASE), lien d'invitation, deployer.sh (mode sous-chemin : fragment Caddy dans /etc/caddy/sites/<domaine>.d/ + redirection app.<domaine>) ; migration vers delmeecorentin.fr/app/ : deploiement/LISEZMOI.md § 3 bis (site d'abord, puis app en 2 passages). Pas encore déployé. À voir : en Chrome headless le SW échoue à s'installer (« Cache.put : Entry already exists »), aussi avec APP_BASE=/ (antérieur à ce lot).
 - **2026-11-05 soir — APP EN LIGNE** sur https://app.delmeecorentin.fr (35c6e76 + 0a3941c pour l’installeur). DATA_DIR=/var/lib/app-coaching/data ajouté (le service ne pouvait pas écrire la bibliothèque dans le clone, lecture seule). Reste : compte coach (npm run coach:creer, terminal interactif), installation sur téléphone, BACKUP_AGE_RECIPIENT (sauvegardes chiffrées) ; bibliotheque.json (data/) pas encore dans la sauvegarde de nuit.
 
 ## 2026-11-04 — domaine réel aligné (delmeecorentin.fr)

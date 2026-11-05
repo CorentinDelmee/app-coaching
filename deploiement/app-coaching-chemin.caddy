@@ -1,0 +1,54 @@
+# /etc/caddy/sites/<domaine>.d/app-coaching.caddy — App coaching servie sous un SOUS-CHEMIN du site (APP_BASE=/app/).
+# FRAGMENT importé DANS le bloc du site (import /etc/caddy/sites/<domaine>.d/*.caddy, voir coaching-domicile) :
+# pas de bloc « domaine { } » ici, et l'encodage (encode zstd gzip) vient du bloc du site.
+# CECI EST UN MODÈLE : deployer.sh le copie en remplaçant A_REMPLACER_PREFIXE (APP_BASE sans barre finale, ex. /app)
+# et A_REMPLACER_PROXY_KEY (PROXY_KEY de /etc/app-coaching.env), puis vérifie la config (caddy validate) avant de recharger.
+# Les en-têtes du site ne s'appliquent PAS ici (le site les met dans ses propres handle) : ceux de l'app sont dans chaque handle.
+# Ne pas modifier le fichier installé à la main : il est réécrit à chaque déploiement.
+
+# API de l'app → Node (service app-coaching)
+handle /api/app/* {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "DENY"
+		X-Robots-Tag "noindex, nofollow"
+		Cache-Control "no-store"
+		-Server
+	}
+	request_body {
+		max_size 6MB
+	}
+	reverse_proxy 127.0.0.1:5405 {
+		header_up X-Forwarded-For {remote_host}
+		# Preuve que la requête vient de Caddy : sans elle, le serveur ignore X-Forwarded-For (IP = adresse de connexion).
+		# A_REMPLACER_PROXY_KEY est remplacé par PROXY_KEY de /etc/app-coaching.env (deployer.sh ; fichier 0640 root:caddy).
+		header_up X-Proxy-Cle A_REMPLACER_PROXY_KEY
+	}
+}
+
+# PWA statique sous A_REMPLACER_PREFIXE/ avec repli SPA (/app sans barre finale reste la page « L'app » du site)
+handle A_REMPLACER_PREFIXE/* {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+		X-Frame-Options "DENY"
+		X-Robots-Tag "noindex, nofollow"
+		# Même CSP que l'app sur son propre domaine (app-coaching.caddy) : une seule CSP, aucune du site.
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; frame-src https://www.youtube-nocookie.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+		-Server
+	}
+	# Les en-têtes passent avant « uri » (ordre des directives Caddy) : les chemins ci-dessous gardent le préfixe.
+	@app_versionnes path A_REMPLACER_PREFIXE/assets/*
+	header @app_versionnes Cache-Control "public, max-age=31536000, immutable"
+	@app_vivants path A_REMPLACER_PREFIXE/ A_REMPLACER_PREFIXE/index.html A_REMPLACER_PREFIXE/sw.js A_REMPLACER_PREFIXE/registerSW.js A_REMPLACER_PREFIXE/manifest.webmanifest A_REMPLACER_PREFIXE/workbox-*.js
+	header @app_vivants Cache-Control "no-cache"
+	# Les fichiers du build sont à la racine de /var/www/app-coaching/site : on retire le préfixe avant de les chercher.
+	uri strip_prefix A_REMPLACER_PREFIXE
+	root * /var/www/app-coaching/site
+	try_files {path} /index.html
+	file_server
+}

@@ -8,7 +8,8 @@ Contrat technique : `docs/CONTRAT-VPS.md`. L'app sera sur `https://app.delmeecor
 | `installer.sh` | Une fois : utilisateur `appcoaching`, clé GitHub (lecture seule), clone, `/etc/app-coaching.env` (secrets générés), service, timer. |
 | `deployer.sh` | Chaque mise en ligne : tests serveur + build `VITE_BACKEND=api` sur une copie, mise à jour, échange atomique de la PWA, Caddy, redémarrage, vérification, retour arrière si échec. |
 | `app-coaching.service` | Serveur Node 127.0.0.1:5405, durci, 384 Mo max, seul `/var/lib/app-coaching` inscriptible. |
-| `app-coaching.caddy` | Bloc Caddy (HTTPS, CSP, `/api/app/*` → Node, repli SPA, cache). |
+| `app-coaching.caddy` | Bloc Caddy (HTTPS, CSP, `/api/app/*` → Node, repli SPA, cache) : mode domaine propre. |
+| `app-coaching-chemin.caddy` + `app-coaching-redirection.caddy` | Mode sous-chemin (`APP_BASE=/app/`) : fragment importé par le bloc du site + redirection de `app.<domaine>` (voir § 3 bis). |
 | `sauvegarder.sh` + `app-coaching-sauvegarde.{service,timer}` | Chaque nuit à 4 h : `app.db` + `fichiers/`, 14 jours conservés. |
 
 **Ce que root exécute, et d'où ça vient.** `installer.sh` et `deployer.sh` copient les scripts lancés en root, les unités systemd
@@ -50,6 +51,31 @@ Si le site vitrine est déjà installé, l'utilisateur et Caddy existent : rien 
 | `RESA_API_URL` | `http://127.0.0.1:5311` (même VPS : l'API publique du site est `https://delmeecorentin.fr/api/resa`, l'app l'appelle en local) |
 | `RESA_ADMIN_KEY` | **identique** à celle de `/etc/coaching-resa.env`. Si elle est vide : `grep RESA_ADMIN_KEY /etc/coaching-resa.env`, puis `nano /etc/app-coaching.env` (`Ctrl+O`, `Entrée`, `Ctrl+X`). Jamais dans une conversation. |
 `deployer.sh` refuse de continuer si une variable est vide, et signale si les deux `RESA_ADMIN_KEY` diffèrent.
+
+## 3 bis. Adresse de l'app : domaine propre ou sous-chemin du site
+L'adresse = `APP_ORIGIN` + `APP_BASE`. Trois variables de `/etc/app-coaching.env`, lues par `deployer.sh` (build Vite + Caddy) :
+
+| Mode | `APP_ORIGIN` | `APP_BASE` | `APP_SCOPE` | Fichiers Caddy écrits par `deployer.sh` |
+|---|---|---|---|---|
+| **Domaine propre** (défaut, autre coach) | `https://app.<domaine>` | `/` (ou absent) | vide | `/etc/caddy/sites/app-coaching.caddy` (bloc complet, modèle `app-coaching.caddy`) |
+| **Sous-chemin** (chez Corentin) | `https://<domaine>` (sans chemin) | `/app/` | `/` | fragment `/etc/caddy/sites/<domaine>.d/app-coaching.caddy` (modèle `app-coaching-chemin.caddy`, importé par le bloc du site) + redirection `/etc/caddy/sites/app-coaching-redirection.caddy` (`app.<domaine>/x` → `<domaine>/app/x`, 301) ; l'ancien bloc est supprimé |
+
+- `APP_SCOPE=/` : la portée du manifeste couvre tout le site, pour que le bouton « Installer » de la page `/app` du site déclenche l'invite du navigateur. Le service worker, lui, reste limité à `/app/` : il ne sert jamais l'app à la place d'une page du site.
+- Changer de mode : modifier les variables, relancer `deployer.sh` ; il écrit les bons fichiers, retire ceux de l'autre mode, valide toute la config Caddy et remet les anciens fichiers si elle est invalide.
+- Sous-chemin : `deployer.sh` refuse de continuer tant que le bloc du site n'importe pas `/etc/caddy/sites/<domaine>.d/*.caddy` (déployer le site d'abord).
+
+### Migration de Corentin (app.delmeecorentin.fr → delmeecorentin.fr/app/)
+1. ✋ **Site d'abord** : déployer la nouvelle version du site (son bloc importe `/etc/caddy/sites/delmeecorentin.fr.d/*.caddy`).
+2. ✋ **App, 1er passage sans rien changer** : `ssh root@IP "bash /opt/app-coaching/deployer.sh"`. L'ancien `deployer.sh` de `/opt` tourne encore (l'app reste sur `app.`), mais il recopie le nouveau dans `/opt`.
+3. ✋ `nano /etc/app-coaching.env` : remplacer `APP_ORIGIN=https://app.delmeecorentin.fr` par les trois lignes
+   ```
+   APP_ORIGIN=https://delmeecorentin.fr
+   APP_BASE=/app/
+   APP_SCOPE=/
+   ```
+4. ✋ **App, 2e passage** : `ssh root@IP "bash /opt/app-coaching/deployer.sh"` → doit finir par `Déployé : … · https://delmeecorentin.fr/app/`.
+5. Vérifier : `https://delmeecorentin.fr/app/` (app), `https://delmeecorentin.fr/app` (page du site), `https://app.delmeecorentin.fr/bienvenue` → redirigé vers `/app/bienvenue`.
+6. À savoir : nouvelle origine = chacun se reconnecte une fois (cookie et données locales liés à l'ancienne adresse) ; une app déjà installée depuis `app.` s'ouvre redirigée dans le navigateur : la réinstaller depuis la page du site. Garder l'entrée DNS `app.` (redirection).
 
 ## 4. Mettre en ligne puis créer ton compte coach
 1. ✋ `ssh root@IP "bash /opt/app-coaching/deployer.sh"` → doit finir par `active` et `Déployé : …`.

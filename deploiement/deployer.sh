@@ -13,6 +13,8 @@ DEPOT=$APP_DIR/depot
 ESSAI=$APP_DIR/essai
 ENV_FILE=/etc/app-coaching.env
 CADDY_BLOC=/etc/caddy/sites/app-coaching.caddy
+# Mode sous-chemin (APP_BASE=/app/) : fragment importé par le bloc du site + redirection de l'ancienne adresse app.<domaine>
+CADDY_REDIR=/etc/caddy/sites/app-coaching-redirection.caddy
 # Copie root:root des fichiers exécutés ou installés par root (scripts 0755, unités et bloc Caddy 0644) :
 # root n'exécute jamais un fichier du dépôt, que l'utilisateur 'appcoaching' pourrait modifier.
 OPT=/opt/app-coaching
@@ -20,7 +22,8 @@ copier_opt() {
   local D=$DEPOT/deploiement
   install -d -o root -g root -m 0755 "$OPT"
   install -o root -g root -m 0755 "$D/deployer.sh" "$D/installer.sh" "$D/sauvegarder.sh" "$OPT/"
-  install -o root -g root -m 0644 "$D/app-coaching.service" "$D/app-coaching-sauvegarde.service"     "$D/app-coaching-sauvegarde.timer" "$D/app-coaching.caddy" "$OPT/"
+  install -o root -g root -m 0644 "$D/app-coaching.service" "$D/app-coaching-sauvegarde.service"     "$D/app-coaching-sauvegarde.timer" "$D/app-coaching.caddy" \
+    "$D/app-coaching-chemin.caddy" "$D/app-coaching-redirection.caddy" "$OPT/"
 }
 
 [ "$(id -u)" -eq 0 ] || { echo "À lancer en root."; exit 1; }
@@ -39,8 +42,29 @@ case "$(lire PROXY_KEY)" in *[!0-9a-f]*) echo "PROXY_KEY doit être en hexadéci
 for V in PROXY_KEY SESSION_SECRET COACH_API_KEY RESA_API_URL RESA_ADMIN_KEY APP_ORIGIN DB_FILE FICHIERS_DIR; do
   [ -n "$(lire "$V")" ] || { echo "$V est vide dans $ENV_FILE : le remplir (nano $ENV_FILE)."; exit 1; }
 done
-case "$(lire APP_ORIGIN)" in https://app.*) ;; *) echo "APP_ORIGIN doit être https://app.<domaine>."; exit 1;; esac
-DOMAINE=$(lire APP_ORIGIN | sed -e 's#^https://app\.##' -e 's#/*$##')
+# Adresse de l'app : APP_BASE='/' (défaut) = domaine propre https://app.<domaine> ; '/app/' = sous-chemin du site https://<domaine>/app/.
+# APP_SCOPE = portée du manifeste (défaut APP_BASE ; '/' pour installer l'app depuis la page du site).
+APP_BASE=$(lire APP_BASE); APP_BASE=${APP_BASE:-/}
+APP_SCOPE=$(lire APP_SCOPE); APP_SCOPE=${APP_SCOPE:-$APP_BASE}
+for V in "$APP_BASE" "$APP_SCOPE"; do
+  echo "$V" | grep -Eq '^/([a-z0-9-]+/)*$' || { echo "APP_BASE / APP_SCOPE invalide ($V) : ex. / ou /app/ (barre au début et à la fin)."; exit 1; }
+done
+case "$APP_BASE" in "$APP_SCOPE"*) ;; *) echo "APP_BASE ($APP_BASE) doit être dans APP_SCOPE ($APP_SCOPE)."; exit 1;; esac
+PREFIXE=
+if [ "$APP_BASE" = / ]; then
+  case "$(lire APP_ORIGIN)" in https://app.*) ;; *) echo "APP_ORIGIN doit être https://app.<domaine> (APP_BASE=/)."; exit 1;; esac
+  DOMAINE=$(lire APP_ORIGIN | sed -e 's#^https://app\.##' -e 's#/*$##')
+else
+  DOMAINE=$(lire APP_ORIGIN | sed -e 's#^https://##')
+  PREFIXE=${APP_BASE%/}
+  CADDY_FRAG=/etc/caddy/sites/$DOMAINE.d/app-coaching.caddy
+fi
+echo "$DOMAINE" | grep -Eq '^[a-z0-9]([a-z0-9.-]*[a-z0-9])?\.[a-z]+$' \
+  || { echo "APP_ORIGIN doit être l'origine exacte, sans chemin ni barre finale (ex. https://delmeecorentin.fr)."; exit 1; }
+# Sous-chemin : le bloc du site doit déjà importer son dossier de fragments (déployer le site AVANT l'app)
+if [ "$APP_BASE" != / ] && ! grep -qsF "import /etc/caddy/sites/$DOMAINE.d/" /etc/caddy/Caddyfile /etc/caddy/sites/*.caddy; then
+  echo "Le bloc Caddy du site n'importe pas /etc/caddy/sites/$DOMAINE.d/*.caddy : déployer d'abord le site, puis relancer."; exit 1
+fi
 # Les deux clés RESA_ADMIN_KEY doivent être identiques (sinon l'écran Réservations répond 502)
 CLE_RESA=$(sed -n 's/^RESA_ADMIN_KEY=//p' /etc/coaching-resa.env 2>/dev/null | tail -n 1 | tr -d '"'"'"'\r' || true)
 if [ -n "$CLE_RESA" ] && [ "$CLE_RESA" != "$(lire RESA_ADMIN_KEY)" ]; then
@@ -59,7 +83,7 @@ sudo -u "$APP_USER" git -C "$ESSAI" checkout -q --force --detach "$NOUVEAU"
 if ! ( cd "$ESSAI" \
        && sudo -u "$APP_USER" npm ci --no-audit --no-fund --loglevel=error \
        && sudo -u "$APP_USER" env -u NODE_ENV npx vitest run serveur/tests \
-       && sudo -u "$APP_USER" env -u NODE_ENV VITE_BACKEND=api npm run build ); then
+       && sudo -u "$APP_USER" env -u NODE_ENV VITE_BACKEND=api APP_BASE="$APP_BASE" APP_SCOPE="$APP_SCOPE" npm run build ); then
   echo "ÉCHEC des tests ou du build : version $NOUVEAU refusée, la version en ligne ($ANCIEN) est conservée."
   exit 1
 fi
@@ -81,24 +105,37 @@ rm -rf "$APP_DIR/site-ancien"
 [ -d "$APP_DIR/site" ] && mv "$APP_DIR/site" "$APP_DIR/site-ancien"
 mv "$NEUF" "$APP_DIR/site"
 
-# 4. Bloc Caddy : validé avec toute la config avant rechargement, sinon on garde l'ancien
-CADDY_TMP=$(mktemp)
-sed -e "s/A_REMPLACER_DOMAINE/$DOMAINE/g" -e "s/A_REMPLACER_PROXY_KEY/$(lire PROXY_KEY)/g" "$OPT/app-coaching.caddy" > "$CADDY_TMP"
-mkdir -p "$(dirname "$CADDY_BLOC")"
-rm -f "$CADDY_BLOC.ancien"
-cp -a "$CADDY_BLOC" "$CADDY_BLOC.ancien" 2>/dev/null || true
-# 0640 root:caddy : le bloc contient PROXY_KEY (lisible par Caddy seulement)
-install -m 0640 -o root -g caddy "$CADDY_TMP" "$CADDY_BLOC"
-rm -f "$CADDY_TMP"
-if caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1; then
+# 4. Caddy : fichiers écrits, toute la config validée avant rechargement, sinon retour aux anciens fichiers.
+#    Domaine propre : bloc complet (CADDY_BLOC), fragment et redirection retirés.
+#    Sous-chemin : fragment (CADDY_FRAG) + redirection (CADDY_REDIR), ancien bloc supprimé.
+#    0640 root:caddy : les fichiers peuvent contenir PROXY_KEY (lisibles par Caddy seulement).
+gabarit() { sed -e "s/A_REMPLACER_DOMAINE/$DOMAINE/g" -e "s#A_REMPLACER_PREFIXE#$PREFIXE#g" -e "s/A_REMPLACER_PROXY_KEY/$(lire PROXY_KEY)/g" "$OPT/$1"; }
+ecrire() { local T; T=$(mktemp); gabarit "$1" > "$T"; mkdir -p "$(dirname "$2")"; install -m 0640 -o root -g caddy "$T" "$2"; rm -f "$T"; }
+if [ "$APP_BASE" = / ]; then FICHIERS="$CADDY_BLOC $CADDY_REDIR $(ls /etc/caddy/sites/*.d/app-coaching.caddy 2>/dev/null || true)"
+else FICHIERS="$CADDY_BLOC $CADDY_REDIR $CADDY_FRAG"; fi
+for F in $FICHIERS; do rm -f "$F.ancien"; cp -a "$F" "$F.ancien" 2>/dev/null || true; done
+if [ "$APP_BASE" = / ]; then
+  ecrire app-coaching.caddy "$CADDY_BLOC"
+  for F in $FICHIERS; do [ "$F" = "$CADDY_BLOC" ] || rm -f "$F"; done
+else
+  ecrire app-coaching-chemin.caddy "$CADDY_FRAG"
+  ecrire app-coaching-redirection.caddy "$CADDY_REDIR"
+  rm -f "$CADDY_BLOC"
+fi
+# Marqueur oublié (gabarit modifié sans deployer.sh) = config refusée comme une config invalide
+RESTE=$(grep -l 'A_REMPLACER' $FICHIERS 2>/dev/null || true)
+if [ -z "$RESTE" ] && caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1; then
   systemctl reload caddy
   grep -q 'import /etc/caddy/sites/\*.caddy' /etc/caddy/Caddyfile \
     || echo "ATTENTION : /etc/caddy/Caddyfile n'importe pas encore /etc/caddy/sites/*.caddy."
 else
-  echo "ATTENTION : config Caddy invalide, ancien bloc remis (caddy validate --config /etc/caddy/Caddyfile pour voir l'erreur)."
-  if [ -f "$CADDY_BLOC.ancien" ]; then install -m 0640 -o root -g caddy "$CADDY_BLOC.ancien" "$CADDY_BLOC"; else rm -f "$CADDY_BLOC"; fi
+  [ -n "$RESTE" ] && echo "ATTENTION : marqueur A_REMPLACER restant dans $RESTE."
+  echo "ATTENTION : config Caddy invalide, anciens fichiers remis (caddy validate --config /etc/caddy/Caddyfile pour voir l'erreur)."
+  for F in $FICHIERS; do
+    if [ -f "$F.ancien" ]; then install -m 0640 -o root -g caddy "$F.ancien" "$F"; else rm -f "$F"; fi
+  done
 fi
-rm -f "$CADDY_BLOC.ancien"
+for F in $FICHIERS; do rm -f "$F.ancien"; done
 
 # 5. Service + vérification (/api/app/moi : 200 ou 401 = le serveur répond), retour arrière sinon
 D=$OPT
@@ -131,7 +168,7 @@ if [ "$OK" != 1 ]; then
   exit 1
 fi
 systemctl is-active app-coaching
-echo "Déployé : $(sudo -u "$APP_USER" git -C "$DEPOT" log --oneline -1) · https://app.$DOMAINE"
+echo "Déployé : $(sudo -u "$APP_USER" git -C "$DEPOT" log --oneline -1) · $(lire APP_ORIGIN)$APP_BASE"
 }
 main "$@"
 exit

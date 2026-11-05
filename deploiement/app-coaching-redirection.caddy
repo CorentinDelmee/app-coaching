@@ -1,0 +1,6 @@
+# /etc/caddy/sites/app-coaching-redirection.caddy — ancienne adresse de l'app (mode sous-chemin, APP_BASE=/app/).
+# CECI EST UN MODÈLE : deployer.sh remplace A_REMPLACER_DOMAINE et A_REMPLACER_PREFIXE (ex. /app), puis valide la config.
+# Les liens et icônes installés avec https://app.<domaine>/... arrivent sur la nouvelle adresse, chemin conservé.
+app.A_REMPLACER_DOMAINE {
+	redir https://A_REMPLACER_DOMAINEA_REMPLACER_PREFIXE{uri} permanent
+}

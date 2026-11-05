@@ -3,6 +3,7 @@
 # Prérequis : installer-vps.sh de pc-seniors déjà passé (Node 24, Caddy, pare-feu).
 # Peut être relancé sans risque : chaque étape vérifie ce qui existe déjà.
 # Usage : bash installer.sh delmeecorentin.fr        (l'app sera sur https://app.delmeecorentin.fr)
+#         bash installer.sh delmeecorentin.fr /app/ (l'app sera sur https://delmeecorentin.fr/app/, sous-chemin du site)
 #   1er passage : crée l'utilisateur et la clé GitHub, affiche la clé à ajouter sur GitHub, puis s'arrête.
 #   2e passage (clé ajoutée) : clone, dépendances, service, fichier de secrets, timer de sauvegarde.
 # Les scripts et unités sont copiés dans /opt/app-coaching (root:root) : root ne lance plus rien depuis le clone.
@@ -22,9 +23,13 @@ copier_opt() {
   local D=$APP_DIR/depot/deploiement
   install -d -o root -g root -m 0755 "$OPT"
   install -o root -g root -m 0755 "$D/deployer.sh" "$D/installer.sh" "$D/sauvegarder.sh" "$OPT/"
-  install -o root -g root -m 0644 "$D/app-coaching.service" "$D/app-coaching-sauvegarde.service"     "$D/app-coaching-sauvegarde.timer" "$D/app-coaching.caddy" "$OPT/"
+  install -o root -g root -m 0644 "$D/app-coaching.service" "$D/app-coaching-sauvegarde.service"     "$D/app-coaching-sauvegarde.timer" "$D/app-coaching.caddy" \
+    "$D/app-coaching-chemin.caddy" "$D/app-coaching-redirection.caddy" "$OPT/"
 }
 DOMAINE=${1:-delmeecorentin.fr}
+# Chemin de l'app : '/' = domaine propre app.<domaine> ; '/app/' = sous-chemin du site (même origine que le site)
+APP_BASE=${2:-/}
+if [ "$APP_BASE" = / ]; then APP_ORIGIN=https://app.$DOMAINE; else APP_ORIGIN=https://$DOMAINE; fi
 
 etape() { printf '\n\033[1;33m==> %s\033[0m\n' "$1"; }
 
@@ -32,7 +37,7 @@ etape() { printf '\n\033[1;33m==> %s\033[0m\n' "$1"; }
 command -v node >/dev/null && command -v caddy >/dev/null && command -v openssl >/dev/null \
   || { echo "Node, Caddy ou openssl absent : lancer d'abord installer-vps.sh (pc-seniors)."; exit 1; }
 
-etape "1/6 Dossier des sites Caddy (le bloc app-coaching.caddy est écrit par deployer.sh)"
+etape "1/6 Dossier des sites Caddy (les fichiers Caddy de l'app sont écrits par deployer.sh)"
 install -d -m 0755 /etc/caddy/sites
 
 etape "2/6 Utilisateur système '$APP_USER' (sans shell) et dossiers"
@@ -80,7 +85,12 @@ HOST=127.0.0.1
 DB_FILE=/var/lib/app-coaching/app.db
 FICHIERS_DIR=/var/lib/app-coaching/fichiers
 DATA_DIR=/var/lib/app-coaching/data
-APP_ORIGIN=https://app.$DOMAINE
+# Adresse de l'app = APP_ORIGIN + APP_BASE. APP_ORIGIN : origine exacte (sans chemin), contrôlée par le serveur (CSRF).
+APP_ORIGIN=$APP_ORIGIN
+# APP_BASE : '/' (domaine propre app.<domaine>) ou '/app/' (sous-chemin du site). Lu par deployer.sh (build et Caddy).
+APP_BASE=$APP_BASE
+# APP_SCOPE : portée du manifeste ; vide = APP_BASE. '/' pour installer l'app depuis une page du site (sous-chemin).
+APP_SCOPE=
 SESSION_SECRET=$(openssl rand -base64 48 | tr -d '\n')
 COACH_API_KEY=$(openssl rand -base64 48 | tr -d '\n')
 # Clé ajoutée par Caddy (X-Proxy-Cle) : seule preuve que X-Forwarded-For est fiable. Hexadécimal (sûr dans sed).
