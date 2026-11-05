@@ -79,6 +79,7 @@ PORT=5405
 HOST=127.0.0.1
 DB_FILE=/var/lib/app-coaching/app.db
 FICHIERS_DIR=/var/lib/app-coaching/fichiers
+DATA_DIR=/var/lib/app-coaching/data
 APP_ORIGIN=https://app.$DOMAINE
 SESSION_SECRET=$(openssl rand -base64 48 | tr -d '\n')
 COACH_API_KEY=$(openssl rand -base64 48 | tr -d '\n')

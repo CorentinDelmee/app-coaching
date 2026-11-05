@@ -44,7 +44,7 @@ Si le site vitrine est déjà installé, l'utilisateur et Caddy existent : rien 
 | Variable | Valeur |
 |---|---|
 | `NODE_ENV` `PORT` `HOST` | `production` · `5405` · `127.0.0.1` (déjà écrits) |
-| `DB_FILE` · `FICHIERS_DIR` | `/var/lib/app-coaching/app.db` · `/var/lib/app-coaching/fichiers` |
+| `DB_FILE` · `FICHIERS_DIR` · `DATA_DIR` | `/var/lib/app-coaching/app.db` · `/var/lib/app-coaching/fichiers` · `/var/lib/app-coaching/data` (bibliothèque d'exercices : le dossier du code est en lecture seule) |
 | `APP_ORIGIN` | `https://app.delmeecorentin.fr` (contrôle CSRF : doit être exact) |
 | `SESSION_SECRET` · `COACH_API_KEY` | générés par l'installeur (≥ 32 car.) ; `COACH_API_KEY` sert au MCP/REST |
 | `RESA_API_URL` | `http://127.0.0.1:5311` (même VPS : l'API publique du site est `https://delmeecorentin.fr/api/resa`, l'app l'appelle en local) |
