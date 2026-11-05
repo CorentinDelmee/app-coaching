@@ -6,7 +6,7 @@ import { VERSION_CONSENTEMENT, accesSante, consentementRepondu, patchConsentemen
 import { redirection } from '../../src/router/garde.js'
 import { markdownVersHtml } from '../../src/domain/markdown.js'
 import { validerNouveauCode } from '../../src/domain/identifiants.js'
-import { estIOS } from '../../src/lib/installation.js'
+import { estIOS, estIOSHorsSafari } from '../../src/lib/installation.js'
 import { genererDemo } from '../../src/data/demo/index.js'
 
 const NOW = new Date(2026, 9, 22, 12).getTime() // jeudi 22 octobre 2026
@@ -143,6 +143,11 @@ describe('outils du lot 9', () => {
     expect(estIOS('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', 5)).toBe(true)
     expect(estIOS('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', 0)).toBe(false)
     expect(estIOS('Mozilla/5.0 (Linux; Android 14)')).toBe(false)
+  })
+  it('iOS hors Safari (Chrome, Instagram) : demander d'ouvrir dans Safari', () => {
+    expect(estIOSHorsSafari('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit CriOS/120 Mobile')).toBe(true)
+    expect(estIOSHorsSafari('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Mobile Instagram 300')).toBe(true)
+    expect(estIOSHorsSafari('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Version/17.0 Mobile Safari/604.1')).toBe(false)
   })
   it('markdown : échappe le HTML, titres, listes, tableaux, gras, à compléter', () => {
     const h = markdownVersHtml('## Titre\n\n- un **gras**\n- <script>x</script>\n\n| A | B |\n|---|---|\n| 1 | 2 |\n\nSIRET : [À COMPLÉTER]')

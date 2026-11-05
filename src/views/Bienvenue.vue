@@ -4,7 +4,7 @@ import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import FeuilleBas from '../components/seance/FeuilleBas.vue'
-import { installee, installer, surIOS } from '../lib/installation.js'
+import { horsSafari, installee, installer, surIOS } from '../lib/installation.js'
 import { installerRessort, mouvementReduit } from '../anim/transitions.js'
 import { motsMontent } from '../anim/titres.js'
 import { memoriserSource } from '../anim/passage.js'
@@ -62,6 +62,7 @@ async function surInstaller() {
       </div>
 
       <FeuilleBas :ouverte="aide" titre="Installer l'application" @fermer="aide = false">
+        <p v-if="surIOS && horsSafari"><b>Sur iPhone, l'installation se fait depuis Safari.</b> Copiez l'adresse de cette page, ouvrez Safari et collez-la, puis suivez les étapes.</p>
         <ol v-if="surIOS" class="etapes">
           <li>Dans Safari, touchez le bouton <b>Partager</b> (le carré avec une flèche vers le haut).</li>
           <li>Choisissez <b>« Sur l'écran d'accueil »</b>.</li>
