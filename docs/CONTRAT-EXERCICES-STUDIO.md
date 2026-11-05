@@ -1,3 +1,9 @@
+> **État au 23:39 (WIP, arrêt PC)** :
+> - Fait : ce contrat ; serveur/src/exercices.js (schémas zod, filtres, utiliseDans, vue client).
+> - Reste : routes /api/app/exercices dans app-http.js (non branchées), photo, notesPrivees côté client (/e), outils bibliotheque.js,
+> - Reste : src/data (interface, adaptateurs api + local, démo 20+ exercices), tests Vitest.
+> - Rien n'est encore appelable : le lot écran doit attendre ces routes.
+
 # Contrat — exercices enrichis (refonte coach « Studio ») — 2026-11-05
 
 Lot serveur (`studio-exo-serveur`). Le lot écran n'appelle QUE `data.exercices.*` (voir « src/data »), jamais `fetch`.
