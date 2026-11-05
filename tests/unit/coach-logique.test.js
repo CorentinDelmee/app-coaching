@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  messageIdentifiants, lienWhatsAppIdentifiants, basculerChamp, fixerNbSeries, nouveauBloc, nouvelleSerie, clePerso, deplacer,
+  adresseApp, messageIdentifiants, lienWhatsAppIdentifiants, basculerChamp, fixerNbSeries, nouveauBloc, nouvelleSerie, clePerso, deplacer,
   dupliquerWorkout, dupliquerProgramme, retirerWorkoutDuProgramme, nouvelleQuestion, cleDepuisLibelle, construireCourbe,
   chargesRealisees, pointsPoids, grilleMois, nouvelItemExercice, synchroniserExercicesCircuit, renommerPourClient, dateFr
 } from '../../src/coach/logique.js'
@@ -10,6 +10,10 @@ let n = 0
 const uuid = () => `id${++n}`
 
 describe('messages', () => {
+  it('adresse de l’app : origine + chemin de base, sans barre finale', () => {
+    expect(adresseApp('https://app.test', '/')).toBe('https://app.test')
+    expect(adresseApp('https://site.test', '/app/')).toBe('https://site.test/app')
+  })
   it('message avec identifiant et code, lien WhatsApp encodé', () => {
     const infos = { nom: 'Léa Martin', identifiant: 'lea.martin', code: 'ABC234', url: 'https://app.test' }
     expect(messageIdentifiants(infos)).toContain('Bonjour Léa')

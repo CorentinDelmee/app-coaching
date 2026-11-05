@@ -9,7 +9,7 @@ import { etatSemaine } from '../../domain/programme.js'
 import { libelleSeance, payeCeMois } from '../../domain/coaching.js'
 import { maintenant, rafraichir, uuid, etat, marquerVue, messageErreur } from '../store.js'
 import { HABITUDES_DEFAUT, parserHabitudes } from '../../domain/suivi.js'
-import { chargesRealisees, dateFr, pointsPoids, lienWhatsAppIdentifiants, messageIdentifiants } from '../logique.js'
+import { chargesRealisees, dateFr, pointsPoids, lienWhatsAppIdentifiants, messageIdentifiants, adresseApp } from '../logique.js'
 import CalendrierMois from '../components/CalendrierMois.vue'
 import SvgCourbe from '../components/SvgCourbe.vue'
 
@@ -147,7 +147,7 @@ async function genererNouveauCode() {
   erreur.value = ''
   try {
     const { identifiant, code } = await data.reinitialiserCode(props.id)
-    nouveauCode.value = { nom: profil.value.nom, identifiant, code, url: window.location.origin }
+    nouveauCode.value = { nom: profil.value.nom, identifiant, code, url: adresseApp(window.location.origin, import.meta.env.BASE_URL) }
   } catch (e) { erreur.value = messageErreur(e) }
 }
 async function copier(texte, quoi) {

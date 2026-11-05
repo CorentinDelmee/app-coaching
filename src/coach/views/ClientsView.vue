@@ -4,7 +4,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import data from '../../data/index.js'
 import { etat, rafraichir, messageErreur } from '../store.js'
-import { lienWhatsAppIdentifiants, messageIdentifiants } from '../logique.js'
+import { adresseApp, lienWhatsAppIdentifiants, messageIdentifiants } from '../logique.js'
 import { LIEUX } from '../../domain/modele.js'
 
 const archives = ref([])
@@ -33,7 +33,7 @@ async function creer() {
     const { profil, identifiant, code } = await data.creerClient({
       nom: formulaire.nom.trim(), tarif: Number(formulaire.tarif) || 0, lieuDefaut: formulaire.lieuDefaut, modules: { ...formulaire.modules }
     })
-    cree.value = { nom: profil.nom, identifiant, code, url: window.location.origin, numero: formulaire.numero }
+    cree.value = { nom: profil.nom, identifiant, code, url: adresseApp(window.location.origin, import.meta.env.BASE_URL), numero: formulaire.numero }
     Object.assign(formulaire, { ouvert: false, nom: '', numero: '' })
     await charger()
   } catch (e) {

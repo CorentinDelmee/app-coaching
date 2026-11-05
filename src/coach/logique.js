@@ -27,6 +27,8 @@ export function dateFr(jour, anneeRef) {
 }
 
 // --- Messages à transmettre au client -------------------------------------------------------------
+// Adresse publique de l'app (origine + chemin de base, sans barre finale) : https://x.fr ou https://x.fr/app.
+export const adresseApp = (origine, base = '/') => origine + base.replace(/\/+$/, '')
 export function messageIdentifiants({ nom, identifiant, code, url }) {
   const prenom = nom.trim().split(/\s+/)[0]
   return `Bonjour ${prenom}, voici votre accès à l'application de coaching :\n${url}\nIdentifiant : ${identifiant}\nCode : ${code}\nVous pourrez changer ce code dans votre profil.`
