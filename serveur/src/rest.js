@@ -5,6 +5,8 @@ import { z } from 'zod'
 import { appeler } from './outils.js'
 import { cleValide, creerLimiteur } from './auth.js'
 import { ErreurService } from './service.js'
+import { creerCoachHttp } from './coach-http.js'
+import { vientDuProxy } from './app-http.js'
 
 const TAILLE_MAX = 256 * 1024
 
@@ -43,6 +45,7 @@ export function creerServeurRest(app, { now = () => Date.now() } = {}) {
   const { config, outils, journal, service, biblio } = app
   const limiteur = creerLimiteur({ max: config.limiteParMinute, now })
   const ACTEUR = 'rest'
+  const coachHttp = creerCoachHttp(app, { now })
 
   const repondre = (res, statut, corps, origine) => {
     res.writeHead(statut, {
@@ -61,6 +64,11 @@ export function creerServeurRest(app, { now = () => Date.now() } = {}) {
     try {
       // API de l'app (cookie de session) : traitée à part, avec son propre limiteur par IP réelle (pas celui-ci : derrière Caddy, toutes les requêtes viennent de 127.0.0.1).
       if (app.appHttp && chemin.startsWith('/api/app/')) return void (await app.appHttp(req, res))
+      // Route publique des outils du coach (Claude à distance) : auth, limites et journal propres (coach-http.js).
+      if (await coachHttp(req, res, chemin)) return
+      // Caddy n'expose que /api/app/ et /api/coach/ : une requête relayée par Caddy (X-Proxy-Cle) vers une autre route est refusée,
+      // même si Caddy et Node normalisaient un chemin différemment.
+      if (vientDuProxy(req, config.proxyCle)) return repondre(res, 404, { erreur: 'Route inconnue', code: 'ROUTE_INCONNUE' }, null)
       if (req.method === 'OPTIONS') {
         res.writeHead(origine ? 204 : 403, origine ? { 'Access-Control-Allow-Origin': origine, 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE', Vary: 'Origin' } : {})
         return res.end()

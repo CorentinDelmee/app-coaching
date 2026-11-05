@@ -54,6 +54,46 @@ Premier compte coach : `DB_FILE=… npm run coach:creer <identifiant>` (saisie m
 **Claude Desktop** : même bloc `mcpServers` dans `claude_desktop_config.json` (chemin absolu vers `serveur/mcp.mjs`).
 Le transport est **stdio** (le serveur est lancé par Claude, aucun port ouvert). Streamable HTTP : non fourni en V1 (l'API REST couvre l'accès HTTP).
 
+## Brancher Claude Code en distant (sur la base du VPS)
+Le même `serveur/mcp.mjs`, lancé avec `COACH_API_URL`, n'ouvre **aucune base locale** : il lit la liste des outils sur
+`GET <COACH_API_URL>/outils` (à chaque demande de Claude : un outil ajouté côté serveur apparaît après mise en ligne, sans rien changer ici)
+et transmet chaque appel à `POST <COACH_API_URL>/outils/<nom>`. Il faut seulement le dépôt cloné et `npm ci` sur la machine de Claude.
+1. Récupérer la clé (`COACH_API_KEY` de `/etc/app-coaching.env`) et la mettre dans un fichier **hors de tout dépôt Git**, lisible par toi seul :
+   ```
+   ssh root@IP "sed -n 's/^COACH_API_KEY=//p' /etc/app-coaching.env" > ~/.config/app-coaching/cle-coach.txt && chmod 600 ~/.config/app-coaching/cle-coach.txt
+   ```
+   (créer le dossier avant : `mkdir -p ~/.config/app-coaching`). Ne jamais coller la clé dans une conversation ni dans `.mcp.json`.
+2. `.mcp.json` à la racine du dossier depuis lequel Claude Code est lancé (aucun secret dedans ; chemins **absolus**, à adapter : `echo $HOME` donne le début) :
+   ```json
+   {
+     "mcpServers": {
+       "coaching-coach": {
+         "command": "node",
+         "args": ["/Users/corentin/Documents/REXV2/Projets/app-coaching/serveur/mcp.mjs"],
+         "env": {
+           "COACH_API_URL": "https://delmeecorentin.fr/api/coach",
+           "COACH_API_KEY_FILE": "/Users/corentin/.config/app-coaching/cle-coach.txt"
+         }
+       }
+     }
+   }
+   ```
+   Adresse : `https://<domaine>/api/coach` en mode sous-chemin (chez Corentin), `https://app.<domaine>/api/coach` en mode domaine propre.
+   Sous Windows : `"args": ["C:\\Users\\coren\\Documents\\REXV2\\Projets\\app-coaching\\serveur\\mcp.mjs"]`, `"COACH_API_KEY_FILE": "C:\\Users\\coren\\.config\\app-coaching\\cle-coach.txt"`.
+3. Vérifier : `curl -s -H "Authorization: Bearer $(cat ~/.config/app-coaching/cle-coach.txt)" https://delmeecorentin.fr/api/coach/sante` → `{"ok":true,"outils":N}` ;
+   dans Claude Code, `/mcp` doit montrer `coaching-coach` connecté avec ses outils.
+
+Règles : `COACH_API_KEY_FILE` passe avant `COACH_API_KEY` ; HTTPS obligatoire (http seulement vers 127.0.0.1) ; une clé fausse fait échouer la liste avec « HTTP 401 ».
+Changer la clé : la modifier dans `/etc/app-coaching.env`, `systemctl restart app-coaching`, puis réécrire le fichier local.
+
+### Route `/api/coach/*` (seule partie de l'API à clé exposée sur Internet, par Caddy)
+`GET /api/coach/sante` · `GET /api/coach/outils` (nom, description, `mutation`, schéma JSON d'entrée) · `POST /api/coach/outils/<nom>` (corps = arguments ;
+réponse = données de l'outil, ou `{ erreur, code }` avec 400 `VALIDATION`, 404 `OUTIL_INCONNU`, 409 `AMBIGU`…).
+Tout exige `Authorization: Bearer <COACH_API_KEY>` (temps constant). **10 échecs d'authentification en 15 min depuis une IP réelle → 429** pour cette IP
+(même avec la bonne clé, jusqu'à la fin de la fenêtre) ; 120 requêtes/min par IP ; corps ≤ 1 Mo (413) ; `Cache-Control: no-store` ; journal acteur `api-coach`.
+L'IP réelle vient de `X-Forwarded-For` seulement si Caddy a ajouté `X-Proxy-Cle` (= `PROXY_KEY`). Une requête relayée par Caddy vers une autre route
+(`/api/outils`, `/api/clients`…) reçoit 404 : les routes REST historiques ne servent qu'en local (127.0.0.1).
+
 Outils : `lister_clients`, `chercher_client` (tolère casse et accents, signale les homonymes), `creer_seance`, `modifier_seance`,
 `supprimer_seance` (**2 temps** : 1er appel = résumé + jeton valable 5 min, aucune suppression ; 2e appel avec le jeton = suppression),
 `ajouter_exercice`, `rattacher_video`, `chercher_video_exercice`, `consulter_agenda`, `lister_seances`.
@@ -74,8 +114,8 @@ Recherche automatique (`chercher_video_exercice`, et à la création de séance 
 
 ## Sécurité
 - Clé API en `Authorization: Bearer`, lue dans l'environnement, comparée à temps constant (empreintes SHA-256) ; refus par défaut.
-- Écoute **127.0.0.1 uniquement** ; limitation de débit (120/min) ; corps limité à 256 Ko ; validation zod stricte de tous les arguments ; liens vidéo : YouTube seulement.
-- Journal `serveur/data/journal.jsonl` : une ligne par action (quand, acteur `rest`/`mcp-stdio`, outil, client, résultat) ; ne contient jamais la clé.
+- Écoute **127.0.0.1 uniquement** ; limitation de débit (120/min) ; corps limité à 256 Ko (1 Mo sur `/api/coach/*`) ; validation zod stricte de tous les arguments ; liens vidéo : YouTube seulement.
+- Journal `serveur/data/journal.jsonl` : une ligne par action (quand, acteur `rest`/`mcp-stdio`/`api-coach`, outil, client, résultat) ; ne contient jamais la clé.
 - Suppression : confirmation obligatoire par jeton à usage unique.
 - Limite connue (démo) : la clé `VITE_API_KEY` de l'écran « Vidéos » est visible dans le navigateur (toute variable `VITE_*` est copiée en clair dans le bundle).
   Garde-fou : `npm run build` (production) **échoue** si `VITE_API_KEY` est défini. Utiliser pour la démo une clé **distincte** de celle de production, uniquement en `npm run dev`.
