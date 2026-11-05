@@ -311,6 +311,7 @@ function exerciceDe(e, rapport) {
 
 /** Détail d'une séance MyPTHub -> { nom, consignes?, blocs[] } ; blocs { type:'exercice', … } ou { type:'superset', exercices[] }. */
 export function seanceDe(w, rapport = {}) {
+  if (Array.isArray(w.groups)) return seanceGroupes(w, rapport) // forme réelle de MyPTHub
   const nom = texte(premier(w, ['name', 'title'])) || 'Séance MyPTHub'
   const blocs = []
   const entrees = CLES_EXOS.map((k) => w[k]).find(Array.isArray) || []
@@ -352,6 +353,91 @@ export function seanceDe(w, rapport = {}) {
     'created_by', 'category_id', 'trainer_user_id', 'company_id', 'club_id', 'tag', 'enabled', 'archived', 'archived_original_id', 'new', 'note', 'day_1', 'day_2', 'day_3', 'day_4', 'day_5', 'day_6', 'day_7', 'deleted_by', 'library', 'private_workout_customer_id', 'private_workout_parent_id', 'ai_first_touch', 'assigned_via', 'metadata'])
   const consignes = texte(premier(w, ['description', 'notes', 'instructions']))
   return { nom, ...(consignes ? { consignes } : {}), blocs: final }
+}
+
+
+// --- Séances au format réel de MyPTHub (GET /v4/workouts/<id> -> { workout }) -----------------------------------------
+// workout { title, note, metadata.description, groups[] } ; groupe { group_type: standalone | superset | giantset, exercises[] } ;
+// exercice { exercise: { name, note, description, video_type, video_id }, meta: { type?, field_1…field_5 (type de colonne),
+// field_N_label (unité), sets: [{ field_1…field_5 }] } }. Types de colonne vus : weight, bodyweight, reps, rep_range, time,
+// rest_period, tempo, intensity, speed, distance, resistance, incline, kcals, split_times, amrap, state, n/a.
+// `assigned_customers` (données des clients) n'est jamais lu.
+const METHODES = { interval: 'intervalles', lsd: 'endurance longue (LSD)', fartlek: 'fartlek' }
+const EXTRAS = { intensity: ['intensité', '%'], speed: ['vitesse', 'km/h'], distance: ['distance', 'km'], incline: ['inclinaison', '%'], kcals: ['objectif', 'kcal'], split_times: ['temps intermédiaire', 's'] }
+
+/** rep_range « 8.12 » -> « 8-12 » ; « 5.08 » -> « 5-8 » ; « 7.80 » (7-8 formaté en décimal) -> « 7-8 ». */
+export function fourchette(v) {
+  const m = String(v).trim().match(/^(\d+)[.,-](\d+)$/)
+  if (!m) return String(v).trim()
+  const a = Number(m[1])
+  let b = Number(m[2])
+  if (b > a * 4 && m[2].endsWith('0')) b = Number(m[2].slice(0, -1))
+  return `${a}-${b}`
+}
+const nombreFr = (x) => String(x).replace('.', ',')
+
+function exerciceGroupe(e, rapport) {
+  const ex = e.exercise && typeof e.exercise === 'object' ? e.exercise : {}
+  const m = e.meta && typeof e.meta === 'object' ? e.meta : {}
+  const nom = texte(ex.name)
+  if (!nom) return null
+  const types = Object.fromEntries([1, 2, 3, 4, 5].map((n) => [n, m[`field_${n}`]]))
+  const series = []
+  const repos = []
+  const extras = []
+  for (const st of Array.isArray(m.sets) && m.sets.length ? m.sets : [{}]) {
+    // Colonne « poids du corps » : vide dans l'export réel, elle indique seulement l'absence de charge.
+    const s = Object.values(types).includes('bodyweight') ? { poidsDuCorps: true } : {}
+    const plus = []
+    for (const n of [1, 2, 3, 4, 5]) {
+      const brut = st[`field_${n}`]
+      if (brut === undefined || brut === null || brut === '') continue
+      const type = types[n]
+      const x = nombre(brut)
+      if (type === 'weight' && x !== undefined) s.poids = x
+      else if (type === 'bodyweight') { s.poidsDuCorps = true; if (x) s.poids = x }
+      else if (type === 'reps' && x !== undefined) s.reps = x
+      else if (type === 'rep_range') s.fourchetteReps = fourchette(brut)
+      else if (type === 'amrap') { s.repsAuMax = true; if (x) plus.push(`AMRAP (objectif ${x})`) }
+      else if (type === 'time' && x !== undefined) s.tempsTravail = x
+      else if (type === 'rest_period' && x !== undefined) repos.push(x)
+      else if (type === 'tempo') s.tempo = String(brut)
+      else if (type === 'resistance' && x !== undefined) s.resistance = x
+      else if (EXTRAS[type]) plus.push(`${EXTRAS[type][0]} ${nombreFr(brut)} ${m[`field_${n}_label`] || EXTRAS[type][1]}`)
+      else rapport[`seance.sets.${type ?? `field_${n} (type absent)`}`] = (rapport[`seance.sets.${type ?? `field_${n} (type absent)`}`] || 0) + 1
+    }
+    series.push(s)
+    extras.push(plus.join(', '))
+  }
+  const out = { nom, series }
+  // Repos du bloc : la valeur la plus fréquente (MyPTHub la note série par série, presque toujours identique).
+  if (repos.length) out.repos = [...repos].sort((a, b) => repos.filter((r) => r === b).length - repos.filter((r) => r === a).length)[0]
+  const lignes = []
+  if (METHODES[m.type]) lignes.push(`Méthode : ${METHODES[m.type]}.`)
+  else if (m.type) rapport[`seance.meta.type.${m.type}`] = (rapport[`seance.meta.type.${m.type}`] || 0) + 1
+  if (extras.some(Boolean)) lignes.push(new Set(extras).size === 1 ? `${extras[0]}.` : extras.map((x, i) => `Série ${i + 1} : ${x || '—'}`).join(' ; '))
+  if (texte(ex.note)) lignes.push(texte(ex.note))
+  if (lignes.length) out.consignes = lignes.join('\n')
+  // Pour la bibliothèque (seulement si l'exercice est créé) : description et vidéo YouTube.
+  if (texte(ex.description)) out.description = texte(ex.description).slice(0, 2000)
+  if (ex.video_type === 'youtube' && /^[\w-]{6,20}$/.test(String(ex.video_id || ''))) out.video = `https://www.youtube.com/watch?v=${ex.video_id}`
+  return out
+}
+
+/** Séance MyPTHub (forme réelle, avec groups) -> { nom, consignes?, blocs[] }. */
+export function seanceGroupes(w, rapport = {}) {
+  const blocs = []
+  for (const g of w.groups) {
+    const exos = (g.exercises || []).map((e) => exerciceGroupe(e, rapport)).filter(Boolean)
+    if (!exos.length) continue
+    if (exos.length === 1) { blocs.push({ type: 'exercice', ...exos[0] }); continue }
+    // superset (2) et giantset (3 à 8) : exercices enchaînés, repos après le passage (celui du dernier exercice).
+    const repos = exos.map((x) => x.repos).filter((x) => x !== undefined).pop()
+    blocs.push({ type: 'superset', ...(repos !== undefined ? { repos } : {}), exercices: exos.map(({ repos: _, ...x }) => x) })
+    if (!['superset', 'giantset', 'circuit'].includes(g.group_type)) rapport[`seance.group_type.${g.group_type}`] = (rapport[`seance.group_type.${g.group_type}`] || 0) + 1
+  }
+  const consignes = [texte(w.note), texte(w.metadata?.description)].filter(Boolean).filter((x, i, l) => l.indexOf(x) === i).join('\n')
+  return { nom: texte(w.title ?? w.name) || 'Séance MyPTHub', ...(consignes ? { consignes } : {}), blocs }
 }
 
 /** Programmes (scheduler/current) : chaque schedule -> { sourceId, nom, debut (lundi), semaines[[sourceId]], joursFixes, termine }. */

@@ -147,12 +147,15 @@ export async function importer({ db, backend }, normalise, { essai = false, now 
   }
 
   // --- Séances et programmes ---------------------------------------------------------------------------------------
-  async function exercice(nom) {
+  /** Exercice de la bibliothèque pour ce nom ; sinon créé (avec la description et la vidéo YouTube de MyPTHub si fournies). */
+  async function exercice(nom, { description, video } = {}) {
     const n = norm(nom)
     if (exos.has(n)) return exos.get(n)
     let id = `ex-${slug(nom)}`
     if (await api.exercices.lire(id)) id += `-${randomUUID().slice(0, 4)}`
-    const e = await api.exercices.creer({ id, nom: nom.trim(), categories: [], description: 'Importé de MyPTHub (à compléter par le coach).' })
+    const e = await api.exercices.creer({ id, nom: nom.trim(), categories: [], description: description ? `${description}
+
+(Importé de MyPTHub.)` : 'Importé de MyPTHub (à compléter par le coach).', ...(video ? { lienVideo: video } : {}) })
     exos.set(n, e)
     bilan.exercicesCrees++
     return e
@@ -161,7 +164,7 @@ export async function importer({ db, backend }, normalise, { essai = false, now 
   // Comme seriesEtChamps (service.js) : poids et reps modifiables par le client, le reste fixé par le coach.
   function champsDe(series) {
     const s = series.length ? series : [{}]
-    const champs = ['poids', 'reps', 'fourchetteReps', 'tempsTravail', 'tempo', 'rpe'].filter((k) => s.some((x) => k in x)).map((k) => ({ cle: k, modifiableParClient: k === 'poids' || k === 'reps' }))
+    const champs = ['poids', 'poidsDuCorps', 'reps', 'fourchetteReps', 'repsAuMax', 'tempsTravail', 'tempo', 'resistance', 'rpe'].filter((k) => s.some((x) => k in x)).map((k) => ({ cle: k, modifiableParClient: k === 'poids' || k === 'reps' }))
     return { series: s, champs }
   }
 
@@ -176,10 +179,10 @@ export async function importer({ db, backend }, normalise, { essai = false, now 
         const bid = `${id}-b${k + 1}`
         if (b.type === 'superset') {
           const exercices = []
-          for (const [j, x] of b.exercices.entries()) exercices.push({ id: `${bid}${'abcdefghij'[j] ?? j}`, exerciceId: (await exercice(x.nom)).id, ...champsDe(x.series), ...(x.consignes ? { consignes: x.consignes } : {}) })
+          for (const [j, x] of b.exercices.entries()) exercices.push({ id: `${bid}${'abcdefghij'[j] ?? j}`, exerciceId: (await exercice(x.nom, x)).id, ...champsDe(x.series), ...(x.consignes ? { consignes: x.consignes } : {}) })
           blocs.push({ type: 'superset', id: bid, ...(b.repos !== undefined ? { repos: b.repos } : {}), exercices })
         } else {
-          blocs.push({ type: 'exercice', id: bid, exerciceId: (await exercice(b.nom)).id, ...champsDe(b.series), ...(b.repos !== undefined ? { repos: b.repos } : {}), ...(b.consignes ? { consignes: b.consignes } : {}) })
+          blocs.push({ type: 'exercice', id: bid, exerciceId: (await exercice(b.nom, b)).id, ...champsDe(b.series), ...(b.repos !== undefined ? { repos: b.repos } : {}), ...(b.consignes ? { consignes: b.consignes } : {}) })
         }
       }
       await api.workouts.creer({ id, clientId: pid, nom: s.nom, ...(s.consignes ? { consignes: s.consignes } : {}), blocs })

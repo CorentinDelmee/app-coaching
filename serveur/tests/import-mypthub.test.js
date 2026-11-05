@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { normaliser, cleMensuration, jourDe, questionFr, seanceDe } from '../src/import-mypthub/normaliser.js'
+import { normaliser, cleMensuration, jourDe, questionFr, seanceDe, fourchette } from '../src/import-mypthub/normaliser.js'
 import { importer } from '../src/import-mypthub/importer.js'
 import { creerStoreSqlite, ouvrirBase } from '../src/magasin-sqlite.js'
 import { creerAppHttp, hacherCode } from '../src/app-http.js'
@@ -104,6 +104,40 @@ describe('normaliser (fonctions)', () => {
     expect(s.blocs[1].exercices[0].series).toHaveLength(3)
     expect(s.blocs[1].exercices[0].series[0]).toEqual({ fourchetteReps: '8-12' })
     expect(s.blocs[2].series).toEqual([{ tempsTravail: 45 }])
+  })
+})
+
+describe('séances au format réel (workout.groups)', () => {
+  // Séance inventée, à la forme de GET /v4/workouts/<id> -> { workout } (assigned_customers jamais lu).
+  const w = { title: 'Jambes', note: 'Bien chauffer', metadata: { description: 'Bloc force' }, assigned_customers: [{ user: { email: 'x@exemple.test' } }], groups: [
+    { group_type: 'standalone', exercises: [{ exercise: { name: 'Squat', note: 'Talons au sol', description: 'Pieds largeur épaules', video_type: 'youtube', video_id: 'abcDEF12345' },
+      meta: { field_1: 'weight', field_1_label: 'kg', field_2: 'rep_range', field_3: 'tempo', field_4: 'rest_period', sets: [{ field_1: 60, field_2: '8.12', field_3: 3010, field_4: 90 }, { field_1: 65, field_2: '7.80', field_3: 3010, field_4: 90 }] } }] },
+    { group_type: 'giantset', exercises: [
+      { exercise: { name: 'Fentes' }, meta: { field_1: 'bodyweight', field_2: 'reps', sets: [{ field_2: 12 }] } },
+      { exercise: { name: 'Gainage' }, meta: { field_2: 'time', field_4: 'rest_period', sets: [{ field_2: 45, field_4: 60 }] } },
+      { exercise: { name: 'Course' }, meta: { type: 'interval', field_2: 'time', field_3: 'speed', field_3_label: 'kph', field_5: 'state', sets: [{ field_2: 60, field_3: 11.5, field_5: 1 }] } }
+    ] }
+  ] }
+  const rapport = {}
+  const s = seanceDe(w, rapport)
+  it('exercices, séries (charge, fourchette, tempo), repos, consignes, vidéo', () => {
+    expect(s).toMatchObject({ nom: 'Jambes', consignes: 'Bien chauffer\nBloc force' })
+    expect(s.blocs[0]).toEqual({ type: 'exercice', nom: 'Squat', repos: 90, consignes: 'Talons au sol', description: 'Pieds largeur épaules', video: 'https://www.youtube.com/watch?v=abcDEF12345',
+      series: [{ poids: 60, fourchetteReps: '8-12', tempo: '3010' }, { poids: 65, fourchetteReps: '7-8', tempo: '3010' }] })
+  })
+  it('giantset -> superset ; poids du corps, temps, vitesse et méthode en consignes ; colonne inconnue signalée', () => {
+    const b = s.blocs[1]
+    expect(b.type).toBe('superset')
+    expect(b.repos).toBe(60)
+    expect(b.exercices.map((x) => x.nom)).toEqual(['Fentes', 'Gainage', 'Course'])
+    expect(b.exercices[0].series).toEqual([{ poidsDuCorps: true, reps: 12 }])
+    expect(b.exercices[2].series).toEqual([{ tempsTravail: 60 }])
+    expect(b.exercices[2].consignes).toBe('Méthode : intervalles.\nvitesse 11,5 kph.')
+    expect(rapport['seance.sets.state']).toBe(1)
+    expect(JSON.stringify(s)).not.toContain('exemple.test')
+  })
+  it('fourchettes de répétitions', () => {
+    expect(['8.12', '5.08', '15.20', '7.80', '10-15'].map(fourchette)).toEqual(['8-12', '5-8', '15-20', '7-8', '10-15'])
   })
 })
 
