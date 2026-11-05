@@ -4,6 +4,7 @@ import { createHash, createHmac, randomBytes, scrypt, timingSafeEqual } from 'no
 import { mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { join, posix } from 'node:path'
 import { ENTITES, clientDe, visiblePar } from '../../src/data/entites.js'
+import { accesSante } from '../../src/domain/consentement.js'
 import { LONGUEUR_CODE_MIN } from '../../src/domain/identifiants.js'
 
 const SESSION_MS = 12 * 3600e3
@@ -76,6 +77,8 @@ export function ipReelle(req, proxyCle) {
 
 // Écriture par un client (policies RLS) : seulement ces entités, et seulement ses lignes.
 const ECRITURE_CLIENT = new Set(['realisations', 'templates', 'reponses', 'mesures', 'douleurs', 'nutrition'])
+// Entités de santé : un client sans consentement santé n'y écrit pas (supprimer ses données reste permis).
+const ENTITES_SANTE = new Set(['reponses', 'mesures', 'douleurs', 'nutrition'])
 const CHAMPS_PROTEGES = ['role', 'tarif', 'modules', 'identifiant', 'archive', 'creeLe']
 const COACH_SEUL = new Set(['alertesVues'])
 const TYPES_FICHIER = { 'image/jpeg': ['jpg', 'jpeg'], 'image/png': ['png'], 'image/webp': ['webp'], 'application/pdf': ['pdf'] }
@@ -227,6 +230,7 @@ export function creerAppHttp({ db, store, config, journal = null, now = () => Da
     if (req.method === 'PUT') {
       const obj = await lireJson(req)
       if (!obj || typeof obj !== 'object' || Array.isArray(obj) || obj.id !== id) throw new Erreur(400, 'invalide')
+      if (!coach && ENTITES_SANTE.has(entite) && !accesSante(await store.un('profils', u.profil_id))) throw new Erreur(403, 'consentement_sante')
       if (!ENTITES[entite].valider(obj).ok) throw new Erreur(400, 'invalide')
       if (Buffer.byteLength(JSON.stringify(obj)) > QUOTAS.octetsLigne) throw new Erreur(413, 'quota')
       if (!coach) {
