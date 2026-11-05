@@ -164,8 +164,8 @@ describe('bibliothèque et YouTube', () => {
     const fetchFn = async (url) => ({ ok: true, json: async () => (String(url).includes('/search')
       ? { items: [{ id: { videoId: 'aaaaaaaaaaa' } }, { id: { videoId: 'bbbbbbbbbbb' } }] }
       : { items: [
-        { id: 'aaaaaaaaaaa', snippet: { title: 'Vlog', channelTitle: 'X' }, contentDetails: { duration: 'PT20M' }, statistics: { viewCount: '10' } },
-        { id: 'bbbbbbbbbbb', snippet: { title: 'Pompes parfaites', channelTitle: 'Y' }, contentDetails: { duration: 'PT50S' }, statistics: { viewCount: '90000' } }] }) })
+        { id: 'aaaaaaaaaaa', snippet: { title: 'Vlog', channelTitle: 'X' }, status: { embeddable: true, privacyStatus: 'public' }, contentDetails: { duration: 'PT20M' }, statistics: { viewCount: '10' } },
+        { id: 'bbbbbbbbbbb', snippet: { title: 'Pompes parfaites', channelTitle: 'Y' }, status: { embeddable: true, privacyStatus: 'public' }, contentDetails: { duration: 'PT12S' }, statistics: { viewCount: '90000' } }] }) })
     const r = await chercherYoutube('Pompes', { cle: 'k', fetchFn })
     expect(r[0].url).toContain('bbbbbbbbbbb')
   })
