@@ -118,7 +118,7 @@ describe('garde de navigation', () => {
   })
   it('client : hors /coach, hors pages de connexion, consentement d\'abord', () => {
     expect(redirection({ user: client, nom: undefined, chemin: '/coach/clients' })).toBe('/')
-    expect(redirection({ user: client, nom: 'bienvenue', chemin: '/bienvenue' })).toBe('/')
+    expect(redirection({ user: client, nom: 'bienvenue', chemin: '/bienvenue' })).toBe(null) // installation depuis le site
     expect(redirection({ user: client, nom: 'programme', chemin: '/programme' })).toBe(null)
     const neuf = { role: 'client', preferences: {} }
     expect(redirection({ user: neuf, nom: 'accueil', chemin: '/' })).toBe('/consentement')

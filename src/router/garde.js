@@ -8,8 +8,9 @@ const estCoach = (chemin) => /^\/coach(\/|$)/.test(chemin)
 export function redirection({ user, nom, chemin }) {
   const publique = PUBLIQUES.includes(nom)
   if (!user) return publique ? null : '/bienvenue'
-  if (user.role === 'coach') return estCoach(chemin) || nom === 'confidentialite' ? null : '/coach'
-  if (estCoach(chemin) || nom === 'bienvenue' || nom === 'connexion') return '/'
+  if (user.role === 'coach') return estCoach(chemin) || nom === 'confidentialite' || nom === 'bienvenue' ? null : '/coach'
+  if (nom === 'bienvenue') return null // écran d'installation, ouvert depuis le site même connecté
+  if (estCoach(chemin) || nom === 'connexion') return '/'
   // premier lancement : le consentement passe avant tout (sauf la page Confidentialité qu'il cite)
   if (!consentementRepondu(user) && nom !== 'consentement' && nom !== 'confidentialite') return '/consentement'
   // données de santé refusées : l'écran « Santé désactivée » (Bientot.vue) remplace Questionnaires et Suivi
