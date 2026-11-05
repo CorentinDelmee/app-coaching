@@ -6,7 +6,7 @@ Description=App coaching - sauvegarde de app.db et des fichiers
 Type=oneshot
 User=appcoaching
 Group=appcoaching
-ExecStart=/bin/bash /var/www/app-coaching/depot/deploiement/sauvegarder.sh
+ExecStart=/bin/bash /opt/app-coaching/sauvegarder.sh
 # Seule BACKUP_AGE_RECIPIENT (clé publique) est utile ici : les secrets du serveur sont retirés de l'environnement.
 EnvironmentFile=/etc/app-coaching.env
 UnsetEnvironment=SESSION_SECRET COACH_API_KEY RESA_ADMIN_KEY PROXY_KEY

@@ -5,6 +5,8 @@
 # Usage : bash installer.sh delmeecorentin.fr        (l'app sera sur https://app.delmeecorentin.fr)
 #   1er passage : crée l'utilisateur et la clé GitHub, affiche la clé à ajouter sur GitHub, puis s'arrête.
 #   2e passage (clé ajoutée) : clone, dépendances, service, fichier de secrets, timer de sauvegarde.
+# Les scripts et unités sont copiés dans /opt/app-coaching (root:root) : root ne lance plus rien depuis le clone.
+# Installation déjà faite avec l'ancienne version : git pull dans le clone, puis relancer cet installateur (secrets conservés).
 main() {
 set -euo pipefail
 
@@ -13,6 +15,15 @@ APP_HOME=/var/lib/appcoaching
 APP_DIR=/var/www/app-coaching
 DEPOT=git@github.com:CorentinDelmee/app-coaching.git
 ENV_FILE=/etc/app-coaching.env
+# Copie root:root des fichiers exécutés ou installés par root (scripts 0755, unités et bloc Caddy 0644) :
+# root n'exécute jamais un fichier du dépôt, que l'utilisateur 'appcoaching' pourrait modifier.
+OPT=/opt/app-coaching
+copier_opt() {
+  local D=$APP_DIR/depot/deploiement
+  install -d -o root -g root -m 0755 "$OPT"
+  install -o root -g root -m 0755 "$D/deployer.sh" "$D/installer.sh" "$D/sauvegarder.sh" "$OPT/"
+  install -o root -g root -m 0644 "$D/app-coaching.service" "$D/app-coaching-sauvegarde.service"     "$D/app-coaching-sauvegarde.timer" "$D/app-coaching.caddy" "$OPT/"
+}
 DOMAINE=${1:-delmeecorentin.fr}
 
 etape() { printf '\n\033[1;33m==> %s\033[0m\n' "$1"; }
@@ -85,7 +96,8 @@ chown root:root "$ENV_FILE"
 chmod 600 "$ENV_FILE"
 
 etape "6/6 Service systemd + sauvegarde quotidienne (rien n'est démarré : deployer.sh s'en charge)"
-D=$APP_DIR/depot/deploiement
+copier_opt
+D=$OPT
 install -m 0644 "$D/app-coaching.service" "$D/app-coaching-sauvegarde.service" "$D/app-coaching-sauvegarde.timer" /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable app-coaching >/dev/null
@@ -97,7 +109,7 @@ echo "1. Créer le compte coach (voir deploiement/LISEZMOI.md, étape 4), après
 if grep -q '^RESA_ADMIN_KEY=$' "$ENV_FILE"; then
   echo "2. RESA_ADMIN_KEY est vide : la copier depuis /etc/coaching-resa.env (nano $ENV_FILE)."
 fi
-echo "3. Mettre en ligne : bash $APP_DIR/depot/deploiement/deployer.sh"
+echo "3. Mettre en ligne : bash $OPT/deployer.sh"
 }
 main "$@"
 exit

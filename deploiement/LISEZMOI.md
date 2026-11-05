@@ -11,6 +11,20 @@ Contrat technique : `docs/CONTRAT-VPS.md`. L'app sera sur `https://app.delmeecor
 | `app-coaching.caddy` | Bloc Caddy (HTTPS, CSP, `/api/app/*` → Node, repli SPA, cache). |
 | `sauvegarder.sh` + `app-coaching-sauvegarde.{service,timer}` | Chaque nuit à 4 h : `app.db` + `fichiers/`, 14 jours conservés. |
 
+**Ce que root exécute, et d'où ça vient.** `installer.sh` et `deployer.sh` copient les scripts lancés en root, les unités systemd
+et le bloc Caddy du dépôt vers `/opt/app-coaching/` (propriétaire root, 0755 / 0644) avant de les installer ou de les lancer :
+root n'exécute jamais un fichier du clone, que l'utilisateur `appcoaching` pourrait modifier (la sauvegarde nocturne lance aussi
+`/opt/app-coaching/sauvegarder.sh`). Les mises en ligne se font par `bash /opt/app-coaching/deployer.sh`. La confiance repose
+sur **la branche `main` de GitHub** (ce qui y est poussé finit exécuté en root au déploiement suivant, après les tests) et sur la
+**clé de déploiement en lecture seule** du VPS (jamais « Allow write access ») : protège ton compte GitHub (double authentification).
+
+**Installation déjà passée avec l'ancienne version** (clone et `/etc/app-coaching.env` présents, unités pointant vers le clone) :
+```
+ssh root@IP "git -C /var/www/app-coaching/depot pull --ff-only && bash /var/www/app-coaching/depot/deploiement/installer.sh delmeecorentin.fr"
+```
+(dernière fois qu'on lance un fichier du clone : à ce stade il est encore de confiance). Cela crée `/opt/app-coaching`, réinstalle les unités
+et ne touche pas à `/etc/app-coaching.env` ; relançable sans risque. Ensuite, toujours `bash /opt/app-coaching/deployer.sh`.
+
 ## 1. DNS (≈ 5 min + propagation)
 ✋ Hostinger → Domaines → delmeecorentin.fr → DNS : ajoute `A` · `app` → l'IP du VPS (la même que `@`), et `AAAA` · `app` seulement si `@` en a une.
 Vérifie : `dig +short app.delmeecorentin.fr` = IP du VPS. (Caddy obtient le certificat HTTPS tout seul une fois le DNS propagé.)
@@ -38,7 +52,7 @@ Si le site vitrine est déjà installé, l'utilisateur et Caddy existent : rien 
 `deployer.sh` refuse de continuer si une variable est vide, et signale si les deux `RESA_ADMIN_KEY` diffèrent.
 
 ## 4. Mettre en ligne puis créer ton compte coach
-1. ✋ `ssh root@IP "bash /var/www/app-coaching/depot/deploiement/deployer.sh"` → doit finir par `active` et `Déployé : …`.
+1. ✋ `ssh root@IP "bash /opt/app-coaching/deployer.sh"` → doit finir par `active` et `Déployé : …`.
 2. ✋ Crée le compte (saisie masquée du code) :
    ```
    ssh -t root@IP "cd /var/www/app-coaching/depot && sudo -u appcoaching env DB_FILE=/var/lib/app-coaching/app.db FICHIERS_DIR=/var/lib/app-coaching/fichiers npm run coach:creer corentin"
@@ -59,7 +73,7 @@ Si le site vitrine est déjà installé, l'utilisateur et Caddy existent : rien 
 - 🤖 Dis « c'est en ligne » à REX : il vérifie pages, HTTPS et mobile avec un navigateur automatique.
 
 ## 6. Mises à jour et restauration
-Après un push : relancer la commande 4.1. Pas de mise à jour automatique (production réelle).
+Après un push : relancer la commande 4.1 (`bash /opt/app-coaching/deployer.sh`, qui recopie scripts et unités dans `/opt` après le test). Pas de mise à jour automatique (production réelle).
 ### Sauvegardes chiffrées (à faire une fois)
 1. ✋ Sur ton Mac : `brew install age` puis `age-keygen -o ~/cle-sauvegarde-coaching.txt`. La commande affiche la clé **publique** (`age1…`).
    La clé **privée** (le fichier) ne quitte jamais ton Mac : ni le VPS, ni Git, ni un cloud partagé. Garde-en une copie hors ligne (clé USB) : sans elle, les sauvegardes sont illisibles.

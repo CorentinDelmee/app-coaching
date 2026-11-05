@@ -3,6 +3,7 @@
 # Étapes : essai sur une copie (npm ci + tests serveur + build VITE_BACKEND=api) → git merge --ff-only
 # → npm ci --omit=dev → dist/ copié dans un dossier neuf puis échangé d'un coup → redémarrage → vérification.
 # Si la vérification échoue : retour à la version précédente (code + site).
+# Usage : bash /opt/app-coaching/deployer.sh (copie root:root ; jamais le fichier du clone).
 # Tout est dans main() : un git pull qui modifie ce fichier pendant qu'il tourne ne le casse pas.
 main() {
 set -euo pipefail
@@ -12,6 +13,15 @@ DEPOT=$APP_DIR/depot
 ESSAI=$APP_DIR/essai
 ENV_FILE=/etc/app-coaching.env
 CADDY_BLOC=/etc/caddy/sites/app-coaching.caddy
+# Copie root:root des fichiers exécutés ou installés par root (scripts 0755, unités et bloc Caddy 0644) :
+# root n'exécute jamais un fichier du dépôt, que l'utilisateur 'appcoaching' pourrait modifier.
+OPT=/opt/app-coaching
+copier_opt() {
+  local D=$DEPOT/deploiement
+  install -d -o root -g root -m 0755 "$OPT"
+  install -o root -g root -m 0755 "$D/deployer.sh" "$D/installer.sh" "$D/sauvegarder.sh" "$OPT/"
+  install -o root -g root -m 0644 "$D/app-coaching.service" "$D/app-coaching-sauvegarde.service"     "$D/app-coaching-sauvegarde.timer" "$D/app-coaching.caddy" "$OPT/"
+}
 
 [ "$(id -u)" -eq 0 ] || { echo "À lancer en root."; exit 1; }
 [ -d "$DEPOT/.git" ] || { echo "Dépôt absent : lancer d'abord installer.sh."; exit 1; }
@@ -58,6 +68,7 @@ fi
 # 2. Code : avance rapide seulement, puis dépendances de production
 sudo -u "$APP_USER" git -C "$DEPOT" merge --ff-only -q "$NOUVEAU"
 ( cd "$DEPOT" && sudo -u "$APP_USER" npm ci --omit=dev --no-audit --no-fund --loglevel=error )
+copier_opt
 
 # 3. Site : copié à côté puis échangé d'un coup
 NEUF=$APP_DIR/site-nouveau
@@ -72,7 +83,7 @@ mv "$NEUF" "$APP_DIR/site"
 
 # 4. Bloc Caddy : validé avec toute la config avant rechargement, sinon on garde l'ancien
 CADDY_TMP=$(mktemp)
-sed -e "s/A_REMPLACER_DOMAINE/$DOMAINE/g" -e "s/A_REMPLACER_PROXY_KEY/$(lire PROXY_KEY)/g" "$DEPOT/deploiement/app-coaching.caddy" > "$CADDY_TMP"
+sed -e "s/A_REMPLACER_DOMAINE/$DOMAINE/g" -e "s/A_REMPLACER_PROXY_KEY/$(lire PROXY_KEY)/g" "$OPT/app-coaching.caddy" > "$CADDY_TMP"
 mkdir -p "$(dirname "$CADDY_BLOC")"
 rm -f "$CADDY_BLOC.ancien"
 cp -a "$CADDY_BLOC" "$CADDY_BLOC.ancien" 2>/dev/null || true
@@ -90,7 +101,7 @@ fi
 rm -f "$CADDY_BLOC.ancien"
 
 # 5. Service + vérification (/api/app/moi : 200 ou 401 = le serveur répond), retour arrière sinon
-D=$DEPOT/deploiement
+D=$OPT
 install -m 0644 "$D/app-coaching.service" "$D/app-coaching-sauvegarde.service" "$D/app-coaching-sauvegarde.timer" /etc/systemd/system/
 systemctl daemon-reload
 # La sauvegarde tourne désormais en appcoaching : reprendre les fichiers créés par l'ancienne version (root)
@@ -108,6 +119,9 @@ if [ "$OK" != 1 ]; then
   echo "ÉCHEC : le serveur ne répond pas. Retour à $ANCIEN (journal : journalctl -u app-coaching -n 50)."
   sudo -u "$APP_USER" git -C "$DEPOT" reset -q --keep "$ANCIEN"
   ( cd "$DEPOT" && sudo -u "$APP_USER" npm ci --omit=dev --no-audit --no-fund --loglevel=error )
+  copier_opt
+  install -m 0644 "$OPT/app-coaching.service" "$OPT/app-coaching-sauvegarde.service" "$OPT/app-coaching-sauvegarde.timer" /etc/systemd/system/
+  systemctl daemon-reload
   if [ -d "$APP_DIR/site-ancien" ]; then
     rm -rf "$APP_DIR/site-echec"
     mv "$APP_DIR/site" "$APP_DIR/site-echec"
