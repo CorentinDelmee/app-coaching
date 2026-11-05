@@ -8,7 +8,7 @@ Contrat technique : `docs/CONTRAT-VPS.md`. L'app sera sur `https://app.delmeecor
 | `installer.sh` | Une fois : utilisateur `appcoaching`, clé GitHub (lecture seule), clone, `/etc/app-coaching.env` (secrets générés), service, timer. |
 | `deployer.sh` | Chaque mise en ligne : tests serveur + build `VITE_BACKEND=api` sur une copie, mise à jour, échange atomique de la PWA, Caddy, redémarrage, vérification, retour arrière si échec. |
 | `app-coaching.service` | Serveur Node 127.0.0.1:5405, durci, 384 Mo max, seul `/var/lib/app-coaching` inscriptible. |
-| `app-coaching.caddy` | Bloc Caddy (HTTPS, CSP, `/api/app/*` → Node, repli SPA, cache) : mode domaine propre. |
+| `app-coaching.caddy` | Bloc Caddy (HTTPS, CSP, `/api/app/*` et `/api/coach/*` → Node, repli SPA, cache) : mode domaine propre. |
 | `app-coaching-chemin.caddy` + `app-coaching-redirection.caddy` | Mode sous-chemin (`APP_BASE=/app/`) : fragment importé par le bloc du site + redirection de `app.<domaine>` (voir § 3 bis). |
 | `sauvegarder.sh` + `app-coaching-sauvegarde.{service,timer}` | Chaque nuit à 4 h : `app.db` + `fichiers/`, 14 jours conservés. |
 
@@ -47,7 +47,7 @@ Si le site vitrine est déjà installé, l'utilisateur et Caddy existent : rien 
 | `NODE_ENV` `PORT` `HOST` | `production` · `5405` · `127.0.0.1` (déjà écrits) |
 | `DB_FILE` · `FICHIERS_DIR` · `DATA_DIR` | `/var/lib/app-coaching/app.db` · `/var/lib/app-coaching/fichiers` · `/var/lib/app-coaching/data` (bibliothèque d'exercices : le dossier du code est en lecture seule) |
 | `APP_ORIGIN` | `https://app.delmeecorentin.fr` (contrôle CSRF : doit être exact) |
-| `SESSION_SECRET` · `COACH_API_KEY` | générés par l'installeur (≥ 32 car.) ; `COACH_API_KEY` sert au MCP/REST |
+| `SESSION_SECRET` · `COACH_API_KEY` | générés par l'installeur (≥ 32 car.) ; `COACH_API_KEY` sert au MCP/REST, et à Claude à distance via `https://<domaine>/api/coach` |
 | `RESA_API_URL` | `http://127.0.0.1:5311` (même VPS : l'API publique du site est `https://delmeecorentin.fr/api/resa`, l'app l'appelle en local) |
 | `RESA_ADMIN_KEY` | **identique** à celle de `/etc/coaching-resa.env`. Si elle est vide : `grep RESA_ADMIN_KEY /etc/coaching-resa.env`, puis `nano /etc/app-coaching.env` (`Ctrl+O`, `Entrée`, `Ctrl+X`). Jamais dans une conversation. |
 `deployer.sh` refuse de continuer si une variable est vide, et signale si les deux `RESA_ADMIN_KEY` diffèrent.
@@ -96,6 +96,11 @@ L'adresse = `APP_ORIGIN` + `APP_BASE`. Trois variables de `/etc/app-coaching.env
   ssh root@IP 'for i in 1 2 3 4 5 6; do curl -s -o /dev/null -w "%{http_code}\n" -X POST http://127.0.0.1:5405/api/app/connexion -H "Origin: $(sed -n "s/^APP_ORIGIN=//p" /etc/app-coaching.env)" -H "Content-Type: application/json" -H "X-Forwarded-For: 203.0.113.$i" -d "{\"identifiant\":\"essai-proxy\",\"code\":\"faux\"}"; done'
   ```
   → `401` ×5 puis `429` (sans la clé `X-Proxy-Cle`, toutes ces requêtes comptent pour la même IP). Attendre 15 min avant de réessayer avec ce même identifiant.
+- Outils du coach pour Claude (`/api/coach/*`, relayé par Caddy dans les deux modes) : depuis ton ordinateur,
+  `curl -s -o /dev/null -w '%{http_code}\n' https://delmeecorentin.fr/api/coach/sante` → `401` (clé absente : normal) ;
+  `curl -s https://delmeecorentin.fr/api/outils | head -c 80` → page du site (HTML) ou 404, **jamais** `{"erreur":"Clé API absente…` (route interne, non relayée par Caddy).
+  Brancher Claude Code sur le VPS : `serveur/README.md`, section « Brancher Claude Code en distant » (clé dans un fichier local hors Git).
+  10 essais ratés en 15 min depuis une même IP → `429` pour elle pendant 15 min.
 - 🤖 Dis « c'est en ligne » à REX : il vérifie pages, HTTPS et mobile avec un navigateur automatique.
 
 ## 6. Mises à jour et restauration

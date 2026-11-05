@@ -28,6 +28,25 @@ handle /api/app/* {
 	}
 }
 
+# Outils du coach pour Claude à distance (clé Bearer COACH_API_KEY, voir serveur/README.md) → Node.
+# Seules /api/app/* et /api/coach/* sont relayées : les routes REST historiques (/api/outils…) restent internes.
+handle /api/coach/* {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Robots-Tag "noindex, nofollow"
+		Cache-Control "no-store"
+		-Server
+	}
+	request_body {
+		max_size 1MB
+	}
+	reverse_proxy 127.0.0.1:5405 {
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Proxy-Cle A_REMPLACER_PROXY_KEY
+	}
+}
+
 # PWA statique sous A_REMPLACER_PREFIXE/ avec repli SPA (/app sans barre finale reste la page « L'app » du site)
 handle A_REMPLACER_PREFIXE/* {
 	header {
