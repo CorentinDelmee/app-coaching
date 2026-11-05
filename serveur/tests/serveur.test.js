@@ -59,7 +59,7 @@ describe('clients', () => {
     expect(r.donnees.ambigu).toBe(true)
     const c = await outil('creer_seance', { client: 'fabien vincent', nom: 'X' })
     expect(c.ok).toBe(false)
-    expect(c.code).toBe('CLIENT_AMBIGU')
+    expect(c.code).toBe('AMBIGU')
   })
 })
 
