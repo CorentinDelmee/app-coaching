@@ -144,7 +144,7 @@ describe('outils du lot 9', () => {
     expect(estIOS('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', 0)).toBe(false)
     expect(estIOS('Mozilla/5.0 (Linux; Android 14)')).toBe(false)
   })
-  it('iOS hors Safari (Chrome, Instagram) : demander d'ouvrir dans Safari', () => {
+  it('iOS hors Safari (Chrome, Instagram) : ouvrir dans Safari', () => {
     expect(estIOSHorsSafari('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit CriOS/120 Mobile')).toBe(true)
     expect(estIOSHorsSafari('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Mobile Instagram 300')).toBe(true)
     expect(estIOSHorsSafari('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Version/17.0 Mobile Safari/604.1')).toBe(false)
