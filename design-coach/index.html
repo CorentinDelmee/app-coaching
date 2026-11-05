@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Refonte coach — 3 directions</title>
+<style>
+  :root { --fond: #F4F2EC; --texte: #1E1F22; --doux: #55575C; --carte: #fff; --trait: #E2DED3; --jaune: #F2E27A; }
+  * { box-sizing: border-box }
+  body { margin: 0; background: var(--fond); color: var(--texte); font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif }
+  main { max-width: 1180px; margin: 0 auto; padding: 32px 16px 64px }
+  h1 { font-weight: 600; font-size: clamp(28px, 5vw, 40px); margin: 0 0 6px; letter-spacing: -.02em }
+  .intro { color: var(--doux); margin: 0 0 28px; max-width: 70ch }
+  .dir { background: var(--carte); border: 1px solid var(--trait); border-radius: 16px; padding: 22px; margin-bottom: 28px }
+  .tete { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 16px; margin-bottom: 8px }
+  .tete h2 { margin: 0; font-weight: 600; font-size: 26px }
+  .reco { background: var(--jaune); color: #26230A; font-weight: 600; font-size: 13px; padding: 3px 10px; border-radius: 99px }
+  .idee { color: var(--doux); margin: 0 0 14px; max-width: 80ch }
+  .notes { font-size: 14px; color: var(--doux); margin: 0 0 14px }
+  .ouvrir { display: inline-block; background: #1E1F22; color: #fff; text-decoration: none; padding: 11px 18px; border-radius: 10px; font-weight: 600; margin-bottom: 16px }
+  .ouvrir:hover { background: #33353A }
+  .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px }
+  .grille.tel { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) }
+  figure { margin: 0 }
+  figure a { display: block; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: #ddd }
+  figure img { display: block; width: 100%; height: auto }
+  figcaption { font-size: 13px; color: var(--doux); padding-top: 4px }
+  h3 { font-size: 15px; font-weight: 600; margin: 18px 0 8px }
+</style>
+</head>
+<body>
+<main>
+  <h1>Refonte de l'espace coach — 3 directions</h1>
+  <p class="intro">Ouvre chaque maquette et clique partout (fausses données). Dans les trois, les exercices s'éditent dans un panneau <strong>à côté</strong> de la liste, avec aperçu vidéo ou photo et des infos en plus. Sur téléphone, le panneau devient une feuille plein écran. Clique sur une capture pour l'agrandir.</p>
+  <div id="dirs"></div>
+</main>
+<script>
+const D = [
+  { id: 'd1', nom: 'Atelier', reco: true, idee: "Ta charte actuelle (jaune, Syne) en version pro lumineuse : liste dense et rigoureuse, panneau qui glisse pendant que la liste se resserre, tout s'enregistre seul. Coach et client restent une même marque.",
+    notes: 'Test indépendant : clarté 8,5 · plaisir 7 · mobile 7 · finition 8 (avant correction du bug trouvé).',
+    ordi: ['aujourdhui-ordi', 'exercices-ordi', 'exercice-panneau-ordi', 'exercices-vignettes-ordi', 'clients-ordi', 'client-suivi-ordi', 'programme-ordi'],
+    tel: ['aujourdhui-tel', 'exercices-tel', 'exercice-panneau-tel', 'clients-tel', 'client-suivi-tel', 'programme-tel'] },
+  { id: 'd2', nom: 'Console', reco: false, idee: "Un poste de pilotage sombre, dense et très rapide : Ctrl+K pour tout (« ouvrir Fabien », « nouvel exercice »), raccourcis clavier visibles, le jaune comme signal, le bleu pour ce que Claude a proposé.",
+    notes: 'Test indépendant : clarté 8 · plaisir 8 · mobile 7 · finition 7 (avant corrections, faites depuis).',
+    ordi: ['dash-desktop', 'exercices-desktop', 'exercice-panneau-desktop', 'exercices-vignettes-desktop', 'palette-desktop', 'clients-desktop', 'client-fiche-desktop', 'programme-desktop'],
+    tel: ['dash-mobile', 'exercices-mobile', 'exercice-panneau-mobile', 'palette-mobile', 'clients-mobile', 'client-fiche-mobile', 'programme-mobile'] },
+  { id: 'd3', nom: 'Studio', reco: false, idee: "Visuel et chaleureux : grandes vignettes teintées par groupe musculaire qui s'animent, la vignette cliquée « vole » dans le panneau d'édition, cartes clients avec anneau de progression. Bascule en liste compacte pour aller vite.",
+    notes: 'Test indépendant : clarté 8,5 · plaisir 8 · mobile 7,5 · finition 7,5 (avant corrections, faites depuis).',
+    ordi: ['1-aujourdhui-1280x800', '2-exercices-1280x800', '3-exercice-panneau-1280x800', '8-element-partage-en-vol-1280x800', '4-exercices-liste-1280x800', '5-clients-1280x800', '6-fiche-client-1280x800', '7-programme-1280x800'],
+    tel: ['1-aujourdhui-390x844', '2-exercices-390x844', '3-exercice-panneau-390x844', '4-exercice-feuille-champs-390x844', '5-clients-390x844', '6-fiche-client-390x844', '7-programme-390x844'] }
+];
+const lib = (n) => n.replace(/^\d-/, '').replace(/-(ordi|tel|desktop|mobile|1280x800|390x844)$/, '').replace(/-/g, ' ');
+document.getElementById('dirs').innerHTML = D.map((d) => `
+  <section class="dir">
+    <div class="tete"><h2>${d.id.toUpperCase()} · ${d.nom}</h2>${d.reco ? '<span class="reco">Ma recommandation</span>' : ''}</div>
+    <p class="idee">${d.idee}</p>
+    <p class="notes">${d.notes}</p>
+    <a class="ouvrir" href="${d.id}/index.html" target="_blank" rel="noopener">Ouvrir la maquette ${d.nom}</a>
+    <h3>Ordinateur</h3>
+    <div class="grille">${d.ordi.map((c) => `<figure><a href="${d.id}/captures/${c}.png" target="_blank" rel="noopener"><img loading="lazy" src="${d.id}/captures/${c}.png" alt="${d.nom} — ${lib(c)} (ordinateur)"></a><figcaption>${lib(c)}</figcaption></figure>`).join('')}</div>
+    <h3>Téléphone</h3>
+    <div class="grille tel">${d.tel.map((c) => `<figure><a href="${d.id}/captures/${c}.png" target="_blank" rel="noopener"><img loading="lazy" src="${d.id}/captures/${c}.png" alt="${d.nom} — ${lib(c)} (téléphone)"></a><figcaption>${lib(c)}</figcaption></figure>`).join('')}</div>
+  </section>`).join('');
+</script>
+</body>
+</html>

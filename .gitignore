@@ -13,3 +13,6 @@ serveur/data/
 serveur/.env
 tmp/
 .worktrees/
+
+# Captures des testeurs (lourdes, régénérables)
+design-coach/*/test-captures/

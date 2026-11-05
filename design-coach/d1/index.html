@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Espace coach — Atelier (d1)</title>
+<meta name="theme-color" content="#F4F2EC">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="at">
+<a class="at-skip" href="#at-main">Aller au contenu</a>
+<div class="at-app">
+  <!-- Barre latérale (ordinateur) -->
+  <aside class="at-side" aria-label="Navigation coach">
+    <div class="at-brand"><span class="at-brand-mark" aria-hidden="true">CD</span><span><b>Delmée</b><small>Espace coach</small></span></div>
+    <button class="at-cmd" type="button" data-action="search"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m14 14 4 4"/></svg>Rechercher<kbd>/</kbd></button>
+    <nav class="at-nav">
+      <p class="at-nav-t">Travail</p>
+      <a href="#/aujourdhui" data-route="aujourdhui"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M3 8h14M7 2v4M13 2v4"/></svg>Aujourd'hui</a>
+      <a href="#/clients" data-route="clients"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8" cy="7" r="3"/><path d="M2.5 17c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5M13 4.5a3 3 0 0 1 0 5.6M15.5 12.8c1 .8 1.7 2.2 2 4.2"/></svg>Clients<span class="at-count">18</span></a>
+      <a href="#/alertes" data-route="aujourdhui" data-alias><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3a5 5 0 0 0-5 5v3l-1.5 3h13L15 11V8a5 5 0 0 0-5-5ZM8 17a2 2 0 0 0 4 0"/></svg>Alertes<span class="at-count at-count-hot">3</span></a>
+      <a href="#/agenda" data-route="aujourdhui" data-alias><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg>Agenda &amp; réservations</a>
+      <p class="at-nav-t">Bibliothèque</p>
+      <a href="#/exercices" data-route="exercices"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 10h2M16 10h2M4 6v8M16 6v8M6 7.5v5M14 7.5v5M6 10h8"/></svg>Exercices<span class="at-count">124</span></a>
+      <a href="#/programmes" data-route="programmes"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg>Séances &amp; programmes</a>
+      <a href="#/questionnaires" data-route="aujourdhui" data-alias><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="3" width="12" height="15" rx="2"/><path d="M7 8h6M7 11h6M7 14h3"/></svg>Questionnaires</a>
+    </nav>
+    <div class="at-side-foot">
+      <div class="at-rex"><span class="at-rex-dot" aria-hidden="true"></span><span><b>Claude</b> a préparé 4 éléments<small>à relire</small></span></div>
+      <div class="at-me"><span class="at-av" style="--h:38">CD</span><span>Corentin<small>Rambouillet</small></span></div>
+    </div>
+  </aside>
+
+  <main class="at-main" id="at-main" tabindex="-1">
+    <!-- ================= AUJOURD'HUI ================= -->
+    <section class="at-view" data-view="aujourdhui" aria-labelledby="at-t-auj">
+      <header class="at-head">
+        <div>
+          <p class="at-eyebrow">Mercredi 5 novembre</p>
+          <h1 id="at-t-auj" class="at-h1">Bonjour Corentin<span class="at-dot">.</span></h1>
+          <p class="at-sub">4 séances aujourd'hui, la prochaine dans <b>38 min</b> chez Mireille L. (Rambouillet).</p>
+        </div>
+        <div class="at-head-actions">
+          <button class="at-btn at-btn-ghost" type="button" data-toast="Check-in envoyé à 6 clients">Envoyer les check-ins</button>
+          <a class="at-btn at-btn-primary" href="#/programmes"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg>Nouvelle séance</a>
+        </div>
+      </header>
+
+      <div class="at-kpis" role="list">
+        <div class="at-kpi" role="listitem"><span>Séances cette semaine</span><b>17</b><small class="at-up">+3 vs sem. dern.</small></div>
+        <div class="at-kpi" role="listitem"><span>Check-ins reçus</span><b>11<i>/14</i></b><small>3 en attente</small></div>
+        <div class="at-kpi" role="listitem"><span>Assiduité 30 j</span><b>92<i> %</i></b><small class="at-up">+4 pts</small></div>
+        <div class="at-kpi" role="listitem"><span>Réservations à confirmer</span><b>2</b><small>avant ce soir</small></div>
+      </div>
+
+      <div class="at-dash">
+        <article class="at-card at-dash-day">
+          <header class="at-card-h"><h2>Séances du jour</h2><a href="#/agenda" class="at-link">Agenda</a></header>
+          <ol class="at-timeline" id="at-timeline"></ol>
+        </article>
+
+        <article class="at-card at-dash-alerts">
+          <header class="at-card-h"><h2>Alertes</h2><span class="at-pill at-pill-hot">3</span></header>
+          <ul class="at-rows" id="at-alerts"></ul>
+        </article>
+
+        <article class="at-card at-dash-rex">
+          <header class="at-card-h"><h2>Préparé par Claude</h2><span class="at-pill">à relire</span></header>
+          <ul class="at-rows" id="at-rexfeed"></ul>
+        </article>
+
+        <article class="at-card at-dash-checkins">
+          <header class="at-card-h"><h2>Derniers check-ins</h2><a href="#/clients" class="at-link">Tous</a></header>
+          <ul class="at-rows" id="at-checkins"></ul>
+        </article>
+
+        <article class="at-card at-dash-resa">
+          <header class="at-card-h"><h2>Réservations</h2><span class="at-pill">2 à confirmer</span></header>
+          <ul class="at-rows" id="at-resa"></ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================= EXERCICES ================= -->
+    <section class="at-view" data-view="exercices" aria-labelledby="at-t-ex">
+      <div class="at-split" id="at-split-ex">
+        <div class="at-pane">
+          <header class="at-head at-head-tight">
+            <div>
+              <p class="at-eyebrow">Bibliothèque</p>
+              <h1 id="at-t-ex" class="at-h1">Exercices</h1>
+            </div>
+            <div class="at-head-actions">
+              <div class="at-seg" role="group" aria-label="Affichage">
+                <button type="button" aria-pressed="true" data-layout="rows" aria-label="Liste"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button>
+                <button type="button" aria-pressed="false" data-layout="grid" aria-label="Vignettes"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></svg></button>
+              </div>
+              <button class="at-btn at-btn-primary" type="button" id="at-new-ex"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span>Nouvel exercice</span></button>
+            </div>
+          </header>
+
+          <div class="at-toolbar">
+            <label class="at-search"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m14 14 4 4"/></svg>
+              <span class="at-sr">Rechercher un exercice</span>
+              <input type="search" id="at-q" placeholder="Rechercher un exercice, un muscle…" autocomplete="off"><kbd>/</kbd></label>
+            <div class="at-chips" id="at-filters" role="group" aria-label="Filtres"></div>
+          </div>
+
+          <p class="at-result" id="at-result" aria-live="polite"></p>
+          <div class="at-list" id="at-exlist" role="listbox" aria-label="Exercices" tabindex="0"></div>
+        </div>
+
+        <!-- Panneau d'édition -->
+        <aside class="at-panel" id="at-panel" aria-label="Fiche exercice" hidden>
+          <div class="at-grip" aria-hidden="true"><span></span></div>
+          <div class="at-panel-in" id="at-panel-in"></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ================= CLIENTS ================= -->
+    <section class="at-view" data-view="clients" aria-labelledby="at-t-cl">
+      <div class="at-split" id="at-split-cl">
+        <div class="at-pane">
+          <header class="at-head at-head-tight">
+            <div><p class="at-eyebrow">Suivi</p><h1 id="at-t-cl" class="at-h1">Clients</h1></div>
+            <div class="at-head-actions"><button class="at-btn at-btn-primary" type="button" data-toast="Invitation prête à envoyer"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span>Inviter</span></button></div>
+          </header>
+          <div class="at-toolbar">
+            <label class="at-search"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m14 14 4 4"/></svg><span class="at-sr">Rechercher un client</span><input type="search" id="at-qc" placeholder="Rechercher un client…" autocomplete="off"></label>
+            <div class="at-chips" id="at-cfilters" role="group" aria-label="Filtres clients"></div>
+          </div>
+          <div class="at-list at-clist" id="at-clist" role="listbox" aria-label="Clients" tabindex="0"></div>
+        </div>
+        <aside class="at-panel at-panel-wide" id="at-cpanel" aria-label="Fiche client" hidden>
+          <div class="at-grip" aria-hidden="true"><span></span></div>
+          <div class="at-panel-in" id="at-cpanel-in"></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ================= PROGRAMMES ================= -->
+    <section class="at-view" data-view="programmes" aria-labelledby="at-t-pr">
+      <header class="at-head">
+        <div>
+          <p class="at-eyebrow"><a href="#/clients" class="at-crumb">Mireille L.</a> / Programme</p>
+          <h1 id="at-t-pr" class="at-h1">Reprise en douceur</h1>
+          <p class="at-sub">8 semaines · 3 séances par semaine · <span class="at-saved" id="at-prog-saved" data-state="ok"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg><span>Enregistré</span></span></p>
+        </div>
+        <div class="at-head-actions">
+          <button class="at-btn at-btn-ghost" type="button" data-toast="Programme dupliqué en brouillon">Dupliquer</button>
+          <button class="at-btn at-btn-primary" type="button" data-toast="Programme publié pour Mireille">Publier au client</button>
+        </div>
+      </header>
+
+      <div class="at-weeks" role="tablist" aria-label="Semaines" id="at-weeks"></div>
+
+      <div class="at-editor">
+        <div class="at-days" id="at-days" aria-label="Séances par jour"></div>
+
+        <article class="at-card at-session" aria-labelledby="at-sess-t">
+          <header class="at-card-h">
+            <div><p class="at-eyebrow" id="at-sess-day">Lundi · Semaine 3</p><h2 id="at-sess-t">Force bas du corps</h2></div>
+            <span class="at-meta-inline"><b id="at-sess-dur">45</b> min · <b id="at-sess-n">6</b> exercices</span>
+          </header>
+          <p class="at-hint">Glisser par la poignée pour réordonner (ou Alt + flèches). Ajouter depuis la bibliothèque ou les boutons ci-dessous.</p>
+          <ol class="at-blocks" id="at-blocks"></ol>
+          <div class="at-add-row">
+            <button type="button" class="at-btn at-btn-ghost" data-add="exercice">+ Exercice</button>
+            <button type="button" class="at-btn at-btn-ghost" data-add="superset">+ Superset</button>
+            <button type="button" class="at-btn at-btn-ghost" data-add="circuit">+ Circuit</button>
+          </div>
+        </article>
+
+        <aside class="at-card at-lib" aria-labelledby="at-lib-t">
+          <header class="at-card-h"><h2 id="at-lib-t">Bibliothèque</h2></header>
+          <label class="at-search at-search-sm"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m14 14 4 4"/></svg><span class="at-sr">Filtrer</span><input type="search" id="at-ql" placeholder="Filtrer…"></label>
+          <ul class="at-lib-list" id="at-lib"></ul>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <!-- Barre du bas (téléphone) -->
+  <nav class="at-tabbar" aria-label="Navigation coach">
+    <a href="#/aujourdhui" data-route="aujourdhui"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M3 8h14M7 2v4M13 2v4"/></svg><span>Aujourd'hui</span></a>
+    <a href="#/clients" data-route="clients"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8" cy="7" r="3"/><path d="M2.5 17c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5M13 4.5a3 3 0 0 1 0 5.6"/></svg><span>Clients</span></a>
+    <a href="#/exercices" data-route="exercices"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 10h2M16 10h2M4 6v8M16 6v8M6 7.5v5M14 7.5v5M6 10h8"/></svg><span>Exercices</span></a>
+    <a href="#/programmes" data-route="programmes"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg><span>Programmes</span></a>
+  </nav>
+</div>
+
+<div class="at-scrim" id="at-scrim" hidden></div>
+<div class="at-toast" id="at-toast" role="status" aria-live="polite"></div>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
