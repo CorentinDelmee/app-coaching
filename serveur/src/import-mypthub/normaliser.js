@@ -69,8 +69,11 @@ function liste(v, cles = []) {
   return listes.length === 1 ? listes[0].filter((e) => e && typeof e === 'object') : []
 }
 
-/** Réponse d'API d'un client dont le chemin vérifie `test` (regex) ; renvoie la première trouvée. */
-const apiDe = (brut, test) => { for (const [chemin, v] of Object.entries(brut?.api || {})) if (test.test(chemin)) return { chemin, v: deballer(v) }; return null }
+/** Réponses d'API d'un client dont le chemin (sans « ?… » ni « &… ») vérifie `test` ; les réponses { error } sont écartées. */
+const apisDe = (brut, test) => Object.entries(brut?.api || {})
+  .filter(([chemin, v]) => test.test(chemin.split(/[?&]/)[0]) && !(v && typeof v === 'object' && v.error && Object.keys(v).length === 1))
+  .map(([chemin, v]) => ({ chemin, v: deballer(v) }))
+const apiDe = (brut, test) => apisDe(brut, test)[0] || null
 
 // Rapport : champs non convertis, par « famille » (ex. workout.exercises[].tempo) -> nombre d'occurrences.
 function nonConvertis(rapport, famille, obj, utilises) {
@@ -86,16 +89,32 @@ function nonConvertis(rapport, famille, obj, utilises) {
 // --- Profil -----------------------------------------------------------------------------------------------------
 const SEXES = { m: 'homme', male: 'homme', man: 'homme', homme: 'homme', f: 'femme', female: 'femme', woman: 'femme', femme: 'femme' }
 
+// Formes réelles (export du 2026-11-05) : /v4/customers/N -> { customer: { telephone, address1…, injuries, description, user: { email, dob, gender } } }
+// et /v5/contacts/N -> { contact: { goals (texte), telephone, description } }.
 function profilDe(contact, brut, rapport) {
-  const fiche = apiDe(brut, /\/v4\/customers\/\d+$/)?.v || {}
-  const c5 = apiDe(brut, /\/v5\/contacts\/\d+$/)?.v || {}
+  const c4 = apiDe(brut, /\/v4\/customers\/\d+$/)?.v || {}
+  const client4 = c4.customer && typeof c4.customer === 'object' ? c4.customer : c4
+  const fiche = { ...(client4.user && typeof client4.user === 'object' ? client4.user : {}), ...client4 }
+  const c5brut = apiDe(brut, /\/v5\/contacts\/\d+$/)?.v || {}
+  const c5 = c5brut.contact && typeof c5brut.contact === 'object' ? c5brut.contact : c5brut
   const prenom = texte(premier(contact, ['first_name']) ?? premier(fiche, ['first_name']))
   const nomFamille = texte(premier(contact, ['last_name']) ?? premier(fiche, ['last_name']))
   const nom = texte(premier(contact, ['full_name'])) || [prenom, nomFamille].filter(Boolean).join(' ') || texte(fiche.name)
   const tel = premier(fiche, ['phone', 'mobile', 'phone_number', 'mobile_number', 'telephone', 'tel']) ?? premier(c5, ['phone', 'mobile', 'phone_number'])
   const sexe = String(premier(contact, ['gender']) ?? premier(fiche, ['gender', 'sex']) ?? '').toLowerCase()
-  const adresse = ['address', 'address_1', 'address_line_1', 'address_2', 'city', 'postcode', 'zip', 'country'].map((k) => texte(fiche[k])).filter(Boolean).join(', ')
-  nonConvertis(rapport, 'customer', fiche, ['first_name', 'last_name', 'name', 'full_name', 'email', 'phone', 'mobile', 'phone_number', 'mobile_number', 'telephone', 'tel', 'gender', 'sex', 'dob', 'date_of_birth', 'birthday', 'address', 'address_1', 'address_line_1', 'address_2', 'city', 'postcode', 'zip', 'country', 'last_seen', 'active', 'disabled'])
+  const ADRESSE = ['address', 'address1', 'address_1', 'address_line_1', 'address2', 'address_2', 'town_city', 'city', 'county', 'postcode', 'zip']
+  const adresse = ADRESSE.map((k) => texte(fiche[k])).filter(Boolean).join(', ')
+  // Réglages, comptes et liens techniques de MyPTHub : sans objet dans l'app (ignorés sans être signalés).
+  const SANS_OBJET = ['user', 'source', 'timezone', 'time_display', 'date_display', 'enabled', 'demo', 'frozen', 'type', 'email_status', 'unread_messages', 'emails_unsubscribed', 'level', 'is_activated', 'idea_marketing', 'archon_active', 'trainer_user_id', 'country', 'files', 'package_purchases', 'uploaded_files', 'starred_files', 'trainer', 'is_provisioned_as_merchant_customer', 'bodyweight_display_units', 'distance_display_units', 'length_display_units', 'weight_display_units', 'height_display_units', 'separator_display_units', 'deleted_by', 'member_id', 'company_id', 'club_id', 'photo', 'initials', 'trainer_name', 'invited_at', 'unseen_logged_sessions_count', 'unseen_logged_nutrition_count', 'unseen_metrics_count', 'unseen_progress_photos_count', 'unseen_form_count', 'active_purchases', 'preferred_am_hour', 'preferred_am_minute', 'preferred_pm_hour', 'preferred_pm_minute']
+  const UTILISES = ['first_name', 'last_name', 'name', 'full_name', 'email', 'phone', 'mobile', 'phone_number', 'mobile_number', 'telephone', 'tel', 'gender', 'sex', 'dob', 'date_of_birth', 'birthday', ...ADRESSE, 'last_seen', 'active', 'disabled', 'injuries', 'description', 'height', 'goals', 'exercise_plan', 'body_type', 'exercise_habit', ...SANS_OBJET]
+  nonConvertis(rapport, 'customer', fiche, UTILISES)
+  nonConvertis(rapport, 'contact', c5, UTILISES)
+  // Texte libre du profil MyPTHub (vers les notes du coach).
+  const infos = [
+    ['Blessures', texte(fiche.injuries)], ['Description', texte(fiche.description) || texte(c5.description)],
+    ['Programme d\'exercice', texte(fiche.exercise_plan)], ['Morphologie', texte(fiche.body_type)], ['Habitudes sportives', texte(fiche.exercise_habit)],
+    ['Taille (profil)', nombre(fiche.height) ? `${nombre(fiche.height)} cm` : '']
+  ].filter(([, v]) => v)
   const out = {
     nom, prenom, nomFamille,
     email: texte(premier(contact, ['email']) ?? fiche.email).toLowerCase() || null,
@@ -103,17 +122,16 @@ function profilDe(contact, brut, rapport) {
     dateNaissance: jourDe(premier(contact, ['dob']) ?? premier(fiche, ['dob', 'date_of_birth', 'birthday'])),
     sexe: SEXES[sexe] || (sexe || null),
     adresse: adresse || null,
-    objectifs: objectifsDe(c5, brut)
+    objectifs: objectifsDe(c5.goals)
   }
-  return out
+  return { profil: out, infos }
 }
 
-function objectifsDe(c5, brut) {
-  const goals = c5.goals ?? apiDe(brut, /goals/)?.v
-  const l = Array.isArray(goals) ? goals : liste(goals, ['goals'])
-  const vus = (Array.isArray(goals) ? goals : l).map((g) => (typeof g === 'string' ? g : texte(premier(g, ['name', 'title', 'goal', 'label', 'description', 'text'])))).filter(Boolean)
-  if (!vus.length && typeof goals === 'string') vus.push(texte(goals))
-  return vus
+/** goals : texte (forme réelle, une ligne par objectif) ou liste d'objets / de textes. */
+function objectifsDe(goals) {
+  if (typeof goals === 'string') return texte(goals).split(/\n+/).map((x) => x.trim()).filter(Boolean)
+  if (!Array.isArray(goals)) return []
+  return goals.map((g) => (typeof g === 'string' ? g : texte(premier(g, ['name', 'title', 'goal', 'label', 'description', 'text'])))).filter(Boolean)
 }
 
 // --- Mesures ----------------------------------------------------------------------------------------------------
@@ -122,7 +140,7 @@ const COTES = { l: 'Gauche', left: 'Gauche', r: 'Droit', right: 'Droit' }
 /** circ_arm_l -> tourDeBrasGauche ; circ_waist -> tourDeTaille ; zone inconnue -> tourDe<Zone>. */
 export function cleMensuration(champ) {
   const m = champ.match(/^circ(?:umference)?_([a-z_]+?)(?:_(l|r|left|right))?$/i)
-  if (!m) return null
+  if (!m || /^legacy$/i.test(m[1])) return null // circ_legacy : indicateur d'ancien format, pas un tour
   const zone = m[1].toLowerCase()
   const base = ZONES[zone] || `tourDe${zone.replace(/(^|_)([a-z])/g, (_, __, c) => c.toUpperCase())}`
   return base + (m[2] ? COTES[m[2].toLowerCase()] : '')
@@ -130,6 +148,8 @@ export function cleMensuration(champ) {
 // Valeurs de bilan (hors poids et tours) : clé MyPTHub (regex) -> clé de l'app + libellé.
 export const BILAN = [
   { re: /^height(_cm)?$/i, cle: 'taille', libelle: 'Taille (cm)' },
+  { re: /fat_?percent_l$/i, cle: 'masseGrasseGauche', libelle: 'Masse grasse gauche (%)' },
+  { re: /fat_?percent_r$/i, cle: 'masseGrasseDroite', libelle: 'Masse grasse droite (%)' },
   { re: /body_?fat|fat_?perc|^bf$/i, cle: 'masseGrasse', libelle: 'Masse grasse (%)' },
   { re: /^(blood_?pressure|bp)$/i, cle: 'tension', libelle: 'Tension artérielle' },
   { re: /systolic/i, cle: 'tensionSystolique', libelle: 'Tension systolique (mmHg)' },
@@ -138,12 +158,17 @@ export const BILAN = [
   { re: /muscle_?mass/i, cle: 'masseMusculaire', libelle: 'Masse musculaire' },
   { re: /visceral/i, cle: 'graisseViscerale', libelle: 'Graisse viscérale' },
   { re: /^bmi$/i, cle: 'imc', libelle: 'IMC' },
-  { re: /water/i, cle: 'eau', libelle: 'Eau corporelle (%)' }
+  { re: /water/i, cle: 'eau', libelle: 'Eau corporelle (%)' },
+  { re: /^note$/i, cle: 'note', libelle: 'Note' }
 ]
 
 function mesuresDe(brut, rapport) {
-  const r = apiDe(brut, /metrics/)
-  const lignes = r ? liste(r.v, ['customer_metrics', 'metrics', 'items']) : []
+  // Toutes les sources : /v5/…/metrics (une par type : bodyweight_circumference, body_fat, vital_stats ; 10 lignes par page),
+  // /v4/…/metrics/latest ({ metrics }), et les « customermetric » du journal d'activité (rattrapent des pages non exportées).
+  const reps = apisDe(brut, /metrics/)
+  const r = reps[0] || null
+  const lignes = reps.flatMap(({ v }) => (Array.isArray(v?.customer_metrics) ? v.customer_metrics : v?.metrics && typeof v.metrics === 'object' && !Array.isArray(v.metrics) ? [v.metrics] : liste(v, ['customer_metrics', 'metrics', 'items'])))
+    .concat(activitesBrutes(brut).filter((a) => a.type === 'customermetric' && a.subject).map((a) => a.subject))
   const parJour = new Map() // une mesure par jour (règle de l'app) ; deux lignes le même jour -> fusion
   const bilans = new Map()
   for (const l of lignes) {
@@ -151,17 +176,19 @@ function mesuresDe(brut, rapport) {
     if (!date) { rapport['metrics.(sans date)'] = (rapport['metrics.(sans date)'] || 0) + 1; continue }
     const m = parJour.get(date) || { date }
     const b = bilans.get(date) || { date, valeurs: {} }
-    const utilises = ['date', 'recorded_at', 'measured_at', 'created_at']
+    // Première source lue = API (prioritaire) ; le journal ne fait que compléter.
+    const utilises = ['date', 'recorded_at', 'measured_at', 'created_at', 'circ_legacy', 'skinfold_legacy']
     const unite = String(premier(l, ['weight_unit', 'unit', 'units']) ?? '').toLowerCase()
     if (unite) utilises.push('weight_unit', 'unit', 'units')
     for (const [k, v] of Object.entries(l)) {
       if (/^weight(_kg)?$/i.test(k) && nombre(v) !== undefined) {
-        m.poids = arrondi(/lb/.test(unite) ? nombre(v) * 0.45359237 : nombre(v), 1); utilises.push(k); continue
+        m.poids ??= arrondi(/lb/.test(unite) ? nombre(v) * 0.45359237 : nombre(v), 1); utilises.push(k); continue
       }
       const zone = cleMensuration(k)
-      if (zone && nombre(v) !== undefined) { (m.mensurations ||= {})[zone] = nombre(v); utilises.push(k); continue }
+      if (zone && nombre(v) !== undefined) { (m.mensurations ||= {})[zone] ??= nombre(v); utilises.push(k); continue }
+      if (/^skinfold_/.test(k) && nombre(v) !== undefined) { b.valeurs[`pli_${k.slice(9)}`] ??= nombre(v); utilises.push(k); continue }
       const bi = BILAN.find((x) => x.re.test(k))
-      if (bi && (nombre(v) !== undefined || (typeof v === 'string' && v.trim()))) { b.valeurs[bi.cle] = nombre(v) ?? v.trim(); utilises.push(k) }
+      if (bi && (nombre(v) !== undefined || (typeof v === 'string' && v.trim()))) { b.valeurs[bi.cle] ??= nombre(v) ?? v.trim(); utilises.push(k) }
     }
     nonConvertis(rapport, 'metrics', l, utilises)
     if (m.poids !== undefined || m.mensurations) parJour.set(date, m)
@@ -172,7 +199,20 @@ function mesuresDe(brut, rapport) {
 }
 
 // --- PAR-Q -------------------------------------------------------------------------------------------------------
-// Questions du PAR-Q standard (et quelques ajouts fréquents) : mots-clés anglais -> libellé français.
+// Les 11 questions du PAR-Q de MyPTHub (texte exact de l'export réel), puis des mots-clés pour d'autres formulations.
+const PARQ_EXACT = {
+  'Do you have a heart condition, high blood pressure or circulatory problems?': 'Avez-vous un problème cardiaque, de l\'hypertension ou des problèmes de circulation ?',
+  'Do you have diabetes?': 'Êtes-vous diabétique ?',
+  'Do you suffer from epilepsy?': 'Souffrez-vous d\'épilepsie ?',
+  'Do you ever experience pain in your chest when exercising or at rest?': 'Ressentez-vous parfois une douleur à la poitrine, à l\'effort ou au repos ?',
+  'Do you ever feel faint or suffer from dizzy spells?': 'Vous arrive-t-il de vous sentir mal ou d\'avoir des vertiges ?',
+  'Do you have back pain or joint conditions that could be exacerbated by exercise?': 'Avez-vous des douleurs de dos ou des problèmes articulaires que l\'exercice pourrait aggraver ?',
+  'Do you have asthma?': 'Êtes-vous asthmatique ?',
+  'Have you had any surgery in the past year that may affect your physical activity?': 'Avez-vous été opéré(e) au cours de l\'année passée d\'une façon qui pourrait gêner votre activité physique ?',
+  'Are you aware of any other condition or injury that may give reason to modify your exercise programme?': 'Avez-vous connaissance d\'une autre affection ou blessure qui justifierait d\'adapter votre programme ?',
+  'Are you taking any medication?': 'Prenez-vous des médicaments ?',
+  'Are you pregnant? Or have you given birth in the past 6 weeks?': 'Êtes-vous enceinte, ou avez-vous accouché au cours des 6 dernières semaines ?'
+}
 const PARQ_FR = [
   [/heart condition.*(recommended|doctor)|doctor.*heart condition.*physical activity/i, 'Un médecin vous a-t-il déjà dit que vous aviez un problème cardiaque et que vous ne deviez pratiquer qu\'une activité physique recommandée par un médecin ?'],
   [/past month.*chest pain|chest pain.*(not|when you were not).*physical/i, 'Au cours du dernier mois, avez-vous ressenti une douleur à la poitrine en dehors d\'une activité physique ?'],
@@ -180,48 +220,48 @@ const PARQ_FR = [
   [/balance|dizziness|consciousness/i, 'Perdez-vous l\'équilibre à cause d\'étourdissements, ou avez-vous déjà perdu connaissance ?'],
   [/bone|joint/i, 'Avez-vous un problème osseux ou articulaire qui pourrait être aggravé par un changement de votre activité physique ?'],
   [/(drugs|medication|prescrib).*(blood pressure|heart)/i, 'Un médecin vous prescrit-il actuellement des médicaments pour la tension artérielle ou un problème cardiaque ?'],
-  [/any other reason/i, 'Connaissez-vous une autre raison pour laquelle vous ne devriez pas pratiquer d\'activité physique ?'],
-  [/pregnan/i, 'Êtes-vous enceinte ou avez-vous accouché récemment ?'],
-  [/smok/i, 'Fumez-vous ?'],
-  [/medication|medicine/i, 'Prenez-vous des médicaments ?'],
-  [/injur/i, 'Avez-vous une blessure (actuelle ou passée) ?'],
-  [/surgery|operation/i, 'Avez-vous été opéré(e) récemment ?'],
-  [/diabet/i, 'Êtes-vous diabétique ?'],
-  [/asthma/i, 'Êtes-vous asthmatique ?'],
-  [/allerg/i, 'Avez-vous des allergies ?']
+  [/any other reason/i, 'Connaissez-vous une autre raison pour laquelle vous ne devriez pas pratiquer d\'activité physique ?']
 ]
-export const questionFr = (q) => PARQ_FR.find(([re]) => re.test(q))?.[1] || q
+export const questionFr = (q) => PARQ_EXACT[q.trim()] || PARQ_FR.find(([re]) => re.test(q))?.[1] || q
 const reponseFr = (a) => {
   if (a === true || a === 1 || /^(yes|y|true|1|oui)$/i.test(String(a ?? '').trim())) return 'Oui'
   if (a === false || a === 0 || /^(no|n|false|0|non)$/i.test(String(a ?? '').trim())) return 'Non'
   return texte(typeof a === 'object' && a ? premier(a, ['answer', 'value', 'text']) : a)
 }
+const ALLERGIES = { milk: 'lait', eggs: 'œufs', fish: 'poisson', shellfish: 'crustacés', tree_nuts: 'fruits à coque', peanuts: 'arachides', wheat: 'blé', soybeans: 'soja', gluten: 'gluten' }
 
+// Forme réelle : { questions: [{ question_text, answer: { yes: 0|1, additional_info } | null, for_gender }], nutrition_answers: { allergy_*: bool, allergy_other_notes, no_allergies }, injury_answers }
 function parqDe(brut, rapport) {
   const r = apiDe(brut, /parq/)
-  if (!r) return { questions: [], allergies: [], date: null }
+  if (!r) return { questions: [], allergies: [], blessures: '', date: null }
   const questions = []
+  const dates = []
   for (const q of liste(r.v, ['questions', 'parq', 'items'])) {
-    const libelle = texte(premier(q, ['question', 'text', 'title', 'label', 'name']))
+    const libelle = texte(premier(q, ['question_text', 'question', 'text', 'title', 'label', 'name']))
     if (!libelle) continue
-    const brute = premier(q, ['answer', 'response', 'value', 'answer_text'])
-    const detail = texte(premier(q, ['details', 'detail', 'notes', 'note', 'comment', 'explanation', 'answer_details']) ?? (brute && typeof brute === 'object' ? premier(brute, ['details', 'notes', 'comment']) : undefined))
-    const rep = reponseFr(brute)
-    questions.push({ question: questionFr(libelle), reponse: [rep || 'Sans réponse', detail].filter(Boolean).join(' — ') })
-    nonConvertis(rapport, 'parq.questions[]', q, ['question', 'text', 'title', 'label', 'name', 'answer', 'response', 'value', 'answer_text', 'details', 'detail', 'notes', 'note', 'comment', 'explanation', 'answer_details', 'type', 'required', 'options'])
+    const a = q.answer
+    if (a === null || a === undefined) continue // question non posée (ex. autre sexe) ou sans réponse
+    const brute = a && typeof a === 'object' ? (a.yes ?? a.answer ?? a.value) : a
+    const detail = texte(a && typeof a === 'object' ? premier(a, ['additional_info', 'details', 'notes', 'comment']) : premier(q, ['details', 'detail', 'notes', 'comment']))
+    if (a && typeof a === 'object') dates.push(jourDe(a.updated_at ?? a.created_at))
+    questions.push({ question: questionFr(libelle), reponse: [reponseFr(brute) || 'Sans réponse', detail].filter(Boolean).join(' — ') })
+    nonConvertis(rapport, 'parq.questions[]', q, ['question_text', 'question', 'text', 'title', 'label', 'name', 'answer', 'help_text', 'has_additional_info', 'additional_info_required', 'for_gender', 'details', 'detail', 'notes', 'comment'])
+    if (a && typeof a === 'object') nonConvertis(rapport, 'parq.questions[].answer', a, ['yes', 'answer', 'value', 'additional_info', 'details', 'notes', 'comment', 'parq_question_id'])
   }
-  // Allergies et nutrition (nutrition_answers) : vers les notes du coach.
-  const nut = r.v && typeof r.v === 'object' && !Array.isArray(r.v) ? deballer(r.v.nutrition_answers) : null
+  const nut = r.v && typeof r.v === 'object' && !Array.isArray(r.v) ? r.v.nutrition_answers : null
   const allergies = []
-  const lignesNut = Array.isArray(nut) ? nut : nut && typeof nut === 'object' ? Object.entries(nut).map(([k, v]) => ({ question: k, answer: v })) : []
-  for (const x of lignesNut) {
-    const q = texte(premier(x, ['question', 'text', 'title', 'label', 'name', 'key']))
-    const a = x.answer ?? x.value ?? x.response
-    const val = Array.isArray(a) ? a.map(texte).filter(Boolean).join(', ') : reponseFr(a)
-    if (val && val !== 'Non') allergies.push(q ? `${questionFr(q.replace(/_/g, ' '))} ${val}` : val)
+  if (nut && typeof nut === 'object') {
+    for (const [k, v] of Object.entries(nut)) {
+      const m = k.match(/^allergy_(.+)$/)
+      if (m && m[1] !== 'other_notes' && v === true) allergies.push(ALLERGIES[m[1]] || m[1].replace(/_/g, ' '))
+    }
+    if (texte(nut.allergy_other_notes)) allergies.push(texte(nut.allergy_other_notes))
+    if (!allergies.length && nut.no_allergies === true) allergies.push('aucune allergie déclarée')
+    nonConvertis(rapport, 'parq.nutrition_answers', nut, [...Object.keys(nut).filter((k) => k.startsWith('allergy_')), 'no_allergies'])
   }
-  const date = jourDe(r.v && typeof r.v === 'object' ? premier(r.v, ['completed_at', 'updated_at', 'submitted_at', 'date']) : null)
-  return { questions, allergies, date }
+  const blessures = texte(r.v?.injury_answers)
+  const date = dates.filter(Boolean).sort().at(-1) || null
+  return { questions, allergies, blessures, date }
 }
 
 // --- Séances et programmes ---------------------------------------------------------------------------------------
@@ -307,7 +347,9 @@ export function seanceDe(w, rapport = {}) {
     }
     return { type: 'exercice', ...b.exercices[0] }
   })
-  nonConvertis(rapport, 'workout', w, ['name', 'title', ...CLES_EXOS, 'description', 'notes', 'instructions', 'duration', 'type', 'status', 'category', 'tags', 'trainer', 'customer', 'assigned_at', 'date', 'scheduled_at', 'is_template'])
+  nonConvertis(rapport, 'workout', w, ['name', 'title', ...CLES_EXOS, 'description', 'notes', 'instructions', 'duration', 'type', 'status', 'category', 'tags', 'trainer', 'customer', 'assigned_at', 'date', 'scheduled_at', 'is_template',
+    // Ligne de la liste des séances assignées (quand le détail manque) : réglages MyPTHub sans objet.
+    'created_by', 'category_id', 'trainer_user_id', 'company_id', 'club_id', 'tag', 'enabled', 'archived', 'archived_original_id', 'new', 'note', 'day_1', 'day_2', 'day_3', 'day_4', 'day_5', 'day_6', 'day_7', 'deleted_by', 'library', 'private_workout_customer_id', 'private_workout_parent_id', 'ai_first_touch', 'assigned_via', 'metadata'])
   const consignes = texte(premier(w, ['description', 'notes', 'instructions']))
   return { nom, ...(consignes ? { consignes } : {}), blocs: final }
 }
@@ -361,16 +403,44 @@ function programmesDe(brut, exporteLe, rapport) {
 }
 
 // --- Notes et résumé -----------------------------------------------------------------------------------------------
+// Forme réelle : /v4/customers/N/notes -> { notes: [{ content, created_at, user (le coach), customer }] }.
 function notesMyPTHub(brut) {
-  const r = apiDe(brut, /\/notes/)
+  const r = apiDe(brut, /\/notes$/)
   if (!r) return []
   const l = liste(r.v, ['notes'])
-  return l.map((n) => ({ date: jourDe(premier(n, ['date', 'created_at', 'updated_at'])), texte: texte(premier(n, ['note', 'text', 'content', 'body', 'description', 'message'])) })).filter((n) => n.texte)
+  return l.map((n) => ({ date: jourDe(premier(n, ['date', 'created_at', 'updated_at'])), texte: texte(premier(n, ['content', 'note', 'text', 'body', 'message'])) })).filter((n) => n.texte)
 }
 
-function activitesDe(brut) {
-  const r = apiDe(brut, /activity_log/)
-  return r ? liste(r.v, ['activity_log', 'activities', 'logs']).map((a) => ({ date: jourDe(premier(a, ['date', 'created_at', 'logged_at'])), texte: texte(premier(a, ['description', 'message', 'activity', 'title', 'name', 'type'])) })).filter((a) => a.texte) : []
+// Journal d'activité : plusieurs pages (/activity_log&…&current_page=P -> { activityLog: { data: [{ type, action, date, subject }] } }).
+function activitesBrutes(brut) {
+  const vues = new Set()
+  const out = []
+  for (const { v } of apisDe(brut, /activity_log$/)) {
+    for (const a of liste(v?.activityLog ?? v, ['data', 'activity_log', 'activities', 'logs'])) {
+      const cle = a.id ?? JSON.stringify(a)
+      if (vues.has(cle)) continue
+      vues.add(cle)
+      out.push(a)
+    }
+  }
+  return out.sort((a, b) => String(b.date ?? '').localeCompare(String(a.date ?? '')))
+}
+
+/** Une activité du journal en une ligne lisible (séance faite + ressenti du client, check-in, mesure, programme…). */
+function activiteLisible(a) {
+  const s = a.subject && typeof a.subject === 'object' ? a.subject : {}
+  const date = jourDe(s.date_completed ?? a.date ?? s.date)
+  const titre = texte(s.workout?.title ?? s.workout?.name ?? s.name)
+  const libelle = {
+    'session/completed': () => `Séance faite${titre ? ` : ${titre}` : ''}${s.time_elapsed ? ` (${Math.round(s.time_elapsed / 60)} min)` : ''}${texte(s.feedback) ? ` — ressenti : « ${texte(s.feedback)} »` : ''}`,
+    'checkininstance/submitted': () => 'Check-in envoyé',
+    'customermetric/updated': () => 'Mesures mises à jour',
+    'schedule/started': () => `Programme commencé${titre ? ` : ${titre}` : ''}`,
+    'schedule/ended': () => `Programme terminé${titre ? ` : ${titre}` : ''}`,
+    'nutritionlogday/logged': () => 'Journal alimentaire rempli',
+    'integrationactivity/synced': () => 'Activité synchronisée (montre / appli)'
+  }[`${a.type}/${a.action}`]
+  return { date, type: `${a.type}/${a.action}`, texte: libelle ? libelle() : texte(premier(a, ['title', 'content'])) || `${a.type} ${a.action}` }
 }
 
 function photosDe(brut) {
@@ -390,65 +460,111 @@ function photosDe(brut) {
 const dateFr = (j) => (j ? `${j.slice(8, 10)}/${j.slice(5, 7)}/${j.slice(0, 4)}` : '?')
 export const MARQUEUR_NOTES = '— Import MyPTHub'
 
-function composerNotes({ exporteLe, notes, objectifs, allergies, photos, activites, derniereConnexion, textesSecours }) {
+function composerNotes({ exporteLe, notes, objectifs, allergies, blessures, infos, formulaires, photos, activites, derniereConnexion, textesSecours }) {
   const l = [`${MARQUEUR_NOTES} (export du ${dateFr(exporteLe)}) —`]
   if (objectifs.length) l.push('', 'Objectifs :', ...objectifs.map((o) => `- ${o}`))
-  if (allergies.length) l.push('', 'Allergies / nutrition :', ...allergies.map((a) => `- ${a}`))
+  for (const [k, v] of infos) l.push('', `${k} : ${v}`)
+  if (blessures) l.push('', `Blessures (PAR-Q) : ${blessures}`)
+  if (allergies.length) l.push('', `Allergies : ${allergies.join(', ')}`)
   if (notes.length) l.push('', 'Notes MyPTHub :', ...notes.map((n) => `- ${n.date ? `[${dateFr(n.date)}] ` : ''}${n.texte}`))
   l.push('', `Dernière connexion MyPTHub : ${derniereConnexion ? dateFr(derniereConnexion) : 'inconnue'}`)
   l.push(`Photos de progression (non importées) : ${photos.nombre}${photos.nombre ? ` (du ${dateFr(photos.premiere)} au ${dateFr(photos.derniere)})` : ''}`)
-  if (activites.length) l.push('', 'Dernières activités :', ...activites.slice(0, 10).map((a) => `- ${a.date ? `[${dateFr(a.date)}] ` : ''}${a.texte}`))
+  if (formulaires.length) l.push(`Formulaires MyPTHub (non importés) : ${formulaires.join(' ; ')}`)
+  if (activites.length) {
+    const faites = activites.filter((a) => a.type === 'session/completed')
+    const checkins = activites.filter((a) => a.type === 'checkininstance/submitted')
+    l.push('', `Journal MyPTHub (partie exportée) : ${faites.length} séance(s) faite(s)${faites.length ? `, dernière le ${dateFr(faites[0].date)}` : ''} ; ${checkins.length} check-in(s)${checkins.length ? `, dernier le ${dateFr(checkins[0].date)}` : ''}.`)
+    const ressentis = faites.filter((a) => a.texte.includes('ressenti'))
+    l.push('Dernières activités :', ...activites.filter((a) => a.type !== 'integrationactivity/synced').slice(0, 10).map((a) => `- ${a.date ? `[${dateFr(a.date)}] ` : ''}${a.texte}`))
+    const autres = ressentis.filter((a) => !activites.slice(0, 10).includes(a))
+    if (autres.length) l.push('Autres ressentis après séance :', ...autres.slice(0, 30).map((a) => `- [${dateFr(a.date)}] ${a.texte}`))
+  }
   for (const [rubrique, t] of textesSecours) l.push('', `Écran MyPTHub « ${rubrique} » (texte copié tel quel) :`, t)
   return l.join('\n').slice(0, 20000)
 }
 
+// Rubriques texte (copie de l'écran) -> API qui porte la même information. Le texte ne sert qu'en secours, si l'API manque ;
+// « financials » (paiement) n'est jamais lu ; les photos ne sont que comptées.
+const RUBRIQUES_API = {
+  activity: /activity_log$/, 'check-ins': /activity_log$/, 'habits-activity': /activity_log$/, programs: /scheduler/, workouts: /\/workouts$/,
+  'nutrition-plan': /nutrition/, files: /files/, forms: /forms/, 'weight-circumference': /metrics/, 'body-fat': /metrics/, 'vital-stats': /metrics/,
+  notes: /\/notes$/, parq: /parq/, 'goals-interests': /\/v5\/contacts\/\d+$/
+}
+const RUBRIQUES_JAMAIS = new Set(['financials', 'progress-photos', 'results-tracker'])
+
 // --- Point d'entrée ------------------------------------------------------------------------------------------------
 /**
  * @param {object} exportBrut forme : { exporte_le, contacts[], clients{contactId:{api, textes}}, workouts{id: json}, erreurs[] }
+ * @param {{ seances?: object, exclure?: string[] }} options seances : détail des séances { id: { workout } } (fichier seances.json) ;
+ *        exclure : noms complets de contacts à ne pas importer (ex. le compte de test du coach), comparés sans accents ni casse.
  * @returns {{ version, exporteLe, clients[], rapport }}
  */
-export function normaliser(exportBrut) {
+export function normaliser(exportBrut, { seances: detailSeances = {}, exclure = [] } = {}) {
   const paiementRetire = {}
   const brut = sansPaiement(exportBrut, paiementRetire)
   const exporteLe = jourDe(brut.exporte_le) || '1970-01-01'
+  const lundiExport = lundiDe(exporteLe)
   const champs = {}
   const rapportClients = []
   const clients = []
-  const workouts = brut.workouts || {}
-  for (const [i, contact] of (brut.contacts || []).entries()) {
+  const workouts = { ...(brut.workouts || {}), ...sansPaiement(detailSeances, paiementRetire) }
+  const exclus = new Set(exclure.map(normNom))
+  let nbExclus = 0
+  const detailsManquants = new Set()
+  for (const contact of brut.contacts || []) {
+    if (exclus.has(normNom(contact.full_name ?? `${contact.first_name ?? ''} ${contact.last_name ?? ''}`))) { nbExclus++; continue }
     const cid = String(contact.id)
     const donnees = brut.clients?.[cid] || brut.clients?.[contact.customer_id] || { api: {}, textes: {} }
-    const profil = profilDe(contact, donnees, champs)
+    const { profil, infos } = profilDe(contact, donnees, champs)
     const derniereConnexion = jourDe(contact.last_seen)
     const archive = !!contact.disabled || contact.active === false || !derniereConnexion || ecartJours(derniereConnexion, exporteLe) > JOURS_INACTIF
-    const { mesures, bilans, source: mesuresApi } = mesuresDe(donnees, champs)
+    const { mesures, bilans } = mesuresDe(donnees, champs)
     const parq = parqDe(donnees, champs)
-    // Séances assignées : liste du client + détail dans export.workouts (sinon la ligne de la liste elle-même).
+    // Séances assignées (forme réelle : { workouts: [{ id, title, note, day_1…day_7, metadata.description }] }) ; détail dans seances.json.
     const assignees = liste(apiDe(donnees, /\/workouts$/)?.v, ['workouts'])
     const programmes = programmesDe(donnees, exporteLe, champs)
     const ids = new Set(assignees.map((w) => String(w.id ?? w.workout_id)).filter((x) => x !== 'undefined'))
     for (const p of programmes) for (const s of p.semaines) for (const w of s) ids.add(w)
     const detailsProg = new Map(programmes.flatMap((p) => p.details))
     const seances = []
+    const joursFixes = {}
     for (const id of ids) {
-      const detail = workouts[id] ? deballer(workouts[id]) : detailsProg.get(id) || assignees.find((w) => String(w.id ?? w.workout_id) === id)
+      const ligne = assignees.find((w) => String(w.id ?? w.workout_id) === id)
+      let detail = workouts[id] ? deballer(workouts[id]) : null
+      if (detail?.workout && typeof detail.workout === 'object') detail = detail.workout
+      if (!detail) { detailsManquants.add(id); detail = detailsProg.get(id) || ligne }
       if (!detail) continue
-      const s = seanceDe(detail, champs)
+      const s = seanceDe(detail === ligne || !ligne ? detail : { title: ligne.title, ...detail }, champs)
+      // Note de l'assignation (ligne de la liste) en consignes si le détail n'en a pas.
+      const note = texte(ligne?.note) || texte(ligne?.metadata?.description)
+      if (!s.consignes && note) s.consignes = note
       seances.push({ sourceId: id, ...s })
+      const jours = [1, 2, 3, 4, 5, 6, 7].filter((d) => ligne?.[`day_${d}`] === true)
+      if (jours.length === 1) joursFixes[id] = jours[0] - 1 // day_1 = lundi (supposé ; aucun jour coché dans l'export réel)
     }
     const connues = new Set(seances.map((s) => s.sourceId))
     for (const p of programmes) { p.semaines = p.semaines.map((s) => s.filter((w) => connues.has(w))); delete p.details; for (const w of Object.keys(p.joursFixes)) if (!connues.has(w)) delete p.joursFixes[w] }
-    // Rubriques texte en secours quand l'API correspondante manque.
-    const textes = donnees.textes || {}
+    // Séances assignées directement, sans programme : l'app client n'affiche que les séances d'un programme ;
+    // pour un client actif, un programme « répété » les regroupe (sans jour fixe sauf day_N), sinon elles restent de simples séances.
+    if (!archive && seances.length && !programmes.some((p) => !p.termine)) {
+      const hors = seances.map((s) => s.sourceId).filter((id) => !programmes.some((p) => p.semaines.some((x) => x.includes(id))))
+      if (hors.length) programmes.push({ sourceId: 'assignees', nom: 'Séances MyPTHub', mode: 'repete', debut: lundiExport, workouts: hors, joursFixes: Object.fromEntries(Object.entries(joursFixes).filter(([w]) => hors.includes(w))), termine: false })
+    }
+    // Rubriques texte : seulement en secours, quand l'export n'a AUCUNE réponse d'API pour ce client (copie d'écran :
+    // en-tête et menus mêlés, parfois la liste des autres clients ; constaté sur l'export réel).
     const secours = []
-    const aApi = { 'weight-circumference': mesuresApi, 'body-fat': mesuresApi, 'vital-stats': mesuresApi, 'goals-interests': profil.objectifs.length > 0 }
-    for (const [rubrique, t] of Object.entries(textes)) {
-      if (rubrique === 'progress-photos' || aApi[rubrique]) continue
+    for (const [rubrique, t] of Object.entries(Object.keys(donnees.api || {}).length ? {} : donnees.textes || {})) {
+      if (RUBRIQUES_JAMAIS.has(rubrique)) continue
+      const re = RUBRIQUES_API[rubrique]
+      if (re && apisDe(donnees, re).length) continue
       const contenu = texte(t?.texte)
       if (contenu) secours.push([rubrique, contenu.slice(0, 4000)])
     }
+    const formulaires = liste(apiDe(donnees, /forms$/)?.v, ['forms']).concat(liste(apiDe(donnees, /forms$/)?.v?.archived ?? []))
+      .map((x) => `${texte(x.title) || 'formulaire'}${x.completed ? ' (rempli)' : ''}`)
     const photos = photosDe(donnees)
-    const notesCoach = composerNotes({ exporteLe, notes: notesMyPTHub(donnees), objectifs: profil.objectifs, allergies: parq.allergies, photos, activites: activitesDe(donnees), derniereConnexion, textesSecours: secours })
+    const activites = activitesBrutes(donnees).map(activiteLisible)
+    const notesCoach = composerNotes({ exporteLe, notes: notesMyPTHub(donnees), objectifs: profil.objectifs, allergies: parq.allergies, blessures: parq.blessures, infos, formulaires, photos, activites, derniereConnexion, textesSecours: secours })
     clients.push({
       source: { mypthub_contact_id: cid, customer_id: contact.customer_id != null ? String(contact.customer_id) : null },
       profil, archive, derniereConnexion, mesures, bilans,
@@ -456,15 +572,17 @@ export function normaliser(exportBrut) {
       notesCoach, seances, programmes
     })
     rapportClients.push({
-      client: `client-${String(i + 1).padStart(2, '0')}`, contactId: cid, archive,
+      client: `client-${String(clients.length).padStart(2, '0')}`, contactId: cid, archive,
       mesures: mesures.length, bilans: bilans.length, parq: parq.questions.length, seances: seances.length,
       exercices: seances.reduce((n, s) => n + s.blocs.reduce((m, b) => m + (b.type === 'superset' ? b.exercices.length : 1), 0), 0),
-      programmes: programmes.length, photos: photos.nombre, textesSecours: secours.map(([r]) => r),
+      programmes: programmes.length, photos: photos.nombre, activites: activites.length, textesSecours: secours.map(([r]) => r),
       manque: [!profil.nom && 'nom', !profil.email && 'email'].filter(Boolean)
     })
   }
   return {
     version: 1, exporteLe, clients,
-    rapport: { clients: rapportClients, champsNonConvertis: champs, paiementRetire, erreursExport: (brut.erreurs || []).length }
+    rapport: { clients: rapportClients, exclus: nbExclus, seancesSansDetail: detailsManquants.size, champsNonConvertis: champs, paiementRetire, erreursExport: (brut.erreurs || []).length }
   }
 }
+
+const normNom = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()

@@ -192,11 +192,18 @@ export async function importer({ db, backend }, normalise, { essai = false, now 
     for (const p of programmes) {
       const id = `${cle}-p-${slug(p.sourceId)}`
       if (await api.programmes.lire(id)) continue
-      const semaines = p.semaines.map((s) => s.map((w) => ids.get(w)).filter(Boolean))
-      if (!semaines.some((s) => s.length)) continue
       const joursFixes = Object.fromEntries(Object.entries(p.joursFixes || {}).filter(([w]) => ids.has(w)).map(([w, j]) => [ids.get(w), j]))
       // Un programme terminé est gardé archivé (historique) ; seul le programme en cours s'affiche chez le client.
-      await api.programmes.creer({ id, clientId: pid, nom: p.nom, mode: 'parSemaine', debut: p.debut, nbSemaines: semaines.length, semaines, joursFixes, archive: !!p.termine })
+      if (p.mode === 'repete') {
+        // Séances assignées directement dans MyPTHub : même liste chaque semaine, sans fin.
+        const workouts = (p.workouts || []).map((w) => ids.get(w)).filter(Boolean)
+        if (!workouts.length) continue
+        await api.programmes.creer({ id, clientId: pid, nom: p.nom, mode: 'repete', debut: p.debut, workouts, joursFixes, archive: !!p.termine })
+      } else {
+        const semaines = p.semaines.map((s) => s.map((w) => ids.get(w)).filter(Boolean))
+        if (!semaines.some((s) => s.length)) continue
+        await api.programmes.creer({ id, clientId: pid, nom: p.nom, mode: 'parSemaine', debut: p.debut, nbSemaines: semaines.length, semaines, joursFixes, archive: !!p.termine })
+      }
       ligne.programmes++
     }
   }

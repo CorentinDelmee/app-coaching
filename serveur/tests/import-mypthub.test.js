@@ -13,54 +13,72 @@ import { lireConfig } from '../src/config.js'
 
 const NOW = Date.UTC(2026, 10, 5, 10)
 
-// Export synthétique : 3 contacts inventés (actif complet, inactif, déjà présent dans l'app par son nom).
+// Export synthétique (personnes inventées), aux FORMES de l'export réel du 2026-11-05 : actif complet, inactif,
+// déjà présent dans l'app par son nom (actif, séances sans programme), compte de test du coach (exclu).
 function exportSynthetique() {
+  const jours = { day_1: false, day_2: false, day_3: false, day_4: false, day_5: false, day_6: false, day_7: false }
   return {
     exporte_le: '2026-11-05T09:00:00Z',
     contacts: [
-      { id: 101, customer_id: 9001, full_name: 'Zoé Testeuse', first_name: 'Zoé', last_name: 'Testeuse', email: 'Zoe@Exemple.test', dob: '1990-04-12', gender: 'female', last_seen: '2026-11-01 08:00:00', active: true, disabled: false, stripe_customer_id: 'cus_X' },
-      { id: 102, customer_id: 9002, full_name: 'Marc Inactif', email: 'marc@exemple.test', last_seen: '2026-08-01T10:00:00Z', active: true, disabled: false },
-      { id: 103, customer_id: 9003, full_name: 'Léa Déjà', email: 'lea@exemple.test', last_seen: '2026-11-04', active: true }
+      { id: 101, customer_id: 9001, full_name: 'Zoé Testeuse', first_name: 'Zoé', last_name: 'Testeuse', email: 'Zoe@Exemple.test', dob: '1990-04-12', gender: 'female', last_seen: Date.UTC(2026, 10, 1) / 1000, active: true, disabled: false, stripe_customer_id: 'cus_X' },
+      { id: 102, customer_id: 9002, full_name: 'Marc Inactif', email: 'marc@exemple.test', last_seen: Date.UTC(2026, 7, 1) / 1000, active: true, disabled: false },
+      { id: 103, customer_id: 9003, full_name: 'Léa Déjà', email: 'lea@exemple.test', last_seen: Date.UTC(2026, 10, 4) / 1000, active: true },
+      { id: 104, customer_id: 9004, full_name: 'Corentin Delmee', email: 'coach@exemple.test', last_seen: Date.UTC(2026, 10, 4) / 1000, active: true }
     ],
     clients: {
       101: {
         api: {
-          '/v5/contacts/101': { data: { id: 101, goals: [{ name: 'Perdre 5 kg' }, { name: 'Courir 10 km' }] } },
-          '/v4/customers/9001': { data: { id: 9001, phone: '0600000000', card_brand: 'visa', last_four: '4242', payment_method: 'card', favourite_colour: 'bleu' } },
-          '/v4/customers/9001/activity_log': { data: [{ created_at: '2026-10-30', description: 'A terminé une séance' }] },
-          '/v4/customers/9001/notes': { data: [{ created_at: '2026-09-01', note: 'Genou droit fragile' }] },
+          '/v5/contacts/101?customer_id=9001': { contact: { id: 101, goals: 'Perdre 5 kg\nCourir 10 km', telephone: null, active_purchases: 1 } },
+          '/v4/customers/9001': { customer: { id: 9001, telephone: '0600000000', injuries: 'Épaule gauche', height: 168, card_brand: 'visa', payment_method: 'card', favourite_colour: 'bleu', user: { email: 'zoe@exemple.test', dob: '1990-04-12', gender: 'female', last_four: '4242' } } },
+          '/v4/customers/9001/activity_log&search=&infinite=true&customerId=9001&current_page=1': { activityLog: { data: [
+            { id: 1, type: 'session', action: 'completed', date: '2026-10-30 10:00:00', subject: { date_completed: '2026-10-30 10:40:00', time_elapsed: 2400, feedback: 'Dur mais top', workout: { title: 'Full body A' } } },
+            { id: 2, type: 'customermetric', action: 'updated', date: '2026-10-15 08:00:00', subject: { date: '2026-10-15', weight: 69.8, circ_legacy: 0 } }
+          ], pagination: { totalPages: 1 } } },
+          '/v4/customers/9001/notes': { notes: [{ id: 1, created_at: '2026-09-01 10:00:00', content: 'Genou droit fragile', user: { first_name: 'Coach' } }] },
           '/v4/customers/9001/parq/questions': { questions: [
-            { id: 1, question: 'Has your doctor ever said that you have a heart condition and that you should only do physical activity recommended by a doctor?', answer: 'no' },
-            { id: 2, question: 'Do you have a bone or joint problem that could be made worse by a change in your physical activity?', answer: 'yes', details: 'Genou' },
-            { id: 3, question: 'Question maison non traduite', answer: 'peut-être' }
-          ], nutrition_answers: { allergies: 'Arachides' } },
-          '/v4/customers/9001/metrics': { data: { customer_metrics: [
-            { date: '2026-09-01', weight: 70.5, height: 168, circ_waist: 80, circ_arm_l: 30, circ_arm_r: 30.5, body_fat: 25, resting_heart_rate: 62, blood_pressure: '120/80', mood_score: 3 },
+            { id: 1, question_text: 'Do you have diabetes?', answer: { id: 1, yes: 0, additional_info: null, updated_at: '2026-03-01 10:00:00' } },
+            { id: 2, question_text: 'Do you have back pain or joint conditions that could be exacerbated by exercise?', answer: { id: 2, yes: 1, additional_info: 'Genou' } },
+            { id: 3, question_text: 'Are you pregnant? Or have you given birth in the past 6 weeks?', for_gender: 'female', answer: null },
+            { id: 4, question_text: 'Question maison non traduite', answer: { id: 4, yes: 1 } }
+          ], nutrition_answers: { allergy_peanuts: true, allergy_milk: false, allergy_other_notes: null, no_allergies: false }, injury_answers: 'Entorse 2024' },
+          '/v5/customers/9001/metrics&filter[type]=bodyweight_circumference': { customer_metrics: [
+            { date: '2026-09-01', weight: 70.5, height: 168, circ_waist_l: null, circ_arm_l: 30, circ_arm_r: 30.5, circ_waist: 80, bodyfat_percent: 25, resting_heart_rate: 62, blood_pressure_systolic: 120, mood_score: 3 },
             { date: '2026-10-01', weight: 69.2, circ_waist: 78 }
-          ] } },
-          '/v4/customers/9001/workouts': { data: [{ id: 501, name: 'Full body A' }, { id: 502, name: 'Haut du corps' }] },
-          '/v4/customers/9001/scheduler/current': { data: { schedules: [
+          ], pagination: { total: 2, per_page: 10, current_page: 1, last_page: 1 } },
+          '/v4/customers/9001/metrics/latest': { error: { message: 'x', statusCode: 404 } },
+          '/v4/customers/9001/workouts': { workouts: [{ id: 501, title: 'Full body A', note: null, ...jours }, { id: 502, title: 'Haut du corps', note: 'Note d\'assignation', ...jours }] },
+          '/v4/customers/9001/scheduler/current': { schedules: [
             { id: 77, name: 'Bloc automne', start_date: '2026-10-05', end_date: '2026-12-20', workouts: [{ workout_id: 501, date: '2026-10-06' }, { workout_id: 502, date: '2026-10-08' }, { workout_id: 501, date: '2026-10-13' }] }
-          ] } },
+          ] },
           '/v4/customers/9001/progress_photos': { data: [{ date: '2026-09-01', url: 'https://temp' }, { date: '2026-10-01', url: 'https://temp' }] }
         },
-        textes: { 'results-tracker': { at: '2026-11-05', texte: 'Squat 60 kg' }, 'progress-photos': { at: '2026-11-05', texte: '2 photos' } }
+        textes: { 'results-tracker': { at: '2026-11-05', texte: 'Squat 60 kg' }, financials: { at: '2026-11-05', texte: 'Paiement 40 €' } }
       },
-      102: { api: {}, textes: { 'weight-circumference': { at: '2026-11-05', texte: 'Poids 82 kg le 01/07/2026' } } },
-      103: { api: { '/v4/customers/9003/metrics': [{ date: '2026-10-20', weight: 60 }] }, textes: {} }
+      102: { api: {}, textes: { 'weight-circumference': { at: '2026-11-05', texte: 'Poids 82 kg le 01/07/2026' }, financials: { at: '2026-11-05', texte: 'Paiement 40 €' } } },
+      103: { api: {
+        '/v5/customers/9003/metrics&filter[type]=bodyweight_circumference': { customer_metrics: [{ date: '2026-10-20', weight: 60 }] },
+        '/v4/customers/9003/workouts': { workouts: [{ id: 601, title: 'Mobilité', ...jours, day_3: true }] },
+        '/v4/customers/9003/scheduler/current': { schedules: [] }
+      }, textes: { notes: { at: '2026-11-05', texte: 'Autre Client\nAC' } } },
+      104: { api: { '/v4/customers/9004/workouts': { workouts: [{ id: 501, title: 'Full body A' }] } }, textes: {} }
     },
     workouts: {
-      501: { data: { id: 501, name: 'Full body A', description: '<p>Échauffement 10 min</p>', exercises: [
-        { name: 'Squat', sets: [{ reps: 10, weight: 40, rest: 90 }, { reps: 8, weight: 45, rest: 90 }], notes: 'Dos droit' },
-        { name: 'Pompes', sets: 3, reps: '8-12', superset_id: 'A' },
-        { name: 'Rowing haltère', sets: 3, reps: 10, weight: 12, superset_id: 'A', rest: 60 },
-        { name: 'Gainage', sets: [{ time: '0:45' }], tempo_magique: 'x' }
-      ] } },
       502: { id: 502, name: 'Haut du corps', exercises: [{ name: 'Développé couché', sets: [{ reps: 5, weight: 50 }] }] }
     },
     erreurs: []
   }
 }
+// Détail des séances (fichier seances.json : { id: { workout } }).
+const SEANCES = {
+  501: { workout: { id: 501, name: 'Full body A', description: '<p>Échauffement 10 min</p>', exercises: [
+    { name: 'Squat', sets: [{ reps: 10, weight: 40, rest: 90 }, { reps: 8, weight: 45, rest: 90 }], notes: 'Dos droit' },
+    { name: 'Pompes', sets: 3, reps: '8-12', superset_id: 'A' },
+    { name: 'Rowing haltère', sets: 3, reps: 10, weight: 12, superset_id: 'A', rest: 60 },
+    { name: 'Gainage', sets: [{ time: '0:45' }], tempo_magique: 'x' }
+  ] } },
+  601: { workout: { id: 601, name: 'Mobilité', exercises: [{ name: 'Chat-vache', sets: [{ reps: 10 }] }] } }
+}
+const OPTIONS = { seances: SEANCES, exclure: ['Corentin Delmée'] }
 
 describe('normaliser (fonctions)', () => {
   it('dates, mensurations, traduction PAR-Q', () => {
@@ -70,11 +88,12 @@ describe('normaliser (fonctions)', () => {
     expect(cleMensuration('circ_waist')).toBe('tourDeTaille')
     expect(cleMensuration('circ_thigh_r')).toBe('tourDeCuisseDroit')
     expect(cleMensuration('weight')).toBe(null)
+    expect(cleMensuration('circ_legacy')).toBe(null)
     expect(questionFr('Do you feel pain in your chest when you do physical activity?')).toMatch(/^Ressentez-vous une douleur/)
     expect(questionFr('Autre chose')).toBe('Autre chose')
   })
   it('séance : séries, fourchettes, superset par superset_id, repos, consignes', () => {
-    const s = seanceDe(exportSynthetique().workouts[501].data)
+    const s = seanceDe(SEANCES[501].workout)
     expect(s.nom).toBe('Full body A')
     expect(s.consignes).toBe('Échauffement 10 min')
     expect(s.blocs).toHaveLength(3)
@@ -89,10 +108,11 @@ describe('normaliser (fonctions)', () => {
 })
 
 describe('normaliser (export complet)', () => {
-  const n = normaliser(exportSynthetique())
+  const n = normaliser(exportSynthetique(), OPTIONS)
   const [zoe, marc, lea] = n.clients
-  it('profil, archivage des inactifs (> 30 jours)', () => {
+  it('profil, archivage des inactifs (> 30 jours), compte du coach exclu', () => {
     expect(n.clients).toHaveLength(3)
+    expect(n.rapport.exclus).toBe(1)
     expect(zoe.profil).toMatchObject({ nom: 'Zoé Testeuse', email: 'zoe@exemple.test', telephone: '0600000000', dateNaissance: '1990-04-12', sexe: 'femme', objectifs: ['Perdre 5 kg', 'Courir 10 km'] })
     expect(zoe.archive).toBe(false)
     expect(marc.archive).toBe(true)
@@ -101,27 +121,36 @@ describe('normaliser (export complet)', () => {
   })
   it('aucun champ ni valeur de paiement', () => {
     const t = JSON.stringify(n.clients)
-    for (const mot of ['stripe', 'cus_X', 'last_four', '4242', 'card_brand', 'payment']) expect(t).not.toContain(mot)
+    for (const mot of ['stripe', 'cus_X', 'last_four', '4242', 'card_brand', 'payment', 'Paiement 40']) expect(t).not.toContain(mot)
     expect(Object.keys(n.rapport.paiementRetire).sort()).toEqual(['card_brand', 'last_four', 'payment_method', 'stripe_customer_id'])
   })
   it('mesures (poids, tours) et bilans (taille, masse grasse, FC, tension)', () => {
+    // La mesure du 15/10 vient du journal d'activité (page de mesures non exportée).
     expect(zoe.mesures).toEqual([
-      { date: '2026-09-01', poids: 70.5, mensurations: { tourDeTaille: 80, tourDeBrasGauche: 30, tourDeBrasDroit: 30.5 } },
-      { date: '2026-10-01', poids: 69.2, mensurations: { tourDeTaille: 78 } }
+      { date: '2026-09-01', poids: 70.5, mensurations: { tourDeBrasGauche: 30, tourDeBrasDroit: 30.5, tourDeTaille: 80 } },
+      { date: '2026-10-01', poids: 69.2, mensurations: { tourDeTaille: 78 } },
+      { date: '2026-10-15', poids: 69.8 }
     ])
-    expect(zoe.bilans).toEqual([{ date: '2026-09-01', valeurs: { taille: 168, masseGrasse: 25, fcRepos: 62, tension: '120/80' } }])
+    expect(zoe.bilans).toEqual([{ date: '2026-09-01', valeurs: { taille: 168, masseGrasse: 25, fcRepos: 62, tensionSystolique: 120 } }])
     expect(n.rapport.champsNonConvertis['metrics.mood_score']).toBe(1)
   })
   it('PAR-Q en français, allergies et notes dans les notes du coach', () => {
-    expect(zoe.parq.questions[0]).toEqual({ question: expect.stringMatching(/^Un médecin vous a-t-il déjà dit/), reponse: 'Non' })
-    expect(zoe.parq.questions[1].reponse).toBe('Oui — Genou')
-    expect(zoe.parq.questions[2]).toEqual({ question: 'Question maison non traduite', reponse: 'peut-être' })
+    expect(zoe.parq.questions).toEqual([
+      { question: 'Êtes-vous diabétique ?', reponse: 'Non' },
+      { question: expect.stringMatching(/^Avez-vous des douleurs de dos/), reponse: 'Oui — Genou' },
+      { question: 'Question maison non traduite', reponse: 'Oui' }
+    ]) // question sans réponse (autre sexe / non posée) écartée
+    expect(zoe.parq.date).toBe('2026-03-01')
+    expect(zoe.notesCoach).toContain('Blessures (PAR-Q) : Entorse 2024')
+    expect(zoe.notesCoach).toContain('Blessures : Épaule gauche')
     expect(zoe.notesCoach).toContain('Perdre 5 kg')
-    expect(zoe.notesCoach).toContain('Arachides')
+    expect(zoe.notesCoach).toContain('Allergies : arachides')
     expect(zoe.notesCoach).toContain('Genou droit fragile')
     expect(zoe.notesCoach).toContain('Photos de progression (non importées) : 2 (du 01/09/2026 au 01/10/2026)')
-    expect(zoe.notesCoach).toContain('A terminé une séance')
-    expect(zoe.notesCoach).toContain('« results-tracker »')
+    expect(zoe.notesCoach).toContain('Séance faite : Full body A (40 min) — ressenti : « Dur mais top »')
+    expect(zoe.notesCoach).not.toContain('Squat 60 kg') // rubriques texte ignorées quand l'API est là
+    // Texte d'écran jamais repris quand le client a des données d'API (il peut contenir la liste des autres clients).
+    expect(lea.notesCoach).not.toContain('Autre Client')
     expect(zoe.notesCoach).not.toContain('https://temp')
     // Secours : pas d'API de mesures -> texte de l'écran gardé dans les notes.
     expect(marc.notesCoach).toContain('Poids 82 kg')
@@ -129,6 +158,10 @@ describe('normaliser (export complet)', () => {
   it('séances et programme par semaine avec jours fixes', () => {
     expect(zoe.seances.map((s) => s.sourceId).sort()).toEqual(['501', '502'])
     expect(zoe.programmes).toEqual([{ sourceId: '77', nom: 'Bloc automne', debut: '2026-10-05', fin: '2026-12-20', semaines: [['501', '502'], ['501']], joursFixes: { 501: 1, 502: 3 }, termine: false }])
+    expect(zoe.seances.find((s) => s.sourceId === '502').consignes).toBe('Note d\'assignation')
+    // Séances assignées sans programme : client actif -> programme répété ; client archivé -> séances simples.
+    expect(lea.programmes).toEqual([{ sourceId: 'assignees', nom: 'Séances MyPTHub', mode: 'repete', debut: '2026-11-02', workouts: ['601'], joursFixes: { 601: 2 }, termine: false }])
+    expect(lea.seances[0].blocs[0].nom).toBe('Chat-vache')
     expect(n.rapport.champsNonConvertis['customer.favourite_colour']).toBe(1)
     expect(n.rapport.champsNonConvertis['workout.exercises[].sets[].tempo_magique'] ?? n.rapport.champsNonConvertis['workout.exercises[].tempo_magique']).toBe(1)
   })
@@ -169,16 +202,16 @@ describe('importer', () => {
 
   it('--essai : compte rendu complet, rien d\'écrit', async () => {
     const avant = ['profiles', 'comptes', 'mesures', 'workouts', 'exercices'].map(compter)
-    const r = await importer({ db, backend }, normaliser(exportSynthetique()), { essai: true, now: () => NOW })
+    const r = await importer({ db, backend }, normaliser(exportSynthetique(), OPTIONS), { essai: true, now: () => NOW })
     expect(r.codes).toEqual([])
     expect(r.bilan.clients.map((c) => c.action)).toEqual(['créé', 'créé', 'complété'])
-    expect(r.bilan.clients[0]).toMatchObject({ mesures: 2, seances: 2, programmes: 1, reponses: 2 })
+    expect(r.bilan.clients[0]).toMatchObject({ mesures: 3, seances: 2, programmes: 1, reponses: 2 })
     expect(['profiles', 'comptes', 'mesures', 'workouts', 'exercices'].map(compter)).toEqual(avant)
   })
 
   it('import réel : clients, comptes, codes avant validation, complète sans écraser', async () => {
     let codesVus = null
-    res1 = await importer({ db, backend }, normaliser(exportSynthetique()), { now: () => NOW, avantValidation: (c) => { codesVus = c } })
+    res1 = await importer({ db, backend }, normaliser(exportSynthetique(), OPTIONS), { now: () => NOW, avantValidation: (c) => { codesVus = c } })
     expect(codesVus).toHaveLength(2)
     expect(res1.codes.map((c) => [c.identifiant, c.archive])).toEqual([['zoe.testeuse', false], ['marc.inactif', true]])
     expect(compter('profiles')).toBe(4)
@@ -193,7 +226,7 @@ describe('importer', () => {
     expect(await backend.un('mesures', 'mes-pl-2026-10-20')).toMatchObject({ poids: 60, mensurations: { tourDeTaille: 70 } })
     // Exercice existant réutilisé (Squat), les autres créés.
     expect((await backend.tout('exercices')).filter((e) => e.nom === 'Squat')).toHaveLength(1)
-    expect(res1.bilan.exercicesCrees).toBe(4)
+    expect(res1.bilan.exercicesCrees).toBe(5)
     // Aucun champ de paiement dans toute la base.
     const tout = JSON.stringify(db.prepare('SELECT * FROM profiles').all()) + JSON.stringify(['mesures', 'reponses', 'workouts', 'questionnaires', 'programmes'].map((t) => db.prepare(`SELECT data FROM ${t}`).all()))
     for (const mot of ['stripe', 'last_four', '4242', 'payment', 'card_brand']) expect(tout).not.toContain(mot)
@@ -201,7 +234,7 @@ describe('importer', () => {
 
   it('idempotent : un 2e passage ne crée rien', async () => {
     const avant = ['profiles', 'comptes', 'mesures', 'workouts', 'programmes', 'questionnaires', 'reponses', 'exercices'].map(compter)
-    const r = await importer({ db, backend }, normaliser(exportSynthetique()), { now: () => NOW })
+    const r = await importer({ db, backend }, normaliser(exportSynthetique(), OPTIONS), { now: () => NOW })
     expect(r.codes).toEqual([])
     expect(r.bilan.clients.map((c) => c.action)).toEqual(['complété', 'complété', 'complété'])
     expect(r.bilan.clients.every((c) => c.mesures + c.mesuresCompletees + c.reponses + c.seances + c.programmes === 0)).toBe(true)
@@ -213,7 +246,7 @@ describe('importer', () => {
     const zoe = (await appel('GET', '/api/app/e/profils', { cookie: coachCookie })).json.items.find((p) => p.identifiant === 'zoe.testeuse')
     expect(zoe.fiche.notes).toContain('Genou droit fragile')
     const de = async (e) => (await appel('GET', `/api/app/e/${e}`, { cookie: coachCookie })).json.items.filter((x) => x.clientId === zoe.id)
-    expect((await de('mesures')).map((m) => m.poids).sort()).toEqual([69.2, 70.5])
+    expect((await de('mesures')).map((m) => m.poids).sort()).toEqual([69.2, 69.8, 70.5])
     const seances = await de('workouts')
     expect(seances.map((w) => w.nom).sort()).toEqual(['Full body A', 'Haut du corps'])
     const fb = seances.find((w) => w.nom === 'Full body A')
