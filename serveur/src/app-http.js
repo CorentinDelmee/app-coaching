@@ -205,18 +205,24 @@ export function creerAppHttp({ db, store, config, journal = null, now = () => Da
     if (COACH_SEUL.has(entite)) return false
     return visiblePar(entite, obj, { id: u.profil_id, role: u.role })
   }
+  // Les notes du coach (programmes.notes) sont privées : jamais renvoyées à un client.
+  const pourLecteur = (entite, o, u) => {
+    if (u.role === 'coach' || entite !== 'programmes' || !o || !('notes' in o)) return o
+    const { notes, ...reste } = o
+    return reste
+  }
   async function entites(req, res, u, entite, id) {
     if (!Object.hasOwn(ENTITES, entite)) throw new Erreur(404, 'entite_inconnue')
     const coach = u.role === 'coach'
     if (!coach && COACH_SEUL.has(entite)) throw new Erreur(403, 'interdit')
     if (req.method === 'GET' && id === undefined) {
-      return envoyer(res, 200, { items: (await store.tout(entite)).filter((o) => lisible(entite, o, u)) })
+      return envoyer(res, 200, { items: (await store.tout(entite)).filter((o) => lisible(entite, o, u)).map((o) => pourLecteur(entite, o, u)) })
     }
     if (id === undefined) throw new Erreur(404, 'route_inconnue')
     const existant = await store.un(entite, id)
     if (req.method === 'GET') {
       if (!existant || !lisible(entite, existant, u)) throw new Erreur(404, 'introuvable')
-      return envoyer(res, 200, { item: existant })
+      return envoyer(res, 200, { item: pourLecteur(entite, existant, u) })
     }
     if (req.method === 'PUT') {
       const obj = await lireJson(req)

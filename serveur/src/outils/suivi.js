@@ -89,7 +89,7 @@ export function outilsSuivi(ctx) {
           client: { id: c.id, nom: c.nom }, periode: { du: debut, au: fin },
           sante: sante ? { accessible: true } : { accessible: false, raison: 'Le client n\'a pas accepté de partager ses données de santé (douleurs, poids, nutrition, check-ins).' },
           resume,
-          seancesFaites: recentes(realisations, n).map(({ id, date, workoutId, dureeSec, volume, commentaire }) => ({ id, date, seanceId: workoutId, dureeSec, volume, commentaire })),
+          seancesFaites: recentes(realisations, n).map(({ id, date, workoutId, dureeSec, volume, commentaire }) => ({ id, date, seanceId: workoutId, dureeSec, volume, ...(sante ? { commentaire } : {}) })),
           seancesCoaching: recentes(coaching, n).map(({ id, date, heure: h, lieu, statut, tarif }) => ({ id, date, heure: h, lieu, statut, tarif })),
           ...(sante ? {
             mesures: recentes(mesures, n), douleurs: recentes(douleurs, n), nutrition: recentes(nutrition, n),

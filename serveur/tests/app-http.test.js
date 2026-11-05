@@ -180,6 +180,15 @@ describe('entités (policies RLS)', () => {
     expect((await appel('GET', '/api/app/e/mesures/mb', { cookie: clientB })).json.item.poids).toBe(80)
     expect((await appel('GET', '/api/app/e/profils', { cookie: clientA })).json.items.map((p) => p.id)).toEqual(['pa'])
   })
+  it('les notes du coach sur un programme ne sont jamais renvoyées au client (le coach les voit)', async () => {
+    await appel('PUT', '/api/app/e/programmes/prog-pa', { cookie: coach, corps: { id: 'prog-pa', clientId: 'pa', nom: 'P', mode: 'parSemaine', debut: '2026-11-02', semaines: [[]], notes: 'note privée du coach' } })
+    const l = await appel('GET', '/api/app/e/programmes', { cookie: clientA })
+    expect(l.json.items.map((p) => p.id)).toEqual(['prog-pa'])
+    expect(JSON.stringify(l.json)).not.toContain('note privée')
+    expect(JSON.stringify((await appel('GET', '/api/app/e/programmes/prog-pa', { cookie: clientA })).json)).not.toContain('note privée')
+    expect((await appel('GET', '/api/app/e/programmes/prog-pa', { cookie: coach })).json.item.notes).toBe('note privée du coach')
+    await appel('DELETE', '/api/app/e/programmes/prog-pa', { cookie: coach })
+  })
   it('le client ne réattribue pas une ligne de B à lui-même', async () => {
     const r = await appel('PUT', '/api/app/e/mesures/mb', { cookie: clientA, corps: { id: 'mb', clientId: 'pa', date: '2026-11-01', poids: 1 } })
     expect(r.statut).toBe(403)

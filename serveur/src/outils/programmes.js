@@ -35,7 +35,10 @@ export function outilsProgrammes(ctx) {
   async function programmeDe(r, client) {
     const tous = await api.programmes.lister({}, { archives: true })
     const direct = tous.find((p) => p.id === r)
-    if (direct) return direct
+    if (direct) {
+      if (client && direct.clientId !== (await service.resoudreClient(client)).id) throw new ErreurService('Ce programme appartient à un autre client.', 'PROGRAMME_AUTRE_CLIENT')
+      return direct
+    }
     const c = client ? await service.resoudreClient(client) : null
     const trouves = tous.filter((p) => !p.archive && norm(p.nom) === norm(r) && (!c || p.clientId === c.id))
     if (trouves.length === 0) throw new ErreurService(`Programme introuvable : « ${r} ». Utilise lister_programmes.`, 'PROGRAMME_INTROUVABLE')

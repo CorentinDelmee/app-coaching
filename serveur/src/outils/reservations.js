@@ -48,7 +48,7 @@ export function outilsReservations(ctx) {
     let r, donnees
     try {
       r = await fetchFn(`${config.resaUrl}/api/resa/admin/${chemin}`, {
-        method: methode, body: corps === undefined ? undefined : JSON.stringify(corps), signal: AbortSignal.timeout(8000),
+        method: methode, body: corps === undefined ? undefined : JSON.stringify(corps), signal: AbortSignal.timeout(8000), redirect: 'error',
         headers: { 'X-Resa-Admin-Key': config.resaCle, ...(corps !== undefined ? { 'Content-Type': 'application/json' } : {}) }
       })
       donnees = await r.json().catch(() => ({}))
