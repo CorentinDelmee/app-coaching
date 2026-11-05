@@ -100,6 +100,14 @@ Outils : `lister_clients`, `chercher_client` (tolère casse et accents, signale 
 Exemple `creer_seance` : `{ "client": "Fabien Vincent", "nom": "Séance de jeudi", "date": "2026-10-29", "blocs": [ { "exercice": { "nom": "Squat", "series": 4, "reps": 8, "charge": 60, "repos": 120, "tempo": "3-1-1" } }, { "circuit": { "format": "amrap", "minutes": 8, "exercices": [ { "nom": "Burpees", "reps": 5 } ] } } ] }`.
 Un client au **programme répété** (cas de Fabien) voit la séance revenir chaque semaine le jour choisi (le serveur le signale dans `note`).
 
+## Import MyPTHub (une fois)
+Données PRIVÉES (santé) : jamais dans le dépôt, les scripts refusent d'écrire dedans. Aucune donnée personnelle affichée (comptes et noms de champs seulement).
+1. PC : `node serveur/scripts/normaliser-mypthub.mjs <export brut.json> <normalise.json>` -> JSON normalisé + `<normalise.json>.rapport.json` (compteurs par client, champs non convertis).
+2. Serveur (code de cette version déployé et service redémarré, sinon refus : migration 2) : copier `normalise.json` hors du clone, puis en utilisateur appcoaching
+   `sudo -u appcoaching env DB_FILE=/var/lib/app-coaching/app.db node serveur/scripts/importer-mypthub.mjs <normalise.json> --essai` (rien n'est écrit), puis
+   `... --codes <fichier-prive>` : sauvegarde `app.db.avant-import-mypthub-*.db`, import, codes des nouveaux comptes dans le fichier (chmod 600, jamais écrasé).
+Idempotent (source MyPTHub + ids fixes) : un 2e passage ne crée rien ; un client déjà présent (même e-mail ou même nom) est complété, jamais écrasé.
+
 ## API REST (toutes les routes exigent `Authorization: Bearer <COACH_API_KEY>`, sauf `/api/sante`)
 `GET /api/outils` (liste + schémas) · `POST /api/outils/<outil>` (corps = arguments) · `GET /api/clients` · `GET /api/clients/recherche?nom=` ·
 `GET|POST /api/seances` · `POST /api/seances/<id>/exercices` · `PATCH /api/seances/<id>` · `DELETE /api/seances/<id>[?jeton=]` · `GET /api/agenda?client=&du=&au=` ·

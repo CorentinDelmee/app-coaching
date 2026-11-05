@@ -1,13 +1,13 @@
 // Magasin SQLite : migration, aller-retour des objets, profils en colonnes, pas de cascade à la mise à jour.
 import { describe, expect, it } from 'vitest'
-import { creerStoreSqlite, ouvrirBase } from '../src/magasin-sqlite.js'
+import { creerStoreSqlite, ouvrirBase, VERSION_SCHEMA } from '../src/magasin-sqlite.js'
 
 const profil = { id: 'p1', role: 'client', identifiant: 'fabien', nom: 'Fabien', tarif: 35, lieuDefaut: 'domicile', modules: { calories: false }, archive: false, creeLe: 1 }
 
 describe('magasin SQLite', () => {
   it('migre une seule fois (user_version)', () => {
     const db = ouvrirBase(':memory:')
-    expect(db.prepare('PRAGMA user_version').get().user_version).toBe(1)
+    expect(db.prepare('PRAGMA user_version').get().user_version).toBe(VERSION_SCHEMA)
     expect(db.prepare("SELECT count(*) n FROM sqlite_master WHERE type = 'table'").get().n).toBe(17)
   })
   it('écrit et relit profils et entités ; mise à jour sans cascade', async () => {

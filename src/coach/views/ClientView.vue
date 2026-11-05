@@ -8,7 +8,7 @@ import { jourLocal, ajouterJours, lundiDe } from '../../domain/dates.js'
 import { etatSemaine } from '../../domain/programme.js'
 import { libelleSeance, payeCeMois } from '../../domain/coaching.js'
 import { maintenant, rafraichir, uuid, etat, marquerVue, messageErreur } from '../store.js'
-import { HABITUDES_DEFAUT, parserHabitudes } from '../../domain/suivi.js'
+import { HABITUDES_DEFAUT, parserHabitudes, seriesDisponibles, pointsSerie } from '../../domain/suivi.js'
 import { chargesRealisees, dateFr, pointsPoids, lienWhatsAppIdentifiants, messageIdentifiants, adresseApp } from '../logique.js'
 import CalendrierMois from '../components/CalendrierMois.vue'
 import SvgCourbe from '../components/SvgCourbe.vue'
@@ -34,7 +34,7 @@ async function charger() {
   const f = { clientId: props.id }
   const [programmes, workouts, realisations, seances, mots, reponses, questionnaires, mesures, douleurs, exercices] = await Promise.all([
     data.programmes.lister(f), data.workouts.lister(f), data.realisations.lister(f), data.seancesCoaching.lister(f), data.motsDuCoach.lister(f),
-    data.reponses.lister(f), data.questionnaires.lister(), data.mesures.lister(f), data.douleurs.lister(f), data.exercices.lister()
+    data.reponses.lister(f), data.questionnaires.lister({}, { archives: true }), data.mesures.lister(f), data.douleurs.lister(f), data.exercices.lister()
   ])
   Object.assign(d, { programmes, workouts, realisations, seances, mots, reponses, questionnaires, mesures, douleurs, exercices })
   reglages.nom = profil.value.nom
@@ -98,6 +98,11 @@ const courbeDouleur = computed(() => {
   d.reponses.forEach((r) => note(r.date, r.valeurs?.douleur))
   return [...m.entries()].map(([date, valeur]) => ({ date, valeur }))
 })
+// Tours (cm) : une courbe par mensuration enregistrée (mesures importées ou saisies).
+const courbesTours = computed(() => seriesDisponibles(d.mesures).filter((s) => s.id !== 'poids').map((s) => ({ ...s, points: pointsSerie(d.mesures, s.id) })))
+// Fiche du profil (réservée au coach, jamais envoyée au client) : contact + notes (import MyPTHub).
+const LIBELLES_CONTACT = { email: 'E-mail', telephone: 'Téléphone', dateNaissance: 'Naissance', sexe: 'Sexe', adresse: 'Adresse' }
+const contactFiche = computed(() => Object.entries(profil.value?.fiche?.contact || {}).filter(([k, v]) => v && LIBELLES_CONTACT[k]).map(([k, v]) => ({ libelle: LIBELLES_CONTACT[k], valeur: k === 'dateNaissance' ? dateFr(v) : v })))
 const courbeVolume = computed(() => d.realisations.map((r) => ({ date: r.date, valeur: r.volume })))
 
 // --- Coaching ------------------------------------------------------------------------------------------------------------------
@@ -198,6 +203,11 @@ async function archiver() {
         </div>
       </div>
       <div class="c-carte"><CalendrierMois :evenements="evenements" :aujourdhui="aujourdhui" /></div>
+      <div v-if="contactFiche.length || profil.fiche?.notes" class="c-carte" style="margin-top: 16px">
+        <h3>Fiche (visible par vous seul)</h3>
+        <table v-if="contactFiche.length" class="c-table"><tr v-for="l in contactFiche" :key="l.libelle"><td class="c-doux">{{ l.libelle }}</td><td>{{ l.valeur }}</td></tr></table>
+        <p v-if="profil.fiche?.notes" class="c-petit" style="white-space: pre-wrap; margin-bottom: 0">{{ profil.fiche.notes }}</p>
+      </div>
     </section>
 
     <!-- Séances faites -->
@@ -242,6 +252,7 @@ async function archiver() {
       <div class="c-carte"><SvgCourbe :donnees="courbePoids" titre="Poids" unite="kg" /></div>
       <div class="c-carte"><SvgCourbe :donnees="courbeDouleur" titre="Douleur (max du jour)" unite="/10" /></div>
       <div class="c-carte"><SvgCourbe :donnees="courbeVolume" titre="Volume par séance" unite="kg" /></div>
+      <div v-for="s in courbesTours" :key="s.id" class="c-carte"><SvgCourbe :donnees="s.points" :titre="s.libelle" unite="cm" /></div>
     </section>
 
     <!-- Coaching -->

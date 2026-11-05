@@ -6,7 +6,9 @@ import { dirname, join } from 'node:path'
 import { ENTITES, clientDe } from '../../src/data/entites.js'
 import { RACINE_SERVEUR } from './config.js'
 
-const MIGRATIONS = [() => readFileSync(join(RACINE_SERVEUR, 'schema.sql'), 'utf8')]
+// 2 : fiche du profil (JSON réservé au coach : contact, notes, source d'import ; retirée des réponses aux clients, voir app-http.js).
+const MIGRATIONS = [() => readFileSync(join(RACINE_SERVEUR, 'schema.sql'), 'utf8'), () => 'ALTER TABLE profiles ADD COLUMN fiche TEXT;']
+export const VERSION_SCHEMA = MIGRATIONS.length
 
 export function ouvrirBase(fichier) {
   if (fichier !== ':memory:') mkdirSync(dirname(fichier), { recursive: true })
@@ -27,7 +29,7 @@ const lireJson = (v) => (v === null || v === undefined ? undefined : JSON.parse(
 const profilDepuisLigne = (r) => ({
   id: r.id, role: r.role, identifiant: r.identifiant, nom: r.nom, tarif: r.tarif ?? undefined, lieuDefaut: r.lieu_defaut ?? undefined,
   modules: lireJson(r.modules), archive: !!r.archive, preferences: lireJson(r.preferences),
-  consentementLe: r.consentement_le ?? null, creeLe: Number(r.cree_le)
+  consentementLe: r.consentement_le ?? null, creeLe: Number(r.cree_le), ...(r.fiche ? { fiche: lireJson(r.fiche) } : {})
 })
 
 export function creerStoreSqlite(db) {
@@ -47,11 +49,11 @@ export function creerStoreSqlite(db) {
     // ON CONFLICT DO UPDATE (et non INSERT OR REPLACE, qui supprimerait la ligne et déclencherait les ON DELETE CASCADE).
     async ecrire(entite, o) {
       if (entite === 'profils') {
-        db.prepare(`INSERT INTO profiles (id, role, identifiant, nom, tarif, lieu_defaut, modules, archive, preferences, consentement_le, cree_le)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET role = excluded.role, identifiant = excluded.identifiant,
+        db.prepare(`INSERT INTO profiles (id, role, identifiant, nom, tarif, lieu_defaut, modules, archive, preferences, consentement_le, cree_le, fiche)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET role = excluded.role, identifiant = excluded.identifiant,
           nom = excluded.nom, tarif = excluded.tarif, lieu_defaut = excluded.lieu_defaut, modules = excluded.modules, archive = excluded.archive,
-          preferences = excluded.preferences, consentement_le = excluded.consentement_le, cree_le = excluded.cree_le`)
-          .run(o.id, o.role, o.identifiant, o.nom, o.tarif ?? null, o.lieuDefaut ?? null, json(o.modules), o.archive ? 1 : 0, json(o.preferences), o.consentementLe ?? null, o.creeLe)
+          preferences = excluded.preferences, consentement_le = excluded.consentement_le, cree_le = excluded.cree_le, fiche = excluded.fiche`)
+          .run(o.id, o.role, o.identifiant, o.nom, o.tarif ?? null, o.lieuDefaut ?? null, json(o.modules), o.archive ? 1 : 0, json(o.preferences), o.consentementLe ?? null, o.creeLe, json(o.fiche))
         return
       }
       db.prepare(`INSERT INTO ${table(entite)} (id, client_id, data) VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET client_id = excluded.client_id, data = excluded.data`)
