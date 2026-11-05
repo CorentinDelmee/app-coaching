@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Studio — espace coach (maquette d3)</title>
+<link rel="preload" href="assets/fonts/syne-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/studio.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-maison" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-ex" viewBox="0 0 24 24"><path d="M2 12h2M20 12h2M6 7v10M18 7v10M4 9v6M20 9v6M6 12h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-clients" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c1.9.7 3.1 2.4 3.5 5.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-prog" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18M8 2.5v3M16 2.5v3M7 13h4M7 17h7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-cherche" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-grille" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="4" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="i-liste" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="3.5" y="4.5" width="3" height="3" rx="1" fill="currentColor"/><rect x="3.5" y="10.5" width="3" height="3" rx="1" fill="currentColor"/><rect x="3.5" y="16.5" width="3" height="3" rx="1" fill="currentColor"/></symbol>
+  <symbol id="i-play" viewBox="0 0 12 12"><path d="M2 1l9 5-9 5z" fill="currentColor"/></symbol>
+  <symbol id="i-fermer" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-haut" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bas" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-photo" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="11" r="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M21 16l-5-5-8 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-cloche" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2.2 2.2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-msg" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-plus-menu" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="18" cy="12" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-etincelle" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z" fill="currentColor"/></symbol>
+</svg>
+
+<div class="st-app">
+  <nav class="st-nav" aria-label="Navigation coach">
+    <div class="st-marque"><i aria-hidden="true"></i>Studio coach</div>
+    <a href="#/accueil" data-vue="accueil"><svg><use href="#i-maison"/></svg>Aujourd'hui</a>
+    <a href="#/exercices" data-vue="exercices"><svg><use href="#i-ex"/></svg>Exercices<span class="st-pastille" data-n-propose>0</span></a>
+    <a href="#/clients" data-vue="clients"><svg><use href="#i-clients"/></svg>Clients</a>
+    <a href="#/programme" data-vue="programme"><svg><use href="#i-prog"/></svg>Programmes</a>
+    <a href="#/accueil" data-faux><svg><use href="#i-cal"/></svg>Agenda &amp; réservations</a>
+    <a href="#/accueil" data-faux><svg><use href="#i-msg"/></svg>Questionnaires</a>
+    <a href="#/accueil" data-faux><svg><use href="#i-cloche"/></svg>Alertes<span class="st-pastille">3</span></a>
+    <span class="st-sep"></span>
+    <div class="st-moi"><span class="st-av" data-m="gainage" style="--t:36px">CD</span><div><b>Corentin</b>Coach · Rambouillet</div></div>
+  </nav>
+
+  <main class="st-main" id="contenu">
+    <!-- ===== Aujourd'hui ===== -->
+    <section class="st-vue" data-vue="accueil" aria-labelledby="t-accueil">
+      <header class="st-entete st-entete--compact">
+        <div><p id="t-date">Jeudi 5 novembre</p><h1 id="t-accueil">Bonjour Corentin.</h1></div>
+        <div class="st-actions"><a class="st-btn st-btn--jaune" href="#/programme"><svg><use href="#i-plus"/></svg><span class="st-lbl">Nouvelle séance</span></a></div>
+      </header>
+      <div class="st-dash">
+        <section class="st-bloc st-b-jour"><h2>Séances du jour <a class="st-voir" href="#/accueil">Agenda</a></h2><ol class="st-timeline" id="st-timeline"></ol></section>
+        <section class="st-bloc st-b-claude"><h2><svg width="18" height="18" style="color:var(--st-jaune)"><use href="#i-etincelle"/></svg>Fait par Claude cette nuit</h2>
+          <ul class="st-claude-liste" id="st-claude"></ul>
+          <a class="st-btn st-btn--jaune" href="#/exercices?filtre=propose">Valider les vidéos proposées</a>
+        </section>
+        <section class="st-bloc st-b-alertes"><h2>Alertes</h2><ul class="st-mini" id="st-alertes"></ul></section>
+        <section class="st-bloc st-b-checkins"><h2>Check-ins</h2><ul class="st-mini" id="st-checkins"></ul></section>
+        <section class="st-bloc st-b-resa"><h2>Réservations</h2><ul class="st-mini" id="st-resa"></ul></section>
+        <div class="st-rapides">
+          <a class="st-rapide st-rapide--jaune" href="#/programme"><span><svg><use href="#i-plus"/></svg></span>Créer une séance</a>
+          <a class="st-rapide" data-m="dos" href="#/exercices"><span><svg><use href="#i-ex"/></svg></span>Ajouter un exercice</a>
+          <a class="st-rapide" data-m="bras" href="#/clients"><span><svg><use href="#i-clients"/></svg></span>Nouveau client</a>
+          <a class="st-rapide" data-m="epaules" href="#/accueil"><span><svg><use href="#i-msg"/></svg></span>Envoyer un questionnaire</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Exercices ===== -->
+    <section class="st-vue" data-vue="exercices" aria-labelledby="t-ex">
+      <header class="st-entete st-entete--compact">
+        <div><h1 id="t-ex">Exercices</h1><p>Ta bibliothèque de mouvements, prête à glisser dans une séance.</p></div>
+        <div class="st-actions"><button class="st-btn st-btn--jaune" type="button" data-toast="Nouvel exercice créé (maquette)"><svg><use href="#i-plus"/></svg><span class="st-lbl">Nouvel exercice</span></button></div>
+      </header>
+      <div class="st-outils">
+        <label class="st-recherche"><svg><use href="#i-cherche"/></svg><span class="st-sr">Rechercher un exercice</span><input id="st-q" type="search" placeholder="Rechercher : squat, élastique, épaules…" autocomplete="off"><kbd>/</kbd></label>
+        <select class="st-select" id="st-materiel" aria-label="Matériel"><option value="">Tout matériel</option></select>
+        <select class="st-select" id="st-categorie" aria-label="Catégorie"><option value="">Toutes catégories</option></select>
+        <div class="st-vuebascule" role="group" aria-label="Affichage">
+          <button type="button" aria-pressed="true" data-affichage="grille" aria-label="Grandes vignettes"><svg><use href="#i-grille"/></svg></button>
+          <button type="button" aria-pressed="false" data-affichage="liste" aria-label="Liste compacte"><svg><use href="#i-liste"/></svg></button>
+        </div>
+        <div class="st-filtres" id="st-filtres" role="group" aria-label="Filtrer par groupe musculaire"></div>
+      </div>
+      <p class="st-compte" id="st-compte" aria-live="polite"></p>
+      <div class="st-ex-zone" id="st-ex-zone">
+        <ul class="st-grille" id="st-grille" aria-label="Exercices"></ul>
+        <aside class="st-panneau" id="st-panneau" hidden role="dialog" aria-modal="false" aria-labelledby="st-pan-nom"></aside>
+      </div>
+    </section>
+
+    <!-- ===== Clients ===== -->
+    <section class="st-vue" data-vue="clients" aria-labelledby="t-cl">
+      <header class="st-entete st-entete--compact">
+        <div><h1 id="t-cl">Clients</h1><p id="st-cl-sous"></p></div>
+        <div class="st-actions"><button class="st-btn st-btn--jaune" type="button" data-toast="Invitation prête à envoyer (maquette)"><svg><use href="#i-plus"/></svg><span class="st-lbl">Inviter un client</span></button></div>
+      </header>
+      <div class="st-cl-zone" id="st-cl-zone">
+        <ul class="st-clients" id="st-clients" aria-label="Clients"></ul>
+        <article class="st-fiche" id="st-fiche" hidden aria-labelledby="st-fiche-nom"></article>
+      </div>
+    </section>
+
+    <!-- ===== Programme ===== -->
+    <section class="st-vue" data-vue="programme" aria-labelledby="t-pr">
+      <header class="st-entete">
+        <div><p>Programme · Hélène Marchal (fictive)</p><h1 id="t-pr">Remise en forme — 6 semaines</h1></div>
+        <div class="st-actions"><span class="st-sauve is-ok" id="st-pr-sauve" style="background:var(--st-surface)"><svg viewBox="0 0 16 16"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Enregistré</span><button class="st-btn st-btn--encre" type="button" data-toast="Programme envoyé à Hélène (maquette)">Envoyer au client</button></div>
+      </header>
+      <div class="st-ed">
+        <aside class="st-ed-biblio" aria-label="Exercices à glisser"><h2>Glisser dans un jour</h2><ul id="st-ed-biblio"></ul></aside>
+        <div>
+          <div class="st-semaines" role="group" aria-label="Semaines" id="st-semaines"></div>
+          <div class="st-jours" id="st-jours"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<nav class="st-tabbar" aria-label="Navigation coach (téléphone)">
+  <a href="#/accueil" data-vue="accueil"><svg><use href="#i-maison"/></svg>Aujourd'hui</a>
+  <a href="#/exercices" data-vue="exercices"><svg><use href="#i-ex"/></svg>Exercices<span class="st-pastille" data-n-propose>0</span></a>
+  <a href="#/clients" data-vue="clients"><svg><use href="#i-clients"/></svg>Clients</a>
+  <a href="#/programme" data-vue="programme"><svg><use href="#i-prog"/></svg>Séances</a>
+  <a href="#/accueil" data-faux><svg><use href="#i-plus-menu"/></svg>Plus</a>
+</nav>
+<div class="st-voile" id="st-voile"></div>
+<div class="st-toast" id="st-toast" role="status" aria-live="polite"></div>
+
+<script src="assets/donnees.js"></script>
+<script src="assets/studio.js"></script>
+</body>
+</html>
