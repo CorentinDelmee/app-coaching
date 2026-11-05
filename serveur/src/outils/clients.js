@@ -46,8 +46,8 @@ export function outilsClients(ctx) {
     if (mode !== 'archive') trouves = chercher(await clientsDe(false))
     if (!trouves.length && mode !== 'actif') trouves = chercher(await clientsDe(true))
     if (!trouves.length) {
-      const dit = mode === 'archive' ? 'Aucun client archivé' : mode === 'actif' ? 'Aucun client actif' : 'Client introuvable'
-      throw new ErreurService(`${dit} ne correspond à « ${q} ». Utilise lister_clients.`, 'CLIENT_INTROUVABLE')
+      if (mode === 'actif' && chercher(await clientsDe(true)).length) throw new ErreurService(`Client archivé : « ${q} ». Utilise reactiver_client pour le remettre en service.`, 'CLIENT_ARCHIVE')
+      throw new ErreurService(`Client introuvable : « ${q} »${mode === 'archive' ? ' parmi les clients archivés' : ''}. Utilise lister_clients.`, 'CLIENT_INTROUVABLE')
     }
     if (trouves.length > 1) {
       throw new ErreurService(`Plusieurs clients correspondent à « ${q} » : ${trouves.map((c) => `${c.nom} (${c.id})`).join(', ')}. Précise avec l'id.`, 'AMBIGU')
@@ -75,10 +75,12 @@ export function outilsClients(ctx) {
   }
 
   return {
-    creer_client: def('Crée un client : profil + compte de connexion. Obligatoire : nom (prénom puis nom, ex. « Élodie Martin »). L\'identifiant (prenom.nom, suffixe -2 si déjà pris) et un code d\'accès initial aléatoire de 8 caractères sont générés. Le code n\'est renvoyé qu\'UNE fois, en clair : à transmettre au client, il ne pourra plus être relu (sinon nouveau_code_client). Le client acceptera lui-même le consentement santé à sa première connexion.',
-      z.object({ nom: z.string().trim().min(2).max(120), tarif: z.number().min(0).max(1000).optional().describe('Tarif d\'une séance en euros (35 par défaut)'), lieuDefaut: lieu.optional().describe('domicile (défaut) ou salle'), modules: modulesPartiels.optional() }).strict(),
-      async ({ nom, tarif = 35, lieuDefaut = 'domicile', modules = {} }) => {
+    creer_client: def('Crée un client : profil + compte de connexion. Obligatoire : nom (prénom puis nom, ex. « Élodie Martin »). L\'identifiant (prenom.nom, suffixe -2 si déjà pris) et un code d\'accès initial aléatoire de 8 caractères sont générés. Le code n\'est renvoyé qu\'UNE fois, en clair : à transmettre au client, il ne pourra plus être relu (sinon nouveau_code_client). Refuse (DOUBLON) si un client actif porte déjà ce nom, sauf forcer: true. Le client acceptera lui-même le consentement santé à sa première connexion.',
+      z.object({ nom: z.string().trim().min(2).max(120), tarif: z.number().min(0).max(1000).optional().describe('Tarif d\'une séance en euros (35 par défaut)'), lieuDefaut: lieu.optional().describe('domicile (défaut) ou salle'), modules: modulesPartiels.optional(), forcer: z.boolean().optional().describe('true pour créer malgré un client actif du même nom (vrai homonyme)') }).strict(),
+      async ({ nom, tarif = 35, lieuDefaut = 'domicile', modules = {}, forcer }) => {
         const base = db()
+        const meme = forcer ? [] : (await clientsDe(false)).filter((c) => norm(c.nom) === norm(nom))
+        if (meme.length) throw new ErreurService(`Un client actif porte déjà ce nom : ${meme.map((c) => `${c.nom} (${c.id}, ${c.identifiant})`).join(', ')}. Si c'est bien un homonyme, rappelle avec forcer: true.`, 'DOUBLON')
         const identifiant = identifiantUnique(nom, (await backend.tout('profils')).map((p) => p.identifiant).concat(base.prepare('SELECT identifiant FROM comptes').all().map((c) => c.identifiant)))
         if (!/^[a-z0-9][a-z0-9._-]{1,39}$/.test(identifiant)) throw new ErreurService('Impossible de fabriquer un identifiant à partir de ce nom : écris prénom puis nom avec des lettres.', 'VALIDATION')
         const profil = {
@@ -154,7 +156,7 @@ export function outilsClients(ctx) {
         const p = await resoudre(client, 'actif')
         const cle = `archiver_client:${p.id}`
         if (!j) return confirmations.demander(cle, `Archiver ${p.nom} (${p.identifiant}) : connexion impossible, données conservées, réactivable.`)
-        if (!confirmations.verifier(cle, j)) throw new ErreurService('Jeton de confirmation invalide ou expiré : redemande l\'archivage sans jeton.', 'JETON_INVALIDE')
+        if (!confirmations.verifier(cle, j)) throw new ErreurService('Jeton invalide ou expiré : rappelle avec exactement les mêmes arguments que le premier appel (avec le jeton), ou demande un nouveau jeton : redemande l\'archivage sans jeton.', 'JETON_INVALIDE')
         await ecrireProfil({ ...p, archive: true })
         db().prepare('UPDATE comptes SET archive = 1, sv = sv + 1 WHERE profil_id = ?').run(p.id)
         return { id: p.id, archive: true, message: `${p.nom} est archivé : il ne peut plus se connecter. Ses données sont conservées.` }

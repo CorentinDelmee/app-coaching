@@ -14,7 +14,7 @@ directement ; suppressions/archivages toujours en 2 temps** (`src/outils/confirm
 - Aucune table nouvelle sans nécessité ; si une migration est indispensable : fonction `migrer<Lot>(db)` idempotente appelée depuis TON module.
 - Désigner un client : `client` = nom, identifiant ou id (résolution comme `service.chercherClient` ; homonymes → erreur code `AMBIGU` qui liste les choix).
 - Réponses : objets JSON simples ; toute création renvoie l'`id` ; listes bornées (`limite`, défaut 50, max 200) ; dates `AAAA-MM-JJ`, heures `HH:MM` Europe/Paris.
-- Erreurs : `throw new ErreurService(code, message)` (voir `service.js`) avec un message en français qui dit quoi corriger.
+- Erreurs : `throw new ErreurService(message, code)` (voir `service.js`) avec un message en français qui dit quoi corriger.
 - Descriptions d'outils en français, précises (Claude les lit pour choisir) : dire ce qui est créé, ce qui est obligatoire, les valeurs possibles.
 - Textes libres du coach (notes, consignes) : conservés tels quels (limite de longueur raisonnable), jamais interprétés comme HTML.
 

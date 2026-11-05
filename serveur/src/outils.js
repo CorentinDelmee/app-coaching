@@ -7,8 +7,8 @@ import { outilsBibliotheque } from './outils/bibliotheque.js'
 import { outilsQuestionnaires } from './outils/questionnaires.js'
 import { outilsReservations } from './outils/reservations.js'
 import { outilsSuivi } from './outils/suivi.js'
+import { jour } from './outils/dates.js'
 
-const jour = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'date attendue au format AAAA-MM-JJ')
 const nomCourt = z.string().trim().min(1).max(120)
 const secs = z.number().int().min(0).max(7200)
 
@@ -20,7 +20,7 @@ const Exercice = z.object({
   charge: z.number().min(0).max(1000).optional().describe('Charge en kg'),
   repos: secs.optional().describe('Repos entre séries, en secondes'),
   tempo: z.string().regex(/^[\dXx]-[\dXx]-[\dXx](-[\dXx])?$/, 'tempo attendu, ex. « 3-1-1 »').optional(),
-  tempsTravail: secs.optional().describe('Durée de l\'effort en secondes (gainage, etc.)'),
+  tempsTravail: secs.optional().describe('Durée de l\'effort en secondes. Gainage ou exercice tenu : reps: 0 + tempsTravail (ex. 45)'),
   rpe: z.number().min(1).max(10).optional(),
   consignes: z.string().max(500).optional()
 }).strict().refine((e) => Array.isArray(e.series) || e.reps !== undefined || e.tempsTravail !== undefined, { message: 'Précise « reps » (ou « tempsTravail », ou des séries détaillées)' })
@@ -88,13 +88,25 @@ export function creerOutils(service, ctx = { service }) {
   }
 }
 
+/** Messages zod en français (le défaut est en anglais) ; undefined = message par défaut de zod. */
+export function erreurZodFr(iss) {
+  if (iss.code === 'invalid_type') return iss.input === undefined ? 'champ obligatoire manquant' : `type incorrect (attendu : ${{ string: 'texte', number: 'nombre', boolean: 'vrai/faux', array: 'liste', object: 'objet' }[iss.expected] ?? iss.expected})`
+  if (iss.code === 'unrecognized_keys') return `champ(s) inconnu(s) : ${iss.keys.join(', ')}`
+  if (iss.code === 'invalid_value') return `valeur non autorisée (valeurs possibles : ${iss.values.join(', ')})`
+  if (iss.code === 'too_small') return iss.origin === 'string' ? `texte trop court (minimum ${iss.minimum} caractères)` : iss.origin === 'array' ? `liste trop courte (minimum ${iss.minimum})` : `valeur trop petite (minimum ${iss.minimum})`
+  if (iss.code === 'too_big') return iss.origin === 'string' ? `texte trop long (maximum ${iss.maximum} caractères)` : iss.origin === 'array' ? `liste trop longue (maximum ${iss.maximum})` : `valeur trop grande (maximum ${iss.maximum})`
+  if (iss.code === 'invalid_format') return 'format incorrect'
+  if (iss.code === 'invalid_union') return 'aucune des formes acceptées ne correspond'
+  return undefined
+}
+
 /** Exécute un outil : validation stricte, journal (qui, quand, outil, client, résultat), erreurs claires. Ne lève jamais. */
 export async function appeler({ outils, journal }, nom, args, acteur) {
   const outil = Object.hasOwn(outils, nom) ? outils[nom] : null
   const client = typeof args?.client === 'string' ? args.client : typeof args?.nom === 'string' && nom === 'chercher_client' ? args.nom : null
   const consigner = (ok, resultat, erreur) => journal.ecrire({ acteur, outil: nom, client, ok, resultat, erreur })
   if (!outil) { consigner(false, null, 'outil inconnu'); return { ok: false, code: 'OUTIL_INCONNU', erreur: `Outil inconnu : « ${String(nom).slice(0, 60)} »` } }
-  const v = outil.schema.safeParse(args ?? {})
+  const v = outil.schema.safeParse(args ?? {}, { error: erreurZodFr })
   if (!v.success) {
     const erreur = v.error.issues.map((i) => `${i.path.join('.') || 'arguments'} : ${i.message}`).join(' ; ')
     consigner(false, null, `validation : ${erreur}`.slice(0, 300))
