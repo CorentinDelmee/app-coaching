@@ -1,6 +1,12 @@
 // Registre des outils : UNE définition (nom, description, schéma zod strict, exécution) utilisée par l'API REST ET par le serveur MCP.
 import { z } from 'zod'
 import { ErreurService } from './service.js'
+import { outilsClients } from './outils/clients.js'
+import { outilsProgrammes } from './outils/programmes.js'
+import { outilsBibliotheque } from './outils/bibliotheque.js'
+import { outilsQuestionnaires } from './outils/questionnaires.js'
+import { outilsReservations } from './outils/reservations.js'
+import { outilsSuivi } from './outils/suivi.js'
 
 const jour = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'date attendue au format AAAA-MM-JJ')
 const nomCourt = z.string().trim().min(1).max(120)
@@ -45,7 +51,7 @@ export const Bloc = z.union([
 
 const ref = (d) => z.string().trim().min(1).max(120).describe(d)
 
-export function creerOutils(service) {
+export function creerOutils(service, ctx = { service }) {
   const def = (description, schema, run, { mutation = false } = {}) => ({ description, schema, run, mutation })
   return {
     lister_clients: def('Liste les clients du coach (id, nom, identifiant).', z.object({}).strict(), () => service.listerClients()),
@@ -71,7 +77,14 @@ export function creerOutils(service) {
       z.object({ nom: ref('Nom de l\'exercice'), limite: z.number().int().min(1).max(10).optional() }).strict(), (a) => service.chercherVideoExercice(a)),
     consulter_agenda: def('Agenda d\'un client entre deux dates (défaut : 15 jours) : séances de coaching et séances programmées.',
       z.object({ client: ref('Nom, identifiant ou id du client'), du: jour.optional(), au: jour.optional() }).strict(), (a) => service.consulterAgenda(a)),
-    lister_seances: def('Liste les séances (toutes, ou d\'un client).', z.object({ client: ref('Nom, identifiant ou id du client').optional() }).strict(), (a) => service.listerSeances(a))
+    lister_seances: def('Liste les séances (toutes, ou d\'un client).', z.object({ client: ref('Nom, identifiant ou id du client').optional() }).strict(), (a) => service.listerSeances(a)),
+    // Automatisation coach (2026-11-05, docs/CONTRAT-OUTILS-COACH.md) : un module par lot ; un nom d'outil n'existe qu'une fois.
+    ...outilsClients(ctx),
+    ...outilsProgrammes(ctx),
+    ...outilsBibliotheque(ctx),
+    ...outilsQuestionnaires(ctx),
+    ...outilsReservations(ctx),
+    ...outilsSuivi(ctx)
   }
 }
 

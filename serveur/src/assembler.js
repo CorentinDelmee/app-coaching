@@ -25,7 +25,7 @@ export async function assembler(config, { now = () => Date.now(), fetchFn } = {}
   const journal = creerJournal(join(dossier, 'journal.jsonl'), now)
   journal.purger(config.journalJours)
   const service = creerService({ backend, biblio, config, now, fetchFn })
-  const outils = creerOutils(service)
+  const outils = creerOutils(service, { service, backend, biblio, config, now, fetchFn })
   // API de l'app (/api/app/*) : seulement avec SQLite et un secret de session.
   const appHttp = backend.mode === 'sqlite' && config.sessionSecret ? creerAppHttp({ db: backend.db, store: backend, config, journal, now, fetchFn }) : null
   return { config, backend, biblio, journal, service, outils, appHttp }
