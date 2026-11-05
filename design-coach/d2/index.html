@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16171A">
+<title>Console coach</title>
+<link rel="preload" href="assets/fonts/inter-tight-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+<div class="cs-app">
+  <aside class="cs-side" aria-label="Navigation principale">
+    <div class="cs-brand"><span class="cs-logo">C</span><div><b>Corentin Delmée</b><small>Espace coach</small></div></div>
+    <button class="cs-search" data-act="cmd"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="m13.2 13.2 3.8 3.8"/></svg><span>Rechercher…</span><span class="cs-kbd">Ctrl</span><span class="cs-kbd">K</span></button>
+    <nav class="cs-nav">
+      <a href="#/dash" data-route="dash"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10.5 10 4l7 6.5V17H3z"/><path d="M8 17v-4h4v4"/></svg><span>Aujourd'hui</span><span class="cs-kbd">G</span><span class="cs-kbd">D</span></a>
+      <a href="#/clients" data-route="clients"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8" cy="7" r="3"/><path d="M2.5 17c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5"/><path d="M13 4.2a3 3 0 0 1 0 5.6M15 12.8c1.4.6 2.3 2 2.6 4.2"/></svg><span>Clients</span><span class="cs-count">8</span></a>
+      <a href="#/dash" data-route="alertes"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 13V9a5 5 0 0 1 10 0v4l1.5 2h-13z"/><path d="M8.5 17.5a1.8 1.8 0 0 0 3 0"/></svg><span>Alertes</span><span class="cs-count is-hot">3</span></a>
+      <div class="cs-navlabel">Contenu</div>
+      <a href="#/exercices" data-route="exercices"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8v4M6 6v8M14 6v8M17 8v4M6 10h8"/></svg><span>Exercices</span><span class="cs-kbd">G</span><span class="cs-kbd">E</span></a>
+      <a href="#/programmes" data-route="programmes"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 6h10M7 10h10M7 14h10M3.5 6h.01M3.5 10h.01M3.5 14h.01"/></svg><span>Programmes</span><span class="cs-kbd">G</span><span class="cs-kbd">P</span></a>
+      <a href="#/exercices" data-route="videos"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="5" width="11" height="10" rx="2"/><path d="m13.5 9 4-2.5v7l-4-2.5"/></svg><span>Bibliothèque vidéos</span></a>
+      <a href="#/dash" data-route="questionnaires"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 4.5h13v9h-8l-4 3v-3h-1z"/></svg><span>Questionnaires</span></a>
+      <div class="cs-navlabel">Activité</div>
+      <a href="#/dash" data-route="agenda"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12.5" rx="2"/><path d="M3 8.5h14M7 3v3M13 3v3"/></svg><span>Agenda et réservations</span><span class="cs-count">1</span></a>
+      <a href="#/dash" data-route="donnees"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><path d="m3 14 4.5-4.5 3 3L17 6"/><path d="M12.5 6H17v4.5"/></svg><span>Données</span></a>
+    </nav>
+    <div class="cs-side-foot"><span class="cs-dot"></span><span>Synchronisé · Claude actif</span></div>
+  </aside>
+
+  <div class="cs-main">
+    <header class="cs-top">
+      <div class="cs-crumb" id="cs-crumb"></div>
+      <div class="cs-top-r">
+        <button class="cs-btn cs-btn--ghost cs-btn--icon" data-act="cmd" aria-label="Rechercher (Ctrl K)"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="m13.2 13.2 3.8 3.8"/></svg></button>
+        <span class="cs-avatar" aria-label="Corentin" style="background:var(--cs-acc);color:var(--cs-acc-ink)">CD</span>
+      </div>
+    </header>
+    <main class="cs-view" id="cs-view" tabindex="-1"></main>
+  </div>
+</div>
+
+<nav class="cs-tabbar" aria-label="Navigation (téléphone)">
+  <a href="#/dash" data-route="dash"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10.5 10 4l7 6.5V17H3z"/><path d="M8 17v-4h4v4"/></svg>Aujourd'hui</a>
+  <a href="#/clients" data-route="clients"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8" cy="7" r="3"/><path d="M2.5 17c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5"/></svg>Clients</a>
+  <button class="cs-tab-cmd" data-act="cmd" aria-label="Commandes et recherche"><span class="cs-cmdic"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg></span></button>
+  <a href="#/exercices" data-route="exercices"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8v4M6 6v8M14 6v8M17 8v4M6 10h8"/></svg>Exercices</a>
+  <a href="#/programmes" data-route="programmes"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 6h10M7 10h10M7 14h10M3.5 6h.01M3.5 10h.01M3.5 14h.01"/></svg>Séances</a>
+</nav>
+
+<div class="cs-scrim" id="cs-scrim"></div>
+
+<aside class="cs-panel" id="cs-panel" aria-hidden="true" aria-label="Détail" tabindex="-1">
+  <div class="cs-grab" aria-hidden="true"><i></i></div>
+  <header class="cs-panel-h">
+    <div id="cs-panel-head" style="display:flex;gap:8px;align-items:center;min-width:0"></div>
+    <span class="cs-save" id="cs-save" role="status" aria-live="polite"><i></i>À jour</span>
+    <button class="cs-btn cs-btn--ghost cs-btn--icon" id="cs-close" aria-label="Fermer (Échap)"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg></button>
+  </header>
+  <div class="cs-panel-b" id="cs-panel-b"></div>
+  <footer class="cs-panel-f">
+    <button class="cs-btn cs-btn--ghost cs-btn--icon" id="cs-prev" aria-label="Exercice précédent"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 12 4-4 4 4"/></svg></button>
+    <button class="cs-btn cs-btn--ghost cs-btn--icon" id="cs-next" aria-label="Exercice suivant"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg></button>
+    <span><span class="cs-kbd">↑</span><span class="cs-kbd">↓</span> changer</span>
+    <span><span class="cs-kbd">Échap</span> fermer</span>
+    <span style="margin-left:auto">Sauvegarde automatique</span>
+  </footer>
+</aside>
+
+
+<div class="cs-cmd" id="cs-cmd" role="dialog" aria-modal="true" aria-label="Palette de commandes" aria-hidden="true">
+  <div class="cs-cmd-in"><svg class="cs-i" viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="m13.2 13.2 3.8 3.8"/></svg>
+    <input id="cs-cmd-q" type="text" role="combobox" aria-expanded="true" aria-controls="cs-cmd-list" aria-label="Commande" autocomplete="off" spellcheck="false"><span class="cs-kbd">Échap</span></div>
+  <ul class="cs-cmd-list" id="cs-cmd-list" role="listbox"></ul>
+  <div class="cs-cmd-f"><span><span class="cs-kbd">↑</span><span class="cs-kbd">↓</span> naviguer</span><span><span class="cs-kbd">↵</span> ouvrir</span><span style="margin-left:auto">Essayez « nouvel exercice », « fabien »</span></div>
+</div>
+<div class="cs-toast" id="cs-toast" role="status" aria-live="polite"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
