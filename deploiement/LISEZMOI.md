@@ -20,7 +20,7 @@ sur **la branche `main` de GitHub** (ce qui y est poussé finit exécuté en roo
 
 **Installation déjà passée avec l'ancienne version** (clone et `/etc/app-coaching.env` présents, unités pointant vers le clone) :
 ```
-ssh root@IP "git -C /var/www/app-coaching/depot pull --ff-only && bash /var/www/app-coaching/depot/deploiement/installer.sh delmeecorentin.fr"
+ssh root@IP "sudo -u appcoaching git -C /var/www/app-coaching/depot pull --ff-only && bash /var/www/app-coaching/depot/deploiement/installer.sh delmeecorentin.fr"
 ```
 (dernière fois qu'on lance un fichier du clone : à ce stade il est encore de confiance). Cela crée `/opt/app-coaching`, réinstalle les unités
 et ne touche pas à `/etc/app-coaching.env` ; relançable sans risque. Ensuite, toujours `bash /opt/app-coaching/deployer.sh`.
