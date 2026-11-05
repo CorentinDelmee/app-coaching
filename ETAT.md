@@ -1,4 +1,5 @@
 # ÉTAT — app-coaching
+- **2026-11-05 soir — APP EN LIGNE** sur https://app.delmeecorentin.fr (35c6e76 + 0a3941c pour l’installeur). DATA_DIR=/var/lib/app-coaching/data ajouté (le service ne pouvait pas écrire la bibliothèque dans le clone, lecture seule). Reste : compte coach (npm run coach:creer, terminal interactif), installation sur téléphone, BACKUP_AGE_RECIPIENT (sauvegardes chiffrées) ; bibliotheque.json (data/) pas encore dans la sauvegarde de nuit.
 
 ## 2026-11-04 — domaine réel aligné (delmeecorentin.fr)
 - deploiement/ (installer par défaut, LISEZMOI), vite.config, consentement (plus de mention Supabase), suivi.json (4 tâches Supabase/Netlify abandonnées), public/_headers (Netlify) supprimé : Caddy porte les en-têtes.
