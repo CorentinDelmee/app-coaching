@@ -245,3 +245,7 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 - [x] **V2.3a** socle + écrans hors séance : tokens V2 et polices, choix ouverts (`src/config/apparence.js`), préférences client (ambiance, Grand affichage), menu M5, dashboard à aplat jaune, Coaching, Programme, overview Workout en sections, Profil. Captures `docs/captures-v2/`.
 - [x] **V2.3b** séance en cours, circuits, check-in au style V2 : pages entières avec repères de bloc et temps total, chronos à phrase + chiffres en roulette + balayage de couleur, section de circuit (« Découvrir le circuit »), option facultative (`facultatif` : moteur, démo, éditeur coach), check-in M2, ouverture depuis l'overview, retour en un geste. Captures `docs/captures-v2/seance/`.
 - [ ] **V2.4** tests navigateur (anciens scripts `tests/e2e/lot5-*` à adapter) + revue des animations.
+
+## Import MyPTHub (2026-11-05)
+- [x] Normalisation (PC) + import idempotent (serveur, --essai) + fiche coach + tests synthétiques (`serveur/scripts/*-mypthub.mjs`, `serveur/src/import-mypthub/`).
+- [ ] Lancer la normalisation sur l'export réel, corriger les champs non convertis, puis import sur le VPS (REX / Corentin).

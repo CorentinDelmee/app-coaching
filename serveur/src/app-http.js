@@ -209,9 +209,11 @@ export function creerAppHttp({ db, store, config, journal = null, now = () => Da
     return visiblePar(entite, obj, { id: u.profil_id, role: u.role })
   }
   // Les notes du coach (programmes.notes) sont privées : jamais renvoyées à un client.
+  // Idem pour la fiche du profil (profils.fiche : contact, notes du coach, source d'import).
   const pourLecteur = (entite, o, u) => {
-    if (u.role === 'coach' || entite !== 'programmes' || !o || !('notes' in o)) return o
-    const { notes, ...reste } = o
+    const prive = { programmes: 'notes', profils: 'fiche' }[entite]
+    if (u.role === 'coach' || !prive || !o || !(prive in o)) return o
+    const { [prive]: _, ...reste } = o
     return reste
   }
   async function entites(req, res, u, entite, id) {
@@ -238,6 +240,9 @@ export function creerAppHttp({ db, store, config, journal = null, now = () => Da
           // Un client modifie seulement son profil, sans toucher aux champs sensibles.
           if (id !== u.profil_id || !existant) throw new Erreur(403, 'interdit')
           if (CHAMPS_PROTEGES.some((k) => !egal(obj[k], existant[k]))) throw new Erreur(403, 'champ_protege')
+          // Le client ne reçoit jamais la fiche : on garde celle de la base (jamais effacée ni remplacée par lui).
+          delete obj.fiche
+          if (existant.fiche !== undefined) obj.fiche = existant.fiche
         } else {
           if (!ECRITURE_CLIENT.has(entite)) throw new Erreur(403, 'interdit')
           if (clientDe(entite, obj) !== u.profil_id) throw new Erreur(403, 'interdit')
@@ -250,7 +255,7 @@ export function creerAppHttp({ db, store, config, journal = null, now = () => Da
         throw new Erreur(400, 'identifiant_ou_role_non_modifiable')
       }
       try { await store.ecrire(entite, obj) } catch { throw new Erreur(400, 'invalide') } // ex. client_id inexistant
-      return envoyer(res, 200, { item: obj })
+      return envoyer(res, 200, { item: pourLecteur(entite, obj, u) })
     }
     if (req.method === 'DELETE') {
       if (!existant) throw new Erreur(404, 'introuvable')
