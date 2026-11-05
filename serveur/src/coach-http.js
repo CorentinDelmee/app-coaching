@@ -11,7 +11,9 @@ export const PREFIXE_COACH = '/api/coach/'
 export const ACTEUR_COACH = 'api-coach'
 const TAILLE_MAX = 1024 * 1024 // 1 Mo
 const ECHECS_MAX = 10
-const STATUT = { VALIDATION: 400, JSON_INVALIDE: 400, OUTIL_INCONNU: 404, CLIENT_INTROUVABLE: 404, SEANCE_INTROUVABLE: 404, BLOC_INTROUVABLE: 404, CLIENT_AMBIGU: 409, AMBIGU: 409, JETON_INVALIDE: 409, VIDEO_VALIDEE: 409, INTERNE: 500 }
+const STATUT = { VALIDATION: 400, JSON_INVALIDE: 400, OUTIL_INCONNU: 404, CLIENT_INTROUVABLE: 404, SEANCE_INTROUVABLE: 404, BLOC_INTROUVABLE: 404, AMBIGU: 409, JETON_INVALIDE: 409, VIDEO_VALIDEE: 409,
+  EXERCICE_INTROUVABLE: 404, PROGRAMME_INTROUVABLE: 404, QUESTIONNAIRE_INTROUVABLE: 404, INTROUVABLE: 404, CONSENTEMENT_SANTE: 403, CLIENT_ARCHIVE: 409, DOUBLON: 409, CLIENT_ARCHIVE: 409, DOUBLON: 409, REFUSE: 403, NON_DISPONIBLE: 503, RESERVATION_INDISPONIBLE: 503,
+  CONFLIT: 409, EXISTE: 409, EXISTE_DEJA: 409, SEANCE_EXISTE: 409, EXERCICE_UTILISE: 409, PROGRAMME_AUTRE_CLIENT: 409, QUESTIONNAIRE_AUTRE_CLIENT: 409, SEANCE_AUTRE_CLIENT: 409, INTERNE: 500 }
 
 class ErreurHttp extends Error {
   constructor(statut, code, message) { super(message); this.statut = statut; this.code = code }
@@ -58,7 +60,7 @@ export function creerCoachHttp(app, { now = () => Date.now() } = {}) {
       if (!debit(ip)) throw new ErreurHttp(429, 'LIMITE', 'Trop de requêtes, réessaie dans une minute')
       if (!cleValide(req.headers.authorization, config.cleApi)) {
         echecs.compter(ip, t)
-        journal.ecrire({ acteur: ACTEUR_COACH, outil: `${req.method} ${chemin}`.slice(0, 80), ok: false, erreur: 'authentification refusée' })
+        journal.ecrire({ acteur: ACTEUR_COACH, outil: `${req.method} ${chemin}`.slice(0, 80), ok: false, erreur: `authentification refusée (ip ${ip})` })
         throw new ErreurHttp(401, 'NON_AUTORISE', 'Clé API absente ou invalide')
       }
       const route = chemin.slice(PREFIXE_COACH.length)

@@ -23,7 +23,7 @@ beforeEach(() => {
   appels = []
   reponses = {}
   const fetchFn = async (url, opts) => {
-    appels.push({ url, methode: opts.method, corps: opts.body ? JSON.parse(opts.body) : undefined, cle: opts.headers['X-Resa-Admin-Key'], headers: opts.headers })
+    appels.push({ url, methode: opts.method, corps: opts.body ? JSON.parse(opts.body) : undefined, cle: opts.headers['X-Resa-Admin-Key'], headers: opts.headers, redirect: opts.redirect })
     const cle = `${opts.method} ${url.replace('http://resa.test/api/resa/admin/', '')}`
     const r = reponses[cle]
     if (r instanceof Error) throw r
@@ -51,6 +51,7 @@ describe('lister_reservations', () => {
     expect(tout.donnees.total).toBe(2)
     expect(JSON.stringify(tout.donnees)).not.toContain('resaX')
     expect(appels[0].cle).toBe('k'.repeat(40))
+    expect(appels[0].redirect).toBe('error')
     expect(appels[0].headers['X-Forwarded-For']).toBeUndefined()
     const p = (await lancer('lister_reservations', { du: '2026-11-10', au: '2026-11-12' })).donnees
     expect(p.reservations.map((r) => r.id)).toEqual([ID_B])

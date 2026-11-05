@@ -7,13 +7,14 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { creerAppHttp, hacherCode, ipReelle, cheminFichier, signerSession, QUOTAS } from '../src/app-http.js'
 import { creerStoreSqlite, ouvrirBase } from '../src/magasin-sqlite.js'
 import { creerServeurRest } from '../src/rest.js'
+import { VERSION_CONSENTEMENT } from '../../src/domain/consentement.js'
 import { lireConfig, variablesManquantes } from '../src/config.js'
 
 const ORIGINE = 'https://app.exemple.fr'
 const SECRET = 's'.repeat(40)
 const PROXY = 'p'.repeat(40)
 const journalApp = []
-const profilClient = (id, identifiant) => ({ id, role: 'client', identifiant, nom: identifiant, tarif: 40, lieuDefaut: 'domicile', modules: { calories: false }, archive: false, creeLe: 1 })
+const profilClient = (id, identifiant) => ({ id, role: 'client', identifiant, nom: identifiant, tarif: 40, lieuDefaut: 'domicile', modules: { calories: false }, archive: false, creeLe: 1, consentementLe: 1, preferences: { consentement: { version: VERSION_CONSENTEMENT, sante: true } } })
 let base, serveur, resa, resaRecu, resaPanne = false, db, dossier
 
 async function appel(methode, chemin, { corps, cookie, origine = ORIGINE, brut, type, entetes = {} } = {}) {
@@ -180,6 +181,26 @@ describe('entités (policies RLS)', () => {
     expect((await appel('GET', '/api/app/e/mesures/mb', { cookie: clientB })).json.item.poids).toBe(80)
     expect((await appel('GET', '/api/app/e/profils', { cookie: clientA })).json.items.map((p) => p.id)).toEqual(['pa'])
   })
+  it('les notes du coach sur un programme ne sont jamais renvoyées au client (le coach les voit)', async () => {
+    await appel('PUT', '/api/app/e/programmes/prog-pa', { cookie: coach, corps: { id: 'prog-pa', clientId: 'pa', nom: 'P', mode: 'parSemaine', debut: '2026-11-02', semaines: [[]], notes: 'note privée du coach' } })
+    const l = await appel('GET', '/api/app/e/programmes', { cookie: clientA })
+    expect(l.json.items.map((p) => p.id)).toEqual(['prog-pa'])
+    expect(JSON.stringify(l.json)).not.toContain('note privée')
+    expect(JSON.stringify((await appel('GET', '/api/app/e/programmes/prog-pa', { cookie: clientA })).json)).not.toContain('note privée')
+    expect((await appel('GET', '/api/app/e/programmes/prog-pa', { cookie: coach })).json.item.notes).toBe('note privée du coach')
+    await appel('DELETE', '/api/app/e/programmes/prog-pa', { cookie: coach })
+  })
+  it('un client sans consentement santé ne peut pas écrire de données de santé (403)', async () => {
+    const st = creerStoreSqlite(db)
+    const refus = profilClient('pb', 'bob'); refus.preferences = { consentement: { version: VERSION_CONSENTEMENT, sante: false } }
+    await st.ecrire('profils', refus)
+    try {
+      for (const e of ['reponses', 'mesures', 'douleurs', 'nutrition']) {
+        const r = await appel('PUT', `/api/app/e/${e}/z-${e}`, { cookie: clientB, corps: { id: `z-${e}`, clientId: 'pb', date: '2026-11-01', poids: 70, zone: 'dos', intensite: 2, questionnaireId: 'q', frequence: 'quotidien', valeurs: {} } })
+        expect(r.statut).toBe(403); expect(r.json).toEqual({ erreur: 'consentement_sante' })
+      }
+    } finally { await st.ecrire('profils', profilClient('pb', 'bob')) }
+  })
   it('le client ne réattribue pas une ligne de B à lui-même', async () => {
     const r = await appel('PUT', '/api/app/e/mesures/mb', { cookie: clientA, corps: { id: 'mb', clientId: 'pa', date: '2026-11-01', poids: 1 } })
     expect(r.statut).toBe(403)
@@ -196,7 +217,7 @@ describe('entités (policies RLS)', () => {
     for (const modif of [{ role: 'coach' }, { tarif: 0 }, { modules: { calories: true } }, { archive: true }]) {
       expect((await appel('PUT', '/api/app/e/profils/pa', { cookie: clientA, corps: { ...p, ...modif } })).statut).toBe(403)
     }
-    expect((await appel('PUT', '/api/app/e/profils/pa', { cookie: clientA, corps: { ...p, preferences: { theme: 'sombre' } } })).statut).toBe(200)
+    expect((await appel('PUT', '/api/app/e/profils/pa', { cookie: clientA, corps: { ...p, preferences: { ...p.preferences, theme: 'sombre' } } })).statut).toBe(200)
     expect((await appel('PUT', '/api/app/e/profils/pb', { cookie: clientA, corps: profilClient('pb', 'bob') })).statut).toBe(403)
   })
   it('alertesVues : coach seulement', async () => {

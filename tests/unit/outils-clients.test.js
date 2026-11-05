@@ -35,9 +35,11 @@ describe('creer_client', () => {
     const fiche = await lancer('fiche_client', { client: id })
     expect(JSON.stringify(fiche)).not.toContain(code)
   })
-  it('identifiant unique pour des homonymes, et AMBIGU sur le nom seul', async () => {
+  it('refuse un doublon de nom (DOUBLON) sauf forcer ; AMBIGU sur le nom seul', async () => {
     const a = (await lancer('creer_client', { nom: 'Paul Durand' })).donnees
-    const b = (await lancer('creer_client', { nom: 'Paul Durand' })).donnees
+    const d = await lancer('creer_client', { nom: 'paul DURAND' })
+    expect(d.code).toBe('DOUBLON'); expect(d.erreur).toContain(a.id)
+    const b = (await lancer('creer_client', { nom: 'Paul Durand', forcer: true })).donnees
     expect(b.identifiant).toBe('paul.durand-2')
     const r = await lancer('fiche_client', { client: 'Paul Durand' })
     expect(r.code).toBe('AMBIGU')
@@ -129,7 +131,7 @@ describe('archiver / réactiver / nouveau code', () => {
     expect((await lancer('reactiver_client', { client: id })).code).toBe('CLIENT_INTROUVABLE')
     const t = (await lancer('archiver_client', { client: id })).donnees
     await lancer('archiver_client', { client: id, jeton: t.jeton })
-    expect((await lancer('nouveau_code_client', { client: id })).code).toBe('CLIENT_INTROUVABLE')
+    expect((await lancer('nouveau_code_client', { client: id })).code).toBe('CLIENT_ARCHIVE')
     expect((await lancer('reactiver_client', { client: 'eva' })).ok).toBe(true)
     expect((await backend.un('profils', id)).archive).toBe(false)
     expect(db.prepare('SELECT archive FROM comptes WHERE identifiant = ?').get(identifiant).archive).toBe(0)

@@ -72,6 +72,10 @@ describe('/api/coach/* : authentification', () => {
     expect((await appel('POST', '/api/coach/outils/chercher_client', { corps: '{pas du json', ip: '198.51.100.1' })).statut).toBe(400)
     expect((await appel('GET', '/api/coach/autre', { ip: '198.51.100.1' })).statut).toBe(404)
   })
+  it('codes métier : introuvable 404, consentement 403, indisponible 503', async () => {
+    expect((await appel('POST', '/api/coach/outils/voir_programme', { corps: { programme: 'zzz' }, ip: '198.51.100.1' })).statut).toBe(404)
+    expect((await appel('POST', '/api/coach/outils/lister_reservations', { corps: {}, ip: '198.51.100.1' })).statut).toBe(503) // RESA_ADMIN_KEY absente
+  })
   it('corps > 1 Mo : 413', async () => {
     const r = await fetch(`${base}/api/coach/outils/chercher_client`, { method: 'POST', headers: { Authorization: `Bearer ${CLE}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ nom: 'x'.repeat(1100 * 1024) }) }).catch(() => null)
     // Le serveur répond 413 puis coupe : selon le moment, fetch voit la réponse ou la coupure.

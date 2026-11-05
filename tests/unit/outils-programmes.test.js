@@ -28,6 +28,13 @@ afterAll(() => { app.backend.db?.close(); rmSync(dossier, { recursive: true, for
 
 describe('programmes', () => {
   let prog
+  it('refuse un id de programme qui appartient à un autre client', async () => {
+    const p = await app.service.api.programmes.creer({ id: 'prog-bruno-x', clientId: 'bruno', nom: 'Autre', mode: 'parSemaine', debut: '2026-11-02', semaines: [[]] })
+    const r = await outil('voir_programme', { programme: p.id, client: 'alice' })
+    expect(r.ok).toBe(false); expect(r.code).toBe('PROGRAMME_AUTRE_CLIENT')
+    expect((await outil('voir_programme', { programme: p.id, client: 'bruno' })).ok).toBe(true)
+    await app.backend.supprimer('programmes', p.id)
+  })
   it('crée un programme de 2 semaines, valide pour l\'app, avec vidéos et jours fixes', async () => {
     const r = await outil('creer_programme', {
       client: 'alice', nom: 'Prépa été', debut: '2026-11-05', notes: 'Genou fragile',

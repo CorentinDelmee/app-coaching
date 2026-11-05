@@ -29,6 +29,7 @@ export function creerServeurMcpDistant({ url, cle, fetchFn = (...a) => globalThi
       method: methode,
       headers: { Authorization: `Bearer ${cle}`, ...(corps ? { 'Content-Type': 'application/json' } : {}) },
       ...(corps ? { body: JSON.stringify(corps) } : {}),
+      redirect: 'error',
       signal: AbortSignal.timeout(60e3)
     })
     let donnees

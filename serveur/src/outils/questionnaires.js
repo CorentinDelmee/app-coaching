@@ -10,11 +10,11 @@ import { ErreurService } from '../service.js'
 import { slug } from '../util.js'
 import { def } from './def.js'
 import { creerConfirmations } from './confirmer.js'
+import { jour } from './dates.js'
 
 const EMOJIS_DEFAUT = ['😫', '😕', '😐', '🙂', '🤩'] // 5 emojis = les 5 libellés de l'app (Très bas … Au top)
 const texte = (max) => z.string().trim().min(1).max(max)
 const limite = z.number().int().min(1).max(200).optional().describe('Nombre maximum de résultats (50 par défaut, 200 max)')
-const jour = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'date attendue au format AAAA-MM-JJ')
 
 const Question = z.object({
   libelle: texte(200).describe('La question posée au client'),
@@ -134,24 +134,20 @@ export function outilsQuestionnaires(ctx) {
           const r = await resume(q)
           return confirmations.demander(cle, `Supprimer le questionnaire « ${q.nom} » (${q.questions.length} questions, ${q.frequence}, pour ${typeof r.pour === 'string' ? r.pour : r.pour.client}). ${r.nbReponses} réponse(s) déjà reçue(s) seront conservées.`)
         }
-        if (!confirmations.verifier(cle, jeton)) throw new ErreurService('Jeton de confirmation invalide ou expiré : redemande la suppression sans jeton.', 'JETON_INVALIDE')
+        if (!confirmations.verifier(cle, jeton)) throw new ErreurService('Jeton invalide ou expiré : rappelle avec exactement les mêmes arguments que le premier appel (avec le jeton), ou demande un nouveau jeton : redemande la suppression sans jeton.', 'JETON_INVALIDE')
         await backend.supprimer('questionnaires', id)
         return { supprimee: true, id, nom: q.nom }
       }, { mutation: true }),
 
-    envoyer_questionnaire: def('Envoie un questionnaire à UN client : crée pour lui une copie personnelle (visible de lui seul). Si le questionnaire est déjà réservé à ce client, rien n\'est dupliqué. Refusé si le client n\'a pas accepté le partage des données de santé (il ne pourrait pas le remplir).',
+    envoyer_questionnaire: def('Rend un questionnaire accessible à UN client. Un questionnaire général (sans client) est déjà visible de tous les clients : rien n\'est copié (pour un questionnaire destiné à un seul client, passe `client` à creer_questionnaire). Un questionnaire réservé à un autre client est refusé. Autorisé sans consentement santé (le client le donne dans l\'app avant de répondre) ; seule la lecture des réponses exige ce consentement.',
       z.object({ id: texte(120).describe('Id du questionnaire à envoyer'), client: texte(120).describe('Nom, identifiant ou id du client') }).strict(),
       async ({ id, client }) => {
         const q = await existant(id)
         const c = await service.resoudreClient(client)
-        if (!accesSante(c)) throw new ErreurService(`${c.nom} n'a pas accepté le partage des données de santé : les questionnaires lui sont fermés dans l'app.`, 'CONSENTEMENT_SANTE')
         if (q.clientId === c.id) return { id: q.id, deja: true, client: c.nom, message: 'Ce questionnaire est déjà réservé à ce client.' }
+        if (!q.clientId) return { id: q.id, deja: true, client: c.nom, message: 'Ce questionnaire général est déjà visible de ce client : rien à envoyer. Pour un questionnaire destiné à un seul client, passe `client` à creer_questionnaire.' }
         if (q.clientId) throw new ErreurService(`Ce questionnaire est réservé à un autre client (${await nomClient(q.clientId)}). Envoie plutôt un questionnaire général ou crées-en un.`, 'QUESTIONNAIRE_AUTRE_CLIENT')
-        const copieId = `${q.id}-${slug(c.identifiant)}`
-        const deja = await api.questionnaires.lire(copieId)
-        if (deja) return { id: deja.id, deja: true, client: c.nom, message: 'Ce client a déjà reçu ce questionnaire.' }
-        const copie = await api.questionnaires.creer({ ...q, id: copieId, clientId: c.id })
-        return { id: copie.id, deja: false, client: c.nom, nom: copie.nom }
+        return { id: q.id, deja: true, client: c.nom, message: 'Ce questionnaire est déjà accessible à ce client.' }
       }, { mutation: true }),
 
     lire_reponses: def('Lit les réponses à des questionnaires, de la plus récente à la plus ancienne, avec le libellé de chaque question. Donne `client` ou `questionnaire` (ou les deux), et éventuellement une période. '

@@ -10,8 +10,8 @@ import { LIEUX, STATUTS_SEANCE } from '../../../src/domain/modele.js'
 import { ErreurService } from '../service.js'
 import { creerConfirmations } from './confirmer.js'
 import { def } from './def.js'
+import { jour } from './dates.js'
 
-const jour = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'date attendue au format AAAA-MM-JJ')
 const heure = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'heure attendue au format HH:MM')
 const ref = (d) => z.string().trim().min(1).max(120).describe(d)
 const limite = z.number().int().min(1).max(200).optional().describe('Nombre maximum d\'éléments par liste (défaut 50, max 200)')
@@ -89,7 +89,7 @@ export function outilsSuivi(ctx) {
           client: { id: c.id, nom: c.nom }, periode: { du: debut, au: fin },
           sante: sante ? { accessible: true } : { accessible: false, raison: 'Le client n\'a pas accepté de partager ses données de santé (douleurs, poids, nutrition, check-ins).' },
           resume,
-          seancesFaites: recentes(realisations, n).map(({ id, date, workoutId, dureeSec, volume, commentaire }) => ({ id, date, seanceId: workoutId, dureeSec, volume, commentaire })),
+          seancesFaites: recentes(realisations, n).map(({ id, date, workoutId, dureeSec, volume, commentaire }) => ({ id, date, seanceId: workoutId, dureeSec, volume, ...(sante ? { commentaire } : {}) })),
           seancesCoaching: recentes(coaching, n).map(({ id, date, heure: h, lieu, statut, tarif }) => ({ id, date, heure: h, lieu, statut, tarif })),
           ...(sante ? {
             mesures: recentes(mesures, n), douleurs: recentes(douleurs, n), nutrition: recentes(nutrition, n),
@@ -129,6 +129,7 @@ export function outilsSuivi(ctx) {
     planifier_seance_coaching: def('Planifie une séance de coaching (en personne) pour un client : obligatoires client, date (AAAA-MM-JJ) et heure (HH:MM). lieu : « domicile » ou « salle » (défaut : lieu habituel du client). tarif en euros (défaut : tarif du client, figé à la création). Statut « prevue ». Renvoie l\'id.',
       z.object({ client: ref('Nom, identifiant ou id du client'), date: jour, heure, lieu: z.enum(LIEUX).optional(), tarif: z.number().min(0).max(1000).optional() }).strict(),
       async ({ client, date, heure: h, lieu, tarif }) => {
+        if (date < jourLocal(now())) throw new ErreurService(`La date ${date} est passée : une séance de coaching se planifie à partir d'aujourd'hui (${jourLocal(now())}).`, 'VALIDATION')
         const c = await service.resoudreClient(client)
         await sansDoublon(c.id, date, h)
         const s = await api.seancesCoaching.creer({ clientId: c.id, date, heure: h, lieu: lieu ?? c.lieuDefaut ?? 'domicile', statut: 'prevue', tarif: tarif ?? c.tarif ?? 0 })

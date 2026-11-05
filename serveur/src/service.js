@@ -40,8 +40,13 @@ export function creerService({ backend, biblio, config = {}, now = () => Date.no
   /** Accepte un id, un identifiant ou un nom ; refuse l'ambiguïté. */
   async function resoudreClient(ref) {
     const r = await chercherClient(ref)
+    if (r.resultats.length === 0) {
+      const n = norm(ref)
+      const archive = (await api.profils.lister({}, { archives: true })).find((p) => p.role === 'client' && p.archive && (norm(p.nom) === n || p.id === ref || p.identifiant === ref))
+      if (archive) throw new ErreurService(`Client archivé : « ${ref} ». Utilise reactiver_client pour le remettre en service.`, 'CLIENT_ARCHIVE')
+    }
     if (r.resultats.length === 0) throw new ErreurService(`Client introuvable : « ${ref} ». Utilise lister_clients.`, 'CLIENT_INTROUVABLE')
-    if (r.ambigu) throw new ErreurService(`Plusieurs clients correspondent à « ${ref} » : ${r.resultats.map((c) => `${c.nom} (${c.id})`).join(', ')}. Précise avec l'id.`, 'CLIENT_AMBIGU')
+    if (r.ambigu) throw new ErreurService(`Plusieurs clients correspondent à « ${ref} » : ${r.resultats.map((c) => `${c.nom} (${c.id})`).join(', ')}. Précise avec l'id.`, 'AMBIGU')
     return (await api.profils.lire(r.resultats[0].id))
   }
 
@@ -295,7 +300,7 @@ export function creerService({ backend, biblio, config = {}, now = () => Date.no
         return { confirmationRequise: true, jeton: j, valableSecondes: DUREE_JETON_MS / 1000, aSupprimer: await resumerSeance(w), message: 'Rien n\'est supprimé. Montre ce résumé à Corentin, puis rappelle supprimer_seance avec ce jeton s\'il confirme.' }
       }
       const t = jetons.get(jeton)
-      if (!t || t.seanceId !== seanceId || t.expire < now()) throw new ErreurService('Jeton de confirmation invalide ou expiré : redemande la suppression sans jeton.', 'JETON_INVALIDE')
+      if (!t || t.seanceId !== seanceId || t.expire < now()) throw new ErreurService('Jeton invalide ou expiré : rappelle avec exactement les mêmes arguments que le premier appel (avec le jeton), ou demande un nouveau jeton : redemande la suppression sans jeton.', 'JETON_INVALIDE')
       jetons.delete(jeton)
       await retirerDesProgrammes(w.id)
       await backend.supprimer('workouts', w.id)

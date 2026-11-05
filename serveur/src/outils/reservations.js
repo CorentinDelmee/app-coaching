@@ -2,6 +2,7 @@
 // Passent par l'API réservation (même clé et mêmes formes JSON que le relais /api/app/reservations/*, voir docs/CONTRAT-VPS.md) :
 // config.resaUrl (RESA_API_URL) + config.resaCle (RESA_ADMIN_KEY), appel via ctx.fetchFn (injectable en test).
 import { z } from 'zod'
+import { jour, jourValide } from './dates.js'
 import { def } from './def.js'
 import { creerConfirmations } from './confirmer.js'
 import { ErreurService } from '../service.js'
@@ -11,7 +12,8 @@ const jeton = z.string().regex(/^[0-9a-f]{32}$/).optional()
 const idResa = z.string().trim().min(1).max(80).describe('Id de la réservation (voir lister_reservations)')
 const JOUR = /^\d{4}-\d{2}-\d{2}$/
 const INSTANT = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?$/
-const instant = (d) => z.string().regex(INSTANT, 'format attendu : AAAA-MM-JJ ou AAAA-MM-JJTHH:MM (heure de Paris)').describe(d)
+const instant = (d) => z.string().regex(INSTANT, 'format attendu : AAAA-MM-JJ ou AAAA-MM-JJTHH:MM (heure de Paris)')
+  .refine((v) => jourValide(v.slice(0, 10)) && (v.length === 10 || /^([01]\d|2[0-3]):[0-5]\d$/.test(v.slice(11))), { message: 'cette date ou cette heure n\'existe pas' }).describe(d)
 
 /** Décalage Europe/Paris (ex. « +01:00 ») à un instant donné. */
 function decalageParis(ms) {
@@ -48,7 +50,7 @@ export function outilsReservations(ctx) {
     let r, donnees
     try {
       r = await fetchFn(`${config.resaUrl}/api/resa/admin/${chemin}`, {
-        method: methode, body: corps === undefined ? undefined : JSON.stringify(corps), signal: AbortSignal.timeout(8000),
+        method: methode, body: corps === undefined ? undefined : JSON.stringify(corps), signal: AbortSignal.timeout(8000), redirect: 'error',
         headers: { 'X-Resa-Admin-Key': config.resaCle, ...(corps !== undefined ? { 'Content-Type': 'application/json' } : {}) }
       })
       donnees = await r.json().catch(() => ({}))
@@ -74,8 +76,8 @@ export function outilsReservations(ctx) {
     lister_reservations: def('Liste les réservations de bilans faites par les clients depuis le site (avec nom, e-mail, téléphone, adresse, état dans l\'agenda). Filtres : statut a_venir (défaut), passees ou annulees ; période du / au (AAAA-MM-JJ, jours inclus, selon la date du rendez-vous).',
       z.object({
         statut: z.enum(['a_venir', 'passees', 'annulees']).optional(),
-        du: z.string().regex(JOUR).optional().describe('Premier jour inclus, AAAA-MM-JJ'),
-        au: z.string().regex(JOUR).optional().describe('Dernier jour inclus, AAAA-MM-JJ'),
+        du: jour.optional().describe('Premier jour inclus, AAAA-MM-JJ'),
+        au: jour.optional().describe('Dernier jour inclus, AAAA-MM-JJ'),
         limite: z.number().int().min(1).max(200).optional().describe('50 par défaut, 200 au maximum')
       }).strict(),
       async ({ statut = 'a_venir', du, au, limite = 50 }) => {
@@ -95,7 +97,7 @@ export function outilsReservations(ctx) {
           if (!r) throw new ErreurService('Aucune réservation à venir avec cet id (déjà annulée, passée ou inconnue). Vérifie avec lister_reservations.', 'INTROUVABLE')
           return confirmations.demander(cle, `Annuler le rendez-vous de ${r.prenom} ${r.nom} le ${r.debut.slice(0, 10)} à ${r.debut.slice(11, 16)}. Le client sera prévenu par l'invitation Google.`)
         }
-        if (!confirmations.verifier(cle, j)) throw new ErreurService('Jeton de confirmation invalide ou expiré : redemande l\'annulation sans jeton.', 'JETON_INVALIDE')
+        if (!confirmations.verifier(cle, j)) throw new ErreurService('Jeton invalide ou expiré : rappelle avec exactement les mêmes arguments que le premier appel (avec le jeton), ou demande un nouveau jeton : redemande l\'annulation sans jeton.', 'JETON_INVALIDE')
         const { reservation } = await appel('POST', `reservations/${encodeURIComponent(id)}/annuler`)
         return { annulee: true, reservation: resume(reservation) }
       }, { mutation: true }),
@@ -128,6 +130,8 @@ export function outilsReservations(ctx) {
         motif: z.string().trim().max(100).optional().describe('Facultatif, 100 caractères max (ex. « Congé »)')
       }).strict(),
       async ({ debut, fin, motif }) => {
+        // Jour entier : début à 00:00, fin à 23:59 (fin incluse) ; sinon on compare les heures telles quelles.
+        if ((debut.length === 10 ? `${debut}T00:00` : debut) >= (fin.length === 10 ? `${fin}T23:59` : fin)) throw new ErreurService('La fin du blocage doit être après son début.', 'VALIDATION')
         const { blocage } = await appel('POST', 'blocages', { debut: versIsoParis(debut), fin: versIsoParis(fin), ...(motif ? { motif } : {}) })
         return { id: blocage.id, blocage }
       }, { mutation: true }),

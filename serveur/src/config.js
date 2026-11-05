@@ -44,7 +44,7 @@ export function lireConfig(env = process.env) {
 /** En production, refuse de démarrer s'il manque une variable (liste des manquantes, jamais leurs valeurs). */
 export function variablesManquantes(env = process.env) {
   if (env.NODE_ENV !== 'production') return []
-  const manque = ['DB_FILE', 'FICHIERS_DIR', 'APP_ORIGIN', 'RESA_API_URL', 'COACH_API_KEY'].filter((k) => !env[k])
-  for (const k of ['SESSION_SECRET', 'RESA_ADMIN_KEY', 'PROXY_KEY']) if (!env[k] || env[k].length < 32) manque.push(k)
+  const manque = ['DB_FILE', 'FICHIERS_DIR', 'APP_ORIGIN', 'RESA_API_URL'].filter((k) => !env[k])
+  for (const k of ['SESSION_SECRET', 'RESA_ADMIN_KEY', 'PROXY_KEY', 'COACH_API_KEY']) if (!env[k] || env[k].length < 32) manque.push(k)
   return manque
 }

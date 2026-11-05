@@ -61,19 +61,16 @@ describe('outils questionnaires', () => {
     expect((await outil('modifier_questionnaire', { id })).code).toBe('VALIDATION')
     expect((await outil('voir_questionnaire', { id: 'nope' })).code).toBe('QUESTIONNAIRE_INTROUVABLE')
   })
-  it('envoie à un client une copie personnelle, sans doublon ; un autre client ne la voit pas', async () => {
+  it('envoyer un questionnaire général ne copie rien ; un questionnaire réservé à un autre client est refusé', async () => {
     const r = await outil('envoyer_questionnaire', { id, client: 'Alice' })
-    expect(r.donnees.deja).toBe(false)
-    expect((await outil('envoyer_questionnaire', { id, client: 'alice' })).donnees.deja).toBe(true)
-    const pourAlice = (await outil('lister_questionnaires', { client: 'alice' })).donnees.questionnaires.map((q) => q.id)
-    const pourBob = (await outil('lister_questionnaires', { client: 'bob' })).donnees.questionnaires.map((q) => q.id)
-    expect(pourAlice).toContain(r.donnees.id)
-    expect(pourBob).not.toContain(r.donnees.id)
-    expect((await outil('envoyer_questionnaire', { id: r.donnees.id, client: 'bob' })).code).toBe('QUESTIONNAIRE_AUTRE_CLIENT')
+    expect(r.ok).toBe(true); expect(r.donnees.deja).toBe(true)
+    const perso = (await outil('creer_questionnaire', { nom: 'Perso Alice', frequence: 'ponctuel', client: 'alice', questions: [QUESTIONS[4]] })).donnees.id
+    expect((await outil('envoyer_questionnaire', { id: perso, client: 'alice' })).donnees.deja).toBe(true)
+    expect((await outil('envoyer_questionnaire', { id: perso, client: 'bob' })).code).toBe('QUESTIONNAIRE_AUTRE_CLIENT')
   })
-  it('refuse d\'envoyer à un client sans accès santé', async () => {
-    expect((await outil('envoyer_questionnaire', { id, client: 'carla' })).code).toBe('CONSENTEMENT_SANTE')
-    expect((await outil('envoyer_questionnaire', { id, client: 'dan' })).code).toBe('CONSENTEMENT_SANTE')
+  it('envoyer est permis sans consentement santé (lire les réponses reste refusé)', async () => {
+    expect((await outil('envoyer_questionnaire', { id, client: 'carla' })).ok).toBe(true)
+    expect((await outil('lire_reponses', { client: 'carla' })).code).toBe('CONSENTEMENT_SANTE')
   })
   it('lit les réponses d\'un client sans mélanger les autres, et masque les clients sans consentement', async () => {
     const b = app.backend

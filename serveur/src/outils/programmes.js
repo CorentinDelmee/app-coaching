@@ -9,9 +9,9 @@ import { norm, slug } from '../util.js'
 import { Bloc } from '../outils.js'
 import { creerConfirmations } from './confirmer.js'
 import { def } from './def.js'
+import { jour } from './dates.js'
 
 const JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
-const jour = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'date attendue au format AAAA-MM-JJ')
 const ref = (d) => z.string().trim().min(1).max(120).describe(d)
 const jeton = z.string().regex(/^[0-9a-f]{32}$/).optional().describe('Jeton reçu au 1er appel (confirmation)')
 const MAX_NOTES = 5000
@@ -35,7 +35,10 @@ export function outilsProgrammes(ctx) {
   async function programmeDe(r, client) {
     const tous = await api.programmes.lister({}, { archives: true })
     const direct = tous.find((p) => p.id === r)
-    if (direct) return direct
+    if (direct) {
+      if (client && direct.clientId !== (await service.resoudreClient(client)).id) throw new ErreurService('Ce programme appartient à un autre client.', 'PROGRAMME_AUTRE_CLIENT')
+      return direct
+    }
     const c = client ? await service.resoudreClient(client) : null
     const trouves = tous.filter((p) => !p.archive && norm(p.nom) === norm(r) && (!c || p.clientId === c.id))
     if (trouves.length === 0) throw new ErreurService(`Programme introuvable : « ${r} ». Utilise lister_programmes.`, 'PROGRAMME_INTROUVABLE')
@@ -111,7 +114,7 @@ export function outilsProgrammes(ctx) {
       z.object({ programme: ref('Id ou nom du programme'), client: ref('Client, si on désigne le programme par son nom').optional() }).strict(),
       async (a) => ({ programme: await resume(await programmeDe(a.programme, a.client)) })),
 
-    creer_programme: def('Crée un programme pour un client : plusieurs semaines, chaque semaine avec ses séances (nom, jour fixe lundi…dimanche facultatif, consignes, blocs comme creer_seance : exercices, circuits, supersets). Les vidéos des exercices sont rattachées automatiquement. Obligatoires : client, nom, semaines. `debut` (AAAA-MM-JJ, ramené au lundi) vaut le lundi de cette semaine par défaut. `repeter: true` : une seule semaine type répétée chaque semaine (`nbSemaines` pour limiter). `notes` : notes du coach sur le programme. Renvoie l\'id du programme, les ids des séances et les exercices restés sans vidéo.',
+    creer_programme: def('Crée un programme pour un client : plusieurs semaines, chaque semaine avec ses séances (nom, jour fixe lundi…dimanche facultatif, consignes, blocs comme creer_seance : exercices, circuits, supersets). Les vidéos des exercices sont rattachées automatiquement. Obligatoires : client, nom, semaines. `debut` (AAAA-MM-JJ) est ramené au lundi de sa semaine (un mercredi donne le lundi précédent) et vaut le lundi de cette semaine par défaut. `repeter: true` : une seule semaine type répétée chaque semaine (`nbSemaines` pour limiter). `notes` : notes du coach sur le programme. Renvoie l\'id du programme, les ids des séances et les exercices restés sans vidéo.',
       z.object({
         client: ref('Nom, identifiant ou id du client'), nom: z.string().trim().min(1).max(120).describe('Nom du programme'),
         debut: jour.optional(), repeter: z.boolean().optional(), nbSemaines: z.number().int().min(1).max(52).optional(),
@@ -120,7 +123,9 @@ export function outilsProgrammes(ctx) {
       async (a) => {
         const c = await service.resoudreClient(a.client)
         const debut = lundiDe(a.debut ?? aujourdhui())
-        const deja = (await api.programmes.lister({ clientId: c.id })).length
+        const existants = await api.programmes.lister({ clientId: c.id })
+        const deja = existants.length
+        const memeNom = existants.find((p) => norm(p.nom) === norm(a.nom))
         const creees = []
         try {
           const liste = a.semaines.flatMap((sem, i) => sem.seances.map((s) => ({ semaine: i + 1, s })))
@@ -133,7 +138,7 @@ export function outilsProgrammes(ctx) {
             ...(a.notes ? { notes: ajoutNote('', a.notes) } : {})
           }
           await api.programmes.creer(p)
-          return { id: p.id, programme: await resume(await api.programmes.lire(p.id)), exercicesSansVideo, ...(deja ? { note: `Ce client avait déjà ${deja} programme(s) actif(s) : pense à archiver l'ancien si celui-ci le remplace.` } : {}) }
+          return { id: p.id, programme: await resume(await api.programmes.lire(p.id)), exercicesSansVideo, ...(memeNom ? { avertissement: `Un programme actif « ${memeNom.nom} » (${memeNom.id}) existe déjà pour ce client : celui-ci s'ajoute en double. Archive ou supprime l'ancien si celui-ci le remplace.` } : {}), ...(deja ? { note: `Ce client avait déjà ${deja} programme(s) actif(s) : pense à archiver l'ancien si celui-ci le remplace.` } : {}) }
         } catch (e) { await nettoyer(creees); throw e }
       }, { mutation: true }),
 
@@ -175,7 +180,7 @@ export function outilsProgrammes(ctx) {
         const p = await programmeDe(a.programme, a.client)
         const cle = `supprimer_programme:${p.id}:${a.avecSeances ? 'avec' : 'sans'}`
         if (!a.jeton) return confirmations.demander(cle, { aSupprimer: await resume(p), avecSeances: !!a.avecSeances })
-        if (!confirmations.verifier(cle, a.jeton)) throw new ErreurService('Jeton de confirmation invalide ou expiré : redemande la suppression sans jeton.', 'JETON_INVALIDE')
+        if (!confirmations.verifier(cle, a.jeton)) throw new ErreurService('Jeton invalide ou expiré : rappelle avec exactement les mêmes arguments que le premier appel (avec le jeton), ou demande un nouveau jeton : redemande la suppression sans jeton.', 'JETON_INVALIDE')
         const ids = [...new Set(p.mode === 'repete' ? p.workouts : p.semaines.flat())]
         await backend.supprimer('programmes', p.id)
         if (a.avecSeances) {

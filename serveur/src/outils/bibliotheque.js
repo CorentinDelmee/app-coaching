@@ -105,7 +105,7 @@ export function outilsBibliotheque(ctx) {
         if (utilise.length) throw new ErreurService(`« ${ex.nom} » est utilisé dans ${utilise.length} séance(s) : ${utilise.slice(0, 5).join(', ')}. Retire-le de ces séances d'abord.`, 'EXERCICE_UTILISE')
         const cle = `supprimer_exercice:${ex.id}`
         if (!jeton) return confirmations.demander(cle, `Supprimer l'exercice « ${ex.nom} » (${ex.id})${ex.lienVideo ? ' et son lien vidéo' : ''}`)
-        if (!confirmations.verifier(cle, jeton)) throw new ErreurService('Jeton de confirmation invalide ou expiré : redemande la suppression sans jeton.', 'JETON_INVALIDE')
+        if (!confirmations.verifier(cle, jeton)) throw new ErreurService('Jeton invalide ou expiré : rappelle avec exactement les mêmes arguments que le premier appel (avec le jeton), ou demande un nouveau jeton : redemande la suppression sans jeton.', 'JETON_INVALIDE')
         await backend.supprimer('exercices', ex.id)
         return { supprimee: true, id: ex.id, nom: ex.nom }
       }, { mutation: true }),
