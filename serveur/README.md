@@ -110,7 +110,8 @@ Chaque entrée : nom, alias, muscles, vidéo YouTube (durée, chaîne, titre), j
 Au premier lancement, `serveur/donnees/bibliotheque-videos.json` (51 exercices, liens vérifiés) est importé. Une vidéo choisie par Claude est « proposée » ;
 dans le dashboard coach, **Vidéos** (`/coach/bibliotheque`) permet de la **valider** ou de la **remplacer** par un autre lien (une vidéo validée n'est jamais écrasée par Claude).
 Recherche automatique (`chercher_video_exercice`, et à la création de séance pour un exercice sans vidéo) : API YouTube Data v3 si `YOUTUBE_API_KEY`, score sur 100
-(durée < 2 min, chaîne reconnue, vues, titre pertinent) avec justification ; repli sur la bibliothèque locale sinon.
+(durée, chaîne reconnue, vues, titre pertinent) avec justification ; repli sur la bibliothèque locale sinon.
+**Règle des vidéos courtes** : > 30 s refusée, ≤ 20 s favorisée, intégrable et publique seulement ; requête en français puis anglais en repli (2 recherches au plus par exercice, ≈ 202 unités de quota sur 10 000/jour). Outils : `lister_exercices`, `creer_exercice` (recherche auto d'une vidéo « proposée »), `modifier_exercice`, `supprimer_exercice` (2 temps), `valider_video`.
 
 ## Sécurité
 - Clé API en `Authorization: Bearer`, lue dans l'environnement, comparée à temps constant (empreintes SHA-256) ; refus par défaut.
