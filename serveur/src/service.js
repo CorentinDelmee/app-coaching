@@ -254,13 +254,13 @@ export function creerService({ backend, biblio, config = {}, now = () => Date.no
       return { clients: (await clientsActifs()).map(resume) }
     },
 
-    async creerSeance({ client, nom, date, consignes, blocs = [] }) {
+    async creerSeance({ client, nom, date, consignes, blocs = [], sansPlacement = false }) {
       const c = await resoudreClient(client)
       const id = `w-${slug(c.identifiant)}-${now().toString(36)}${randomBytes(2).toString('hex')}`
       const w = { id, clientId: c.id, nom, ...(consignes ? { consignes } : {}), blocs: [] }
       for (const entree of blocs) w.blocs.push(await construireBloc(idBlocSuivant(w), entree))
       await api.workouts.creer(w) // validation = celle de l'app
-      const note = await placer(c.id, id, date)
+      const note = sansPlacement ? null : await placer(c.id, id, date) // sansPlacement : le lot « programmes » place lui-même la séance
       return reponseSeance(w, { date: date ?? null, ...(note ? { note } : {}) })
     },
 
