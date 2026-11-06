@@ -41,6 +41,7 @@ export function indexUsage(workouts, programmes) {
 /** Exercice tel que renvoyé : photo/vidéo normalisées, notes privées et usage retirés pour un client. */
 export function presenterExercice(ex, { coach, usage, video }) {
   const o = { ...ex, photo: ex.photo ?? null, video }
+  if (o.lienVideo === null) delete o.lienVideo // anciennes lignes : « pas de lien » = champ absent
   if (!coach) {
     for (const c of CHAMPS_COACH) delete o[c]
     return o

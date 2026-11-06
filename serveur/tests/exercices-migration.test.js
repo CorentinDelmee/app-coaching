@@ -17,6 +17,7 @@ const anciens = Array.from({ length: 181 }, (_, i) => {
   if (i % 13 === 0) e.archive = true
   return JSON.parse(JSON.stringify(e)) // comme une ligne JSON de la base (undefined retiré)
 })
+const sansNull = (e) => Object.fromEntries(Object.entries(e).filter(([, v]) => v !== null))
 const req = async (methode, chemin, corps) => {
   const r = await fetch(base + chemin, { method: methode, headers: { Cookie: cookie, Origin: ORIGINE, 'Content-Type': 'application/json' }, body: corps ? JSON.stringify(corps) : undefined })
   return { statut: r.status, json: await r.json() }
@@ -45,7 +46,7 @@ describe('migration des exercices existants', () => {
     expect(r.total).toBe(actifs.length)
     for (const item of r.items) {
       const { photo, video, utiliseDans, utiliseDansProgrammes, ...origine } = item
-      expect(origine).toEqual(anciens.find((e) => e.id === item.id))
+      expect(origine).toEqual(sansNull(anciens.find((e) => e.id === item.id)))
       expect(photo).toBeNull(); expect(utiliseDans).toBe(0); expect(utiliseDansProgrammes).toBe(0)
     }
     expect((await req('GET', '/api/app/e/exercices')).json.items).toHaveLength(181) // route générique : tout, archivés compris
@@ -53,7 +54,7 @@ describe('migration des exercices existants', () => {
   it('PUT générique (ancienne UI) accepte chaque ancienne ligne, sans perte', async () => {
     for (const e of anciens) expect((await req('PUT', `/api/app/e/exercices/${e.id}`, e)).statut, e.id).toBe(200)
     // seul changement toléré : « lienVideo: null » devient simplement absent (même sens)
-    for (const e of anciens) expect(await store.un('exercices', e.id)).toEqual(Object.fromEntries(Object.entries(e).filter(([, v]) => v !== null)))
+    for (const e of anciens) expect(await store.un('exercices', e.id)).toEqual(sansNull(e))
   })
   it('PATCH sur une ancienne ligne ajoute les nouveaux champs sans perdre les anciens', async () => {
     const e = anciens[7] // description longue importée

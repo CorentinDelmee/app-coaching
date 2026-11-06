@@ -1,8 +1,7 @@
-> **État au 23:39 (WIP, arrêt PC)** :
-> - Fait : ce contrat ; serveur/src/exercices.js (schémas zod, filtres, utiliseDans, vue client).
-> - Reste : routes /api/app/exercices dans app-http.js (non branchées), photo, notesPrivees côté client (/e), outils bibliotheque.js,
-> - Reste : src/data (interface, adaptateurs api + local, démo 20+ exercices), tests Vitest.
-> - Rien n'est encore appelable : le lot écran doit attendre ces routes.
+> **État au 2026-11-06 : TERMINÉ côté serveur et src/data (le lot écran peut appeler `data.exercices.*`).**
+> - Fait : routes `/api/app/exercices` (liste, détail, POST, PATCH, photo POST/DELETE, `/fichiers` avec ETag/304), vue client sans `notesPrivees`/`utiliseDans*`, outils MCP (`creer_exercice`, `modifier_exercice`, `lister_exercices` acceptent la fiche Studio), `data.exercices.{recherche,detail,mettreAJour,envoyerPhoto,retirerPhoto}` en adaptateurs api et local, démo de 24 fiches (liens YouTube de `serveur/donnees/bibliotheque-videos.json`).
+> - Testé : tests Vitest (615 verts), migration sur 181 exercices hérités, test HTTP réel curl sur le port 5415.
+> - Précisions (pas de changement de forme) : `lienVideo` est enregistré sous la forme `https://www.youtube.com/watch?v=<id>` ; une ancienne valeur `lienVideo: null` est renvoyée comme champ absent ; `PUT /e/exercices/:id` reste tolérant (anciens liens non YouTube, descriptions longues) ; l'adaptateur api traduit 409 en `ErreurData('EXISTE')` ; la photo en mode local est une data-URL (`photo.url`).
 
 # Contrat — exercices enrichis (refonte coach « Studio ») — 2026-11-05
 
