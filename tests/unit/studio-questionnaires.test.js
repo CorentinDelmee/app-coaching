@@ -25,4 +25,12 @@ describe('questionnaires Studio', () => {
     expect(emojisDepuisTexte('😫 😕🙂')).toEqual(['😫', '😕', '🙂'])
     expect(pluriel(2, 'réponse')).toBe('2 réponses')
   })
+  it('valide choix et nombre', () => {
+    const avec = (x) => ({ ...base(), questions: [{ libelle: 'Q', ...x }] })
+    expect(probleme(avec({ type: 'choixUnique', choix: ['A'] }))).toMatch(/deux choix/)
+    expect(probleme(avec({ type: 'choixMultiple', choix: ['A', ' a '] }))).toMatch(/identiques/)
+    expect(probleme(avec({ type: 'choixUnique', choix: ['A', 'B'] }))).toBeNull()
+    expect(probleme(avec({ type: 'nombre', min: 5, max: 5 }))).toMatch(/minimum/)
+    expect(probleme(avec({ type: 'nombre', min: 0, max: 10 }))).toBeNull()
+  })
 })

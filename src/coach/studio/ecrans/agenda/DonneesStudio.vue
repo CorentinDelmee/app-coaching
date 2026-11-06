@@ -57,7 +57,7 @@ function surDepot(ev) {
 </script>
 
 <template>
-  <div class="st-app st-ag">
+  <div class="st-ag">
     <header class="st-entete">
       <div>
         <h1>Import / export</h1>
