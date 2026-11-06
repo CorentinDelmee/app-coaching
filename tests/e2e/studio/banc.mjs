@@ -88,7 +88,7 @@ const LIB_PAGE = `(() => {
   const entrees = new WeakMap()
   const noter = (n) => { if (n.nodeType === 1 && /-enter-active/.test(n.className) && !entrees.has(n)) entrees.set(n, performance.now()) }
   new MutationObserver((ms) => { for (const m of ms) { if (m.type === 'attributes') noter(m.target); else m.addedNodes.forEach((n) => { noter(n); n.querySelectorAll?.('[class*="-enter-active"]').forEach(noter) }) } })
-    .observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] })
+    .observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["class"] }) // document (pas documentElement : absent quand le script d’amorce s’exécute)
   // Contraste de tous les textes visibles (opacité des ancêtres comprise : c'est ce qui révèle les creux des fondus).
   function scan() {
     const sortie = [], ignores = { fond_image: 0 }
@@ -268,7 +268,6 @@ async function auditerTransitions(browser, vp) {
   surveiller(page, journal)
   try {
     await aller(page, '/coach/aujourdhui')
-    const studio = FORCE || await page.evaluate(() => window.__banc.studio())
     for (const cible of ['/coach/exercices', '/coach/clients', '/coach/aujourdhui', '/coach/seances']) {
       const lien = page.locator(`a[href="${cible}"]:visible`).first()
       if (!(await lien.count())) { add(`transition → ${cible}`, vp.nom, 'contraste en temps réel', 'skip', 'lien de navigation non visible à cette taille'); continue }
@@ -276,7 +275,9 @@ async function auditerTransitions(browser, vp) {
       await lien.click()
       await pause(1100)
       const r = await page.evaluate(() => window.__banc.fin())
-      add(`transition → ${cible}`, vp.nom, 'contraste en temps réel', r.echecs.length ? design(studio) : 'ok', r.echecs.length ? `pire creux ${r.echecs[0].ratio}:1 sur ${r.echecs.length} textes (${r.n} scans) : ` + resume(r.echecs, (m) => `${m.sel}"${m.texte}" ${m.ratio}<${m.need}`) : `${r.n} scans, aucun creux`)
+      // jugé d'après la page d'ARRIVÉE (la sortante n'est plus mesurée) : un creux sur une ancienne vue est « attendu »
+      const arrivee = FORCE || await page.evaluate(() => window.__banc.studio())
+      add(`transition → ${cible}`, vp.nom, 'contraste en temps réel', r.echecs.length ? design(arrivee) : 'ok', r.echecs.length ? `pire creux ${r.echecs[0].ratio}:1 sur ${r.echecs.length} textes (${r.n} scans) : ` + resume(r.echecs, (m) => `${m.sel}"${m.texte}" ${m.ratio}<${m.need}`) : `${r.n} scans, aucun creux`)
     }
     add('transitions', vp.nom, 'console sans erreur', journal.erreurs.length ? 'fail' : 'ok', [...new Set(journal.erreurs)].slice(0, 3).join(' | '))
   } catch (e) { add('transitions', vp.nom, 'contraste en temps réel', 'fail', 'exception: ' + e.message.split('\n')[0]) } finally { await ctx.close() }
