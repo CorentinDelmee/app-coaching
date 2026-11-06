@@ -1,0 +1,20 @@
+/* Champs de formulaire des éditeurs Studio (séances, programmes). À poser sous .st-prog (racine des 4 écrans du lot). */
+.st-prog :where(label) { display: grid; gap: 6px; font-size: 12.5px; font-weight: 700; letter-spacing: .02em; color: var(--st-doux); min-width: 0; }
+.st-prog :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--st-filet-fort); border-radius: var(--st-r-m);
+  background: var(--st-surface); color: var(--st-encre); font-size: 15px; font-weight: 500; letter-spacing: 0;
+  transition: border-color var(--st-d-court), box-shadow var(--st-d-court);
+}
+.st-prog :where(textarea) { resize: vertical; min-height: 64px; line-height: 1.45; }
+.st-prog :where(select) { appearance: none; padding-right: 34px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%235C5F66' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 16px; }
+.st-prog :where(input, select, textarea):focus-visible { outline: none; border-color: var(--st-encre); box-shadow: 0 0 0 3px rgba(35, 37, 43, .14); }
+.st-prog input::placeholder, .st-prog textarea::placeholder { color: #6B6E75; }
+.st-prog input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--st-encre); flex: none; }
+.st-prog input[type="number"] { font-variant-numeric: tabular-nums; }
+/* Petites actions (hauteur 40 + zone élargie à 44) */
+.st-prog .st-prog-mini { min-height: 44px; padding: 0 14px; font-size: 13.5px; border-radius: 12px; position: relative; }
+.st-prog .st-prog-mini::after { content: ''; position: absolute; inset: -2px; }
+.st-prog .st-btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+.st-prog-lien { border: 0; background: none; padding: 0; min-height: 32px; color: var(--st-encre); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.st-prog-retour { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin: -8px 0 6px; color: var(--st-doux); font-weight: 600; text-decoration: none; }
+.st-prog-retour:hover { color: var(--st-encre); }
