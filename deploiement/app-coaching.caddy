@@ -15,7 +15,7 @@ app.A_REMPLACER_DOMAINE {
 		X-Robots-Tag "noindex, nofollow"
 		# CSP = celle de public/_headers sans Supabase : tout en 'self' (polices et scripts auto-hébergés, API en même origine),
 		# images data:/blob: (aperçus de photos), YouTube sans cookie en iframe (vidéos d'exercices), service worker.
-		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; frame-src https://www.youtube-nocookie.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://i.ytimg.com; font-src 'self' data:; connect-src 'self'; frame-src https://www.youtube-nocookie.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 		-Server
 	}
 

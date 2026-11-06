@@ -1,0 +1,94 @@
+/* Studio (refonte coach, maquette design-coach/d3) — tokens + briques communes.
+   Tout est limité à .st-app (racine de CoachLayout) : l'app client ne change pas.
+   Polices Syne / Albert Sans : déjà déclarées (auto-hébergées) dans src/styles/tokens.css. Préfixe CSS : st- */
+.st-app {
+  --st-fond: #F4F1EC;          /* lin chaud, jamais blanc pur en fond */
+  --st-surface: #FFFFFF;
+  --st-surface-2: #EDE8E0;
+  --st-encre: #23252B;         /* anthracite, jamais noir pur */
+  --st-texte: #2B2D33;
+  --st-doux: #5C5F66;          /* 5,7:1 sur le fond, 6,4:1 sur blanc */
+  --st-filet: rgba(35, 37, 43, .10);
+  --st-filet-fort: rgba(35, 37, 43, .18);
+  --st-jaune: #F2E27A; --st-jaune-texte: #26230A;   /* jaune toujours en aplat, jamais en texte sur clair */
+  --st-ok: #1B6B4C; --st-ok-fond: #DDF3E9;
+  --st-alerte: #A23B2A; --st-alerte-fond: #FBE4DE;
+  --st-propose: #7A5A00; --st-propose-fond: #FFF1C2;
+  /* Groupes musculaires : pastel (fond) + encre (texte, >= 6:1 sur le pastel) */
+  --m-jambes: #F7D9C4; --m-jambes-i: #7A3412;
+  --m-dos: #CFE3F5; --m-dos-i: #18476E;
+  --m-pecs: #F5D0D6; --m-pecs-i: #7E2234;
+  --m-epaules: #E3D6F5; --m-epaules-i: #4B2C7A;
+  --m-bras: #D3EEDB; --m-bras-i: #1C5C35;
+  --m-gainage: #F3E7B8; --m-gainage-i: #5E4A00;
+  --m-mobilite: #CDEDEC; --m-mobilite-i: #135955;
+  --m-cardio: #F9D5B8; --m-cardio-i: #7C3A05;
+  --mc: var(--st-surface-2); --mi: var(--st-doux);   /* repli sans groupe */
+
+  --st-titre: 'Syne', system-ui, sans-serif;          /* 500, jamais > 600, interlettrage -.035em */
+  --st-sans: 'Albert Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --st-r-xl: 28px; --st-r-l: 20px; --st-r-m: 14px; --st-r-s: 10px;
+  --st-ombre-1: 0 1px 2px rgba(35,37,43,.06), 0 2px 8px rgba(35,37,43,.05);
+  --st-ombre-2: 0 2px 6px rgba(35,37,43,.06), 0 18px 40px -12px rgba(35,37,43,.22);
+  --st-ombre-3: 0 30px 80px -20px rgba(35,37,43,.35);
+  --st-ressort: cubic-bezier(.34, 1.4, .64, 1);      /* survol, appui */
+  --st-sortie: cubic-bezier(.16, 1, .3, 1);          /* expo-out : entrées, cascade */
+  --st-vaul: cubic-bezier(.32, .72, 0, 1);           /* panneau, feuille, élément partagé */
+  --st-d-appui: 120ms; --st-d-court: 220ms; --st-d-base: 420ms; --st-d-panneau: 500ms;
+  --st-nav: 248px;
+  /* empilement : barres sticky des vues < 10 ; barre du bas 40 ; voile 49 ; panneau 50 ; volant 60 ; toast 80 */
+  --st-z-barre: 40; --st-z-voile: 49; --st-z-panneau: 50; --st-z-volant: 60; --st-z-toast: 80;
+
+  background: var(--st-fond); color: var(--st-texte); font: 15px/1.45 var(--st-sans);
+  -webkit-font-smoothing: antialiased;
+}
+@media (max-width: 900px) { .st-app { --st-nav: 0px; } }
+
+:where(.st-app) *, :where(.st-app) *::before, :where(.st-app) *::after { box-sizing: border-box; }
+/* :where() = spécificité nulle : ces remises à zéro ne doivent jamais battre une classe de composant (.st-btn--encre, etc.). */
+:where(.st-app) :where(button, input, select, textarea) { font: inherit; color: inherit; }
+:where(.st-app) :where(button) { cursor: pointer; }
+:where(.st-app) :focus-visible { outline: 2.5px solid var(--st-encre); outline-offset: 2px; border-radius: 8px; }
+.st-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Couleur d'un groupe : data-m="dos" pose --mc (pastel) / --mi (encre). Le nom du muscle est toujours écrit à côté. */
+.st-app [data-m="jambes"] { --mc: var(--m-jambes); --mi: var(--m-jambes-i); }
+.st-app [data-m="dos"] { --mc: var(--m-dos); --mi: var(--m-dos-i); }
+.st-app [data-m="pecs"] { --mc: var(--m-pecs); --mi: var(--m-pecs-i); }
+.st-app [data-m="epaules"] { --mc: var(--m-epaules); --mi: var(--m-epaules-i); }
+.st-app [data-m="bras"] { --mc: var(--m-bras); --mi: var(--m-bras-i); }
+.st-app [data-m="gainage"] { --mc: var(--m-gainage); --mi: var(--m-gainage-i); }
+.st-app [data-m="mobilite"] { --mc: var(--m-mobilite); --mi: var(--m-mobilite-i); }
+.st-app [data-m="cardio"] { --mc: var(--m-cardio); --mi: var(--m-cardio-i); }
+
+/* En-tête de page */
+.st-entete { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+.st-entete h1 { font-family: var(--st-titre); font-weight: 500; font-size: clamp(34px, 5vw, 56px); line-height: 1; letter-spacing: -.035em; margin: 0; color: var(--st-encre); }
+.st-entete p { margin: 6px 0 0; color: var(--st-doux); }
+.st-entete .st-actions { margin-left: auto; display: flex; gap: 8px; }
+@media (max-width: 900px) { .st-entete h1 { font-size: 40px; } }
+
+/* Boutons */
+.st-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: var(--st-r-m); border: 1px solid var(--st-filet-fort); background: var(--st-surface); color: var(--st-encre); font-weight: 600; text-decoration: none; transition: transform var(--st-d-appui) ease-out, box-shadow var(--st-d-court), background var(--st-d-court); }
+.st-btn svg { width: 18px; height: 18px; }
+.st-btn:active { transform: scale(.96); transition-duration: 80ms; }
+.st-btn--jaune { background: var(--st-jaune); color: var(--st-jaune-texte); border-color: transparent; }
+.st-btn--encre { background: var(--st-encre); color: #fff; border-color: transparent; }
+.st-btn--danger { background: var(--st-alerte); color: #fff; border-color: transparent; }
+.st-btn--rond { width: 44px; padding: 0; border-radius: 50%; }
+.st-btn--fantome { background: transparent; border-color: transparent; }
+.st-btn--fantome:hover { background: var(--st-surface-2); }
+
+/* Blocs (cartes utilitaires) */
+.st-bloc { background: var(--st-surface); border-radius: var(--st-r-l); box-shadow: var(--st-ombre-1); padding: 18px 20px; min-width: 0; }
+.st-bloc h2 { font-family: var(--st-titre); font-weight: 500; font-size: 20px; letter-spacing: -.02em; margin: 0 0 12px; color: var(--st-encre); }
+
+/* Entrée de vue */
+@keyframes st-entree { from { opacity: 0; transform: translateY(10px); } }
+@keyframes st-cascade { from { opacity: 0; transform: translateY(12px); } }
+@keyframes st-tourne { to { transform: rotate(1turn); } }
+@keyframes st-trace { to { stroke-dashoffset: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .st-app *, .st-app *::before, .st-app *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
+}
