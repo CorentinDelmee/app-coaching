@@ -106,3 +106,6 @@ textarea.st-qs-champ { resize: vertical; line-height: 1.45; }
   .st-qs .st-entete .st-actions .st-btn { width: 100%; }
 }
 @media (max-width: 420px) { .st-qs-ligne { grid-template-columns: 1fr; } }
+
+.st-qs-sortie { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 16px; padding: 14px 16px; border-radius: 18px; background: var(--st-alerte-fond); color: var(--st-alerte); box-shadow: var(--st-ombre-2); animation: st-entree var(--st-d-base) var(--st-sortie); }
+.st-qs-sortie p { flex: 1 1 260px; margin: 0; }

@@ -2,12 +2,13 @@
 // Studio — éditeur de questionnaire : sauvegarde automatique, 7 types de questions, aperçu vivant de chaque question.
 // Création : le questionnaire est créé dès qu'il est complet (nom + au moins une question avec texte), puis modifié.
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
 import data from '../../../../data/index.js'
 import { FREQUENCES } from '../../../../domain/modele.js'
 import { etat, rafraichir, uuid, messageErreur } from '../../../store.js'
 import { TYPES_QUESTION_LIBELLES, cleDepuisLibelle, copie, deplacer, nouvelleQuestion } from '../../../logique.js'
 import { useSauvegardeAuto } from '../../useSauvegardeAuto.js'
+import { remplacerAdresse } from '../programmes/commun/adresse.js'
 import { toast } from '../../toast.js'
 import IndicateurSauvegarde from '../../IndicateurSauvegarde.vue'
 import Puce from '../../Puce.vue'
@@ -32,7 +33,7 @@ const sauve = useSauvegardeAuto(async (doc) => {
   if (!existe) {
     await data.questionnaires.creer(documentPropre(doc, { creation: true }))
     existe = true; existeRef.value = true
-    router.replace(`/coach/questionnaires/${idDoc}`)
+    remplacerAdresse(`/coach/questionnaires/${idDoc}`)
   } else {
     const propre = documentPropre(doc)
     await data.questionnaires.modifier(idDoc, { ...propre, clientId: propre.clientId })
@@ -62,7 +63,24 @@ async function charger() {
   }
 }
 onMounted(charger)
-onBeforeUnmount(() => { sauve.arreter() })
+
+// Quitter la page : on attend l'écriture en cours ; si rien n'a pu être écrit, bandeau « Quitter / Rester » (pas de confirm()).
+const sortie = ref(null) // { vers, raison }
+let forcer = false
+async function avantDeQuitter(to) {
+  if (forcer || !q.value) return true
+  await sauve.maintenant()
+  const contenu = existe || q.value.nom.trim() || q.value.questions.length
+  if (sauve.etat.value === 'erreur') { sortie.value = { vers: to.fullPath, raison: 'La dernière modification n’a pas pu être enregistrée.' }; return false }
+  if (manque.value && contenu) { sortie.value = { vers: to.fullPath, raison: `Non enregistré : ${manque.value}` }; return false }
+  return true
+}
+onBeforeRouteLeave(avantDeQuitter)
+onBeforeRouteUpdate((to) => (to.params.id === idDoc ? true : avantDeQuitter(to)))
+function quitterQuandMeme() { forcer = true; const v = sortie.value.vers; sortie.value = null; router.push(v).finally(() => { forcer = false }) }
+const avantFermeture = (e) => { if (['attente', 'encours', 'erreur'].includes(sauve.etat.value) || (manque.value && (existe || q.value?.nom.trim() || q.value?.questions.length))) { e.preventDefault(); e.returnValue = '' } }
+onMounted(() => window.addEventListener('beforeunload', avantFermeture))
+onBeforeUnmount(() => { window.removeEventListener('beforeunload', avantFermeture); sauve.arreter() })
 
 const manque = computed(() => (q.value ? probleme(q.value) : null))
 // Chaque modification d'un questionnaire complet est planifiée ; un questionnaire incomplet n'est pas écrit (message affiché).
@@ -134,6 +152,12 @@ const apercuCurseur = (qu) => qu.etiquettes || ['', '']
       <IndicateurSauvegarde class="st-qs-sauve" :etat="sauve.etat.value" @reessayer="sauve.reessayer" />
     </header>
 
+    <div v-if="sortie" class="st-qs-sortie" role="alertdialog" aria-labelledby="st-qs-sortie-t">
+      <p id="st-qs-sortie-t"><b>{{ sortie.raison }}</b> Si tu quittes, la dernière modification sera perdue.</p>
+      <button type="button" class="st-btn st-btn--encre" @click="sortie = null">Rester et corriger</button>
+      <button type="button" class="st-btn" @click="quitterQuandMeme">Quitter sans enregistrer</button>
+    </div>
+
     <p v-if="manque" class="st-qs-note" role="status">{{ manque }} <span>Rien n’est écrit tant que ce n’est pas complet.</span></p>
     <p v-if="nbReponses" class="st-qs-note st-qs-note--info">{{ nbReponses }} réponse{{ nbReponses > 1 ? 's' : '' }} déjà reçue{{ nbReponses > 1 ? 's' : '' }} : les questions existantes gardent leur clé, tu peux reformuler leur texte sans perdre l’historique.</p>
 
@@ -145,7 +169,7 @@ const apercuCurseur = (qu) => qu.etiquettes || ['', '']
         </label>
       </fieldset>
       <label class="st-qs-pour">
-        <span class="st-qs-etiq">Envoyé à</span>
+        <span class="st-qs-etiq">Pour</span>
         <select v-model="q.clientId" class="st-qs-champ">
           <option :value="null">Tous les clients</option>
           <option v-for="c in etat.clients" :key="c.id" :value="c.id">{{ c.nom }}</option>
