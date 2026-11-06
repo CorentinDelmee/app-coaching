@@ -2,6 +2,7 @@
 import { ouvrirSessionCoach } from './store.js'
 import ecranAujourdhui from './studio/ecrans/aujourdhui/routes.js'
 import ecranClients from './studio/ecrans/clients/routes.js'
+import ecranExercices from './studio/ecrans/exercices/routes.js'
 import ecranAgenda from './studio/ecrans/agenda/routes.js'
 import ecranQuestionnaires from './studio/ecrans/questionnaires/routes.js'
 
@@ -20,8 +21,7 @@ export const routeCoach = {
     // Démo des composants Studio (vignette, panneau, élément partagé) : en développement seulement.
     ...(import.meta.env.DEV ? [{ path: 'studio-demo', component: () => import('./studio/DemoComposants.vue'), meta: { studio: true } }] : []),
     ...studio(ecranClients),
-    { path: 'exercices', component: () => import('./views/ExercicesView.vue') },
-    { path: 'bibliotheque', component: () => import('./views/BibliothequeVideosView.vue') },
+    ...studio(ecranExercices),
     { path: 'seances', component: () => import('./views/SeancesView.vue') },
     { path: 'seances/:id', component: () => import('./views/SeanceEditeur.vue'), props: true },
     { path: 'programmes', component: () => import('./views/ProgrammesView.vue') },
