@@ -349,6 +349,7 @@ onMounted(async () => {
   await charger()
   await nextTick()
   placerSouligne()
+  if (onglet.value !== 'apercu') barreOnglets.value?.querySelector('[aria-selected="true"]')?.scrollIntoView({ inline: 'nearest', block: 'nearest' })
   // Le focus va au nom du client (annoncé par le lecteur d'écran), jamais au body.
   titre.value?.focus({ preventScroll: true })
   if (reduit.matches) { vu.value = true; return }
