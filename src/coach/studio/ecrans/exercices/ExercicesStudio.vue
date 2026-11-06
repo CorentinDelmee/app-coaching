@@ -15,7 +15,7 @@ import { volerVers, mouvementReduit } from '../../transitionPartagee.js'
 import { toast } from '../../toast.js'
 import { NOMS_MUSCLES, TEINTES_STUDIO, NIVEAUX, muscleDe, mediaDe, mouvementDe, idVideoDe, statutVideo, dureeCourte } from '../../medias.js'
 import { uuid } from '../../../store.js'
-import { filtrer, compteParTeinte, materielsDe, categoriesDe, compteVideo, voisin, messageErreurExo } from './logique.js'
+import { filtrer, compteParTeinte, materielsDe, categoriesDe, compteVideo, voisin, messageErreurExo, LIBELLES } from './logique.js'
 import * as D from './donnees.js'
 import FicheExercice from './FicheExercice.vue'
 
@@ -31,13 +31,18 @@ const materiel = ref('')
 const categorie = ref('')
 const niveau = ref('')
 const video = ref(['propose', 'valide', 'aucune'].includes(route.query.video) ? route.query.video : '')
-const affichage = ref('grille')
+// Grandes vignettes / liste compacte : préférence d'affichage de cet appareil (aucune donnée, simple confort).
+const CLE_AFFICHAGE = 'studio:exercices:affichage'
+const lirePref = () => { try { return localStorage.getItem(CLE_AFFICHAGE) === 'liste' ? 'liste' : 'grille' } catch { return 'grille' } }
+const affichage = ref(lirePref())
+watch(affichage, (a) => { try { localStorage.setItem(CLE_AFFICHAGE, a) } catch { /* navigation privée : on ne mémorise pas */ } })
 
 const liste = computed(() => filtrer(items.value, { q: q.value, muscles: muscles.value, materiel: materiel.value, categorie: categorie.value, niveau: niveau.value, video: video.value }))
 const comptes = computed(() => compteParTeinte(items.value))
 const optionsMuscles = computed(() => TEINTES_STUDIO.map((t) => ({ valeur: t, texte: NOMS_MUSCLES[t], muscle: t, n: comptes.value[t] })))
 const optionsVideo = computed(() => [
   { valeur: 'propose', texte: 'Vidéo à valider', propose: true, n: compteVideo(items.value, 'propose') },
+  { valeur: 'valide', texte: 'Vidéo validée', n: compteVideo(items.value, 'valide') },
   { valeur: 'aucune', texte: 'Sans vidéo', n: compteVideo(items.value, 'aucune') }
 ])
 const materiels = computed(() => materielsDe(items.value))
@@ -56,20 +61,30 @@ const courant = computed(() => items.value.find((e) => e.id === courantId.value)
 const panneau = ref(null)
 const fiche = ref(null)
 const etatSauve = ref('repos')
+const invalides = ref([])         // champs de la fiche à corriger (non enregistrés)
+const avertir = ref(null)         // { action: 'fermer' | 'aller', d } : fermeture demandée avec un champ invalide
 const cascade = ref(true)
 const lecture = ref(false)
 const mediaCourant = computed(() => (courant.value ? mediaDe(courant.value) : null))
 const idVideo = computed(() => (courant.value ? idVideoDe(courant.value) : null))
 const precedent = computed(() => !!(courant.value && voisin(liste.value, courant.value.id, -1)))
 const suivant = computed(() => !!(courant.value && voisin(liste.value, courant.value.id, 1)))
+const texteInvalide = computed(() => (invalides.value.length === 1 ? `${LIBELLES[invalides.value[0]] || 'Un champ'} n'est pas enregistré` : `${invalides.value.length} champs ne sont pas enregistrés`))
 
-// Lien direct : /coach/exercices?ex=<id> ouvre l'exercice (ex. depuis Aujourd'hui). L'ouverture ne réécrit pas l'URL :
-// recharger la page rend la grille (le panneau ne recouvre pas tout au retour sur téléphone).
-function majUrl(id) {
+// ?ex=<id> suit l'exercice affiché (lien direct, ex. depuis Aujourd'hui). Sur téléphone, ouvrir la feuille ajoute UNE
+// entrée d'historique : le retour arrière du navigateur ferme la feuille au lieu de quitter l'écran.
+const mobile = () => typeof matchMedia === 'function' && matchMedia('(max-width: 900px)').matches
+let entreeFeuille = false
+function majUrl(id, { pousser = false } = {}) {
   const query = { ...route.query }
   if (id) query.ex = id; else delete query.ex
-  router.replace({ query })
+  if ((route.query.ex || null) === (id || null)) return
+  if (pousser) { entreeFeuille = true; router.push({ query }) } else router.replace({ query })
 }
+watch(() => route.query.ex, (ex) => {
+  if (!ex && courantId.value) { entreeFeuille = false; fermer({ force: true, depuisHistorique: true }) }
+  else if (ex && ex !== courantId.value) { const e = items.value.find((x) => x.id === ex); if (e) ouvrir(e, null) }
+})
 
 async function ouvrir(e, elMedia) {
   const deja = !!courantId.value
@@ -77,28 +92,49 @@ async function ouvrir(e, elMedia) {
   // L'ancienne fiche est démontée (:key) : son onBeforeUnmount écrit ce qui reste, sans bloquer le changement.
   cascade.value = !deja
   lecture.value = false
+  avertir.value = null
   courantId.value = e.id
+  majUrl(e.id, { pousser: !deja && mobile() && !route.query.ex })
   await nextTick()
   const cible = panneau.value?.media?.()
   if (!deja && elMedia && cible) volerVers(elMedia, cible, { muscle: muscleDe(e) })
   else if (deja && cible && !mouvementReduit()) cible.animate?.([{ opacity: 0.4 }, { opacity: 1 }], { duration: 260, easing: 'ease-out' })
 }
 
-async function fermer() {
+/** Un champ invalide reste-t-il ? Alors on prévient dans le panneau au lieu de fermer / changer en silence. */
+function retenir(action) {
+  if (!invalides.value.length || avertir.value) return false
+  avertir.value = action
+  nextTick(() => document.getElementById('st-exo-avertir')?.focus())
+  return true
+}
+function corriger() { avertir.value = null; nextTick(() => fiche.value?.focusInvalide?.()) }
+function quandMeme() {
+  const a = avertir.value
+  avertir.value = null
+  if (a?.action === 'aller') aller(a.d, true); else fermer({ force: true })
+}
+
+async function fermer({ force = false, depuisHistorique = false } = {}) {
   const id = courantId.value
   if (!id) return
+  if (!force && retenir({ action: 'fermer' })) return
   fiche.value?.enregistrer?.() // sans attendre : le panneau se ferme tout de suite, l'écriture finit en arrière-plan
   courantId.value = null
   lecture.value = false
-  if (route.query.ex) majUrl(null)
+  avertir.value = null
+  if (!depuisHistorique && route.query.ex) {
+    if (entreeFeuille) { entreeFeuille = false; router.back() } else majUrl(null)
+  }
   await nextTick()
   // PanneauLateral rend le focus à la carte d'ouverture ; après ↑ ↓ c'est la dernière carte affichée qui doit l'avoir.
   document.querySelector(`.st-exo-grille .st-carte[data-id="${CSS.escape(id)}"]`)?.focus({ preventScroll: true })
 }
 
-function aller(d) {
+function aller(d, force = false) {
   const n = courant.value && voisin(liste.value, courant.value.id, d)
   if (!n) return
+  if (!force && retenir({ action: 'aller', d })) return
   ouvrir(n, null)
   nextTick(() => document.querySelector(`.st-exo-grille .st-carte[data-id="${CSS.escape(n.id)}"]`)?.scrollIntoView({ block: 'nearest', behavior: mouvementReduit() ? 'auto' : 'smooth' }))
 }
@@ -109,24 +145,39 @@ function surMaj(item) {
 }
 function surArchive(id) {
   const n = voisin(liste.value, id, 1) || voisin(liste.value, id, -1)
-  courantId.value = null
+  invalides.value = []
+  fermer({ force: true })
   items.value = items.value.filter((e) => e.id !== id)
-  if (route.query.ex) majUrl(null)
   if (n) nextTick(() => document.querySelector(`.st-exo-grille .st-carte[data-id="${CSS.escape(n.id)}"]`)?.focus({ preventScroll: true }))
 }
 
-async function nouveau() {
+// ---------- Nouvel exercice : créé seulement quand un nom est saisi ----------
+const creation = ref(false)
+const nomNouveau = ref('')
+const champNouveau = ref(null)
+const enCreation = ref(false)
+async function commencerCreation() {
+  creation.value = true
+  await nextTick()
+  champNouveau.value?.focus()
+}
+function annulerCreation() { creation.value = false; nomNouveau.value = '' }
+async function creer() {
+  const nom = nomNouveau.value.trim()
+  if (!nom || enCreation.value) return
+  enCreation.value = true
   try {
-    const cree = await D.creer({ id: uuid(), nom: 'Nouvel exercice', categories: [] })
+    const cree = await D.creer({ id: uuid(), nom, categories: [] })
     const item = (await D.detail(cree.id)) || cree
-    if (!item) { await charger(); return }
     items.value = [...items.value, item]
     toutEffacer()
-    await ouvrir(item, null)
+    annulerCreation()
     await nextTick()
-    const champ = document.getElementById('st-exo-nom')
-    champ?.focus(); champ?.select()
-  } catch (e) { toast(messageErreurExo(e)) }
+    const carte = document.querySelector(`.st-exo-grille .st-carte[data-id="${CSS.escape(item.id)}"]`)
+    carte?.scrollIntoView({ block: 'center', behavior: mouvementReduit() ? 'auto' : 'smooth' })
+    await ouvrir(item, carte?.querySelector('.st-carte-media') || null)
+    toast(`« ${nom} » créé`)
+  } catch (e) { toast(messageErreurExo(e)) } finally { enCreation.value = false }
 }
 
 // Filtre vidéo <-> ?video= (lien « N vidéos proposées par Claude » d'Aujourd'hui, ancienne /coach/bibliotheque)
@@ -184,9 +235,15 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', surTouche); anim
         <p>{{ charge ? `${items.length} mouvements dans ta bibliothèque, prêts à glisser dans une séance.` : 'Chargement de ta bibliothèque…' }}</p>
       </div>
       <div class="st-actions">
-        <button class="st-btn st-btn--jaune" type="button" @click="nouveau"><IconeSt nom="plus" /><span>Nouvel exercice</span></button>
+        <button class="st-btn st-btn--jaune" type="button" :aria-expanded="creation" aria-controls="st-exo-creation" @click="commencerCreation"><IconeSt nom="plus" /><span>Nouvel exercice</span></button>
       </div>
     </header>
+    <form v-if="creation" id="st-exo-creation" class="st-exo-creation" @submit.prevent="creer" @keydown.esc.stop="annulerCreation">
+      <label for="st-exo-nouveau">Nom du nouvel exercice</label>
+      <input id="st-exo-nouveau" ref="champNouveau" v-model="nomNouveau" maxlength="120" autocomplete="off" placeholder="ex. Fente latérale">
+      <button type="submit" class="st-btn st-btn--encre" :disabled="!nomNouveau.trim() || enCreation">Créer</button>
+      <button type="button" class="st-btn st-btn--fantome" @click="annulerCreation">Annuler</button>
+    </form>
 
     <div class="st-exo-outils">
       <label class="st-exo-recherche">
@@ -212,7 +269,7 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', surTouche); anim
     <p class="st-sr" role="status" aria-live="polite">{{ charge ? `${liste.length} exercice${liste.length > 1 ? 's' : ''}` : '' }}</p>
 
     <ul v-if="liste.length" ref="grille" class="st-exo-grille" data-test="biblio" :class="{ 'is-liste': affichage === 'liste' }">
-      <li v-for="e in liste" :key="e.id"><VignetteExercice data-test="exercice" :exercice="e" :actif="courantId === e.id" :affichage="affichage" @ouvrir="ouvrir" /></li>
+      <li v-for="e in liste" :key="e.id" v-memo="[e, courantId === e.id, affichage]"><VignetteExercice data-test="exercice" :exercice="e" :actif="courantId === e.id" :affichage="affichage" @ouvrir="ouvrir" /></li>
     </ul>
     <div v-else-if="charge && !erreur" class="st-exo-vide">
       <p v-if="!items.length"><b>Ta bibliothèque est vide.</b><br>Crée ton premier exercice ou demande à Claude d'en ajouter.</p>
@@ -223,7 +280,7 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', surTouche); anim
 
     <PanneauLateral
       ref="panneau" :ouvert="!!courant" :etiquette="courant?.nom || 'Exercice'" :muscle="courant ? muscleDe(courant) : null"
-      :sauvegarde="etatSauve" :precedent="precedent" :suivant="suivant" :cascade="cascade"
+      :sauvegarde="invalides.length ? '' : etatSauve" :precedent="precedent" :suivant="suivant" :cascade="cascade"
       @fermer="fermer" @precedent="aller(-1)" @suivant="aller(1)" @reessayer="fiche?.reessayer()"
     >
       <template #media>
@@ -237,9 +294,21 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', surTouche); anim
           <span v-if="statutVideo(courant) === 'propose' && !lecture" class="st-exo-propose">À valider</span>
         </template>
       </template>
+      <template #barre>
+        <button v-if="invalides.length && !avertir" type="button" class="st-exo-acorriger" @click="corriger">
+          {{ invalides.length }} champ{{ invalides.length > 1 ? 's' : '' }} à corriger
+        </button>
+      </template>
+      <div v-if="avertir" id="st-exo-avertir" class="st-exo-avertir" role="alertdialog" aria-labelledby="st-exo-avertir-t" tabindex="-1">
+        <p id="st-exo-avertir-t"><b>{{ texteInvalide }}.</b> Corrige-le pour le garder ; le reste est enregistré.</p>
+        <div>
+          <button type="button" class="st-btn st-btn--encre" @click="corriger">Corriger</button>
+          <button type="button" class="st-btn" @click="quandMeme">{{ avertir.action === 'aller' ? 'Continuer quand même' : 'Fermer quand même' }}</button>
+        </div>
+      </div>
       <FicheExercice
         v-if="courant" :key="courant.id" ref="fiche" :exercice="courant" :materiels="materiels" :categories="categories"
-        @etat="etatSauve = $event" @maj="surMaj" @archive="surArchive"
+        @etat="etatSauve = $event" @invalides="invalides = $event" @maj="surMaj" @archive="surArchive"
       />
     </PanneauLateral>
   </section>

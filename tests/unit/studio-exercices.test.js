@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { filtrer, compteParTeinte, materielsDe, categoriesDe, compteVideo, versFormulaire, construirePatch, basculer, tailleReduite, voisin, messageErreurExo, teintesDe } from '../../src/coach/studio/ecrans/exercices/logique.js'
+import { filtrer, compteParTeinte, materielsDe, categoriesDe, compteVideo, versFormulaire, construirePatch, basculer, tailleReduite, voisin, messageErreurExo, teintesDe, champsDifferents, lienCanonique, proposeeParClaude, cleMateriel } from '../../src/coach/studio/ecrans/exercices/logique.js'
 import routes from '../../src/coach/studio/ecrans/exercices/routes.js'
 
 const YT = 'https://www.youtube.com/watch?v=mKREc_xl_j8'
@@ -74,7 +74,36 @@ describe('construirePatch', () => {
     const avec = { ...ex[2], reposConseille: 60 }
     const f = versFormulaire(avec)
     f.reposConseille = ''; f.lienVideo = 'https://youtu.be/mKREc_xl_j8'
-    expect(construirePatch(avec, f)).toEqual({ patch: { reposConseille: null, lienVideo: 'https://youtu.be/mKREc_xl_j8' }, erreurs: {} })
+    expect(construirePatch(avec, f)).toEqual({ patch: { reposConseille: null, lienVideo: 'https://www.youtube.com/watch?v=mKREc_xl_j8' }, erreurs: {} })
+  })
+})
+
+describe('champs touchés (ne pas écraser ce que Claude a changé)', () => {
+  it('référence lienVideo=X, formulaire lienVideo vide, seul le nom touché -> patch sans lienVideo', () => {
+    const serveur = { ...ex[2], lienVideo: YT, consignes: 'Consigne de Claude' }
+    const form = { ...versFormulaire(ex[2]), nom: 'Planche ventrale' } // copie faite avant le changement de Claude
+    expect(form.lienVideo).toBe('')
+    expect(construirePatch(serveur, form, ['nom'])).toEqual({ patch: { nom: 'Planche ventrale' }, erreurs: {} })
+  })
+  it('un champ invalide ne bloque pas les autres', () => {
+    const form = { ...versFormulaire(ex[2]), lienVideo: 'https://vimeo.com/1', tempo: '2-0-2' }
+    expect(construirePatch(ex[2], form, ['lienVideo', 'tempo'])).toEqual({ patch: { tempo: '2-0-2' }, erreurs: { lienVideo: expect.any(String) } })
+  })
+  it('champ touché revenu à l’ancienne valeur : renvoyé quand même (écriture précédente en vol)', () => {
+    expect(construirePatch(ex[0], versFormulaire(ex[0]), ['tempo']).patch).toEqual({ tempo: '' })
+  })
+  it('champsDifferents compare liens canoniques et repos en texte', () => {
+    const a = versFormulaire({ ...ex[0], reposConseille: 60 })
+    expect(champsDifferents(a, { ...a, lienVideo: 'https://youtu.be/mKREc_xl_j8', reposConseille: ' 60 ' })).toEqual([])
+    expect(champsDifferents(a, { ...a, materiel: [] })).toEqual(['materiel'])
+    expect(lienCanonique('https://youtu.be/mKREc_xl_j8?t=3')).toBe(YT)
+  })
+  it('« proposée par Claude » seulement si la bibliothèque connaît la vidéo ; Haltère = Haltères', () => {
+    expect(proposeeParClaude(ex[0])).toBe(false)
+    expect(proposeeParClaude({ ...ex[0], video: { ...ex[0].video, titre: 'Squat gobelet - tuto' } })).toBe(true)
+    expect(cleMateriel('Haltère')).toBe(cleMateriel('Haltères'))
+    expect(materielsDe([{ materiel: ['Haltère'] }]).filter((m) => cleMateriel(m) === 'haltere')).toEqual(['Haltère'])
+    expect(filtrer([{ ...ex[3], materiel: ['Haltère'] }], { materiel: 'Haltères' }).length).toBe(1)
   })
 })
 
