@@ -7,7 +7,11 @@ export const routeCoach = {
   // Un client connecté est renvoyé vers l'accueil ; en mode local le compte coach de démo s'ouvre tout seul.
   beforeEnter: async () => ((await ouvrirSessionCoach()) === 'ok' ? true : '/'),
   children: [
-    { path: '', redirect: '/coach/clients' },
+    { path: '', redirect: '/coach/aujourdhui' },
+    // Studio : une route refaite porte meta.studio (sinon CoachLayout la rend dans le pont .coach des anciennes vues).
+    { path: 'aujourdhui', component: () => import('./studio/AujourdhuiView.vue'), meta: { studio: true } },
+    // Démo des composants Studio (vignette, panneau, élément partagé) : en développement seulement.
+    ...(import.meta.env.DEV ? [{ path: 'studio-demo', component: () => import('./studio/DemoComposants.vue'), meta: { studio: true } }] : []),
     { path: 'clients', component: () => import('./views/ClientsView.vue') },
     { path: 'clients/:id', component: () => import('./views/ClientView.vue'), props: true },
     { path: 'alertes', component: () => import('./views/AlertesView.vue') },

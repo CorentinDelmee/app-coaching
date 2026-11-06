@@ -44,10 +44,11 @@
 }
 @media (max-width: 900px) { .st-app { --st-nav: 0px; } }
 
-.st-app *, .st-app *::before, .st-app *::after { box-sizing: border-box; }
-.st-app button, .st-app input, .st-app select, .st-app textarea { font: inherit; color: inherit; }
-.st-app button { cursor: pointer; }
-.st-app :focus-visible { outline: 2.5px solid var(--st-encre); outline-offset: 2px; border-radius: 8px; }
+:where(.st-app) *, :where(.st-app) *::before, :where(.st-app) *::after { box-sizing: border-box; }
+/* :where() = spécificité nulle : ces remises à zéro ne doivent jamais battre une classe de composant (.st-btn--encre, etc.). */
+:where(.st-app) :where(button, input, select, textarea) { font: inherit; color: inherit; }
+:where(.st-app) :where(button) { cursor: pointer; }
+:where(.st-app) :focus-visible { outline: 2.5px solid var(--st-encre); outline-offset: 2px; border-radius: 8px; }
 .st-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Couleur d'un groupe : data-m="dos" pose --mc (pastel) / --mi (encre). Le nom du muscle est toujours écrit à côté. */
@@ -73,6 +74,7 @@
 .st-btn:active { transform: scale(.96); transition-duration: 80ms; }
 .st-btn--jaune { background: var(--st-jaune); color: var(--st-jaune-texte); border-color: transparent; }
 .st-btn--encre { background: var(--st-encre); color: #fff; border-color: transparent; }
+.st-btn--danger { background: var(--st-alerte); color: #fff; border-color: transparent; }
 .st-btn--rond { width: 44px; padding: 0; border-radius: 50%; }
 .st-btn--fantome { background: transparent; border-color: transparent; }
 .st-btn--fantome:hover { background: var(--st-surface-2); }
