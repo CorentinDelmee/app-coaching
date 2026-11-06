@@ -61,8 +61,8 @@ export function normaliserReservation(r) {
 }
 
 export const LIB_SYNCHRO = {
-  a_creer: 'Ajout à votre agenda en cours',
-  cree: 'Dans votre agenda',
+  a_creer: 'Ajout à ton agenda en cours',
+  cree: 'Dans ton agenda',
   a_supprimer: 'Retrait de l’agenda en cours',
   supprime: ''
 }

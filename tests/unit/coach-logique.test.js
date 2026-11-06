@@ -18,6 +18,7 @@ describe('messages', () => {
     const infos = { nom: 'Léa Martin', identifiant: 'lea.martin', code: 'ABC234', url: 'https://app.test' }
     expect(messageIdentifiants(infos)).toContain('Bonjour Léa')
     expect(messageIdentifiants(infos)).toContain('Code : ABC234')
+    expect(messageIdentifiants(infos)).toContain('ton accès')
     const lien = lienWhatsAppIdentifiants(infos, '+33 6 12 34 56 78')
     expect(lien.startsWith('https://wa.me/33612345678?text=')).toBe(true)
     expect(decodeURIComponent(lien)).toContain('lea.martin')
