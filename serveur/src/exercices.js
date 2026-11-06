@@ -35,7 +35,8 @@ export const CHAMPS = {
 export const schemaCreation = z.object({ id: z.string().regex(/^[A-Za-z0-9_-]{1,80}$/), ...CHAMPS }).strict().partial().required({ nom: true })
 export const schemaPatch = z.object(CHAMPS).strict().partial()
 // PUT générique : objet complet tel que stocké (id, archive, clientId en plus).
-const schemaStocke = z.object({ id: z.string().min(1).max(80), archive: z.boolean().optional(), clientId: z.string().nullable().optional(), photo: z.any().optional(), ...CHAMPS }).strict().partial().required({ id: true, nom: true })
+// Tolérant sur lienVideo (anciens liens non YouTube) et description (anciens imports longs) : rien d'existant ne doit devenir impossible à enregistrer.
+const schemaStocke = z.object({ ...CHAMPS, id: z.string().min(1).max(80), archive: z.boolean().optional(), clientId: z.string().nullable().optional(), photo: z.any().optional(), lienVideo: z.string().max(2000), description: z.string() }).strict().partial().required({ id: true, nom: true })
 
 /** Applique un patch : '' ou null efface la clé. Renvoie un nouvel objet. */
 export function appliquerPatch(actuel, patch) {
@@ -53,11 +54,10 @@ const retirer = (o, cles) => { const r = { ...o }; for (const c of cles) delete 
 /** Objet complet venant d'un PUT : retire les champs calculés, garde la photo du serveur, valide. Renvoie l'objet nettoyé ou null. */
 export function nettoyerPut(obj, existant) {
   const o = retirer(obj, CHAMPS_CALCULES)
+  for (const k of Object.keys(o)) if (o[k] === null) delete o[k] // anciennes lignes : « lienVideo: null »
   delete o.photo
   if (existant?.photo) o.photo = existant.photo
-  const copie = retirer(o, ['photo'])
-  for (const k of ['reposConseille']) if (copie[k] === undefined) delete copie[k]
-  return schemaStocke.safeParse(copie).success ? o : null
+  return schemaStocke.safeParse(retirer(o, ['photo'])).success ? o : null
 }
 
 /** Index d'usage : exerciceId -> { seances:Set, programmes:Set }. workouts et programmes = lignes du magasin. */
