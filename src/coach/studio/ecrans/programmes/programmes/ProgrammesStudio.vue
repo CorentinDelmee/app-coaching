@@ -158,14 +158,14 @@ async function archiver(p) {
 </template>
 
 <style>
-.st-prog-p { animation: st-entree var(--st-d-base) var(--st-sortie); }
+.st-prog-p { animation: st-prog-monte var(--st-d-base) var(--st-sortie); }
 .st-prog-p-outils { display: grid; gap: 10px; margin-bottom: 14px; }
 .st-prog-p-cherche { display: flex; align-items: center; gap: 10px; max-width: 520px; min-height: 48px; padding: 0 14px; border-radius: var(--st-r-m); background: var(--st-surface); box-shadow: var(--st-ombre-1); color: var(--st-doux); }
 .st-prog-p-cherche svg { width: 20px; height: 20px; flex: none; }
-.st-prog-p-cherche input { flex: 1; min-width: 0; min-height: 46px; border: 0; background: transparent; outline: none; font-size: 15px; color: var(--st-encre); }
+.st-prog-p-cherche input { flex: 1; min-width: 0; min-height: 46px; border: 0; background: transparent; font-size: 15px; color: var(--st-encre); }
 .st-prog-p-cherche:focus-within { box-shadow: 0 0 0 2.5px var(--st-encre); }
 .st-prog-p-liste { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 14px; }
-.st-prog-p-carte { position: relative; display: flex; flex-direction: column; background: var(--st-surface); border-radius: var(--st-r-l); box-shadow: var(--st-ombre-1); transition: box-shadow var(--st-d-court), transform var(--st-d-court) var(--st-sortie); animation: st-cascade var(--st-d-base) var(--st-sortie) both; animation-delay: calc(var(--i) * 40ms); }
+.st-prog-p-carte { position: relative; display: flex; flex-direction: column; background: var(--st-surface); border-radius: var(--st-r-l); box-shadow: var(--st-ombre-1); transition: box-shadow var(--st-d-court), transform var(--st-d-court) var(--st-sortie); animation: st-prog-monte var(--st-d-base) var(--st-sortie) both; animation-delay: calc(var(--i) * 40ms); }
 .st-prog-p-carte:hover { box-shadow: var(--st-ombre-2); transform: translateY(-2px); }
 .st-prog-p-lien { display: flex; gap: 14px; align-items: center; padding: 18px 18px 10px; color: inherit; text-decoration: none; border-radius: var(--st-r-l) var(--st-r-l) 0 0; }
 .st-prog-p-avatar { flex: none; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: var(--mc); color: var(--mi); font: 500 18px var(--st-titre); letter-spacing: -.02em; }
@@ -175,7 +175,7 @@ async function archiver(p) {
 .st-prog-p-actions { display: flex; gap: 4px; padding: 0 10px 10px; margin-top: auto; justify-content: flex-end; }
 .st-prog-p-actions .st-btn { min-height: 44px; padding: 0 14px; font-size: 14px; }
 .st-prog-p-archiver { color: var(--st-alerte); }
-.st-prog-p-dup { margin: 0 12px 12px; padding: 14px; border-radius: var(--st-r-m); background: var(--st-fond); animation: st-entree var(--st-d-court) var(--st-sortie); }
+.st-prog-p-dup { margin: 0 12px 12px; padding: 14px; border-radius: var(--st-r-m); background: var(--st-fond); animation: st-prog-monte var(--st-d-court) var(--st-sortie); }
 .st-prog-p-dup > p { margin: 0 0 10px; font-size: 13.5px; color: var(--st-doux); }
 .st-prog-p-dup-champs { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
 .st-prog-p-dup label { display: grid; gap: 4px; font-size: 13px; font-weight: 600; color: var(--st-encre); flex: 1 1 150px; }
@@ -194,4 +194,6 @@ async function archiver(p) {
   .st-prog-p .st-entete .st-actions { margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .st-prog-p-carte:hover { transform: none; } }
+/* Entrées sans fondu d'opacité : texte lisible pendant tout le mouvement (contraste mesuré en temps réel) */
+@keyframes st-prog-monte { from { transform: translateY(14px); } }
 </style>

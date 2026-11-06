@@ -247,6 +247,9 @@ export function creerGlisser({ surDeposer, surAjouter = () => false, capturer, r
   /** Attributs pour une source (vignette de la bibliothèque) : souris = glisser, toucher / Entrée = ajouter. */
   function source({ donnee, type }) {
     return {
+      // draggable + dragstart annulé : signale l'élément comme glissable sans laisser le glisser HTML5 natif voler les événements pointeur
+      draggable: 'true',
+      onDragstart: (ev) => ev.preventDefault(),
       onPointerdown: (ev) => { if (ev.pointerType === 'mouse' || ev.pointerType === 'pen') debuter(ev, { type, donnee }) },
       onClick: () => {
         const avant = capturer()

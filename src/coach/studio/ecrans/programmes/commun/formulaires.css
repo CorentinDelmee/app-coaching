@@ -12,7 +12,7 @@
 .st-prog input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--st-encre); flex: none; }
 .st-prog input[type="number"] { font-variant-numeric: tabular-nums; }
 /* Petites actions (hauteur 40 + zone élargie à 44) */
-.st-prog .st-prog-mini { min-height: 40px; padding: 0 14px; font-size: 13.5px; border-radius: 12px; position: relative; }
+.st-prog .st-prog-mini { min-height: 44px; padding: 0 14px; font-size: 13.5px; border-radius: 12px; position: relative; }
 .st-prog .st-prog-mini::after { content: ''; position: absolute; inset: -2px; }
 .st-prog .st-btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
 .st-prog-lien { border: 0; background: none; padding: 0; min-height: 32px; color: var(--st-encre); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
