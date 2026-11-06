@@ -97,3 +97,12 @@ describe('écriture et validation', () => {
     expect(teinteClient('abc')).toBe(teinteClient('abc'))
   })
 })
+
+describe('restaurerSemaines (retour en « par semaine »)', () => {
+  it('rend la répartition mémorisée, sans les séances retirées, avec les ajoutées dans chaque semaine', async () => {
+    const { restaurerSemaines } = await import('../../src/coach/studio/ecrans/programmes/programmes/planning.js')
+    expect(restaurerSemaines([['a', 'b'], ['c'], []], ['a', 'b', 'c'])).toEqual([['a', 'b'], ['c'], []])
+    expect(restaurerSemaines([['a', 'b'], ['c']], ['a', 'c', 'd'])).toEqual([['a', 'd'], ['c', 'd']])
+    expect(restaurerSemaines([], ['a'])).toEqual([['a']])
+  })
+})

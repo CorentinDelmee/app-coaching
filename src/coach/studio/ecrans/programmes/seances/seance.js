@@ -64,3 +64,6 @@ export function resumeBloc(b, nomExo, libelleFormat = (f) => f) {
   const n = b.exercices.length
   return [libelleFormat(b.format), `${n} exercice${n > 1 ? 's' : ''}`, b.exercices.slice(0, 4).map((x) => nomExo(x.exerciceId)).join(', ')].filter(Boolean).join(' · ')
 }
+
+/** `?client=` d'une nouvelle séance : accepté seulement si c'est l'id d'un client connu (un lien piégé ne rattache rien). */
+export const clientDeLien = (id, clients = []) => (typeof id === 'string' && clients.some((c) => c.id === id) ? id : null)

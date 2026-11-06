@@ -82,6 +82,19 @@ export function convertirMode(p, mode) {
   return c
 }
 
+/**
+ * Retour en « par semaine » après un passage en « répété » : la répartition mémorisée revient.
+ * Séances retirées entre-temps : enlevées de chaque semaine ; séances ajoutées : ajoutées à chaque semaine.
+ */
+export function restaurerSemaines(memo, workouts = []) {
+  const garde = new Set(workouts)
+  const semaines = memo.map((s) => s.filter((id) => garde.has(id)))
+  const connues = new Set(memo.flat())
+  const nouvelles = workouts.filter((id) => !connues.has(id))
+  const res = semaines.map((s) => [...s, ...nouvelles])
+  return res.length ? res : [[...workouts]]
+}
+
 /** Programme prêt à écrire : nom nettoyé, champs vides retirés (undefined = effacé par modifier()). */
 export function pourEcriture(p) {
   const c = JSON.parse(JSON.stringify(p))

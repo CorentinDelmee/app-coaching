@@ -71,6 +71,8 @@ const pour = (item, index) => {
 /* !important : le fantôme est un clone qui garde les classes de l'écran (position, transition, animation) */
 .st-app .st-gl-fantome { position: fixed !important; transition: none !important; animation: none !important; z-index: var(--st-z-volant, 60); margin: 0; pointer-events: none; max-height: 180px; overflow: hidden; box-shadow: var(--st-ombre-3); border-radius: 16px; opacity: .96; will-change: transform; transition: none; }
 .st-gl-en-cours, .st-gl-en-cours * { cursor: grabbing !important; user-select: none; -webkit-user-select: none; }
+/* pendant un glisser, l'aimantation (scroll-snap) annulerait le défilement automatique horizontal */
+.st-gl-en-cours [data-st-defile-x] { scroll-snap-type: none !important; }
 /* poignée : 44 px, seule zone qui capte le doigt */
 .st-gl-poignee { flex: none; display: inline-grid; place-items: center; width: 44px; height: 44px; margin: -6px 0 -6px -8px; border: 0; border-radius: 12px; background: transparent; color: var(--st-doux); cursor: grab; touch-action: none; transition: background var(--st-d-court), transform var(--st-d-appui); }
 .st-gl-poignee:hover { background: var(--st-surface-2); color: var(--st-encre); }

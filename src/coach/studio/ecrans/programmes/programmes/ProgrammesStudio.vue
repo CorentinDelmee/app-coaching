@@ -5,6 +5,7 @@ import { RouterLink } from 'vue-router'
 import data from '../../../../../data/index.js'
 import { etat, nomClient, rafraichir, uuid, messageErreur, maintenant } from '../../../../store.js'
 import { dateFr, dupliquerProgramme } from '../../../../logique.js'
+import { ignorerClics } from '../commun/clics.js'
 import { jourLocal, lundiDe, jourSemaine } from '../../../../../domain/dates.js'
 import IconeSt from '../../../IconeSt.vue'
 import Filtres from '../../../Filtres.vue'
@@ -54,6 +55,7 @@ function ouvrirDuplication(p) {
 
 async function dupliquer(p) {
   const d = duplication.value
+  if (d.enCours) return
   d.erreur = ''
   if (!d.cible) { d.erreur = 'Choisis le client qui reçoit le programme.'; return }
   if (!d.debut || jourSemaine(d.debut) !== 0) { d.erreur = 'Le début doit être un lundi.'; return }
@@ -64,6 +66,7 @@ async function dupliquer(p) {
     for (const w of copie.workouts) await data.workouts.creer(w)
     await data.programmes.creer(copie.programme)
     duplication.value = null
+    ignorerClics() // double-clic sur « Dupliquer » : le 2e clic ne doit pas ouvrir la carte qui remonte
     await charger()
     toast(`« ${copie.programme.nom} » créé pour ${nomClient(d.cible)} (${copie.workouts.length} séance${copie.workouts.length > 1 ? 's' : ''} copiée${copie.workouts.length > 1 ? 's' : ''})`)
   } catch (e) {
@@ -137,7 +140,7 @@ async function archiver(p) {
             </label>
             <label>Début (lundi)<input v-model="duplication.debut" type="date" required /></label>
             <button class="st-btn st-btn--encre" type="submit" :disabled="duplication.enCours">{{ duplication.enCours ? 'Copie…' : 'Dupliquer' }}</button>
-            <button class="st-btn st-btn--fantome" type="button" @click="duplication = null">Annuler</button>
+            <button class="st-btn st-btn--fantome" type="button" @click="duplication = null; ignorerClics()">Annuler</button>
           </div>
           <p v-if="duplication.erreur" class="st-prog-p-erreur" role="alert">{{ duplication.erreur }}</p>
         </form>
