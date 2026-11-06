@@ -12,7 +12,7 @@ defineProps({ variante: { type: String, default: 'neutre' }, muscle: { type: Str
 .st-puce i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 .st-puce--propose { background: var(--st-propose-fond); color: var(--st-propose); }
 .st-puce--ok { background: var(--st-ok-fond); color: var(--st-ok); }
-.st-puce--neutre { background: var(--st-surface-2); color: var(--st-doux); }
+.st-puce--neutre { background: var(--st-surface-2); color: #45484F; } /* 7:1 sur surface-2 (marge pendant les entrées) */
 .st-puce--alerte { background: var(--st-alerte-fond); color: var(--st-alerte); }
 .st-puce--muscle { background: var(--mc); color: var(--mi); }
 </style>

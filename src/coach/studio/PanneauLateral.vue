@@ -79,7 +79,7 @@ defineExpose({ media: () => elMedia.value, racine: () => racine.value })
   <Teleport defer to="#st-calques">
     <Transition name="st-voile"><div v-if="ouvert" class="st-pan-voile" :style="styleVoile" aria-hidden="true" @click="emit('fermer')" /></Transition>
     <Transition name="st-pan">
-      <aside v-if="ouvert" ref="racine" class="st-panneau" :class="{ 'sans-cascade': !cascade }" role="dialog" :aria-label="etiquette" :style="styleGlisse">
+      <aside v-if="ouvert" ref="racine" data-test="panneau" class="st-panneau" :class="{ 'sans-cascade': !cascade }" role="dialog" :aria-label="etiquette" :style="styleGlisse">
         <div ref="elMedia" class="st-pan-media" :data-m="muscle || undefined" @pointerdown="debutGlisse" @pointermove="suiteGlisse" @pointerup="finGlisse" @pointercancel="finGlisse">
           <slot name="media" />
         </div>
@@ -120,7 +120,7 @@ defineExpose({ media: () => elMedia.value, racine: () => racine.value })
 /* entrée / sortie (ordinateur) */
 .st-pan-enter-active { transition: transform var(--st-d-base) var(--st-sortie), opacity var(--st-d-base) var(--st-sortie); }
 .st-pan-leave-active { transition: transform 120ms ease-in, opacity 120ms ease-in; }
-.st-pan-enter-from { opacity: .9; transform: translateX(24px); } /* pas de texte en fondu à l'entrée (contraste en temps réel) */
+.st-pan-enter-from { transform: translateX(24px); } /* translation seule : l'opacité de la cascade (.9) ne doit pas se multiplier avec celle du panneau */
 .st-pan-leave-to { opacity: 0; transform: translateX(20px); }
 
 /* L'écran réserve la place du panneau : ajouter la classe st-reserve-panneau à sa zone de contenu quand il est ouvert. */
