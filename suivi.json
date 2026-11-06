@@ -206,6 +206,14 @@
       "avancement": 100,
       "qui": "performance-accessibilite",
       "note": "Lighthouse mobile : performance 90, PWA OK. Correctifs d'accessibilité fusionnés (1d07c26). Aucune branche en attente."
+    },
+    {
+      "id": "Studio",
+      "titre": "Refonte coach « Studio »",
+      "statut": "fait",
+      "avancement": 100,
+      "qui": "REX + 20 agents",
+      "note": "Toutes les pages coach en Studio sur main (c27ea4a), 775 tests, banc e2e 263/263, 4 audits sécurité (0 critique restant), protection contre les écrasements Claude/2e appareil. Non déployé : attend ta validation."
     }
   ],
   "taches_humaines": [
@@ -379,6 +387,30 @@
       "duree": "5 min",
       "statut": "fait",
       "comment": "Serveur en France (Corentin, 2026-11-04) ; pages mises à jour."
+    },
+    {
+      "titre": "Regarder Studio en local et valider",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "20 min",
+      "statut": "a_faire",
+      "comment": "Dans Projets/app-coaching : `npm run dev` puis http://localhost:5173/coach (données de démo). Revue critique : revues/studio-coach-2026-11-06.md."
+    },
+    {
+      "titre": "Mettre Studio en ligne (après validation)",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "10 min",
+      "statut": "a_faire",
+      "comment": "`ssh root@IP \"bash /opt/app-coaching/deployer.sh\"` : sauvegarde d'abord (s'arrête si elle échoue), puis code, Caddy (cache des photos, miniatures YouTube), migrations (versions, photos _exercices). Vérifier ensuite `curl -I` sur une photo d'exercice : un seul Cache-Control. Lister les clés JSON des exercices sur une copie de la base avant (deploiement/LISEZMOI.md § 6)."
+    },
+    {
+      "titre": "Supprimer les exports MyPTHub (données de santé)",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "5 min",
+      "statut": "a_faire",
+      "comment": "PC : C:\\Users\\coren\\.config\\app-coaching\\import-mypthub\\ ; serveur : /var/lib/app-coaching/import/ (dont codes-mypthub.txt une fois les codes transmis)."
     }
   ],
   "decisions": [
@@ -791,6 +823,10 @@
     {
       "date": "2026-10-26",
       "texte": "Audit performance et accessibilité : performance 90 sur mobile, PWA OK ; correctifs d'accessibilité fusionnés."
+    },
+    {
+      "date": "2026-11-06",
+      "texte": "Refonte coach Studio terminée sur main : 6 écrans + fondations, testés en vrais clics (ordinateur et téléphone), 4 audits sécurité, protection contre les écrasements par Claude ou un 2e appareil. Pas encore en ligne."
     }
   ],
   "prochaines_etapes": [
