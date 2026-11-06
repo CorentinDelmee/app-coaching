@@ -1,0 +1,152 @@
+/* Écran « Aujourd'hui » + « Alertes » (Studio d3). Préfixe st-auj-. Tokens : ../../tokens.css (portée .st-app). */
+.st-auj { max-width: 1240px; }
+.st-auj a { color: inherit; }
+
+/* En-tête */
+.st-auj-entete { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 22px; }
+.st-auj-entete > div { min-width: 0; flex: 1; }
+.st-auj .st-auj-date { margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--st-doux); }
+.st-auj .st-auj-titre { font-family: var(--st-titre); font-weight: 500; font-size: clamp(34px, 5vw, 56px); line-height: 1; letter-spacing: -.035em; margin: 0; color: var(--st-encre); }
+.st-auj .st-auj-resume { margin: 10px 0 0; color: var(--st-doux); }
+.st-auj-cta { flex: none; }
+
+/* Grille de blocs : 12 colonnes, entrée en cascade (transform + opacity) */
+.st-auj-dash { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+.st-auj-dash > * { min-width: 0; }
+.st-auj-dash.is-charge > [style*="--i"] { animation: st-auj-monte var(--st-d-base) var(--st-sortie) both; animation-delay: calc(var(--i) * 40ms); }
+.st-auj-b--jour { grid-column: span 7; }
+.st-auj-b--alertes { grid-column: span 5; }
+.st-auj-b--tiers { grid-column: span 4; }
+.st-auj-avert { grid-column: 1 / -1; margin: 0; padding: 12px 16px; border-radius: var(--st-r-m); background: var(--st-propose-fond); color: var(--st-propose); font-weight: 600; }
+
+.st-auj .st-auj-h2 { font-family: var(--st-titre); font-weight: 500; font-size: 20px; letter-spacing: -.02em; line-height: 1.2; margin: 0 0 12px; color: var(--st-encre); display: flex; align-items: center; gap: 8px; text-transform: none; }
+.st-auj .st-auj-h3 { margin: 0 0 6px; font: 700 12px var(--st-sans); letter-spacing: .1em; text-transform: uppercase; color: var(--st-doux); }
+.st-auj-voir { margin-left: auto; font: 600 13px var(--st-sans); letter-spacing: 0; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; display: inline-flex; align-items: center; padding: 0 2px; }
+.st-auj-compte { min-width: 26px; height: 26px; padding: 0 8px; border-radius: 13px; display: inline-grid; place-items: center; background: var(--st-alerte-fond); color: var(--st-alerte); font: 700 13px var(--st-sans); }
+.st-auj-doux { margin: 0; color: var(--st-doux); }
+.st-auj-ok { margin: 0; display: flex; align-items: center; gap: 8px; color: var(--st-ok); font-weight: 600; min-height: 44px; }
+
+/* Frise de la journée : le moment fort */
+.st-auj-frise { position: relative; margin: 4px 0 18px; padding-top: 10px; overflow-x: clip; }
+.st-auj-piste { position: relative; height: 14px; border-radius: 7px; background: var(--st-surface-2); overflow: hidden; }
+.st-auj-plot { position: absolute; top: 0; bottom: 0; border-radius: 7px; background: var(--st-encre); transform-origin: left center; transform: scaleX(0); transition: transform 620ms var(--st-vaul); transition-delay: calc(240ms + var(--n) * 60ms); }
+.st-auj-plot.is-passe { background: #A9A59E; }
+.st-auj-plot.is-en-cours, .st-auj-plot.is-prochain { background: var(--st-jaune); box-shadow: inset 0 0 0 1.5px var(--st-jaune-texte); }
+.st-auj-frise.is-pose .st-auj-plot { transform: scaleX(1); }
+.st-auj-curseur { position: absolute; left: 0; right: 0; top: 0; height: 24px; pointer-events: none; transition: transform 1100ms var(--st-sortie); will-change: transform; }
+.st-auj-curseur i { position: absolute; left: -1px; top: 0; width: 2px; height: 34px; background: var(--st-alerte); border-radius: 1px; }
+.st-auj-curseur i::before { content: ''; position: absolute; left: -4px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--st-alerte); }
+.st-auj-grad { position: relative; height: 18px; margin-top: 6px; font-size: 11.5px; color: var(--st-doux); font-variant-numeric: tabular-nums; }
+.st-auj-grad span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.st-auj-grad span:first-child { transform: none; }
+.st-auj-grad span:last-child { transform: translateX(-100%); }
+
+/* Liste des rendez-vous */
+.st-auj-timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.st-auj-seance { position: relative; display: grid; grid-template-columns: 64px 4px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px 10px 0; border-radius: var(--st-r-m); transition: background var(--st-d-court); }
+.st-auj-dash.is-charge .st-auj-seance { animation: st-auj-monte var(--st-d-base) var(--st-sortie) both; animation-delay: calc(120ms + var(--n) * 40ms); }
+.st-auj-seance:hover { background: var(--st-fond); }
+.st-auj-seance.is-en-cours, .st-auj-seance.is-prochain { background: var(--st-fond); }
+.st-auj-seance.is-passe .st-auj-nom, .st-auj-seance.is-passe time { color: var(--st-doux); }
+.st-auj-seance time { font-family: var(--st-titre); font-weight: 500; font-size: 17px; text-align: right; color: var(--st-encre); font-variant-numeric: tabular-nums; line-height: 1.15; }
+.st-auj-seance time small { display: block; font: 700 10.5px var(--st-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--st-ok); margin-top: 2px; }
+.st-auj-seance.is-passe time small { color: var(--st-doux); }
+.st-auj-barre { align-self: stretch; min-height: 40px; border-radius: 2px; background: var(--mi); }
+.st-auj-seance small { display: block; color: var(--st-doux); font-size: 13px; }
+.st-auj-nom { display: block; font-weight: 700; color: var(--st-encre); text-decoration: none; overflow-wrap: anywhere; }
+a.st-auj-nom:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* toute la ligne est cliquable (lien étendu), le focus reste sur le lien */
+.st-auj-lien-etendu::after { content: ''; position: absolute; inset: 0; border-radius: var(--st-r-m); }
+.st-auj-seance .st-puce { position: relative; }
+
+.st-auj-vide { padding: 18px; border-radius: var(--st-r-m); background: var(--st-fond); }
+.st-auj-vide p { margin: 0; color: var(--st-doux); }
+.st-auj .st-auj-vide-t { font-family: var(--st-titre); font-weight: 500; font-size: 22px; letter-spacing: -.02em; color: var(--st-encre); margin-bottom: 4px; }
+
+.st-auj-ensuite { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--st-filet); }
+.st-auj-jour + .st-auj-jour { margin-top: 8px; }
+.st-auj .st-auj-jour-t { margin: 0 0 2px; font-weight: 700; color: var(--st-encre); font-size: 13.5px; }
+.st-auj-proche { display: grid; grid-template-columns: 64px minmax(0, auto) 1fr; gap: 4px 12px; align-items: baseline; min-height: 44px; padding: 8px 8px 8px 0; border-radius: 12px; text-decoration: none; }
+.st-auj-proche:hover { background: var(--st-fond); }
+.st-auj-proche b { font-family: var(--st-titre); font-weight: 500; text-align: right; color: var(--st-encre); font-variant-numeric: tabular-nums; }
+.st-auj-proche span { font-weight: 600; color: var(--st-encre); }
+.st-auj-proche small { color: var(--st-doux); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Petites listes (alertes, relances, check-ins, réservations) */
+.st-auj-mini { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.st-auj-mini li { display: flex; align-items: center; gap: 10px; min-height: 52px; font-size: 14px; }
+.st-auj-mini li > div { flex: 1; min-width: 0; }
+.st-auj-mini small { display: block; color: var(--st-doux); font-size: 13px; overflow-wrap: anywhere; }
+.st-auj-av { width: 38px; height: 38px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--mc); color: var(--mi); font: 600 13px var(--st-sans); letter-spacing: .02em; }
+.st-auj-av--site { background: var(--st-propose-fond); color: var(--st-propose); }
+.st-auj-vu, .st-auj-relance { min-height: 44px; padding: 0 14px; flex: none; }
+.st-auj-vu:disabled { opacity: .5; }
+.st-auj-humeur { font-size: 22px; }
+.st-auj-liste-leave-active { transition: opacity 220ms ease, transform 220ms ease; }
+.st-auj-liste-leave-to { opacity: 0; transform: translateX(16px); }
+.st-auj-liste-move { transition: transform var(--st-d-base) var(--st-vaul); }
+.st-auj-agenda { margin-top: 10px; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 12px; border-radius: var(--st-r-m); background: var(--st-propose-fond); color: var(--st-propose); font-weight: 600; text-decoration: none; }
+
+/* Bandeau « proposé par Claude » */
+.st-auj-claude { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: var(--st-r-l); background: var(--st-encre); color: #E9E7E2; text-decoration: none; box-shadow: var(--st-ombre-1); transition: transform var(--st-d-court) var(--st-ressort); }
+.st-auj-claude:hover { transform: translateY(-2px); }
+.st-auj-claude > span:nth-child(2) { flex: 1; min-width: 0; }
+.st-auj-claude b { color: #fff; display: block; }
+.st-auj-claude small { color: #C9C6BF; }
+.st-auj-claude-i { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: rgba(255,255,255,.1); color: var(--st-jaune); flex: none; }
+
+/* Accès rapides */
+.st-auj-rapides { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.st-auj-rapide { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 12px 16px; border-radius: 18px; background: var(--st-surface); box-shadow: var(--st-ombre-1); font-weight: 600; color: var(--st-encre); text-decoration: none; transition: transform var(--st-d-court) var(--st-ressort), box-shadow var(--st-d-court); }
+.st-auj-rapide:hover { transform: translateY(-2px); box-shadow: var(--st-ombre-2); }
+.st-auj-rapide:active { transform: scale(.97); transition-duration: 80ms; }
+.st-auj-rapide span { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--mc, var(--st-surface-2)); color: var(--mi, var(--st-encre)); flex: none; }
+.st-auj-rapide--jaune span { background: var(--st-jaune); color: var(--st-jaune-texte); }
+
+/* Chargement : barres calmes (opacité seule) */
+.st-auj-squelette { height: 52px; border-radius: var(--st-r-m); background: var(--st-surface-2); margin-bottom: 8px; animation: st-auj-pulse 1.2s ease-in-out infinite alternate; }
+.st-auj-squelette--frise { height: 14px; margin: 14px 0 26px; }
+@keyframes st-auj-pulse { from { opacity: .55; } to { opacity: 1; } }
+
+.st-auj-erreur { max-width: 560px; }
+.st-auj-erreur p { color: var(--st-doux); margin: 0 0 14px; }
+
+/* Alertes (écran complet) */
+.st-auj-alertes-page .st-bloc { max-width: 820px; }
+
+@media (max-width: 1180px) {
+  .st-auj-b--jour, .st-auj-b--alertes { grid-column: span 12; }
+  .st-auj-b--tiers { grid-column: span 6; }
+  .st-auj-b--tiers:last-of-type { grid-column: span 12; }
+}
+@media (max-width: 900px) {
+  .st-auj-entete { margin-bottom: 16px; align-items: center; }
+  .st-auj .st-auj-titre { font-size: 40px; }
+  .st-auj-cta { width: 48px; min-height: 48px; padding: 0; border-radius: 50%; }
+  .st-auj-lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .st-auj-dash { gap: 12px; }
+  .st-auj-b--tiers, .st-auj-b--tiers:last-of-type { grid-column: span 12; }
+  .st-auj .st-bloc { padding: 16px; }
+  .st-auj-seance { grid-template-columns: 58px 4px 1fr; padding-right: 10px; }
+  .st-auj-seance .st-puce { grid-column: 3; justify-self: start; }
+  .st-auj-seance time { font-size: 15.5px; }
+  .st-auj-proche { grid-template-columns: 58px 1fr; }
+  .st-auj-proche small { grid-column: 2; }
+  .st-auj-rapides { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .st-auj-mini .st-puce { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .st-auj-plot, .st-auj-curseur { transition: none !important; }
+  .st-auj-squelette { animation: none !important; }
+}
+
+/* Lignes des petites listes : toute la ligne mène à la fiche (cible large), les boutons restent au-dessus */
+.st-auj-mini li { position: relative; border-radius: var(--st-r-m); padding: 4px 6px; margin: 0 -6px; transition: background var(--st-d-court); }
+.st-auj-mini li:has(a.st-auj-nom):hover { background: var(--st-fond); }
+.st-auj-mini a.st-auj-nom::after { content: ''; position: absolute; inset: 0; border-radius: var(--st-r-m); }
+.st-auj-mini .st-btn, .st-auj-mini .st-puce { position: relative; z-index: 1; }
+/* Entrée : déplacement seul, jamais de fondu d'opacité sur du texte (contraste mesuré en temps réel par le banc) */
+@keyframes st-auj-monte { from { transform: translateY(14px); } }
+/* Cible des noms cliquables portée à 44 px sans changer la mise en page */
+.st-auj a.st-auj-nom { padding: 12px 0; margin: -12px 0; }
+.st-auj .st-auj-date a { display: inline-flex; align-items: center; min-height: 44px; margin: -14px 0; }
