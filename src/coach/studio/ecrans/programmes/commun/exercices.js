@@ -1,14 +1,10 @@
 // Exercices vus par les éditeurs : teinte (groupe musculaire), recherche sans accents, libellé de muscle. Fonctions pures.
-import { muscleDe } from '../../../medias.js'
+import { muscleDe, NOMS_MUSCLES } from '../../../medias.js'
 
-export const NOMS_MUSCLES = { jambes: 'Jambes', dos: 'Dos', pecs: 'Pectoraux', epaules: 'Épaules', bras: 'Bras', gainage: 'Gainage', mobilite: 'Mobilité', cardio: 'Cardio' }
+export { NOMS_MUSCLES }
 
-/** Teinte Studio : 1er muscle principal (contrat exercices enrichis), sinon champ muscle / catégories. */
-export function teinte(ex) {
-  if (!ex) return null
-  for (const m of ex.musclesPrincipaux || []) { const t = muscleDe({ muscle: m }); if (t) return t }
-  return muscleDe(ex)
-}
+/** Teinte Studio (L0 : muscles principaux du contrat, sinon muscle / catégories), null sans exercice. */
+export const teinte = (ex) => (ex ? muscleDe(ex) : null)
 
 export const sansAccents = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
 
