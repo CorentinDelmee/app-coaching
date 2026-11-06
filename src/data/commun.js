@@ -9,6 +9,7 @@
 // Tout le reste (validation, archivage, import/export, enregistrement de séance…) est ici, donc testé une seule fois.
 import { ENTITES, NOMS_ENTITES, clientDe } from './entites.js'
 import { ErreurData } from './erreurs.js'
+import { versionDe } from './versions.js'
 import { identifiantUnique, genererCode, LONGUEUR_CODE_MIN } from '../domain/identifiants.js'
 import { appliquerRealisation } from '../domain/realisations.js'
 import { validerRealisation } from '../domain/modele.js'
@@ -55,7 +56,17 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
         if (!actuel) throw new ErreurData('INTROUVABLE', `${entite} : « ${id} » est introuvable`)
         const fusion = { ...actuel, ...patch, id }
         verifier(entite, fusion)
-        return (await backend.ecrire(entite, fusion, { versionAttendue: version })) ?? fusion
+        try {
+          return (await backend.ecrire(entite, fusion, { versionAttendue: version ?? versionDe(actuel) })) ?? fusion
+        } catch (e) {
+          // Sans version donnée : une écriture de l'écran est passée entre la lecture et l'écriture -> on relit, on réapplique, une seule fois (audit M2).
+          if (version !== undefined || e?.code !== 'CONFLIT') throw e
+          const frais = await backend.un(entite, id)
+          if (!frais) throw e
+          const refusion = { ...frais, ...patch, id }
+          verifier(entite, refusion)
+          return (await backend.ecrire(entite, refusion, { versionAttendue: versionDe(frais) })) ?? refusion
+        }
       },
       /** Archivage doux : rien n'est supprimé. */
       async archiver(id) {

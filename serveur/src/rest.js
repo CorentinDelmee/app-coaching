@@ -122,5 +122,8 @@ export function creerServeurRest(app, { now = () => Date.now() } = {}) {
       repondre(res, STATUT_HTTP[e.code] ?? 500, { erreur: e instanceof ErreurService ? e.message : 'Erreur interne', code: e.code || 'INTERNE' }, origine)
     }
   })
+  // Durée max pour RECEVOIR une requête (audit I1 : 300 s par défaut laissait un corps lent ouvert).
+  // 120 s laisse passer le plus gros envoi (5 Mo) jusqu'à ~340 kbit/s montant (3G faible) ; les corps lents ne comptent plus pour la sécurité des écritures.
+  serveur.requestTimeout = 120e3
   return serveur
 }

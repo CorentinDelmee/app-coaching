@@ -2,6 +2,7 @@
 // Mêmes données et mêmes validations que l'app (creerApi) ; la bibliothèque de vidéos est celle de ctx.biblio.
 import { z } from 'zod'
 import { creerApi } from '../../../src/data/commun.js'
+import { versionDe } from '../../../src/data/versions.js'
 import { idYoutube } from '../../../src/domain/video.js'
 import { ErreurService } from '../service.js'
 import { norm, slug } from '../util.js'
@@ -94,13 +95,22 @@ export function outilsBibliotheque(ctx) {
       z.object({ exercice: ref('Nom exact ou id de l\'exercice'), nom: z.string().trim().min(1).max(120).optional(), description: z.string().max(1000).optional(), categories: z.array(z.string().trim().min(1).max(40)).max(10).optional(), lienVideo: z.string().url().max(300).optional(), ...champsEnrichis }).strict()
         .refine((a) => Object.keys(a).length > 1, { message: 'Précise au moins un champ à modifier (nom, description, categories, lienVideo, fiche Studio)' }),
       async ({ exercice, nom, description, categories, lienVideo, ...enrichis }) => {
-        const ex = await trouver(exercice)
+        let ex = await trouver(exercice)
         if (lienVideo && !idYoutube(lienVideo)) throw new ErreurService(LIEN_INVALIDE, 'LIEN_INVALIDE')
         if (nom && norm(nom) !== norm(ex.nom) && (await api.exercices.lister()).some((e) => norm(e.nom) === norm(nom))) throw new ErreurService(`Un exercice « ${nom} » existe déjà.`, 'EXISTE')
         const patch = { ...(nom ? { nom } : {}), ...(description !== undefined ? { description } : {}), ...(categories ? { categories } : {}) }
         const modifs = { ...patch, ...extraire(enrichis) }
         let maj = ex
-        if (Object.keys(modifs).length) { maj = appliquerPatch(ex, modifs); await backend.ecrire('exercices', maj) } // appliquerPatch gère l'effacement des champs
+        if (Object.keys(modifs).length) {
+          // Version lue envoyée ; sur CONFLIT (écran Studio passé entre-temps) : relecture et une seule nouvelle tentative (audit M2).
+          for (let essai = 0; ; essai++) {
+            maj = appliquerPatch(ex, modifs) // appliquerPatch gère l'effacement des champs
+            try { await backend.ecrire('exercices', maj, { versionAttendue: versionDe(ex) }); break } catch (e) {
+              if (e?.code !== 'CONFLIT' || essai) throw e
+              ex = (await backend.un('exercices', ex.id)) ?? ex
+            }
+          }
+        }
         const video = lienVideo ? await service.rattacherVideo({ exercice: maj.nom, url: lienVideo }) : undefined
         return { id: ex.id, exercice: resume(await api.exercices.lire(ex.id)), ...(video ? { video } : {}) }
       }, { mutation: true }),

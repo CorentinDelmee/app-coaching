@@ -64,10 +64,10 @@ describe('adaptateur api : If-Match et 409 conflit', () => {
     expect(await api.workouts.modifier('w1', { nom: 'T' }, { version: 3 })).toMatchObject({ nom: 'T', version: 4 })
     expect(appels[1].headers['If-Match']).toBe('3')
   })
-  it('sans version : pas d\'en-tête (rétrocompatible)', async () => {
+  it('sans version donnée : la version lue est envoyée (audit M2, pas d écrasement)', async () => {
     const { api, appels } = faux({ 'GET /api/app/e/workouts/w1': [200, { item: w }], 'PUT /api/app/e/workouts/w1': [200, { item: w }] })
     await api.workouts.modifier('w1', { nom: 'T' })
-    expect(appels[1].headers['If-Match']).toBeUndefined()
+    expect(appels[1].headers['If-Match']).toBe(String(w.version ?? 1))
   })
   it('409 conflit -> ErreurData CONFLIT avec actuel ; 409 existe_deja reste EXISTE', async () => {
     const actuel = { ...w, nom: 'Par Claude', version: 4 }

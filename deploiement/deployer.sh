@@ -145,6 +145,11 @@ systemctl daemon-reload
 chown -R "$APP_USER:$APP_USER" /var/lib/app-coaching/sauvegardes /var/lib/app-coaching/derniere-sauvegarde.txt 2>/dev/null || true
 systemctl enable app-coaching >/dev/null
 systemctl enable --now app-coaching-sauvegarde.timer >/dev/null
+# Sauvegarde juste avant le redémarrage : c'est lui qui applique les migrations de la base (audit M5). Échec = on s'arrête, l'ancienne version continue de tourner.
+if ! systemctl start app-coaching-sauvegarde.service; then
+  echo "ÉCHEC : sauvegarde avant migration impossible (journalctl -u app-coaching-sauvegarde -n 30). Rien n'est redémarré ; relance deployer.sh une fois réglé."
+  exit 1
+fi
 systemctl restart app-coaching
 OK=0
 for _ in 1 2 3 4 5 6 7 8 9 10; do

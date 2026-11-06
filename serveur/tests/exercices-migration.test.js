@@ -55,7 +55,9 @@ describe('migration des exercices existants', () => {
   it('PUT générique (ancienne UI) accepte chaque ancienne ligne, sans perte', async () => {
     for (const e of anciens) expect((await req('PUT', `/api/app/e/exercices/${e.id}`, e)).statut, e.id).toBe(200)
     // seul changement toléré : « lienVideo: null » devient simplement absent (même sens)
-    for (const e of anciens) expect(await store.un('exercices', e.id)).toEqual({ ...sansNull(e), version: 2 }) // + version (1 -> 2 : une écriture)
+    // + version (1 -> 2 : une écriture) ; un lien YouTube est désormais enregistré sous sa forme canonique (audit M1)
+    const canon = (e) => { const m = e.lienVideo && /(?:youtu\.be\/|[?&]v=)([\w-]{11})/.exec(e.lienVideo); return m ? { ...e, lienVideo: `https://www.youtube.com/watch?v=${m[1]}` } : e }
+    for (const e of anciens) expect(await store.un('exercices', e.id)).toEqual({ ...canon(sansNull(e)), version: 2 })
   })
   it('PATCH sur une ancienne ligne ajoute les nouveaux champs sans perdre les anciens', async () => {
     const e = anciens[7] // description longue importée
