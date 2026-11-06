@@ -2,13 +2,10 @@
 // Contrat : docs/CONTRAT-EXERCICES-STUDIO.md. Partagé par les routes /api/app/exercices et les outils coach.
 import { z } from 'zod'
 import { idYoutube } from '../../src/domain/video.js'
-import { norm } from './util.js'
+import { CHAMPS_CALCULES, CHAMPS_COACH, NIVEAUX, appliquerPatch, filtrerExercices, indexUsage, presenterExercice } from '../../src/domain/exercices.js'
 
-export const NIVEAUX = ['debutant', 'intermediaire', 'confirme']
-/** Champs calculés ou gérés par le serveur : jamais acceptés en écriture. */
-export const CHAMPS_CALCULES = ['video', 'utiliseDans', 'utiliseDansProgrammes']
-/** Champs que le client (élève) ne voit jamais. */
-export const CHAMPS_COACH = ['notesPrivees', 'utiliseDans', 'utiliseDansProgrammes']
+// Logique pure (patch, usage, filtres) : src/domain/exercices.js, partagée avec l'adaptateur local.
+export { CHAMPS_COACH, NIVEAUX, appliquerPatch, indexUsage }
 
 const texte = (max) => z.string().trim().max(max)
 const liste = (max, n = 40) => z.array(z.string().trim().min(1).max(n)).max(max)
@@ -38,17 +35,6 @@ export const schemaPatch = z.object(CHAMPS).strict().partial()
 // Tolérant sur lienVideo (anciens liens non YouTube) et description (anciens imports longs) : rien d'existant ne doit devenir impossible à enregistrer.
 const schemaStocke = z.object({ ...CHAMPS, id: z.string().min(1).max(80), archive: z.boolean().optional(), clientId: z.string().nullable().optional(), photo: z.any().optional(), lienVideo: z.string().max(2000), description: z.string() }).strict().partial().required({ id: true, nom: true })
 
-/** Applique un patch : '' ou null efface la clé. Renvoie un nouvel objet. */
-export function appliquerPatch(actuel, patch) {
-  const r = { ...actuel }
-  for (const [k, v] of Object.entries(patch)) {
-    if (v === '' || v === null || (Array.isArray(v) && v.length === 0 && k !== 'categories')) delete r[k]
-    else r[k] = v
-  }
-  if (!r.categories) r.categories = []
-  return r
-}
-
 const retirer = (o, cles) => { const r = { ...o }; for (const c of cles) delete r[c]; return r }
 
 /** Objet complet venant d'un PUT : retire les champs calculés, garde la photo du serveur, valide. Renvoie l'objet nettoyé ou null. */
@@ -60,23 +46,6 @@ export function nettoyerPut(obj, existant) {
   return schemaStocke.safeParse(retirer(o, ['photo'])).success ? o : null
 }
 
-/** Index d'usage : exerciceId -> { seances:Set, programmes:Set }. workouts et programmes = lignes du magasin. */
-export function indexUsage(workouts, programmes) {
-  const parWorkout = new Map()
-  const parExo = new Map()
-  const entree = (id) => { if (!parExo.has(id)) parExo.set(id, { seances: new Set(), programmes: new Set() }); return parExo.get(id) }
-  for (const w of workouts) {
-    const ids = (w.blocs || []).flatMap((b) => [b.exerciceId, ...(b.exercices || []).map((x) => x.exerciceId)]).filter(Boolean)
-    for (const id of ids) entree(id).seances.add(w.id)
-    parWorkout.set(w.id, ids)
-  }
-  for (const p of programmes) {
-    const wids = [...(p.workouts || []), ...(p.semaines || []).flat()].map((x) => (typeof x === 'string' ? x : x?.workoutId ?? x?.id)).filter(Boolean)
-    for (const wid of wids) for (const id of parWorkout.get(wid) || []) entree(id).programmes.add(p.id)
-  }
-  return parExo
-}
-
 /** Vidéo vue par l'écran : lienVideo + entrée de la bibliothèque (statut propose | valide). */
 export function videoDe(ex, biblio) {
   if (!ex.lienVideo) return null
@@ -85,26 +54,6 @@ export function videoDe(ex, biblio) {
 }
 
 /** Exercice tel que renvoyé : champs calculés ajoutés, notes privées et usage retirés pour un client. */
-export function presenter(ex, { coach, usage, biblio }) {
-  const o = { ...ex, photo: ex.photo ?? null, video: videoDe(ex, biblio) }
-  if (!coach) return retirer(o, CHAMPS_COACH)
-  const u = usage?.get(ex.id)
-  return { ...o, utiliseDans: u?.seances.size ?? 0, utiliseDansProgrammes: u?.programmes.size ?? 0 }
-}
+export const presenter = (ex, { coach, usage, biblio }) => presenterExercice(ex, { coach, usage, video: videoDe(ex, biblio) })
 
-/** Filtres de la liste (voir le contrat), appliqués à des exercices déjà présentés (champ `video` calculé). */
-export function filtrer(liste, f = {}) {
-  const q = f.q ? norm(f.q) : ''
-  const eq = (a, b) => norm(a) === norm(b)
-  const dans = (tab, v) => (tab || []).some((x) => eq(x, v))
-  return liste.filter((e) => {
-    if (e.archive) return false
-    if (q && !norm(`${e.nom} ${e.description ?? ''}`).includes(q)) return false
-    if (f.categorie && !(e.categorie && eq(e.categorie, f.categorie)) && !dans(e.categories, f.categorie)) return false
-    if (f.muscle && !dans(e.musclesPrincipaux, f.muscle) && !dans(e.musclesSecondaires, f.muscle)) return false
-    if (f.materiel && !dans(e.materiel, f.materiel)) return false
-    if (f.niveau && e.niveau !== f.niveau) return false
-    if (f.video && (f.video === 'aucune' ? !!e.video : e.video?.statut !== f.video)) return false
-    return true
-  }).sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
-}
+export const filtrer = filtrerExercices
