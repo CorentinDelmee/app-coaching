@@ -1,5 +1,5 @@
 // Écran Clients (Studio) : fonctions pures (testées). `aujourdhui` = 'AAAA-MM-JJ' passé en paramètre, jamais Date.now().
-import { ajouterJours, lundiDe } from '../../../../domain/dates.js'
+import { ajouterJours, jourLocal, lundiDe } from '../../../../domain/dates.js'
 import { etatSemaine } from '../../../../domain/programme.js'
 import { TEINTES_STUDIO } from '../../medias.js'
 
@@ -55,7 +55,25 @@ export function resumeClient({ profil, realisations = [], programmes = [], nbAle
   else if (nbAlertes) statut = 'alerte'
   else if (!progs.length) statut = 'sansProgramme'
   else if (depuis === null || depuis > 14) statut = 'aRelancer'
-  return { derniere, depuis, assiduite: profil.archive ? null : assiduite(progs, siennes, aujourdhui), nbAlertes, statut, nbProgrammes: progs.length }
+  // Client créé il y a moins de 14 jours : « Nouveau » (il reste « à surveiller » tant qu'il n'a pas de programme).
+  const nouveau = Number.isFinite(profil.creeLe) && joursEntre(jourLocal(profil.creeLe), aujourdhui) < 14
+  return { derniere, depuis, assiduite: profil.archive ? null : assiduite(progs, siennes, aujourdhui), nbAlertes, statut, nbProgrammes: progs.length, nouveau }
+}
+
+/** Libellé de la puce de statut d'une carte. */
+export function libelleStatut(resume) {
+  if (resume.statut === 'alerte') return `${resume.nbAlertes} alerte${resume.nbAlertes > 1 ? 's' : ''}`
+  if (resume.statut === 'sansProgramme' && resume.nouveau) return 'Nouveau · sans programme'
+  return LIBELLES_STATUT[resume.statut]
+}
+
+const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+/** 'AAAA-MM-JJ' -> « 12 mars 1985 » (avec l'année : date de naissance) ; texte inattendu rendu tel quel. */
+export function dateAvecAnnee(jour) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(jour || ''))
+  if (!m || !MOIS[Number(m[2]) - 1]) return String(jour || '')
+  const j = Number(m[3])
+  return `${j === 1 ? '1er' : j} ${MOIS[Number(m[2]) - 1]} ${m[1]}`
 }
 
 export const LIBELLES_STATUT = { actif: 'Actif', alerte: 'Alerte', sansProgramme: 'Sans programme', aRelancer: 'À relancer', archive: 'Archivé' }

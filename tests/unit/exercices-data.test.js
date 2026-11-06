@@ -47,6 +47,10 @@ describe('local : recherche, détail, mise à jour, photo', () => {
     expect(e.photo.url).toBe('data:image/webp;base64,AQID'); expect(e.photo.id).toMatch(/^p-/)
     expect((await d.exercices.detail('ex-squat')).photo.url).toMatch(/^data:/)
     expect((await d.exercices.retirerPhoto('ex-squat')).photo).toBeNull()
+    // validation de la vidéo : proposée -> validée ; refusée sans vidéo
+    expect((await d.exercices.detail('ex-squat')).video.statut).toBe('propose')
+    expect((await d.exercices.validerVideo('ex-squat')).video.statut).toBe('valide')
+    await expect(d.exercices.validerVideo('nope')).rejects.toMatchObject({ code: 'INTROUVABLE' })
     const n = await d.exercices.creer({ nom: 'Test', categories: [], niveau: 'debutant', materiel: ['Haltères'] })
     expect((await d.exercices.detail(n.id)).materiel).toEqual(['Haltères'])
   })

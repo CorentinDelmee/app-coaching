@@ -121,7 +121,7 @@ Recherche automatique (`chercher_video_exercice`, et à la création de séance 
 (durée, chaîne reconnue, vues, titre pertinent) avec justification ; repli sur la bibliothèque locale sinon.
 **Règle des vidéos courtes** : > 30 s refusée, ≤ 20 s favorisée, intégrable et publique seulement ; requête en français puis anglais en repli (2 recherches au plus par exercice, ≈ 202 unités de quota sur 10 000/jour). Outils : `lister_exercices`, `creer_exercice` (recherche auto d'une vidéo « proposée »), `modifier_exercice`, `supprimer_exercice` (2 temps), `valider_video`. `creer_exercice`, `modifier_exercice` et `lister_exercices` gèrent aussi la fiche Studio (catégorie, muscles, matériel, niveau, consignes, variantes, tempo, repos, notes privées).
 
-**Exercices enrichis (app)** : `GET|POST /api/app/exercices`, `GET|PATCH /api/app/exercices/:id`, `POST|DELETE /api/app/exercices/:id/photo` (JPG/PNG/WebP, 3 Mo, coach seulement ; fichiers dans `FICHIERS_DIR/exercices/`, lus par `/api/app/fichiers?chemin=exercices/<id>.<ext>`). Formes JSON : `docs/CONTRAT-EXERCICES-STUDIO.md`.
+**Exercices enrichis (app)** : `GET|POST /api/app/exercices`, `GET|PATCH /api/app/exercices/:id`, `POST|DELETE /api/app/exercices/:id/photo` (JPG/PNG/WebP, 3 Mo, coach seulement ; fichiers dans `FICHIERS_DIR/_exercices/` (migré automatiquement depuis `exercices/`), lus par `/api/app/fichiers?chemin=_exercices/<id>.<ext>`). Formes JSON : `docs/CONTRAT-EXERCICES-STUDIO.md`.
 
 ## Sécurité
 - Clé API en `Authorization: Bearer`, lue dans l'environnement, comparée à temps constant (empreintes SHA-256) ; refus par défaut.

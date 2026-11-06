@@ -53,14 +53,15 @@ export function presenterExercice(ex, { coach, usage, video }) {
 /** Filtres de la liste (voir le contrat), appliqués à des exercices déjà présentés (champ `video` calculé). */
 export function filtrerExercices(liste, f = {}) {
   const q = f.q ? norm(f.q) : ''
-  const eq = (a, b) => norm(a) === norm(b)
-  const dans = (tab, v) => (tab || []).some((x) => eq(x, v))
+  // Valeurs de filtre normalisées une seule fois (pas une fois par exercice et par élément).
+  const [fCat, fMus, fMat] = [f.categorie, f.muscle, f.materiel].map((v) => (v ? norm(v) : ''))
+  const dans = (tab, n) => (tab || []).some((x) => norm(x) === n)
   return liste.filter((e) => {
     if (e.archive) return false
     if (q && !norm(`${e.nom} ${e.description ?? ''}`).includes(q)) return false
-    if (f.categorie && !(e.categorie && eq(e.categorie, f.categorie)) && !dans(e.categories, f.categorie)) return false
-    if (f.muscle && !dans(e.musclesPrincipaux, f.muscle) && !dans(e.musclesSecondaires, f.muscle)) return false
-    if (f.materiel && !dans(e.materiel, f.materiel)) return false
+    if (fCat && !(e.categorie && norm(e.categorie) === fCat) && !dans(e.categories, fCat)) return false
+    if (fMus && !dans(e.musclesPrincipaux, fMus) && !dans(e.musclesSecondaires, fMus)) return false
+    if (fMat && !dans(e.materiel, fMat)) return false
     if (f.niveau && e.niveau !== f.niveau) return false
     if (f.video && (f.video === 'aucune' ? !!e.video : e.video?.statut !== f.video)) return false
     return true

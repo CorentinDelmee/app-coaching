@@ -130,14 +130,14 @@ describe('photo', () => {
     expect((await p(PNG, 'image/webp')).statut).toBe(415)
     expect((await p(Buffer.concat([WEBP, Buffer.alloc(3 * 1024 * 1024)]), 'image/webp')).statut).toBe(413)
     expect((await appel('POST', `${E}/inconnu/photo`, { cookie: coach, brut: WEBP, type: 'image/webp' })).statut).toBe(404)
-    expect(existsSync(join(dossier, 'exercices')) ? readdirSync(join(dossier, 'exercices')) : []).toEqual([])
+    expect(existsSync(join(dossier, '_exercices')) ? readdirSync(join(dossier, '_exercices')) : []).toEqual([])
   })
   it('envoi : nom généré côté serveur, lecture par un client avec ETag/304', async () => {
     const r = await appel('POST', `${E}/ex-squat-gobelet/photo`, { cookie: coach, brut: WEBP, type: 'image/webp', entetes: { 'X-Nom': 'evil.php' } })
     expect(r.statut).toBe(200)
     premier = r.json.item.photo
     expect(premier.id).toMatch(/^p-[0-9a-f]{12}$/)
-    expect(premier.url).toBe(`/api/app/fichiers?chemin=exercices%2F${premier.id}.webp`)
+    expect(premier.url).toBe(`/api/app/fichiers?chemin=_exercices%2F${premier.id}.webp`)
     url = premier.url
     const g = await appel('GET', url, { cookie: client })
     expect(g.statut).toBe(200); expect(g.h.get('content-type')).toBe('image/webp'); expect(g.h.get('cache-control')).toBe('private, max-age=86400'); expect(g.buf.equals(WEBP)).toBe(true)
@@ -150,7 +150,7 @@ describe('photo', () => {
   it('nouvelle photo : ancienne supprimée du disque ; PATCH/PUT ne l\'écrasent pas', async () => {
     const r = await appel('POST', `${E}/ex-squat-gobelet/photo`, { cookie: coach, brut: PNG, type: 'image/png' })
     expect(r.json.item.photo.url).toMatch(/\.png$/)
-    expect(readdirSync(join(dossier, 'exercices'))).toEqual([`${r.json.item.photo.id}.png`])
+    expect(readdirSync(join(dossier, '_exercices'))).toEqual([`${r.json.item.photo.id}.png`])
     expect((await appel('GET', premier.url, { cookie: coach })).statut).toBe(404)
     expect((await appel('PATCH', `${E}/ex-squat-gobelet`, { cookie: coach, corps: { tempo: '2-0-2' } })).json.item.photo.id).toBe(r.json.item.photo.id)
     const ancien = (await store.un('exercices', 'ex-squat-gobelet'))
@@ -159,15 +159,15 @@ describe('photo', () => {
     expect((await store.un('exercices', 'ex-squat-gobelet')).photo.id).toBe(r.json.item.photo.id)
   })
   it('fichiers/exercices : écriture refusée par la route générique ; chemin invalide', async () => {
-    expect((await appel('POST', '/api/app/fichiers?chemin=exercices%2Fp-aaaaaaaaaaaa.webp', { cookie: coach, brut: WEBP, type: 'image/webp' })).statut).toBe(403)
-    expect((await appel('GET', '/api/app/fichiers?chemin=exercices%2F..%2Fx.webp', { cookie: client })).statut).toBe(400)
+    expect((await appel('POST', '/api/app/fichiers?chemin=_exercices%2Fp-aaaaaaaaaaaa.webp', { cookie: coach, brut: WEBP, type: 'image/webp' })).statut).toBe(403)
+    expect((await appel('GET', '/api/app/fichiers?chemin=_exercices%2F..%2Fx.webp', { cookie: client })).statut).toBe(400)
   })
   it('DELETE photo puis suppression de l\'exercice : fichiers retirés', async () => {
     const r = await appel('DELETE', `${E}/ex-squat-gobelet/photo`, { cookie: coach })
-    expect(r.json.item.photo).toBeNull(); expect(readdirSync(join(dossier, 'exercices'))).toEqual([])
+    expect(r.json.item.photo).toBeNull(); expect(readdirSync(join(dossier, '_exercices'))).toEqual([])
     expect((await appel('DELETE', `${E}/ex-squat-gobelet/photo`, { cookie: coach })).statut).toBe(200)
     await appel('POST', `${E}/ex-squat-gobelet/photo`, { cookie: coach, brut: WEBP, type: 'image/webp' })
     expect((await appel('DELETE', '/api/app/e/exercices/ex-squat-gobelet', { cookie: coach })).statut).toBe(200)
-    expect(readdirSync(join(dossier, 'exercices'))).toEqual([])
+    expect(readdirSync(join(dossier, '_exercices'))).toEqual([])
   })
 })

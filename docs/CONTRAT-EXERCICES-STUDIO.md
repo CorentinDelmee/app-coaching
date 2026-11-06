@@ -28,7 +28,7 @@ Base des routes : `/api/app` (cookie de session, same-origin). Erreurs : `{ "err
   "tempo": "3-1-1",
   "reposConseille": 60,
   "notesPrivees": "texte (coach seulement)",
-  "photo": { "id": "p-3fa9c01b22de", "url": "/api/app/fichiers?chemin=exercices%2Fp-3fa9c01b22de.webp" },
+  "photo": { "id": "p-3fa9c01b22de", "url": "/api/app/fichiers?chemin=_exercices%2Fp-3fa9c01b22de.webp" },
   "video": { "url": "https://www.youtube.com/watch?v=…", "titre": "…", "chaine": "…", "duree": 20, "statut": "valide" },
   "utiliseDans": 3,
   "utiliseDansProgrammes": 2
@@ -49,10 +49,12 @@ Base des routes : `/api/app` (cookie de session, same-origin). Erreurs : `{ "err
 | `PATCH /exercices/:id` corps = seulement les champs à changer (fusion) | coach | `200 { "item": exercice }` · 400 · 404 |
 | `POST /exercices/:id/photo` corps brut `image/jpeg \| image/png \| image/webp` | coach | `200 { "item": exercice }` (ancienne photo supprimée) |
 | `DELETE /exercices/:id/photo` | coach | `200 { "item": exercice }` |
-| `GET /fichiers?chemin=exercices/<id-photo>.<ext>` (= `photo.url`) | coach + client | image ; `ETag`, `Cache-Control: private, max-age=86400`, 304 sur `If-None-Match` |
+| `POST /exercices/:id/valider-video` (sans corps) | coach | `200 { "item": exercice }` avec `video.statut: "valide"` · 403 client · 404 · 409 `sans_video` (pas de lien YouTube) · 503 bibliothèque indisponible. Côté data : `data.exercices.validerVideo(id)` renvoie cet exercice. |
+| `GET /fichiers?chemin=_exercices/<id-photo>.<ext>` (= `photo.url`) | coach + client | image ; `ETag`, `Cache-Control: private, max-age=86400`, 304 sur `If-None-Match` |
+- Chaque filtre texte (`q`, `categorie`, `muscle`, `materiel`) est limité à **120 caractères** (400 `invalide` au-delà).
 - Filtres de la liste (tous facultatifs, combinables) : `q` (nom/description, sans accents ni casse) · `categorie` (égalité sur `categorie` ou présence dans `categories`) · `muscle` (dans principaux OU secondaires) · `materiel` (présence) · `niveau` · `video` ∈ `aucune | propose | valide` · `limite` 1-500 (défaut 500) · `decalage` ≥ 0. Tri : nom croissant. Les exercices archivés ne sont pas listés. Client : mêmes filtres.
 - Les routes génériques `PUT/DELETE /e/exercices/:id` continuent de marcher (coach) mais valident aussi avec le même schéma ; `photo` y est conservée côté serveur. `DELETE` supprime aussi le fichier photo.
-- **Photo** : formats JPG/PNG/WebP, type vérifié par signature (pas l'extension), **3 Mo max** (413 au-delà, 415 pour un autre type ou une signature fausse). **Aucun redimensionnement serveur** : l'écran réduit avant l'envoi (≤ 1600 px de large, WebP/JPEG ~0,8 → ~200 Ko). Stockage : `<fichiersDir>/exercices/p-<hex12>.<ext>`.
+- **Photo** : formats JPG/PNG/WebP, type vérifié par signature (pas l'extension), **3 Mo max** (413 au-delà, 415 pour un autre type ou une signature fausse). **Aucun redimensionnement serveur** : l'écran réduit avant l'envoi (≤ 1600 px de large, WebP/JPEG ~0,8 → ~200 Ko). Stockage : `<fichiersDir>/_exercices/p-<hex12>.<ext>`.
 - Validation de vidéo (statut `valide`) : inchangée, par l'outil `valider_video` (Claude) ; l'écran affiche le statut et `lienVideo` se modifie par PATCH (le serveur le rattache en `propose` si le lien est nouveau).
 
 ## src/data (le lot écran appelle ceci)

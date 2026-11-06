@@ -15,7 +15,7 @@ import Puce from '../../Puce.vue'
 import Filtres from '../../Filtres.vue'
 import IdentifiantsCrees from './IdentifiantsCrees.vue'
 import { rendreFocus } from './retourFocus.js'
-import { LIBELLES_STATUT, VARIANTE_STATUT, compterFiltres, filtrerClients, initiales, libelleDepuis, resumeClient, teinteClient } from './logique.js'
+import { libelleStatut, VARIANTE_STATUT, compterFiltres, filtrerClients, initiales, libelleDepuis, resumeClient, teinteClient } from './logique.js'
 import './clients.css'
 
 const route = useRoute()
@@ -168,7 +168,7 @@ async function restaurer(p) {
         <div class="st-clients-outils">
           <label class="st-clients-recherche">
             <span class="st-sr">Rechercher un client</span>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8" /><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+            <svg class="st-clients-loupe" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8" /><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
             <input ref="champRecherche" v-model="recherche" type="search" placeholder="Rechercher un client" autocomplete="off" enterkeyhint="search" />
             <kbd aria-hidden="true">/</kbd>
           </label>
@@ -186,13 +186,11 @@ async function restaurer(p) {
                 {{ initiales(c.profil.nom) }}
               </span>
               <span class="st-clients-txt">
-                <b>{{ c.profil.nom }}</b>
+                <b :title="c.profil.nom">{{ c.profil.nom }}</b>
                 <small>{{ c.profil.archive ? `${c.profil.identifiant} · archivé` : libelleDepuis(c.resume.depuis) }}</small>
                 <small v-if="!c.profil.archive">{{ c.profil.tarif }} € · {{ c.profil.lieuDefaut === 'domicile' ? 'à domicile' : 'en salle' }}<template v-if="c.resume.assiduite !== null"> · assiduité {{ c.resume.assiduite }} %</template></small>
+                <Puce v-if="!c.profil.archive" :variante="VARIANTE_STATUT[c.resume.statut]" :point="c.resume.statut === 'alerte'">{{ libelleStatut(c.resume) }}</Puce>
               </span>
-              <Puce v-if="!c.profil.archive" :variante="VARIANTE_STATUT[c.resume.statut]" :point="c.resume.statut === 'alerte'">
-                {{ c.resume.statut === 'alerte' ? `${c.resume.nbAlertes} alerte${c.resume.nbAlertes > 1 ? 's' : ''}` : LIBELLES_STATUT[c.resume.statut] }}
-              </Puce>
             </RouterLink>
             <button v-if="c.profil.archive" type="button" class="st-btn st-clients-restaurer" :aria-label="`Restaurer ${c.profil.nom}`" @click="restaurer(c.profil)">Restaurer</button>
           </li>

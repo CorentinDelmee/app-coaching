@@ -145,6 +145,9 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
       },
       async retirerPhoto(id) {
         return (await appel('DELETE', `/exercices/${enc(id)}/photo`))?.item
+      },
+      async validerVideo(id) {
+        return (await appel('POST', `/exercices/${enc(id)}/valider-video`)).item
       }
     },
     agenda: {
