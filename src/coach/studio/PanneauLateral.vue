@@ -3,7 +3,7 @@
 // feuille plein écran glissable sur téléphone (≤ 900 px : se ferme si glissée > 140 px ou vite).
 // En-tête média 16:9 (slot « media ») avec barre : Fermer, Précédent, Suivant, indicateur de sauvegarde (+ slot « barre »).
 // Contenu (slot par défaut) défilant, entrée en cascade (40 ms). Téléporté dans #st-calques (CoachLayout).
-// Clavier : Échap ferme ; ↑ ↓ (hors champ de saisie) = précédent / suivant. Le focus va sur « Fermer » à l'ouverture
+// Clavier : Échap ferme (dans un champ : le 1er Échap quitte le champ, le 2e ferme) ; ↑ ↓ (hors champ de saisie) = précédent / suivant. Le focus va sur « Fermer » à l'ouverture
 // et revient à l'élément qui avait le focus avant (la vignette) à la fermeture.
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import IconeSt from './IconeSt.vue'
@@ -50,7 +50,12 @@ const styleVoile = computed(() => (glisse.value && decalage.value ? { opacity: S
 function surTouche(ev) {
   if (!props.ouvert) return
   const champ = ev.target.closest?.('input, textarea, select, [contenteditable="true"]')
-  if (ev.key === 'Escape') { ev.preventDefault(); emit('fermer'); return }
+  if (ev.key === 'Escape') {
+    ev.preventDefault()
+    // 1er Échap dans un champ : quitte seulement le champ (le focus reste dans le panneau) ; le suivant ferme.
+    if (champ) { champ.blur(); racine.value?.focus({ preventScroll: true }); return }
+    emit('fermer'); return
+  }
   if (champ) return
   if (ev.key === 'ArrowDown' && props.suivant) { ev.preventDefault(); emit('suivant') }
   if (ev.key === 'ArrowUp' && props.precedent) { ev.preventDefault(); emit('precedent') }
@@ -79,7 +84,7 @@ defineExpose({ media: () => elMedia.value, racine: () => racine.value })
   <Teleport defer to="#st-calques">
     <Transition name="st-voile"><div v-if="ouvert" class="st-pan-voile" :style="styleVoile" aria-hidden="true" @click="emit('fermer')" /></Transition>
     <Transition name="st-pan">
-      <aside v-if="ouvert" ref="racine" data-test="panneau" class="st-panneau" :class="{ 'sans-cascade': !cascade }" role="dialog" :aria-label="etiquette" :style="styleGlisse">
+      <aside v-if="ouvert" ref="racine" data-test="panneau" tabindex="-1" class="st-panneau" :class="{ 'sans-cascade': !cascade }" role="dialog" :aria-label="etiquette" :style="styleGlisse">
         <div ref="elMedia" class="st-pan-media" :data-m="muscle || undefined" @pointerdown="debutGlisse" @pointermove="suiteGlisse" @pointerup="finGlisse" @pointercancel="finGlisse">
           <slot name="media" />
         </div>
@@ -98,6 +103,7 @@ defineExpose({ media: () => elMedia.value, racine: () => racine.value })
 </template>
 
 <style>
+.st-panneau:focus { outline: none; }
 .st-panneau { position: fixed; z-index: var(--st-z-panneau); top: 16px; right: 16px; bottom: 16px; width: 440px; display: flex; flex-direction: column; background: var(--st-surface); border-radius: var(--st-r-xl); box-shadow: var(--st-ombre-3); overflow: hidden; }
 .st-pan-media { position: relative; flex: none; aspect-ratio: 16 / 9; overflow: hidden; background: radial-gradient(120% 90% at 30% 10%, rgba(255,255,255,.55), transparent 60%), var(--mc); }
 .st-pan-media > img, .st-pan-media > iframe { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border: 0; }
@@ -128,7 +134,8 @@ defineExpose({ media: () => elMedia.value, racine: () => racine.value })
 @media (min-width: 901px) and (max-width: 1180px) { .st-panneau { width: 400px; } .st-reserve-panneau { padding-right: 416px; } }
 
 @media (max-width: 900px) {
-  .st-panneau { top: max(10px, env(safe-area-inset-top)); left: 0; right: 0; bottom: 0; width: auto; border-radius: 26px 26px 0 0; transition: transform var(--st-d-panneau) var(--st-vaul); }
+  /* 56 px de voile au-dessus de la feuille : zone « toucher dehors pour fermer » assez grande (≥ 44 px) */
+  .st-panneau { top: max(56px, calc(env(safe-area-inset-top) + 44px)); left: 0; right: 0; bottom: 0; width: auto; border-radius: 26px 26px 0 0; transition: transform var(--st-d-panneau) var(--st-vaul); }
   .st-pan-enter-active, .st-pan-leave-active { transition: transform var(--st-d-panneau) var(--st-vaul); }
   .st-pan-enter-from, .st-pan-leave-to { opacity: 1; transform: translateY(100%); }
   .st-pan-media { touch-action: none; }

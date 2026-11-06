@@ -58,7 +58,7 @@ sauvegarde auto → toast. Copie-la.
 ## Composants
 
 ### `PanneauLateral.vue` — panneau d'édition / fiche
-Ordinateur : fixe à droite (440 px ; 400 px de 901 à 1180 px), entrée glissée 24 px. Téléphone : feuille plein écran, glisser la poignée ou
+Ordinateur : fixe à droite (440 px ; 400 px de 901 à 1180 px), entrée glissée 24 px. Téléphone : feuille sous 56 px de voile (toucher le voile ferme), glisser la poignée ou
 le média vers le bas > 140 px (ou vite) ferme. Téléporté dans `#st-calques`.
 - Props : `ouvert` (Boolean) · `etiquette` (nom accessible, ex. nom de l'exercice) · `muscle` (teinte du média) · `sauvegarde`
   (état de `useSauvegardeAuto`, `''` = pas d'indicateur) · `precedent`, `suivant` (Boolean : affiche/active ↑ ↓) · `cascade` (défaut true ;
@@ -66,7 +66,7 @@ le média vers le bas > 140 px (ou vite) ferme. Téléporté dans `#st-calques`.
 - Événements : `fermer`, `precedent`, `suivant`, `reessayer`.
 - Slots : `media` (en-tête 16:9 : `<img>`, `<LecteurVideo>`, `<FigureMouvement>` en enfant direct) · `barre` (boutons en plus, après ↑ ↓) · défaut (contenu défilant, cascade 40 ms par enfant direct).
 - Expose (ref) : `media()` → élément d'en-tête (cible de `volerVers`), `racine()`.
-- Clavier : Échap ferme (même dans un champ) ; ↑ ↓ hors champ = précédent/suivant ; focus sur « Fermer » à l'ouverture, rendu à l'élément précédent à la fermeture.
+- Clavier : Échap ferme ; dans un champ, le 1er Échap quitte seulement le champ (focus sur le panneau), le 2e ferme ; ↑ ↓ hors champ = précédent/suivant ; focus sur « Fermer » à l'ouverture, rendu à l'élément précédent à la fermeture.
 - **Place du contenu** : ajoute la classe `st-reserve-panneau` à ta zone quand le panneau est ouvert (ordinateur : `padding-right` 456/416 px).
 - Fermeture : appelle `sauvegarde.maintenant()` **sans l'attendre** puis passe `ouvert` à false (le panneau se ferme tout de suite, l'écriture finit en arrière-plan ; mets l'id de l'élément dans la valeur planifiée : `s.planifier({ id, patch })`).
 
