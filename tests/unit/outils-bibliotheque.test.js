@@ -132,3 +132,19 @@ describe('outils exercices', () => {
     expect(r.erreur).toContain('Séance jambes')
   })
 })
+
+describe('outils exercices : fiche Studio', () => {
+  it('création avec champs enrichis, filtres, modification et effacement', async () => {
+    const c = await outil('creer_exercice', { nom: 'Fente latérale', lienVideo: LIEN, categorie: 'Renforcement', musclesPrincipaux: ['fessiers'], materiel: ['Haltères'], niveau: 'intermediaire', tempo: '2-0-2', reposConseille: 45, notesPrivees: 'surveiller le genou' })
+    expect(c.ok).toBe(true)
+    expect(c.donnees.exercice).toMatchObject({ categorie: 'Renforcement', musclesPrincipaux: ['fessiers'], niveau: 'intermediaire', reposConseille: 45, notesPrivees: 'surveiller le genou', photo: false })
+    const f = await outil('lister_exercices', { muscle: 'FESSIERS', niveau: 'intermediaire' })
+    expect(f.donnees.exercices.map((e) => e.nom)).toEqual(['Fente latérale'])
+    expect((await outil('lister_exercices', { materiel: 'élastique' })).donnees.total).toBe(0)
+    const m = await outil('modifier_exercice', { exercice: 'Fente latérale', tempo: '', reposConseille: 60, consignes: 'Dos droit' })
+    expect(m.donnees.exercice).toMatchObject({ reposConseille: 60, consignes: 'Dos droit' })
+    expect(m.donnees.exercice).not.toHaveProperty('tempo')
+    expect((await outil('modifier_exercice', { exercice: 'Fente latérale', niveau: 'dieu' })).code).toBe('VALIDATION')
+    expect((await outil('creer_exercice', { nom: 'fente LATERALE', niveau: 'debutant' })).code).toBe('EXISTE') // anti-doublon
+  })
+})
