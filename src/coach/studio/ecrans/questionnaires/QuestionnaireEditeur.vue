@@ -21,7 +21,8 @@ const q = ref(undefined) // undefined = chargement, null = introuvable
 const erreurChargement = ref('')
 const nbReponses = ref(0)
 const brut = ref({}) // texte tapé tel quel (choix, émojis) : évite de réécrire le champ pendant la frappe
-let existe = props.id !== 'nouveau'
+const existeRef = ref(props.id !== 'nouveau')
+let existe = existeRef.value
 let idDoc = existe ? props.id : uuid()
 let pret = false
 let uid = 0
@@ -30,7 +31,7 @@ const nouvelUid = () => ++uid
 const sauve = useSauvegardeAuto(async (doc) => {
   if (!existe) {
     await data.questionnaires.creer(documentPropre(doc, { creation: true }))
-    existe = true
+    existe = true; existeRef.value = true
     router.replace(`/coach/questionnaires/${idDoc}`)
   } else {
     const propre = documentPropre(doc)
@@ -76,6 +77,12 @@ const ajouter = (type) => {
 function retirer(i) {
   const [x] = q.value.questions.splice(i, 1)
   toast('Question supprimée', { action: 'Annuler', surAction: () => q.value.questions.splice(Math.min(i, q.value.questions.length), 0, x) })
+  // Le bouton supprimé disparaît : le focus passe à la question voisine, sinon à « Annuler » du toast.
+  nextTick(() => {
+    const voisin = q.value.questions[Math.min(i, q.value.questions.length - 1)]
+    const cible = voisin && document.querySelector(`[data-u="${voisin._u}"] .st-qs-suppr`)
+    ;(cible || document.querySelector('.st-toast.is-vu button'))?.focus()
+  })
 }
 function bouger(i, d) {
   const u = q.value.questions[i]._u
@@ -205,7 +212,7 @@ const apercuCurseur = (qu) => qu.etiquettes || ['', '']
     </div>
 
     <footer class="st-qs-pied">
-      <button type="button" class="st-btn st-btn--fantome st-qs-archiver" @click="archiver">Archiver ce questionnaire</button>
+      <button v-if="existeRef" type="button" class="st-btn st-btn--fantome st-qs-archiver" @click="archiver">Archiver ce questionnaire</button>
     </footer>
   </section>
 

@@ -55,7 +55,7 @@ onMounted(async () => { await rafraichir(); await charger() })
 </script>
 
 <template>
-  <div class="st-app st-ag">
+  <div class="st-ag">
     <header class="st-entete">
       <div>
         <h1>Agenda</h1>

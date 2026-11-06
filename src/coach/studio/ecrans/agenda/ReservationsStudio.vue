@@ -7,6 +7,7 @@ import {
   LIB_SYNCHRO, JOURS_SEMAINE, formulaireRegles, grouperParJour, libelleBlocage, libelleHeure, lienCarte, lienTel, validerBlocage, validerRegles
 } from '../../../../domain/reservations.js'
 import IconeSt from '../../IconeSt.vue'
+import { toast } from '../../toast.js'
 import Puce from '../../Puce.vue'
 import './ecran.css'
 
@@ -15,7 +16,6 @@ const LISTES = ['a_venir', 'passees', 'annulees']
 const onglet = ref('a_venir')
 const chargement = ref(true)
 const erreur = ref('')
-const message = ref('')
 const groupes = ref([])
 const aConfirmer = ref(null)
 const blocages = ref([])
@@ -52,7 +52,7 @@ async function charger() {
   }
 }
 onMounted(charger)
-watch(onglet, () => { message.value = ''; charger() })
+watch(onglet, charger)
 
 function toucheOnglet(ev, i) {
   const pas = ev.key === 'ArrowRight' ? 1 : ev.key === 'ArrowLeft' ? -1 : 0
@@ -72,10 +72,18 @@ const VIDES = {
 }
 const total = computed(() => groupes.value.reduce((n, g) => n + g.items.length, 0))
 
+function demanderAnnulation(id) {
+  aConfirmer.value = id
+  nextTick(() => document.querySelector(`[data-confirme="${id}"]`)?.focus())
+}
+function garder(id) {
+  aConfirmer.value = null
+  nextTick(() => document.querySelector(`[data-annule="${id}"]`)?.focus())
+}
 async function annuler(id) {
   try {
     await data.reservations.annuler(id)
-    message.value = 'Réservation annulée. Le client reçoit l’annulation Google tout de suite.'
+    toast('Réservation annulée. Le client reçoit l’annulation Google tout de suite.')
     await charger()
   } catch (e) { erreur.value = msgErreur(e) }
 }
@@ -85,14 +93,26 @@ async function bloquer() {
   if (v.erreur) return
   try {
     await data.reservations.bloquer(v.debut, v.fin, bloc.value.motif.trim())
-    message.value = 'Créneau bloqué.'
+    toast('Créneau bloqué.')
     bloc.value.motif = ''
     await charger()
   } catch (e) { erreur.value = msgErreur(e) }
 }
 async function debloquer(id) {
-  try { await data.reservations.debloquer(id); message.value = 'Blocage retiré.'; await charger() } catch (e) { erreur.value = msgErreur(e) }
+  const b = blocages.value.find((x) => x.id === id)
+  try {
+    await data.reservations.debloquer(id)
+    toast('Blocage retiré.', {
+      action: 'Annuler',
+      surAction: async () => {
+        try { await data.reservations.bloquer(b.debut, b.fin, b.motif || ''); if (onglet.value === 'blocages') await charger() } catch (e) { erreur.value = msgErreur(e) }
+      }
+    })
+    await charger()
+  } catch (e) { erreur.value = msgErreur(e) }
 }
+const MOIS_LONGS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+const dateFr = (d) => { const [a, m, j] = String(d).split('-').map(Number); return a && m && j ? `${j === 1 ? '1er' : j} ${MOIS_LONGS[m - 1]} ${a}` : d }
 const ajouterPlage = (k) => regles.value.plages[k].push({ debut: '09:00', fin: '12:00' })
 const retirerPlage = (k, i) => regles.value.plages[k].splice(i, 1)
 function ajouterFermeture() {
@@ -103,18 +123,17 @@ function ajouterFermeture() {
 async function enregistrer() {
   const v = validerRegles(regles.value, reglesBase.value)
   erreursRegles.value = v.erreurs || []
-  message.value = ''
   if (v.erreurs) return
   try {
     await data.reservations.ecrireRegles(v.regles)
     reglesBase.value = v.regles
-    message.value = 'Règles enregistrées. Elles s’appliquent aux prochaines réservations.'
+    toast('Règles enregistrées. Elles s’appliquent aux prochaines réservations.')
   } catch (e) { erreur.value = msgErreur(e) }
 }
 </script>
 
 <template>
-  <div class="st-app st-ag">
+  <div class="st-ag">
     <header class="st-entete">
       <div>
         <h1>Réservations</h1>
@@ -129,7 +148,6 @@ async function enregistrer() {
       >{{ l }}</button>
     </div>
 
-    <p class="st-ag-msg st-ag-msg--ok st-ag-live" role="status" aria-live="polite" :style="message ? '' : 'display:none'">{{ message }}</p>
     <p v-if="erreur" class="st-ag-msg st-ag-msg--err" role="alert">{{ erreur }}<button class="st-btn" type="button" @click="charger">Réessayer</button></p>
 
     <div id="rs-panneau" role="tabpanel" :aria-labelledby="`rs-onglet-${onglet}`">
@@ -156,11 +174,11 @@ async function enregistrer() {
                 <a v-if="r.email" class="st-ag-lien" :href="`mailto:${r.email}`">{{ r.email }}</a>
               </div>
               <div v-if="onglet === 'a_venir'">
-                <button v-if="aConfirmer !== r.id" class="st-btn st-btn--danger" type="button" @click="aConfirmer = r.id">Annuler ce rendez-vous</button>
+                <button v-if="aConfirmer !== r.id" class="st-btn st-ag-btn-contour" type="button" :data-annule="r.id" @click="demanderAnnulation(r.id)">Annuler ce rendez-vous</button>
                 <div v-else class="st-ag-confirm" role="group" :aria-label="`Confirmer l’annulation de ${r.prenom} ${r.nom}`">
                   <span>Le client reçoit l’annulation Google tout de suite.</span>
-                  <button class="st-btn st-btn--danger-plein" type="button" @click="annuler(r.id)">Confirmer l’annulation</button>
-                  <button class="st-btn" type="button" @click="aConfirmer = null">Garder</button>
+                  <button class="st-btn st-btn--danger" type="button" :data-confirme="r.id" @click="annuler(r.id)">Confirmer l’annulation</button>
+                  <button class="st-btn" type="button" @click="garder(r.id)">Garder</button>
                 </div>
               </div>
             </li>
@@ -221,8 +239,8 @@ async function enregistrer() {
             <button class="st-btn" type="button" @click="ajouterFermeture">Ajouter</button>
           </div>
           <div class="st-ag-jetons">
-            <span v-for="d in regles.fermetures" :key="d" class="st-ag-jeton">{{ d }}
-              <button class="st-ag-x" type="button" :aria-label="`Retirer la fermeture du ${d}`" @click="regles.fermetures.splice(regles.fermetures.indexOf(d), 1)"><IconeSt nom="fermer" /></button>
+            <span v-for="d in regles.fermetures" :key="d" class="st-ag-jeton">{{ dateFr(d) }}
+              <button class="st-ag-x" type="button" :aria-label="`Retirer la fermeture du ${dateFr(d)}`" @click="regles.fermetures.splice(regles.fermetures.indexOf(d), 1)"><IconeSt nom="fermer" /></button>
             </span>
             <span v-if="!regles.fermetures.length" class="st-ag-meta">Aucune fermeture.</span>
           </div>

@@ -20,6 +20,14 @@ export function probleme(q) {
   if (!q.questions.length) return 'Ajoute au moins une question pour l’enregistrer.'
   const i = q.questions.findIndex((x) => !x.libelle.trim())
   if (i >= 0) return `La question ${i + 1} n’a pas encore de texte.`
+  for (const [k, x] of q.questions.entries()) {
+    if (x.type === 'choixUnique' || x.type === 'choixMultiple') {
+      const c = (x.choix || []).map((v) => String(v).trim().toLowerCase())
+      if (c.length < 2) return `La question ${k + 1} a besoin d’au moins deux choix.`
+      if (new Set(c).size < c.length) return `La question ${k + 1} a deux choix identiques.`
+    }
+    if (x.type === 'nombre' && Number.isFinite(x.min) && Number.isFinite(x.max) && !(x.min < x.max)) return `La question ${k + 1} : le minimum doit être inférieur au maximum.`
+  }
   return null
 }
 

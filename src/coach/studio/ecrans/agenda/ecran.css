@@ -1,6 +1,6 @@
 @import "../../tokens.css";
-/* Écrans Agenda / Réservations / Données — Studio. Préfixe st-ag-. Racine : .st-app.st-ag (tokens), fond transparent. */
-.st-app.st-ag { background: var(--st-fond); max-width: 1180px; padding: 4px 0 24px; min-height: 100%; }
+/* Écrans Agenda / Réservations / Données — Studio. Préfixe st-ag-. Racine : .st-ag (CoachLayout pose .st-app), fond transparent. */
+.st-ag { background: var(--st-fond); max-width: 1180px; padding: 4px 0 24px; min-height: 100%; }
 .st-ag .st-entete { animation: st-entree var(--st-d-base) var(--st-sortie) both; }
 .st-ag-btn-sync svg { width: 18px; height: 18px; }
 .st-ag-btn-sync[aria-busy="true"] svg { animation: st-tourne 900ms linear infinite; }
@@ -76,8 +76,7 @@
 .st-ag-lien:hover { background: #E3DDD3; }
 .st-ag-confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px; border-radius: var(--st-r-m); background: var(--st-alerte-fond); color: var(--st-alerte); font-size: 13.5px; font-weight: 500; animation: st-entree var(--st-d-court) var(--st-sortie) both; }
 .st-ag-confirm span { flex: 1 1 100%; }
-.st-btn--danger { color: var(--st-alerte); border-color: rgba(162, 59, 42, .35); }
-.st-btn--danger-plein { background: var(--st-alerte); color: #fff; border-color: transparent; }
+.st-ag-btn-contour { color: var(--st-alerte); border-color: rgba(162, 59, 42, .35); }
 
 /* Formulaires */
 .st-ag-form { display: flex; flex-direction: column; gap: 14px; }
@@ -123,23 +122,3 @@
 .st-ag-depot.is-survol { transform: scale(1.015); }
 .st-ag-depot:focus-within { outline: 2.5px solid var(--st-encre); outline-offset: 2px; }
 .st-ag-depot input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-
-/* Durcissement : l'ordre de chargement des feuilles ne doit pas décider du rendu (.st-app button { color: inherit } et pont .coach). */
-.st-app.st-ag .st-btn { color: var(--st-encre); }
-.st-app.st-ag .st-btn--jaune { color: var(--st-jaune-texte); }
-.st-app.st-ag .st-btn--encre { color: #fff; }
-.st-app.st-ag .st-btn--danger { color: var(--st-alerte); }
-.st-app.st-ag .st-btn--danger-plein { color: #fff; }
-.st-app.st-ag .st-ag-onglet { color: var(--st-doux); }
-.st-app.st-ag .st-ag-onglet[aria-selected="true"] { color: #fff; }
-.st-app.st-ag .st-ag-champ { display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--st-doux); }
-.st-app.st-ag .st-ag-case { display: inline-flex; flex-direction: row; font-size: 15px; color: var(--st-encre); gap: 10px; }
-.st-app.st-ag .st-ag-depot { display: flex; flex-direction: column; gap: 6px; font-size: 15px; color: var(--st-encre); }
-.st-app.st-ag .st-ag-depot small { color: var(--st-doux); font-size: 13px; }
-.st-app.st-ag h2 { font-family: var(--st-titre); font-weight: 500; text-transform: none; letter-spacing: -.02em; color: var(--st-encre); }
-.st-app.st-ag h3 { font-family: var(--st-titre); font-weight: 500; font-size: 20px; letter-spacing: -.02em; text-transform: none; color: var(--st-encre); }
-.st-app.st-ag .st-ag-groupe h3::first-letter { text-transform: uppercase; }
-.st-app.st-ag .st-entete h1 { font-family: var(--st-titre); font-weight: 500; color: var(--st-encre); }
-.st-app.st-ag input[type="checkbox"] { width: 22px; height: 22px; min-height: 22px; padding: 0; accent-color: var(--st-encre); }
-.st-app.st-ag .st-ag-depot input { min-height: 0; }
-.st-app.st-ag .st-ag-plage input { min-height: 40px; }
