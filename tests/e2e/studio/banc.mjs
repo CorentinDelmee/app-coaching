@@ -84,6 +84,11 @@ const LIB_PAGE = `(() => {
   const lum = ([r, g, b]) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b) }
   const mix = (top, bot) => { const a = top[3]; return [top[0] * a + bot[0] * (1 - a), top[1] * a + bot[1] * (1 - a), top[2] * a + bot[2] * (1 - a), 1] }
   const nom = (el) => el.tagName.toLowerCase() + (el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\\s+/).slice(0, 2).join('.') : '')
+  // Moment où chaque nœud reçoit une classe *-enter-active (transition Vue) : pour la règle des 100 ms.
+  const entrees = new WeakMap()
+  const noter = (n) => { if (n.nodeType === 1 && /-enter-active/.test(n.className) && !entrees.has(n)) entrees.set(n, performance.now()) }
+  new MutationObserver((ms) => { for (const m of ms) { if (m.type === 'attributes') noter(m.target); else m.addedNodes.forEach((n) => { noter(n); n.querySelectorAll?.('[class*="-enter-active"]').forEach(noter) }) } })
+    .observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["class"] }) // document (pas documentElement : absent quand le script d’amorce s’exécute)
   // Contraste de tous les textes visibles (opacité des ancêtres comprise : c'est ce qui révèle les creux des fondus).
   function scan() {
     const sortie = [], ignores = { fond_image: 0 }
@@ -96,6 +101,11 @@ const LIB_PAGE = `(() => {
       const cs = getComputedStyle(el)
       if (cs.visibility !== 'visible' || cs.display === 'none') continue
       if (el.closest('[disabled],[aria-disabled="true"],[aria-hidden="true"],.st-sr,.sr-only')) continue
+      // Règle (DECISIONS.md) : la page qui SORT (transition Vue *-leave-active, ou nœud détaché) n'est pas mesurée ;
+      // la page qui ENTRE (*-enter-active) n'est mesurée qu'après 100 ms.
+      if (!el.isConnected || el.closest('[class*="-leave-active"]')) continue
+      const entree = el.closest('[class*="-enter-active"]')
+      if (entree && performance.now() - (entrees.get(entree) ?? performance.now()) < 100) continue
       let op = 1; for (let n = el; n; n = n.parentElement) op *= parseFloat(getComputedStyle(n).opacity)
       if (op === 0) continue
       const couches = []; let inconnu = false
@@ -258,7 +268,6 @@ async function auditerTransitions(browser, vp) {
   surveiller(page, journal)
   try {
     await aller(page, '/coach/aujourdhui')
-    const studio = FORCE || await page.evaluate(() => window.__banc.studio())
     for (const cible of ['/coach/exercices', '/coach/clients', '/coach/aujourdhui', '/coach/seances']) {
       const lien = page.locator(`a[href="${cible}"]:visible`).first()
       if (!(await lien.count())) { add(`transition → ${cible}`, vp.nom, 'contraste en temps réel', 'skip', 'lien de navigation non visible à cette taille'); continue }
@@ -266,7 +275,9 @@ async function auditerTransitions(browser, vp) {
       await lien.click()
       await pause(1100)
       const r = await page.evaluate(() => window.__banc.fin())
-      add(`transition → ${cible}`, vp.nom, 'contraste en temps réel', r.echecs.length ? design(studio) : 'ok', r.echecs.length ? `pire creux ${r.echecs[0].ratio}:1 sur ${r.echecs.length} textes (${r.n} scans) : ` + resume(r.echecs, (m) => `${m.sel}"${m.texte}" ${m.ratio}<${m.need}`) : `${r.n} scans, aucun creux`)
+      // jugé d'après la page d'ARRIVÉE (la sortante n'est plus mesurée) : un creux sur une ancienne vue est « attendu »
+      const arrivee = FORCE || await page.evaluate(() => window.__banc.studio())
+      add(`transition → ${cible}`, vp.nom, 'contraste en temps réel', r.echecs.length ? design(arrivee) : 'ok', r.echecs.length ? `pire creux ${r.echecs[0].ratio}:1 sur ${r.echecs.length} textes (${r.n} scans) : ` + resume(r.echecs, (m) => `${m.sel}"${m.texte}" ${m.ratio}<${m.need}`) : `${r.n} scans, aucun creux`)
     }
     add('transitions', vp.nom, 'console sans erreur', journal.erreurs.length ? 'fail' : 'ok', [...new Set(journal.erreurs)].slice(0, 3).join(' | '))
   } catch (e) { add('transitions', vp.nom, 'contraste en temps réel', 'fail', 'exception: ' + e.message.split('\n')[0]) } finally { await ctx.close() }

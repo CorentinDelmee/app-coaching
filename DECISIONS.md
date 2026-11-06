@@ -118,3 +118,4 @@
 - 2026-11-06 [studio] Client invité depuis moins de 14 jours sans programme : reste « À surveiller », libellé « Nouveau · sans programme ».
 - 2026-11-06 [studio] Transitions : la page qui sort peut disparaître vite ; aucun texte de la page qui entre ni du panneau en fondu d'opacité sous 4,5:1 plus de ~100 ms (translation seule).
 - 2026-11-06 [studio] Écritures concurrentes (Claude par le MCP, 2e appareil) : concurrence optimiste par version + 409 « Modifié ailleurs », jamais d'écrasement silencieux.
+- 2026-11-06 [correctifs-l0] Contraste en temps réel (Studio) : la page qui sort peut disparaître en ≤ 120 ms ; la page ou le panneau qui entre n'a jamais de texte en fondu depuis 0 (translation courte + opacité depuis .9) ; aucune transition de couleur sur un élément dont le fond change d'un coup (onglets du bas). Le banc ignore les nœuds *-leave-active ou détachés et ne mesure un nœud *-enter-active qu'après 100 ms.
