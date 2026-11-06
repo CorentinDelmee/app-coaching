@@ -6,7 +6,7 @@ export const NAV_PRINCIPALE = [
   { to: '/coach/exercices', texte: 'Exercices', court: 'Exercices', icone: 'ex', bas: true, aussi: ['/coach/bibliotheque'] },
   { to: '/coach/clients', texte: 'Clients', court: 'Clients', icone: 'clients', bas: true },
   { to: '/coach/programmes', texte: 'Programmes', court: 'Programmes', icone: 'prog', bas: true, aussi: ['/coach/seances'] },
-  { to: '/coach/agenda', texte: 'Agenda & réservations', court: 'Agenda', icone: 'cal', compteur: 'alertesAgenda', aussi: ['/coach/reservations'] },
+  { to: '/coach/agenda', texte: 'Agenda', court: 'Agenda', icone: 'cal', compteur: 'alertesAgenda', aussi: ['/coach/reservations'] },
   { to: '/coach/questionnaires', texte: 'Questionnaires', court: 'Questionnaires', icone: 'msg' },
   { to: '/coach/alertes', texte: 'Alertes', court: 'Alertes', icone: 'cloche', compteur: 'alertes' }
 ]
@@ -15,7 +15,7 @@ export const NAV_PRINCIPALE = [
 export const NAV_SECONDAIRE = [
   { to: '/coach/reservations', texte: 'Réservations', icone: 'cal' },
   { to: '/coach/seances', texte: 'Séances', icone: 'seance' },
-  { to: '/coach/bibliotheque', texte: 'Vidéos', icone: 'video' },
+  { to: '/coach/bibliotheque', texte: 'Vidéos à valider', icone: 'video' },
   { to: '/coach/donnees', texte: 'Import / export', icone: 'donnees' }
 ]
 

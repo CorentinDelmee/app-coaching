@@ -1,5 +1,5 @@
 <script setup>
-// Agenda Google (Studio) : dernière synchro, séances attribuées par jour, alertes (nom inconnu, ambigu, sans nom).
+// Agenda Google (Studio) : dernière synchro, rendez-vous attribués par jour, alertes (nom inconnu, ambigu, sans nom).
 // Les événements « Coaching <nom du client> » du Google Agenda du coach apparaissent dans la case Coaching de l'appli du client.
 import { computed, onMounted, ref } from 'vue'
 import data from '../../../../data/index.js'
@@ -60,7 +60,7 @@ onMounted(async () => { await rafraichir(); await charger() })
       <div>
         <h1>Agenda</h1>
         <p>
-          Créez « Coaching Prénom Nom » dans Google Agenda : la séance apparaît dans l'appli du client.
+          Créez « Coaching Prénom Nom » dans Google Agenda : le rendez-vous apparaît dans l'appli du client.
           <Puce v-if="data.mode === 'local'" variante="propose">Démo : faux agenda</Puce>
         </p>
       </div>
@@ -93,7 +93,7 @@ onMounted(async () => { await rafraichir(); await charger() })
       </section>
 
       <section aria-labelledby="ag-seances">
-        <h2 id="ag-seances" class="st-ag-titre">Séances à venir <span class="st-ag-n">{{ attribuees.length }}</span></h2>
+        <h2 id="ag-seances" class="st-ag-titre">Rendez-vous à venir <span class="st-ag-n">{{ attribuees.length }}</span></h2>
         <ol v-if="jours.length" class="st-ag-jours" data-testid="seances-agenda">
           <li v-for="(g, i) in joursVisibles" :key="g.date" class="st-ag-jour" :style="{ '--i': Math.min(i, 8) }">
             <div class="st-ag-date" :aria-label="g.court"><b>{{ g.num }}</b><span>{{ g.jour }} {{ g.mois }}</span></div>
@@ -109,7 +109,7 @@ onMounted(async () => { await rafraichir(); await charger() })
           </li>
         </ol>
         <button v-if="jours.length > nbJours" class="st-btn st-ag-plus" type="button" @click="nbJours += PAQUET">Voir la suite ({{ jours.length - nbJours }} jours)</button>
-        <p v-if="!jours.length" class="st-ag-vide"><strong>Rien de prévu</strong>Aucune séance à venir dans l'agenda.</p>
+        <p v-if="!jours.length" class="st-ag-vide"><strong>Rien de prévu</strong>Aucun rendez-vous à venir dans l'agenda.</p>
       </section>
     </div>
 

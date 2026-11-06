@@ -31,7 +31,7 @@ export function dateFr(jour, anneeRef) {
 export const adresseApp = (origine, base = '/') => origine + base.replace(/\/+$/, '')
 export function messageIdentifiants({ nom, identifiant, code, url }) {
   const prenom = nom.trim().split(/\s+/)[0]
-  return `Bonjour ${prenom}, voici votre accès à l'application de coaching :\n${url}\nIdentifiant : ${identifiant}\nCode : ${code}\nVous pourrez changer ce code dans votre profil.`
+  return `Bonjour ${prenom}, voici ton accès à l'application de coaching :\n${url}\nIdentifiant : ${identifiant}\nCode : ${code}\nTu pourras changer ce code dans ton profil.`
 }
 export const lienWhatsAppIdentifiants = (infos, numero = '') => lienWhatsApp(numero, messageIdentifiants(infos))
 

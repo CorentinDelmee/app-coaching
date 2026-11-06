@@ -315,7 +315,7 @@ const SEL = {
   carteExo: '[data-test="exercice"], .st-grille [role="button"], .st-grille a, .st-grille button, .st-grille > *, .c-item',
   panneau: '[data-test="panneau"], .st-panneau',
   champNom: '[data-test="exo-nom"], .st-panneau input[type="text"], .st-panneau input:not([type]), .st-panneau input',
-  biblio: '[data-test="biblio"] [draggable="true"], .st-ed-biblio [draggable="true"], .st-ed-biblio [role="button"], .st-ed-biblio > * > *',
+  biblio: '[data-test="biblio"] [data-test="exercice"], [data-test="biblio"] [draggable="true"], .st-ed-biblio [draggable="true"], .st-ed-biblio [role="button"], .st-ed-biblio > * > *',
   zoneSeance: '[data-test="zone-seance"], .st-ed-zone, .st-timeline, .st-ed',
   bloc: '[data-test="bloc"], .st-timeline > *, .st-ed [draggable="true"]'
 }
@@ -364,6 +364,7 @@ async function scenarioExercice(browser, vp) {
     T('rechargement : la modification est retrouvée', await page.getByText(nouveau).count() || await page.locator(`input[value="${nouveau}"]`).count() ? 'ok' : 'fail', nouveau)
 
     // naviguer pendant une sauvegarde : on tape puis on quitte tout de suite
+    await page.keyboard.press('Escape'); await pause(500) // après rechargement, ?ex= rouvre la feuille (voulu) : on la ferme
     const carte2 = page.locator(SEL.carteExo).filter({ visible: true }).first()
     await carte2.click(); await pause(700)
     const champ2 = page.locator(SEL.champNom).first()
@@ -409,17 +410,29 @@ async function scenarioSeance(browser, vp) {
     const enEditeur = /\/coach\/seances\/[^/]+/.test(page.url())
     T('ouvrir l’éditeur de séance', enEditeur ? 'ok' : attendu, page.url().replace(BASE, ''))
     if (!enEditeur) return
+    const mobile = vp.width <= 900 // bibliothèque dans une feuille basse : « + Exercice » l'ouvre, un toucher sur une vignette l'ajoute et la ferme
+    const ouvrirFeuille = async () => {
+      if (!mobile || (await page.locator(SEL.biblio).filter({ visible: true }).count())) return
+      await page.getByRole('button', { name: /^\s*Exercice\s*$/ }).filter({ visible: true }).first().click().catch(() => {}); await pause(600)
+    }
+    await ouvrirFeuille()
     const sources = page.locator(SEL.biblio).filter({ visible: true }), zone = page.locator(SEL.zoneSeance).filter({ visible: true }).first()
     const nSources = await sources.count()
     if (!nSources || !(await zone.count())) return T('créer une séance par glisser-déposer', attendu, 'bibliothèque glissable / zone de séance introuvable (pas encore Studio)')
     const blocs = () => page.locator(SEL.bloc).filter({ visible: true })
     const avant = await blocs().count()
-    await glisser(page, sources.nth(0), zone)
-    await glisser(page, sources.nth(Math.min(1, nSources - 1)), zone)
+    if (mobile) {
+      await sources.nth(0).tap(); await pause(600)
+      await ouvrirFeuille()
+      await page.locator(SEL.biblio).filter({ visible: true }).nth(Math.min(1, nSources - 1)).tap(); await pause(600)
+    } else {
+      await glisser(page, sources.nth(0), zone)
+      await glisser(page, sources.nth(Math.min(1, nSources - 1)), zone)
+    }
     const apres = await blocs().count()
-    T('glisser 2 exercices dans la séance', apres >= avant + 2 ? 'ok' : 'fail', `blocs ${avant} → ${apres}`)
+    T(mobile ? 'toucher 2 exercices de la bibliothèque pour les ajouter' : 'glisser 2 exercices dans la séance', apres >= avant + 2 ? 'ok' : 'fail', `blocs ${avant} → ${apres}`)
     await page.screenshot({ path: join(OUT, 'captures', `scenario-seance-glisse-${vp.nom}.png`) })
-    if (apres >= 2) {
+    if (apres >= 2 && !mobile) {
       const ordre = async () => (await blocs().allTextContents()).map((t) => t.trim().slice(0, 30))
       const o1 = await ordre()
       await glisser(page, blocs().nth(apres - 1), blocs().nth(0), true)
