@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  normaliser, initiales, teinteClient, joursEntre, assiduite, resumeClient, libelleDepuis, filtrerClients, compterFiltres, optionsReponses
+  libelleStatut, dateAvecAnnee, normaliser, initiales, teinteClient, joursEntre, assiduite, resumeClient, libelleDepuis, filtrerClients, compterFiltres, optionsReponses
 } from '../../src/coach/studio/ecrans/clients/logique.js'
 import { TEINTES_STUDIO } from '../../src/coach/studio/medias.js'
 
@@ -89,5 +89,23 @@ describe('studio clients : options de réponses', () => {
     expect(optionsReponses(rs, qs)).toEqual([
       { valeur: 'q2', texte: 'PAR-Q', n: 1 }, { valeur: 'q-inconnu', texte: 'Questionnaire', n: 1 }, { valeur: 'q1', texte: 'Check-in', n: 2 }
     ])
+  })
+})
+
+describe('studio clients : libellés (correctifs)', () => {
+  const p = { id: 'n', nom: 'N', identifiant: 'n', role: 'client' }
+  it('client neuf sans programme : « Nouveau · sans programme » pendant 14 jours', () => {
+    const neuf = resumeClient({ profil: { ...p, creeLe: Date.parse('2026-11-01T10:00:00') }, aujourdhui: AUJ })
+    expect(neuf.statut).toBe('sansProgramme')
+    expect(libelleStatut(neuf)).toBe('Nouveau · sans programme')
+    const ancien = resumeClient({ profil: { ...p, creeLe: Date.parse('2026-10-01T10:00:00') }, aujourdhui: AUJ })
+    expect(libelleStatut(ancien)).toBe('Sans programme')
+    expect(libelleStatut({ statut: 'alerte', nbAlertes: 2 })).toBe('2 alertes')
+    expect(libelleStatut({ statut: 'actif' })).toBe('Actif')
+  })
+  it('date avec année', () => {
+    expect(dateAvecAnnee('1985-03-12')).toBe('12 mars 1985')
+    expect(dateAvecAnnee('1990-01-01')).toBe('1er janvier 1990')
+    expect(dateAvecAnnee('inconnue')).toBe('inconnue')
   })
 })

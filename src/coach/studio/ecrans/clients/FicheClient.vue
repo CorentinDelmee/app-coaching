@@ -23,7 +23,7 @@ import IndicateurSauvegarde from '../../IndicateurSauvegarde.vue'
 import CourbeSt from './CourbeSt.vue'
 import CalendrierSt from './CalendrierSt.vue'
 import IdentifiantsCrees from './IdentifiantsCrees.vue'
-import { assiduite, initiales, optionsReponses, teinteClient } from './logique.js'
+import { assiduite, dateAvecAnnee, initiales, optionsReponses, teinteClient } from './logique.js'
 import { demanderFocus, rendreFocus } from './retourFocus.js'
 
 const props = defineProps({ id: { type: String, required: true } })
@@ -125,7 +125,7 @@ const courbePrincipale = computed(() => (courbePoids.value.length > 1 ? { donnee
 
 // --- Notes privées (fiche importée, réservée au coach) -----------------------------------------------------
 const LIBELLES_CONTACT = { email: 'E-mail', telephone: 'Téléphone', dateNaissance: 'Naissance', sexe: 'Sexe', adresse: 'Adresse' }
-const contactFiche = computed(() => Object.entries(profil.value?.fiche?.contact || {}).filter(([k, v]) => v && LIBELLES_CONTACT[k]).map(([k, v]) => ({ libelle: LIBELLES_CONTACT[k], valeur: k === 'dateNaissance' ? dateFr(v) : v })))
+const contactFiche = computed(() => Object.entries(profil.value?.fiche?.contact || {}).filter(([k, v]) => v && LIBELLES_CONTACT[k]).map(([k, v]) => ({ libelle: LIBELLES_CONTACT[k], valeur: k === 'dateNaissance' ? dateAvecAnnee(v) : v })))
 
 // --- Coaching ---------------------------------------------------------------------------------------------
 const nouvelle = reactive({ date: aujourdhui, heure: '18:00', lieu: 'domicile', statut: 'prevue', tarif: 35 })
@@ -156,8 +156,17 @@ async function envoyerMot() {
     toast('Mot publié sur le tableau de bord du client')
   } catch (e) { toast(messageErreur(e)) }
 }
+const champMot = ref(null)
 async function supprimerMot(m) {
-  try { await data.motsDuCoach.archiver(m.id); await charger(); toast('Mot retiré') } catch (e) { toast(messageErreur(e)) }
+  const i = motsTries.value.findIndex((x) => x.id === m.id)
+  try {
+    await data.motsDuCoach.archiver(m.id)
+    await charger()
+    toast('Mot retiré')
+    await nextTick()
+    const boutons = racine.value?.querySelectorAll('[data-retirer-mot]') || []
+    ;(boutons[Math.min(i, boutons.length - 1)] || champMot.value)?.focus()
+  } catch (e) { toast(messageErreur(e)) }
 }
 async function voirAlerte(a) {
   await marquerVue(a)
@@ -272,7 +281,31 @@ async function fermer() {
   rendreFocus()
 }
 
+const titre = ref(null)
+let inertes = []
+function rendreInerte() {
+  const calques = document.getElementById('st-calques')
+  const racineApp = calques?.parentElement
+  if (!racineApp) return
+  inertes = [...racineApp.children].filter((el) => el !== calques && !el.classList.contains('st-toast') && !el.inert)
+  inertes.forEach((el) => { el.inert = true })
+}
+function rendreActif() {
+  inertes.forEach((el) => { el.inert = false })
+  inertes = []
+}
+function pieger(ev) {
+  if (ev.key !== 'Tab' || !enCalque.value || !racine.value) return
+  const f = [...racine.value.querySelectorAll('a[href], button:not([disabled]), input, select, textarea, summary, [tabindex]:not([tabindex="-1"])')].filter((el) => el.offsetParent !== null)
+  if (!f.length) return
+  const premier = f[0]
+  const dernier = f[f.length - 1]
+  if (ev.shiftKey && (document.activeElement === premier || !racine.value.contains(document.activeElement))) { ev.preventDefault(); dernier.focus() }
+  else if (!ev.shiftKey && document.activeElement === dernier) { ev.preventDefault(); premier.focus() }
+}
+
 function surTouche(ev) {
+  pieger(ev)
   if (ev.key !== 'Escape' || ev.defaultPrevented) return
   ev.preventDefault()
   fermer()
@@ -306,9 +339,12 @@ const styleFeuille = computed(() => (decalage.value ? { transform: `translateY($
 onMounted(async () => {
   document.addEventListener('keydown', surTouche)
   if (mobile.matches) document.body.style.overflow = 'hidden'
+  if (enCalque.value) rendreInerte()
   await charger()
   await nextTick()
   placerSouligne()
+  // Le focus va au nom du client (annoncé par le lecteur d'écran), jamais au body.
+  titre.value?.focus({ preventScroll: true })
   if (reduit.matches) { vu.value = true; return }
   if (mobile.matches) requestAnimationFrame(() => requestAnimationFrame(() => { vu.value = true }))
   else {
@@ -319,6 +355,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', surTouche)
   document.body.style.overflow = ''
+  rendreActif()
   sauvegarde.arreter()
 })
 </script>
@@ -328,6 +365,7 @@ onBeforeUnmount(() => {
   <div v-if="enCalque" class="st-clients st-clients-voile" :class="{ 'is-vu': vu }" aria-hidden="true" @click="fermer" />
   <article
     ref="racine" class="st-clients st-clients-fiche" :class="{ 'is-vu': vu, 'is-glisse': glisse }" :style="styleFeuille" :data-m="teinte"
+    :role="enCalque ? 'dialog' : 'region'" :aria-modal="enCalque ? 'true' : undefined"
     :aria-labelledby="profil ? 'st-clients-fiche-nom' : undefined" :aria-label="profil ? undefined : 'Fiche client'"
     @pointerdown="debutGlisse" @pointermove="moveGlisse" @pointerup="finGlisse" @pointercancel="finGlisse"
   >
@@ -336,7 +374,7 @@ onBeforeUnmount(() => {
       <header class="st-clients-tete">
         <span class="st-clients-av is-grand" aria-hidden="true">{{ initiales(profil.nom) }}</span>
         <div class="st-clients-tete-txt">
-          <h2 id="st-clients-fiche-nom">{{ profil.nom }}</h2>
+          <h2 id="st-clients-fiche-nom" ref="titre" tabindex="-1" :title="profil.nom">{{ profil.nom }}</h2>
           <p>{{ sousTitre }}</p>
           <div v-if="profil.archive || alertesClient.length" class="st-clients-puces">
             <Puce v-if="profil.archive" variante="neutre">Archivé</Puce>
@@ -479,13 +517,13 @@ onBeforeUnmount(() => {
             <div>
               <form class="st-clients-form-in" @submit.prevent="envoyerMot">
                 <h3 class="st-clients-h3">Mot du coach</h3>
-                <label class="st-clients-champ is-large">Message affiché sur le tableau de bord du client<textarea v-model="mot" rows="3" placeholder="Beau travail cette semaine, on garde le cap !" /></label>
+                <label class="st-clients-champ is-large">Message affiché sur le tableau de bord du client<textarea ref="champMot" v-model="mot" rows="3" placeholder="Beau travail cette semaine, on garde le cap !" /></label>
                 <button class="st-btn st-btn--encre" type="submit" :disabled="!mot.trim()">Publier</button>
               </form>
               <ul v-if="motsTries.length" class="st-clients-lignes">
                 <li v-for="m in motsTries" :key="m.id">
                   <div><span>{{ m.texte }}</span><small>{{ dateFr(m.date) }}</small></div>
-                  <button type="button" class="st-btn st-clients-danger" @click="supprimerMot(m)">Retirer</button>
+                  <button type="button" class="st-btn st-clients-danger" data-retirer-mot :aria-label="`Retirer le mot du ${dateFr(m.date)}`" @click="supprimerMot(m)">Retirer</button>
                 </li>
               </ul>
             </div>

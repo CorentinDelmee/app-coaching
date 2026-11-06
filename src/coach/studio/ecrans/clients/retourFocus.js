@@ -10,5 +10,8 @@ export function demanderFocus(id) {
 }
 export function rendreFocus() {
   if (!attente) return
-  document.querySelector(`.st-clients-carte[data-client="${CSS.escape(attente)}"]`)?.focus({ preventScroll: false })
+  const carte = document.querySelector(`.st-clients-carte[data-client="${CSS.escape(attente)}"]`)
+  // Carte disparue (client archivé) : première carte de la liste, sinon le champ de recherche.
+  const cible = carte || document.querySelector('.st-clients-carte') || document.querySelector('.st-clients-recherche input')
+  cible?.focus({ preventScroll: !carte })
 }
