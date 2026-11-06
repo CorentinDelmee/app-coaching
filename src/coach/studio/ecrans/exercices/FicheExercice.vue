@@ -29,7 +29,7 @@ const sales = new Set()                        // champs touchés pas encore con
 const erreurs = ref({})
 const id = props.exercice.id
 const p = (c) => `st-exo-${c}`                 // identifiants de champs
-const ID_CHAMP = { nom: 'nom', lienVideo: 'yt', reposConseille: 'repos', tempo: 'tempo', description: 'desc', consignes: 'cons', erreursFrequentes: 'err', varianteFacile: 'fac', varianteDifficile: 'dur', notesPrivees: 'notes', categorie: 'cat', materiel: 'mat-n' }
+const ID_CHAMP = { nom: 'nom', lienVideo: 'yt', reposConseille: 'repos', tempo: 'tempo', description: 'desc', consignes: 'cons', erreursFrequentes: 'err', varianteFacile: 'fac', varianteDifficile: 'dur', notesPrivees: 'notes', categorie: 'cat' }
 
 /** Réponse du serveur : base à jour ; champs confirmés -> propres ; champs non touchés -> valeur du serveur. */
 function appliquerServeur(item) {
@@ -202,20 +202,20 @@ const utiliseProg = computed(() => serveur.value.utiliseDansProgrammes)
     <h3 id="st-exo-h-classement">Classement</h3>
     <div class="st-exo-champ">
       <span :id="p('l-mp')" class="st-exo-lab">Muscles principaux</span>
-      <div class="st-exo-jetons" role="group" :aria-labelledby="p('l-mp')">
+      <div class="st-exo-jetons" role="group" data-champ="musclesPrincipaux" :aria-labelledby="p('l-mp')">
         <button v-for="o in optionsMuscles('musclesPrincipaux')" :key="o.v" type="button" class="st-exo-jeton" :data-m="o.m || undefined" :aria-pressed="form.musclesPrincipaux.includes(o.v)" @click="form.musclesPrincipaux = basculer(form.musclesPrincipaux, o.v)">{{ o.texte }}</button>
       </div>
       <p v-if="erreurs.musclesPrincipaux" class="st-exo-err">{{ erreurs.musclesPrincipaux }}</p>
     </div>
     <div class="st-exo-champ">
       <span :id="p('l-ms')" class="st-exo-lab">Muscles secondaires</span>
-      <div class="st-exo-jetons" role="group" :aria-labelledby="p('l-ms')">
+      <div class="st-exo-jetons" role="group" data-champ="musclesSecondaires" :aria-labelledby="p('l-ms')">
         <button v-for="o in optionsMuscles('musclesSecondaires')" :key="o.v" type="button" class="st-exo-jeton" :data-m="o.m || undefined" :aria-pressed="form.musclesSecondaires.includes(o.v)" @click="form.musclesSecondaires = basculer(form.musclesSecondaires, o.v)">{{ o.texte }}</button>
       </div>
     </div>
     <div class="st-exo-champ">
       <span :id="p('l-mat')" class="st-exo-lab">Matériel</span>
-      <div class="st-exo-jetons" role="group" :aria-labelledby="p('l-mat')">
+      <div class="st-exo-jetons" role="group" data-champ="materiel" :aria-labelledby="p('l-mat')">
         <button v-for="m in listeMateriels" :key="m" type="button" class="st-exo-jeton" :aria-pressed="form.materiel.includes(m)" @click="form.materiel = basculer(form.materiel, m)">{{ m }}</button>
       </div>
       <form class="st-exo-ajout" @submit.prevent="ajouterMateriel">
@@ -237,7 +237,7 @@ const utiliseProg = computed(() => serveur.value.utiliseDansProgrammes)
     </div>
     <div class="st-exo-champ">
       <span :id="p('l-tags')" class="st-exo-lab">Étiquettes (filtres des séances)</span>
-      <div class="st-exo-jetons" role="group" :aria-labelledby="p('l-tags')">
+      <div class="st-exo-jetons" role="group" data-champ="categories" :aria-labelledby="p('l-tags')">
         <button v-for="c in etiquettes" :key="c" type="button" class="st-exo-jeton" :aria-pressed="form.categories.includes(c)" @click="form.categories = basculer(form.categories, c)">{{ libelleCategorie(c) }}</button>
       </div>
     </div>
