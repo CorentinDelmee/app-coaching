@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import {
   aRelancer, checkinsDuJour, dateDuJour, frise, heureCourte, libelleJour, programmeDuJour, prochainsJours, rendezVous, resumeJour, salutation
 } from '../../src/coach/studio/ecrans/aujourdhui/journee.js'
-import { initiales, teinteDe } from '../../src/coach/studio/ecrans/aujourdhui/avatar.js'
+import { avatarClient, initiales, teinteDe } from '../../src/coach/studio/avatar.js'
+import { teinteClient } from '../../src/coach/studio/ecrans/clients/logique.js'
 import routes from '../../src/coach/studio/ecrans/aujourdhui/routes.js'
 
 const JOUR = '2026-11-06' // vendredi
@@ -143,5 +144,36 @@ describe('libellés', () => {
   })
   it('exporte les routes aujourdhui et alertes', () => {
     expect(routes.map((r) => r.path)).toEqual(['aujourdhui', 'alertes'])
+  })
+})
+
+describe('finitions : numéro, doublons, avatar', () => {
+  it('Relancer utilise le téléphone de la fiche (06… ou +33… -> 33…)', () => {
+    const cl = [
+      { id: 'c1', role: 'client', nom: 'Fabien Vincent', fiche: { contact: { telephone: '06 12 34 56 78' } } },
+      { id: 'c2', role: 'client', nom: 'Léa Martin' }
+    ]
+    const r = aRelancer({ clients: cl, tous: [], seances: [], jour: JOUR })
+    expect(r.find((x) => x.clientId === 'c1').lienWhatsApp.startsWith('https://wa.me/33612345678?text=')).toBe(true)
+    expect(r.find((x) => x.clientId === 'c2').lienWhatsApp.startsWith('https://wa.me/?text=')).toBe(true)
+  })
+  it('une réservation du site déjà dans l’agenda Google (même client, même heure) n’apparaît qu’une fois', () => {
+    const resa = { id: 'r1', debut: '2026-11-06T14:00:00+01:00', fin: '2026-11-06T15:00:00+01:00', prenom: 'Léa', nom: 'MARTIN', statut: 'a_venir' }
+    const google = { id: 'e1', statut: 'attribue', clientId: 'c2', date: JOUR, heure: '14:00' }
+    const seul = rendezVous({ clients, reservations: [resa] })
+    expect(seul).toHaveLength(1)
+    expect(seul[0]).toMatchObject({ source: 'site', clientId: 'c2', lien: '/coach/clients/c2' })
+    expect(rendezVous({ clients, evenements: [google], reservations: [resa] }).map((r) => r.source)).toEqual(['google'])
+    expect(rendezVous({ clients, evenements: [google], reservations: [{ ...resa, debut: '2026-11-06T16:00:00+01:00' }] })).toHaveLength(2)
+  })
+  it('réservation reconnue par le téléphone de la fiche', () => {
+    const cl = [{ id: 'c9', role: 'client', nom: 'Camille M.', fiche: { contact: { telephone: '+33 6 11 22 33 44' } } }]
+    const [r] = rendezVous({ clients: cl, reservations: [{ id: 'r', debut: '2026-11-06T10:00:00+01:00', prenom: 'Camille', nom: 'Martin', telephone: '0611223344', statut: 'a_venir' }] })
+    expect(r.clientId).toBe('c9')
+  })
+  it('avatar : 2 lettres partout', () => {
+    expect(avatarClient('c1', 'Fabien Vincent')).toEqual({ initiales: 'FV', teinte: teinteDe('c1') })
+    expect(avatarClient('c2', 'Madonna').initiales).toBe('MA')
+    expect(avatarClient('c1', 'x').teinte).toBe(teinteClient('c1'))
   })
 })

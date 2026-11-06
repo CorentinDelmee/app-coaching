@@ -6,7 +6,7 @@ import { RouterLink } from 'vue-router'
 import Puce from '../../Puce.vue'
 import { toast } from '../../toast.js'
 import { etat, marquerVue, messageErreur, nomClient } from '../../../store.js'
-import { initiales, teinteDe } from './avatar.js'
+import { avatarClient } from '../../avatar.js'
 
 const props = defineProps({ max: { type: Number, default: 0 } })
 const LIBELLES = { checkin: 'Check-in', douleur: 'Douleur', commentaire: 'Commentaire' }
@@ -29,7 +29,7 @@ async function vu(a) {
 <template>
   <TransitionGroup tag="ul" name="st-auj-liste" class="st-auj-mini">
     <li v-for="a in liste" :key="a.id">
-      <span class="st-auj-av" :data-m="teinteDe(a.clientId)" aria-hidden="true">{{ initiales(nomClient(a.clientId)) }}</span>
+      <span class="st-auj-av" :data-m="avatarClient(a.clientId, nomClient(a.clientId)).teinte" aria-hidden="true">{{ avatarClient(a.clientId, nomClient(a.clientId)).initiales }}</span>
       <div>
         <RouterLink :to="`/coach/clients/${a.clientId}`" class="st-auj-nom">{{ nomClient(a.clientId) }}</RouterLink>
         <small>{{ a.message }}</small>

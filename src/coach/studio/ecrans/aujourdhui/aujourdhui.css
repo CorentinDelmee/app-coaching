@@ -8,6 +8,7 @@
 .st-auj .st-auj-date { margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--st-doux); }
 .st-auj .st-auj-titre { font-family: var(--st-titre); font-weight: 500; font-size: clamp(34px, 5vw, 56px); line-height: 1; letter-spacing: -.035em; margin: 0; color: var(--st-encre); }
 .st-auj .st-auj-resume { margin: 10px 0 0; color: var(--st-doux); }
+.st-auj-ctas { display: flex; align-items: center; gap: 10px; flex: none; }
 .st-auj-cta { flex: none; }
 
 /* Grille de blocs : 12 colonnes, entrée en cascade (transform + opacity) */
@@ -122,6 +123,7 @@ a.st-auj-nom:hover { text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 900px) {
   .st-auj-entete { margin-bottom: 16px; align-items: center; }
   .st-auj .st-auj-titre { font-size: 40px; }
+  .st-auj-cta2 { display: none; } /* « Créer une séance » reste dans les accès rapides */
   .st-auj-cta { width: 48px; min-height: 48px; padding: 0; border-radius: 50%; }
   .st-auj-lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .st-auj-dash { gap: 12px; }

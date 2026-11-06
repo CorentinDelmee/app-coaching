@@ -4,6 +4,7 @@ import { ajouterJours, diffJours } from '../../../../domain/dates.js'
 import { normaliserReservation, libelleJourLong } from '../../../../domain/reservations.js'
 import { questionnairesDus } from '../../../../domain/questionnairesDus.js'
 import { lienWhatsApp } from '../../../../domain/coaching.js'
+import { normaliser, normaliserTelephone, telephoneClient } from '../clients/logique.js'
 
 const DUREE_DEFAUT = 60 // minutes, quand la fin n'est pas connue
 export const JOURS_SANS_SEANCE = 14 // relance si aucune séance prévue et la dernière date d'au moins 14 jours
@@ -18,6 +19,16 @@ export const heureCourte = (hhmm) => {
   return t === null ? '' : `${Math.floor(t / 60)} h ${String(t % 60).padStart(2, '0')}`
 }
 const lieuTexte = (lieu) => (lieu === 'salle' ? 'en salle' : 'à domicile')
+const motsNom = (nom) => normaliser(nom).split(/\s+/).filter(Boolean).sort().join(' ')
+/** Client correspondant à une réservation du site : même téléphone (fiche), sinon même prénom + nom (accents et ordre ignorés). */
+export function clientDeReservation(r, clients = []) {
+  const tel = normaliserTelephone(r.telephone)
+  const actifs = clients.filter((c) => c.role === 'client')
+  const parTel = tel && actifs.find((c) => telephoneClient(c) === tel)
+  if (parTel) return parTel
+  const nom = motsNom(`${r.prenom} ${r.nom}`)
+  return nom ? actifs.find((c) => motsNom(c.nom) === nom) : undefined
+}
 export const prenomDe = (nom = '') => String(nom).trim().split(/\s+/)[0] || ''
 
 /**
@@ -41,6 +52,7 @@ export function rendezVous({ seances = [], evenements = [], reservations = [], c
     if (e.statut !== 'attribue' || !e.date) continue
     const heure = e.journee ? '' : e.heure
     if (cle.has(`${e.clientId}|${e.date}|${heure}`)) continue
+    cle.add(`${e.clientId}|${e.date}|${heure}`)
     liste.push({
       id: `google-${e.id}`, date: e.date, heure, fin: e.finHeure || '', titre: nom(e.clientId) || e.clientNom || 'Client', clientId: e.clientId,
       detail: `Agenda Google · ${e.lieuTexte || lieuTexte(e.lieu)}`, source: 'google', lien: e.clientId ? `/coach/clients/${e.clientId}` : '/coach/agenda'
@@ -49,9 +61,12 @@ export function rendezVous({ seances = [], evenements = [], reservations = [], c
   for (const brut of reservations) {
     const r = normaliserReservation(brut)
     if (!r.date || brut.statut === 'annulee') continue
+    // Une réservation du site est aussi dans l'agenda Google (une fois synchronisée) : même client + même heure = un seul rendez-vous.
+    const client = clientDeReservation(r, clients)
+    if (client && cle.has(`${client.id}|${r.date}|${r.heure}`)) continue
     liste.push({
-      id: `site-${r.id}`, date: r.date, heure: r.heure, fin: r.heureFin, titre: `${r.prenom} ${r.nom.toUpperCase()}`.trim() || 'Réservation',
-      detail: `Réservé sur le site${r.commune ? ` · ${r.commune}` : ''}`, source: 'site', lien: '/coach/reservations'
+      id: `site-${r.id}`, date: r.date, heure: r.heure, fin: r.heureFin, titre: client?.nom || `${r.prenom} ${r.nom.toUpperCase()}`.trim() || 'Réservation', clientId: client?.id,
+      detail: `Réservé sur le site${r.commune ? ` · ${r.commune}` : ''}`, source: 'site', lien: client ? `/coach/clients/${client.id}` : '/coach/reservations'
     })
   }
   return liste.sort((a, b) => `${a.date} ${a.heure}`.localeCompare(`${b.date} ${b.heure}`))
@@ -122,12 +137,13 @@ export function aRelancer({ clients = [], questionnaires = [], reponses = [], to
   for (const c of clients) {
     if (c.role !== 'client' || c.archive) continue
     const prenom = prenomDe(c.nom)
+    const tel = telephoneClient(c) // numéro de la fiche (invitation, Réglages ou import MyPTHub) ; sans numéro, WhatsApp laisse choisir le contact
     for (const q of questionnairesDus({ questionnaires, reponses, clientId: c.id, aujourdhui: jour })) {
       if (q.frequence === 'quotidien') continue
       const message = `Bonjour ${prenom}, petit rappel : le questionnaire « ${q.nom} » t'attend dans l'appli. Merci !`
       sortie.push({
         id: `q:${c.id}:${q.id}`, clientId: c.id, nom: c.nom, raison: 'questionnaire',
-        detail: `« ${q.nom} » à remplir${q.frequence === 'hebdo' ? ' cette semaine' : ''}`, message, lienWhatsApp: lienWhatsApp('', message)
+        detail: `« ${q.nom} » à remplir${q.frequence === 'hebdo' ? ' cette semaine' : ''}`, message, lienWhatsApp: lienWhatsApp(tel, message)
       })
     }
     const aVenir = tous.some((r) => r.clientId === c.id && r.date >= jour && !r.faite)
@@ -140,7 +156,7 @@ export function aRelancer({ clients = [], questionnaires = [], reponses = [], to
         sortie.push({
           id: `s:${c.id}`, clientId: c.id, nom: c.nom, raison: 'seance',
           detail: derniere ? `Aucune séance prévue · dernière il y a ${ecart} jours` : 'Aucune séance prévue',
-          message, lienWhatsApp: lienWhatsApp('', message)
+          message, lienWhatsApp: lienWhatsApp(tel, message)
         })
       }
     }

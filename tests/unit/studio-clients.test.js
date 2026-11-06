@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  libelleStatut, dateAvecAnnee, normaliser, initiales, teinteClient, joursEntre, assiduite, resumeClient, libelleDepuis, filtrerClients, compterFiltres, optionsReponses
+  libelleStatut, dateAvecAnnee, normaliser, initiales, teinteClient, joursEntre, assiduite, resumeClient, libelleDepuis, filtrerClients, compterFiltres, optionsReponses, normaliserTelephone, patchTelephone, telephoneClient, messageAcces
 } from '../../src/coach/studio/ecrans/clients/logique.js'
 import { TEINTES_STUDIO } from '../../src/coach/studio/medias.js'
 
@@ -107,5 +107,28 @@ describe('studio clients : libellés (correctifs)', () => {
     expect(dateAvecAnnee('1985-03-12')).toBe('12 mars 1985')
     expect(dateAvecAnnee('1990-01-01')).toBe('1er janvier 1990')
     expect(dateAvecAnnee('inconnue')).toBe('inconnue')
+  })
+})
+
+describe('téléphone et message d’accès', () => {
+  it('normalise au format WhatsApp', () => {
+    expect(normaliserTelephone('06 12 34 56 78')).toBe('33612345678')
+    expect(normaliserTelephone('+33 6 12 34 56 78')).toBe('33612345678')
+    expect(normaliserTelephone('0033612345678')).toBe('33612345678')
+    expect(normaliserTelephone('+33 (0)6 12 34 56 78')).toBe('33612345678')
+    expect(normaliserTelephone('06.12.34.56.78')).toBe('33612345678')
+    expect(normaliserTelephone('12')).toBe('')
+    expect(normaliserTelephone('')).toBe('')
+  })
+  it('lit et écrit le numéro dans la fiche sans perdre le reste', () => {
+    const p = { fiche: { notes: 'n', contact: { email: 'a@b.fr', telephone: '0612345678' } } }
+    expect(telephoneClient(p)).toBe('33612345678')
+    expect(patchTelephone(p, '07 00 00 00 01')).toEqual({ fiche: { notes: 'n', contact: { email: 'a@b.fr', telephone: '33700000001' } } })
+    expect(patchTelephone({}, '0612345678').fiche.contact.telephone).toBe('33612345678')
+  })
+  it('le message d’accès tutoie', () => {
+    const m = messageAcces({ nom: 'Léa Martin', identifiant: 'lea', code: 'AB12', url: 'https://x.fr' })
+    expect(m).toContain('ton accès')
+    expect(m).not.toMatch(/vous|votre|vos/i)
   })
 })
