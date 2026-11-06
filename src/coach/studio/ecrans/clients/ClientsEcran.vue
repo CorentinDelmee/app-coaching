@@ -3,7 +3,7 @@
 // assiduité en anneau), invitation d'un client (identifiant + code), restauration d'un archivé. La fiche s'ouvre à côté
 // (ordinateur) ou en feuille plein écran (téléphone) : route enfant /coach/clients/:id.
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
-import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import data from '../../../../data/index.js'
 import { jourLocal } from '../../../../domain/dates.js'
 import { LIEUX } from '../../../../domain/modele.js'
@@ -15,10 +15,11 @@ import Puce from '../../Puce.vue'
 import Filtres from '../../Filtres.vue'
 import IdentifiantsCrees from './IdentifiantsCrees.vue'
 import { rendreFocus } from './retourFocus.js'
-import { libelleStatut, VARIANTE_STATUT, compterFiltres, filtrerClients, initiales, libelleDepuis, resumeClient, teinteClient } from './logique.js'
+import { libelleStatut, VARIANTE_STATUT, compterFiltres, filtrerClients, initiales, libelleDepuis, normaliserTelephone, patchTelephone, resumeClient, teinteClient } from './logique.js'
 import './clients.css'
 
 const route = useRoute()
+const router = useRouter()
 const aujourdhui = jourLocal(maintenant())
 const archives = ref([])
 const realisations = ref([])
@@ -100,7 +101,17 @@ async function basculerFormulaire() {
   formulaire.ouvert = !formulaire.ouvert
   erreur.value = ''
   if (formulaire.ouvert) { await nextTick(); champNom.value?.focus() }
+  else if (route.query.inviter) router.replace({ path: route.path, query: { ...route.query, inviter: undefined } })
 }
+// Accès rapide « Nouveau client » (Aujourd'hui) : /coach/clients?inviter=1 ouvre directement le formulaire.
+async function ouvrirSiDemande() {
+  if (route.query.inviter && !formulaire.ouvert) { formulaire.ouvert = true; await nextTick(); champNom.value?.focus() }
+}
+onMounted(ouvrirSiDemande)
+watch(() => route.query.inviter, ouvrirSiDemande)
+// « Ajouter un rendez-vous » (Aujourd'hui) : /coach/clients?rendezvous=1 -> on choisit le client, sa fiche s'ouvre sur l'onglet Rendez-vous.
+const choixRendezVous = computed(() => !!route.query.rendezvous)
+const versClient = (id) => ({ path: `/coach/clients/${id}`, query: choixRendezVous.value ? { onglet: 'coaching' } : undefined })
 async function creer() {
   erreur.value = ''
   if (!formulaire.nom.trim()) { erreur.value = 'Le nom du client est obligatoire.'; return }
@@ -108,7 +119,12 @@ async function creer() {
     const { profil, identifiant, code } = await data.creerClient({
       nom: formulaire.nom.trim(), tarif: Number(formulaire.tarif) || 0, lieuDefaut: formulaire.lieuDefaut, modules: { ...formulaire.modules }
     })
-    cree.value = { nom: profil.nom, identifiant, code, url: adresseApp(window.location.origin, import.meta.env.BASE_URL), numero: formulaire.numero }
+    // Numéro WhatsApp : enregistré dans la fiche du client (même champ que l'import MyPTHub), il sert ensuite à « Relancer ».
+    const numero = formulaire.numero
+    if (normaliserTelephone(numero)) {
+      try { await data.profils.modifier(profil.id, patchTelephone(profil, numero)) } catch { toast('Compte créé, mais le numéro n’a pas pu être enregistré : ajoute-le dans les Réglages.') }
+    }
+    cree.value = { nom: profil.nom, identifiant, code, url: adresseApp(window.location.origin, import.meta.env.BASE_URL), numero }
     Object.assign(formulaire, { ouvert: false, nom: '', numero: '', modules: { habitudes: false, photosRepas: false, calories: false } })
     filtre.value = 'actifs'
     await charger()
@@ -141,6 +157,8 @@ async function restaurer(p) {
       </div>
     </header>
 
+    <p v-if="choixRendezVous" class="st-clients-bloc st-clients-doux" role="status">Pour quel client ajoutes-tu un rendez-vous ? Choisis-le dans la liste : sa fiche s’ouvre sur l’onglet Rendez-vous.</p>
+
     <IdentifiantsCrees v-if="cree" class="st-clients-bloc" :infos="cree" :titre="`Compte créé pour ${cree.nom}`" @termine="cree = null" />
 
     <form v-if="formulaire.ouvert" id="st-clients-invit" class="st-clients-bloc st-clients-form" novalidate @submit.prevent="creer">
@@ -151,7 +169,7 @@ async function restaurer(p) {
         <label class="st-clients-champ">Lieu par défaut
           <select v-model="formulaire.lieuDefaut"><option v-for="l in LIEUX" :key="l" :value="l">{{ l === 'domicile' ? 'À domicile' : 'En salle' }}</option></select>
         </label>
-        <label class="st-clients-champ">WhatsApp (facultatif)<input v-model="formulaire.numero" type="tel" placeholder="+33 6 …" autocomplete="off" /></label>
+        <label class="st-clients-champ">WhatsApp (facultatif)<input v-model="formulaire.numero" type="tel" placeholder="06 12 34 56 78" autocomplete="off" /></label>
       </div>
       <fieldset class="st-clients-cases">
         <legend>Nutrition</legend>
@@ -178,7 +196,7 @@ async function restaurer(p) {
         <ul v-if="affiches.length" ref="liste" class="st-clients-liste" aria-label="Clients">
           <li v-for="c in affiches" :key="c.profil.id" class="st-clients-li">
             <RouterLink
-              :to="`/coach/clients/${c.profil.id}`" class="st-clients-carte" :data-m="c.teinte" :data-client="c.profil.id"
+              :to="versClient(c.profil.id)" class="st-clients-carte" :data-m="c.teinte" :data-client="c.profil.id"
               :aria-current="ouvert === c.profil.id ? 'page' : undefined" :class="{ 'is-archive': c.profil.archive }"
             >
               <span class="st-clients-av" aria-hidden="true">

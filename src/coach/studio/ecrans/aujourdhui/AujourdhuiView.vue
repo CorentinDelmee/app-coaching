@@ -10,7 +10,7 @@ import { etat, maintenant, messageErreur, rafraichir } from '../../../store.js'
 import IconeSt from '../../IconeSt.vue'
 import Puce from '../../Puce.vue'
 import ListeAlertes from './ListeAlertes.vue'
-import { initiales, teinteDe } from './avatar.js'
+import { avatarClient } from '../../avatar.js'
 import {
   aRelancer, checkinsDuJour, dateDuJour, frise, heureCourte, libelleJour, prenomDe, prochainsJours, programmeDuJour, rendezVous, resumeJour, salutation
 } from './journee.js'
@@ -89,7 +89,10 @@ const messageRelance = (r) => `Relancer ${r.nom} sur WhatsApp (${r.raison === 'q
         <h1 class="st-auj-titre">{{ salutation(minutes) }}{{ statut === 'pret' ? ' ' + prenomCoach : '' }}.</h1>
         <p v-if="statut === 'pret'" class="st-auj-resume">{{ resumeJour(items, etat.alertes.length) }}</p>
       </div>
-      <RouterLink to="/coach/seances/nouveau" class="st-btn st-btn--jaune st-auj-cta"><IconeSt nom="plus" /><span class="st-auj-lbl">Nouvelle séance</span></RouterLink>
+      <div class="st-auj-ctas">
+        <RouterLink to="/coach/clients?rendezvous=1" class="st-btn st-btn--jaune st-auj-cta"><IconeSt nom="plus" /><span class="st-auj-lbl">Ajouter un rendez-vous</span></RouterLink>
+        <RouterLink to="/coach/seances/nouveau" class="st-btn st-auj-cta2">Nouvelle séance</RouterLink>
+      </div>
     </header>
 
     <!-- Erreur de chargement : rien n'est affiché à moitié -->
@@ -122,7 +125,7 @@ const messageRelance = (r) => `Relancer ${r.nom} sur WhatsApp (${r.raison === 'q
           </div>
 
           <ol v-if="items.length" class="st-auj-timeline">
-            <li v-for="(it, n) in items" :key="it.id" class="st-auj-seance" :class="`is-${it.etat}`" :data-m="it.clientId ? teinteDe(it.clientId) : 'gainage'" :style="{ '--n': n }">
+            <li v-for="(it, n) in items" :key="it.id" class="st-auj-seance" :class="`is-${it.etat}`" :data-m="avatarClient(it.clientId || it.id, it.titre).teinte" :style="{ '--n': n }">
               <time :datetime="`${it.date}T${it.heure || '00:00'}`">{{ it.heure ? heureCourte(it.heure) : 'Journée' }}<small v-if="LIB_ETAT[it.etat]">{{ LIB_ETAT[it.etat] }}</small></time>
               <span class="st-auj-barre" aria-hidden="true" />
               <div>
@@ -170,7 +173,7 @@ const messageRelance = (r) => `Relancer ${r.nom} sur WhatsApp (${r.raison === 'q
         <template v-if="statut === 'chargement'"><div v-for="n in 2" :key="n" class="st-auj-squelette" /></template>
         <ul v-else-if="relances.length" class="st-auj-mini">
           <li v-for="r in relances.slice(0, 5)" :key="r.id">
-            <span class="st-auj-av" :data-m="teinteDe(r.clientId)" aria-hidden="true">{{ initiales(r.nom) }}</span>
+            <span class="st-auj-av" :data-m="avatarClient(r.clientId, r.nom).teinte" aria-hidden="true">{{ avatarClient(r.clientId, r.nom).initiales }}</span>
             <div><RouterLink :to="`/coach/clients/${r.clientId}`" class="st-auj-nom">{{ r.nom }}</RouterLink><small>{{ r.detail }}</small></div>
             <a class="st-btn st-auj-relance" :href="r.lienWhatsApp" target="_blank" rel="noopener" :aria-label="messageRelance(r)">Relancer</a>
           </li>
@@ -184,8 +187,8 @@ const messageRelance = (r) => `Relancer ${r.nom} sur WhatsApp (${r.raison === 'q
         <template v-if="statut === 'chargement'"><div v-for="n in 2" :key="n" class="st-auj-squelette" /></template>
         <ul v-else-if="checkins.length" class="st-auj-mini">
           <li v-for="c in checkins" :key="c.id">
-            <span class="st-auj-av" :data-m="teinteDe(c.clientId)" aria-hidden="true">{{ initiales(c.nom) }}</span>
-            <div><RouterLink :to="`/coach/clients/${c.clientId}`" class="st-auj-nom">{{ c.nom }}</RouterLink><small>{{ c.resume }}</small></div>
+            <span class="st-auj-av" :data-m="avatarClient(c.clientId, c.nom).teinte" aria-hidden="true">{{ avatarClient(c.clientId, c.nom).initiales }}</span>
+            <div><RouterLink :to="`/coach/clients/${c.clientId}?onglet=reponses`" class="st-auj-nom" :aria-label="`Réponses de ${c.nom}`">{{ c.nom }}</RouterLink><small>{{ c.resume }}</small></div>
             <span v-if="c.humeur" class="st-auj-humeur" role="img" :aria-label="`Énergie ${c.humeur}`">{{ c.humeur }}</span>
           </li>
         </ul>
@@ -198,8 +201,8 @@ const messageRelance = (r) => `Relancer ${r.nom} sur WhatsApp (${r.raison === 'q
         <template v-if="statut === 'chargement'"><div v-for="n in 2" :key="n" class="st-auj-squelette" /></template>
         <ul v-else-if="resas.length" class="st-auj-mini">
           <li v-for="r in resas" :key="r.id">
-            <span class="st-auj-av st-auj-av--site" aria-hidden="true">{{ initiales(r.titre) }}</span>
-            <div><span class="st-auj-nom">{{ r.titre }}</span><small>{{ libelleJour(r.date, jour) }} · {{ heureCourte(r.heure) }}</small></div>
+            <span class="st-auj-av" :class="{ 'st-auj-av--site': !r.clientId }" :data-m="r.clientId ? avatarClient(r.clientId, r.titre).teinte : undefined" aria-hidden="true">{{ avatarClient(r.clientId || r.id, r.titre).initiales }}</span>
+            <div><RouterLink :to="r.lien" class="st-auj-nom">{{ r.titre }}</RouterLink><small>{{ libelleJour(r.date, jour) }} · {{ heureCourte(r.heure) }}</small></div>
           </li>
         </ul>
         <p v-else class="st-auj-doux">Aucune réservation à venir sur le site.</p>
@@ -216,7 +219,7 @@ const messageRelance = (r) => `Relancer ${r.nom} sur WhatsApp (${r.raison === 'q
       <nav class="st-auj-rapides" style="--i: 6" aria-label="Accès rapides">
         <RouterLink class="st-auj-rapide st-auj-rapide--jaune" to="/coach/seances/nouveau"><span><IconeSt nom="plus" /></span>Créer une séance</RouterLink>
         <RouterLink class="st-auj-rapide" data-m="dos" to="/coach/exercices"><span><IconeSt nom="ex" /></span>Exercices</RouterLink>
-        <RouterLink class="st-auj-rapide" data-m="bras" to="/coach/clients"><span><IconeSt nom="clients" /></span>Nouveau client</RouterLink>
+        <RouterLink class="st-auj-rapide" data-m="bras" to="/coach/clients?inviter=1"><span><IconeSt nom="clients" /></span>Nouveau client</RouterLink>
         <RouterLink class="st-auj-rapide" data-m="epaules" to="/coach/questionnaires"><span><IconeSt nom="msg" /></span>Questionnaires</RouterLink>
       </nav>
     </div>

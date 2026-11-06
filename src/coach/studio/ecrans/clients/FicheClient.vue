@@ -5,7 +5,7 @@
 // fiche privée (contact, notes), réglages (nom, tarif, lieu, modules nutrition, habitudes), nouveau code, archivage / restauration,
 // alertes (marquer vu), liens Nouvelle séance / Nouveau programme / ouvrir le programme.
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import data from '../../../../data/index.js'
 import { LIEUX, STATUTS_SEANCE } from '../../../../domain/modele.js'
 import { jourLocal, ajouterJours, lundiDe } from '../../../../domain/dates.js'
@@ -23,12 +23,13 @@ import IndicateurSauvegarde from '../../IndicateurSauvegarde.vue'
 import CourbeSt from './CourbeSt.vue'
 import CalendrierSt from './CalendrierSt.vue'
 import IdentifiantsCrees from './IdentifiantsCrees.vue'
-import { assiduite, dateAvecAnnee, initiales, optionsReponses, teinteClient } from './logique.js'
+import { assiduite, dateAvecAnnee, initiales, normaliserTelephone, optionsReponses, patchTelephone, teinteClient, telephoneClient } from './logique.js'
 import { demanderFocus, rendreFocus } from './retourFocus.js'
 
 const props = defineProps({ id: { type: String, required: true } })
 const emit = defineEmits(['change'])
 const router = useRouter()
+const route = useRoute()
 const mobile = typeof matchMedia === 'function' ? matchMedia('(max-width: 900px)') : { matches: false }
 const reduit = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false }
 
@@ -43,9 +44,10 @@ const teinte = computed(() => teinteClient(props.id))
 
 const ONGLETS = [
   ['apercu', 'Aperçu'], ['programme', 'Programme'], ['suivi', 'Suivi'], ['reponses', 'Réponses'],
-  ['coaching', 'Coaching'], ['notes', 'Notes privées'], ['reglages', 'Réglages']
+  ['coaching', 'Rendez-vous'], ['notes', 'Notes privées'], ['reglages', 'Réglages']
 ]
-const onglet = ref('apercu')
+const cleOnglet = (q) => (ONGLETS.some(([c]) => c === q) ? q : null)
+const onglet = ref(cleOnglet(route.query.onglet) || 'apercu') // ?onglet=reponses | coaching… : liens depuis Aujourd'hui
 
 async function charger() {
   const p = (await data.profils.lire(props.id)) || null
@@ -70,7 +72,7 @@ const evenements = computed(() => {
   const ev = {}
   const ajout = (jour, e) => (ev[jour] ||= []).push(e)
   for (const r of d.realisations) ajout(r.date, { texte: nomWorkout(r.workoutId), type: 'fait' })
-  for (const s of d.seances.filter((x) => x.statut !== 'annulee')) ajout(s.date, { texte: `${s.heure || 'journée'} coaching`, type: 'coach' })
+  for (const s of d.seances.filter((x) => x.statut !== 'annulee')) ajout(s.date, { texte: `${s.heure || 'journée'} rendez-vous`, type: 'coach' })
   for (const p of d.programmes) {
     for (let k = -8; k <= 12; k++) {
       const s = etatSemaine(p, d.realisations, ajouterJours(lundiDe(aujourdhui), k * 7), aujourdhui)
@@ -141,7 +143,7 @@ async function ajouterSeance() {
     // Le tarif est figé dans la séance à sa création (changer le tarif du client ensuite ne touche pas l'historique).
     await data.seancesCoaching.creer({ id: uuid(), clientId: props.id, ...nouvelle, tarif: Number(nouvelle.tarif) || 0 })
     await charger()
-    toast('Séance de coaching ajoutée')
+    toast('Rendez-vous ajouté')
   } catch (e) { erreur.value = messageErreur(e) }
 }
 async function changerStatut(s, statut) {
@@ -174,12 +176,12 @@ async function voirAlerte(a) {
 }
 
 // --- Réglages (sauvegarde automatique) ---------------------------------------------------------------------
-const reglages = reactive({ nom: '', tarif: 0, lieuDefaut: 'domicile', modules: { habitudes: false, photosRepas: false, calories: false }, habitudesTexte: '' })
+const reglages = reactive({ nom: '', tarif: 0, lieuDefaut: 'domicile', telephone: '', modules: { habitudes: false, photosRepas: false, calories: false }, habitudesTexte: '' })
 let reglagesPrets = false
 function remplirReglages(p) {
   reglagesPrets = false
   Object.assign(reglages, {
-    nom: p.nom, tarif: p.tarif, lieuDefaut: p.lieuDefaut,
+    nom: p.nom, tarif: p.tarif, lieuDefaut: p.lieuDefaut, telephone: p.fiche?.contact?.telephone || '',
     modules: { habitudes: false, photosRepas: false, calories: false, ...p.modules },
     habitudesTexte: (p.modules?.listeHabitudes || []).join('\n')
   })
@@ -193,12 +195,15 @@ const sauvegarde = useSauvegardeAuto(async (v) => {
   emit('change')
 }, { delai: 700 })
 const nomVide = computed(() => !reglages.nom.trim())
+// Numéro WhatsApp : vide (effacé) ou reconnu ; un texte non reconnu n'est pas enregistré (l'ancien numéro reste).
+const telephoneInvalide = computed(() => !!reglages.telephone.trim() && !normaliserTelephone(reglages.telephone))
 watch(reglages, () => {
   if (!reglagesPrets || nomVide.value) return
   const { habitudes, photosRepas, calories } = reglages.modules
   sauvegarde.planifier({
     nom: reglages.nom.trim(), tarif: Number(reglages.tarif) || 0, lieuDefaut: reglages.lieuDefaut,
-    modules: { ...profil.value?.modules, habitudes, photosRepas, calories, listeHabitudes: parserHabitudes(reglages.habitudesTexte) }
+    modules: { ...profil.value?.modules, habitudes, photosRepas, calories, listeHabitudes: parserHabitudes(reglages.habitudesTexte) },
+    ...(telephoneInvalide.value ? {} : patchTelephone(profil.value, reglages.telephone))
   })
 }, { deep: true })
 
@@ -207,7 +212,7 @@ async function genererNouveauCode() {
   erreur.value = ''
   try {
     const { identifiant, code } = await data.reinitialiserCode(props.id)
-    nouveauCode.value = { nom: profil.value.nom, identifiant, code, url: adresseApp(window.location.origin, import.meta.env.BASE_URL) }
+    nouveauCode.value = { nom: profil.value.nom, identifiant, code, url: adresseApp(window.location.origin, import.meta.env.BASE_URL), numero: telephoneClient(profil.value) }
   } catch (e) { erreur.value = messageErreur(e) }
 }
 const confirmerArchivage = ref(false)
@@ -240,6 +245,7 @@ function placerSouligne() {
   const b = barreOnglets.value?.querySelector('[aria-selected="true"]')
   if (b) Object.assign(souligne, { x: b.offsetLeft, l: b.offsetWidth })
 }
+watch(() => route.query.onglet, (q) => { if (cleOnglet(q)) choisirOnglet(q) })
 function choisirOnglet(cle, focus = false) {
   onglet.value = cle
   nextTick(() => {
@@ -416,7 +422,7 @@ onBeforeUnmount(() => {
               <div class="st-clients-kpi"><span>Assiduité (4 sem.)</span><b>{{ tauxAssiduite === null ? '—' : `${tauxAssiduite} %` }}</b></div>
               <div class="st-clients-kpi"><span>Cette semaine</span><b>{{ faitesCetteSemaine }}</b><small>séance{{ faitesCetteSemaine > 1 ? 's' : '' }} faite{{ faitesCetteSemaine > 1 ? 's' : '' }}</small></div>
               <div class="st-clients-kpi"><span>Dernière séance</span><b class="is-petit">{{ derniereSeance ? dateFr(derniereSeance.date) : '—' }}</b><small>{{ derniereSeance ? nomWorkout(derniereSeance.workoutId) : "Aucune pour l'instant" }}</small></div>
-              <div class="st-clients-kpi"><span>Prochain coaching</span><b class="is-petit">{{ prochainCoaching ? dateFr(prochainCoaching.date) : '—' }}</b><small>{{ prochainCoaching ? `${prochainCoaching.heure || 'journée'} · ${prochainCoaching.lieu === 'domicile' ? 'domicile' : 'salle'}` : 'Rien de prévu' }}</small></div>
+              <div class="st-clients-kpi"><span>Prochain rendez-vous</span><b class="is-petit">{{ prochainCoaching ? dateFr(prochainCoaching.date) : '—' }}</b><small>{{ prochainCoaching ? `${prochainCoaching.heure || 'journée'} · ${prochainCoaching.lieu === 'domicile' ? 'domicile' : 'salle'}` : 'Rien de prévu' }}</small></div>
             </div>
             <div class="st-clients-prog-mini">
               <div>
@@ -489,11 +495,11 @@ onBeforeUnmount(() => {
             <p v-else class="st-clients-vide-petit">Aucune réponse pour l'instant.</p>
           </template>
 
-          <!-- Coaching : séances en présentiel + mot du coach -->
+          <!-- Rendez-vous (onglet « coaching ») : séances en présentiel + mot du coach -->
           <div v-else-if="onglet === 'coaching'" class="st-clients-deux">
             <div>
               <form class="st-clients-form-in" @submit.prevent="ajouterSeance">
-                <h3 class="st-clients-h3">Ajouter une séance de coaching</h3>
+                <h3 class="st-clients-h3">Ajouter un rendez-vous</h3>
                 <div class="st-clients-champs">
                   <label class="st-clients-champ">Date<input v-model="nouvelle.date" type="date" required /></label>
                   <label class="st-clients-champ">Heure<input v-model="nouvelle.heure" type="time" required /></label>
@@ -508,7 +514,7 @@ onBeforeUnmount(() => {
               <ul v-if="seancesTriees.length" class="st-clients-lignes">
                 <li v-for="s in seancesTriees" :key="s.id" :class="`is-${s.statut}`">
                   <div><b>{{ libelleSeance(s) }}</b><small>{{ s.tarif }} €</small></div>
-                  <select :value="s.statut" :aria-label="`Statut de la séance du ${dateFr(s.date)}`" @change="changerStatut(s, $event.target.value)">
+                  <select :value="s.statut" :aria-label="`Statut du rendez-vous du ${dateFr(s.date)}`" @change="changerStatut(s, $event.target.value)">
                     <option value="prevue">Prévue</option><option value="faite">Faite</option><option value="annulee">Annulée</option>
                   </select>
                 </li>
@@ -548,8 +554,10 @@ onBeforeUnmount(() => {
             <div class="st-clients-champs">
               <label class="st-clients-champ is-large">Nom<input v-model="reglages.nom" required :aria-invalid="nomVide" /></label>
               <label class="st-clients-champ">Tarif (€)<input v-model.number="reglages.tarif" type="number" min="0" inputmode="numeric" /></label>
+              <label class="st-clients-champ">WhatsApp<input v-model="reglages.telephone" type="tel" inputmode="tel" autocomplete="off" placeholder="06 12 34 56 78" :aria-invalid="telephoneInvalide" /></label>
               <label class="st-clients-champ">Lieu par défaut<select v-model="reglages.lieuDefaut"><option v-for="l in LIEUX" :key="l" :value="l">{{ l === 'domicile' ? 'À domicile' : 'En salle' }}</option></select></label>
             </div>
+            <p v-if="telephoneInvalide" class="st-clients-erreur" role="alert">Numéro non reconnu : écris-le comme 06 12 34 56 78 ou +33 6 12 34 56 78. Il n’est pas enregistré tant qu’il est incorrect.</p>
             <p v-if="nomVide" class="st-clients-erreur" role="alert">Le nom est obligatoire : rien n'est enregistré tant qu'il est vide.</p>
             <fieldset class="st-clients-cases">
               <legend>Nutrition</legend>

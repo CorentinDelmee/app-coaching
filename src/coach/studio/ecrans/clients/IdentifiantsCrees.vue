@@ -1,7 +1,8 @@
 <script setup>
 // Identifiant + code à transmettre tout de suite (affichés une seule fois) : copier le message, copier, WhatsApp.
 import { ref } from 'vue'
-import { lienWhatsAppIdentifiants, messageIdentifiants } from '../../../logique.js'
+import { lienWhatsApp } from '../../../../domain/coaching.js'
+import { messageAcces, normaliserTelephone } from './logique.js'
 import IconeSt from '../../IconeSt.vue'
 
 const props = defineProps({ infos: { type: Object, required: true }, titre: { type: String, default: '' } }) // { nom, identifiant, code, url, numero? }
@@ -22,9 +23,9 @@ async function copier(texte, quoi) {
       <div><span>Code</span><b>{{ infos.code }}</b></div>
     </div>
     <div class="st-clients-boutons">
-      <button type="button" class="st-btn" @click="copier(messageIdentifiants(infos), 'Message copié')">Copier le message</button>
+      <button type="button" class="st-btn" @click="copier(messageAcces(infos), 'Message copié')">Copier le message</button>
       <button type="button" class="st-btn" @click="copier(`${infos.identifiant} / ${infos.code}`, 'Identifiants copiés')">Copier identifiant + code</button>
-      <a class="st-btn st-btn--encre" :href="lienWhatsAppIdentifiants(infos, props.infos.numero || '')" target="_blank" rel="noopener">Envoyer par WhatsApp</a>
+      <a class="st-btn st-btn--encre" :href="lienWhatsApp(normaliserTelephone(props.infos.numero), messageAcces(infos))" target="_blank" rel="noopener">Envoyer par WhatsApp</a>
       <button type="button" class="st-btn st-btn--fantome" @click="$emit('termine')"><IconeSt nom="check" />Terminé</button>
       <span v-if="copie" class="st-clients-ok" role="status">{{ copie }}</span>
     </div>

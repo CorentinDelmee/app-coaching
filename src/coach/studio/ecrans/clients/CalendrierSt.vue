@@ -9,7 +9,7 @@ const mois = ref(props.aujourdhui.slice(0, 7))
 const grille = computed(() => grilleMois(mois.value))
 const NOMS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 const titre = computed(() => `${NOMS[Number(mois.value.slice(5)) - 1]} ${mois.value.slice(0, 4)}`)
-const TYPES = { fait: 'Faite', prevu: 'Prévue', coach: 'Coaching' }
+const TYPES = { fait: 'Faite', prevu: 'Prévue', coach: 'Rendez-vous' }
 
 function decaler(n) {
   let [y, m] = mois.value.split('-').map(Number)
@@ -43,7 +43,7 @@ function decaler(n) {
     <p class="st-clients-cal-legende" aria-hidden="true">
       <span class="st-clients-cal-evt is-fait">Séance faite</span>
       <span class="st-clients-cal-evt is-prevu">Prévue</span>
-      <span class="st-clients-cal-evt is-coach">Coaching</span>
+      <span class="st-clients-cal-evt is-coach">Rendez-vous</span>
     </p>
   </div>
 </template>

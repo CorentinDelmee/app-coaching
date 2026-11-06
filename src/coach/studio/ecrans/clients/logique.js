@@ -1,25 +1,12 @@
 // Écran Clients (Studio) : fonctions pures (testées). `aujourdhui` = 'AAAA-MM-JJ' passé en paramètre, jamais Date.now().
 import { ajouterJours, jourLocal, lundiDe } from '../../../../domain/dates.js'
 import { etatSemaine } from '../../../../domain/programme.js'
-import { TEINTES_STUDIO } from '../../medias.js'
 
 /** Texte sans accents ni casse, pour la recherche. */
 export const normaliser = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
 
-/** « Fabien Vincent » -> « FV » ; un seul mot -> 2 premières lettres. */
-export function initiales(nom) {
-  const mots = String(nom || '').trim().split(/\s+/).filter(Boolean)
-  if (!mots.length) return '?'
-  if (mots.length === 1) return mots[0].slice(0, 2).toUpperCase()
-  return (mots[0][0] + mots[mots.length - 1][0]).toUpperCase()
-}
-
-/** Teinte stable d'un client (décorative : le nom est toujours écrit à côté). */
-export function teinteClient(id) {
-  let h = 0
-  for (const c of String(id || '')) h = (h * 31 + c.charCodeAt(0)) >>> 0
-  return TEINTES_STUDIO[h % TEINTES_STUDIO.length]
-}
+// Initiales et teinte : une seule définition pour tous les écrans (studio/avatar.js).
+export { initiales, teinteDe as teinteClient } from '../../avatar.js'
 
 /** Nombre de jours entre deux dates 'AAAA-MM-JJ' (b - a). */
 export const joursEntre = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 86400000)
@@ -125,4 +112,31 @@ export function optionsReponses(reponses, questionnaires) {
     })
     .sort((a, b) => a.rang - b.rang || a.texte.localeCompare(b.texte, 'fr'))
     .map(({ rang: _r, ...o }) => o)
+}
+
+/**
+ * Numéro de téléphone au format WhatsApp (international, chiffres seuls) : « 06 12 34 56 78 » -> « 33612345678 »,
+ * « +33 6 12 34 56 78 » et « 0033… » -> « 33… ». Renvoie '' si le numéro est vide ou trop court pour être un numéro.
+ */
+export function normaliserTelephone(brut) {
+  let n = String(brut || '').replace(/[^\d+]/g, '')
+  if (n.startsWith('+')) n = n.slice(1)
+  else if (n.startsWith('00')) n = n.slice(2)
+  else if (n.startsWith('0')) n = `33${n.slice(1)}`
+  n = n.replace(/\D/g, '').replace(/^330/, '33') // « +33 (0)6… »
+  return n.length >= 9 && n.length <= 15 ? n : ''
+}
+
+/** Numéro enregistré dans la fiche du client (le même champ que l'import MyPTHub : fiche.contact.telephone), normalisé. */
+export const telephoneClient = (profil) => normaliserTelephone(profil?.fiche?.contact?.telephone)
+
+/** Profil modifié pour enregistrer le numéro (sans perdre le reste de la fiche). */
+export const patchTelephone = (profil, numero) => ({
+  fiche: { ...(profil?.fiche || {}), contact: { ...(profil?.fiche?.contact || {}), telephone: normaliserTelephone(numero) } }
+})
+
+/** Message d'accès envoyé au client, au tutoiement (le coach tutoie ses clients). */
+export function messageAcces({ nom, identifiant, code, url }) {
+  const prenom = String(nom || '').trim().split(/\s+/)[0]
+  return `Bonjour ${prenom}, voici ton accès à l'application de coaching :\n${url}\nIdentifiant : ${identifiant}\nCode : ${code}\nTu pourras changer ce code dans ton profil.`
 }
