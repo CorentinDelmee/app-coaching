@@ -21,7 +21,7 @@ app.A_REMPLACER_DOMAINE {
 
 	# API de l'app → Node (service app-coaching)
 	handle /api/app/* {
-		header Cache-Control "no-store"
+		header ?Cache-Control "no-store" # « ? » : ne pose la valeur que si le serveur n'en a pas mis (photos : private, max-age + ETag)
 		request_body {
 			max_size 6MB
 		}

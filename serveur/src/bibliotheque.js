@@ -1,6 +1,6 @@
 // Bibliothèque d'exercices + vidéos de démonstration (fichier JSON). Une entrée = une vidéo proposée pour un exercice.
 // statut : 'propose' (trouvée par Claude / import, à valider) · 'valide' (OK par le coach) · 'remplace' (écartée).
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { idYoutube } from '../../src/domain/video.js'
 import { norm, secondes, slug } from './util.js'
@@ -54,6 +54,24 @@ export function creerBibliotheque(fichier, { now = () => Date.now() } = {}) {
     writeFileSync(`${fichier}.tmp`, JSON.stringify(liste, null, 1))
     renameSync(`${fichier}.tmp`, fichier)
   }
+  // Cache en lecture seule (chercher / lister / lire / connue), valable tant que le fichier garde les mêmes date, taille et inode :
+  // la bibliothèque n'est plus relue ni re-parsée à chaque exercice présenté (audit I1). Les écritures repartent d'une lecture fraîche.
+  let cache = null
+  const cleFichier = () => { try { const s = statSync(fichier); return `${s.mtimeMs}:${s.size}:${s.ino}` } catch { return 'absent' } }
+  const lu = () => {
+    const cle = cleFichier()
+    if (cache?.cle === cle) return cache
+    const liste = lire()
+    const exacts = new Map() // nom ou alias normalisé -> entrées avec vidéo
+    const normes = [] // pour la recherche « nom contenu »
+    for (const e of liste) {
+      if (!e.video || e.statut === 'remplace') continue
+      normes.push({ e, n: norm(e.nom) })
+      for (const k of new Set([norm(e.nom), ...e.alias.map(norm)])) exacts.set(k, [...(exacts.get(k) ?? []), e])
+    }
+    cache = { cle, liste, exacts, normes }
+    return cache
+  }
   const correspond = (e, nom) => {
     const n = norm(nom)
     return norm(e.nom) === n || e.alias.some((a) => norm(a) === n)
@@ -61,17 +79,17 @@ export function creerBibliotheque(fichier, { now = () => Date.now() } = {}) {
   const meilleurs = (liste) => liste.sort((a, b) => RANG[a.statut] - RANG[b.statut] || b.score - a.score)
 
   const api = {
-    lister: ({ statut } = {}) => lire().filter((e) => !statut || e.statut === statut),
-    lire: (id) => lire().find((e) => e.id === id) || null,
+    lister: ({ statut } = {}) => lu().liste.filter((e) => !statut || e.statut === statut),
+    lire: (id) => lu().liste.find((e) => e.id === id) || null,
     /** Entrées avec vidéo pour un nom d'exercice (nom exact ou alias, sinon nom contenu), meilleures d'abord. */
     chercher(nom) {
       const n = norm(nom)
-      const avecVideo = lire().filter((e) => e.video && e.statut !== 'remplace')
-      const exact = avecVideo.filter((e) => correspond(e, nom))
-      return meilleurs(exact.length ? exact : avecVideo.filter((e) => n && (norm(e.nom).includes(n) || n.includes(norm(e.nom)))))
+      const { exacts, normes } = lu()
+      const exact = exacts.get(n) ?? []
+      return meilleurs(exact.length ? [...exact] : normes.filter((x) => n && (x.n.includes(n) || n.includes(x.n))).map((x) => x.e))
     },
     /** Entrée (même sans vidéo) connue pour ce nom : sert à récupérer alias et muscles. */
-    connue: (nom) => lire().find((e) => correspond(e, nom)) || null,
+    connue: (nom) => lu().liste.find((e) => correspond(e, nom)) || null,
     /** Importe des entrées (même id = mise à jour). Renvoie { ajoutees, miseAJour, rejetees }. */
     importer(brut) {
       const items = Array.isArray(brut) ? brut : brut?.exercices ?? brut?.bibliotheque ?? brut?.videos ?? []

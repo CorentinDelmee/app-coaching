@@ -29,27 +29,40 @@ export const CHAMPS = {
   reposConseille: z.number().int().min(0).max(600).nullable(),
   notesPrivees: texte(2000)
 }
-export const schemaCreation = z.object({ id: z.string().regex(/^[A-Za-z0-9_-]{1,80}$/), ...CHAMPS }).strict().partial().required({ nom: true })
+export const schemaCreation = z.object({ id: z.string().regex(/^(?!(?:__proto__|constructor|prototype)$)[A-Za-z0-9_-]{1,80}$/), ...CHAMPS }).strict().partial().required({ nom: true })
 export const schemaPatch = z.object(CHAMPS).strict().partial()
 // PUT générique : objet complet tel que stocké (id, archive, clientId en plus).
 // Tolérant sur lienVideo (anciens liens non YouTube) et description (anciens imports longs) : rien d'existant ne doit devenir impossible à enregistrer.
-const schemaStocke = z.object({ ...CHAMPS, id: z.string().min(1).max(80), archive: z.boolean().optional(), clientId: z.string().nullable().optional(), photo: z.any().optional(), lienVideo: z.string().max(2000), description: z.string() }).strict().partial().required({ id: true, nom: true })
+const schemaStocke = z.object({ ...CHAMPS, id: z.string().min(1).max(80), archive: z.boolean().optional(), clientId: z.string().nullable().optional(), photo: z.any().optional(), lienVideo: z.string().max(2000).refine((v) => v === '' || /^https?:\/\//i.test(v.trim()), 'http(s) seulement'), description: z.string() }).strict().partial().required({ id: true, nom: true })
 
 const retirer = (o, cles) => { const r = { ...o }; for (const c of cles) delete r[c]; return r }
 
-/** Objet complet venant d'un PUT : retire les champs calculés, garde la photo du serveur, valide. Renvoie l'objet nettoyé ou null. */
+const CLES_CONNUES = new Set([...Object.keys(CHAMPS), 'id', 'archive', 'clientId', 'photo', ...CHAMPS_CALCULES])
+const egal = (a, b) => JSON.stringify(a) === JSON.stringify(b)
+
+/**
+ * Objet complet venant d'un PUT : retire les champs calculés, garde la photo du serveur, valide. Renvoie l'objet nettoyé ou null.
+ * Clés inconnues (anciennes lignes, ex. `source`) : conservées telles quelles depuis la ligne stockée, jamais acceptées depuis l'écran
+ * (une clé inconnue envoyée avec une valeur différente de la ligne stockée, ou absente de celle-ci, fait refuser le PUT).
+ */
 export function nettoyerPut(obj, existant) {
+  const inconnues = Object.keys(obj).filter((k) => !CLES_CONNUES.has(k))
+  if (inconnues.some((k) => !existant || !Object.hasOwn(existant, k) || !egal(obj[k], existant[k]))) return null
+  obj = retirer(obj, inconnues)
   const o = retirer(obj, CHAMPS_CALCULES)
   for (const k of Object.keys(o)) if (o[k] === null) delete o[k] // anciennes lignes : « lienVideo: null »
   delete o.photo
   if (existant?.photo) o.photo = existant.photo
-  return schemaStocke.safeParse(retirer(o, ['photo'])).success ? o : null
+  if (!schemaStocke.safeParse(retirer(o, ['photo'])).success) return null
+  for (const k of Object.keys(existant ?? {})) if (!CLES_CONNUES.has(k)) o[k] = existant[k] // clés inconnues d'une ancienne ligne : gardées en stockage
+  return o
 }
 
 /** Vidéo vue par l'écran : lienVideo + entrée de la bibliothèque (statut propose | valide). */
 export function videoDe(ex, biblio) {
-  if (!ex.lienVideo) return null
-  const e = biblio?.chercher(ex.nom).find((x) => x.video.url === ex.lienVideo)
+  if (!ex.lienVideo || !idYoutube(ex.lienVideo)) return null // lien hérité non YouTube : jamais renvoyé comme vidéo (audit M1)
+  let e
+  try { e = biblio?.chercher(ex.nom).find((x) => x.video.url === ex.lienVideo) } catch { e = undefined } // bibliothèque illisible : statut « propose » (audit M2)
   return { url: ex.lienVideo, titre: e?.video.titre ?? null, chaine: e?.video.chaine ?? null, duree: e?.video.duree ?? null, statut: e?.statut === 'valide' ? 'valide' : 'propose' }
 }
 
