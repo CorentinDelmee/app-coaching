@@ -9,6 +9,34 @@
 > - `tokens.css` : les remises à zéro (`button`, `input`, `:focus-visible`, `box-sizing`) sont en `:where()` → spécificité nulle, une classe de composant gagne toujours (corrige `.st-btn--encre`/`--jaune` illisibles). Ajout `.st-btn--danger`.
 > - `/coach` redirige vers `/coach/aujourdhui` (emplacement provisoire `AujourdhuiView.vue`).
 
+## Conflits (Claude / autre appareil) — à brancher dans chaque éditeur à sauvegarde auto
+
+Corentin dicte à Claude (outils MCP) pendant qu'un écran est ouvert, ou garde le Mac et le téléphone ouverts. Sans contrôle,
+la sauvegarde auto de l'écran (objet entier) effaçait ce que Claude venait d'ajouter. Règle (src/data/versions.js) :
+- `profils`, `exercices`, `workouts`, `programmes`, `questionnaires` portent `version` (1 à la création, +1 à chaque écriture, par tous les chemins).
+- `data.<entite>.modifier(id, patch, { version })` et `data.exercices.mettreAJour(id, patch, { version })` : si l'objet a changé
+  depuis la lecture → `ErreurData` `code: 'CONFLIT'`, `e.actuel` = l'objet à jour. Rien n'est écrit. Sans `{ version }` : comme avant.
+- `creer` / `modifier` / `mettreAJour` **renvoient l'objet enregistré** (avec sa nouvelle `version`) : le callback doit le `return`.
+
+**Dans un éditeur** (4 changements) :
+```js
+const s = useSauvegardeAuto(
+  (valeur, opts) => data.workouts.modifier(id, valeur, opts),            // 1. passer `opts` et RENVOYER le résultat
+  { delai: 700, recharger: (actuel) => { workout.value = copie(actuel) }, // 2. remplacer l'état de l'écran par l'objet à jour
+    resumer: (v) => v.nom }                                               //    (facultatif) texte court de la saisie perdue
+)
+// 3. après CHAQUE lecture (ouverture, autre objet, rafraîchissement) : s.suivreVersion(objetLu.version)
+// 4. <IndicateurSauvegarde :etat="s.etat.value" :conflit="s.conflit.value" @reessayer="s.reessayer" @recharger="s.recharger" />
+```
+En conflit : la file s'arrête (plus aucune écriture, même au démontage), l'indicateur affiche « Modifié ailleurs (Claude ou un autre
+appareil) », la dernière saisie (si `resumer`) et « Recharger » ; `s.recharger()` appelle `recharger(actuel)`, reprend la version
+d'`actuel` et relance les sauvegardes. `s.occupe()` = une saisie attend, s'écrit, a échoué ou est bloquée.
+Si `recharger` remet l'état de l'écran, pense à remettre aussi la copie « dernier écrit » de l'écran (sinon une écriture inutile repart).
+
+**Rafraîchir au retour** : `useRafraichirAuRetour(charger, { sauvegarde: s })` (`useRafraichirAuRetour.js`) relance `charger()` quand
+l'onglet redevient visible ou que la fenêtre reprend le focus (au plus une fois toutes les 2 s), **jamais** si `s.occupe()`.
+`charger()` doit rappeler `s.suivreVersion(...)`.
+
 Maquette de référence : `design-coach/d3/` (DESIGN.md = règles de couleur, typo, mouvement). Préfixe CSS : `st-`.
 Tout est limité à `.st-app` (racine de `CoachLayout`) : l'app client ne change pas.
 

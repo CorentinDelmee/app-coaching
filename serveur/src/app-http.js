@@ -9,6 +9,7 @@ import { LONGUEUR_CODE_MIN } from '../../src/domain/identifiants.js'
 import { idYoutube } from '../../src/domain/video.js'
 import { CHAMPS_COACH, NIVEAUX, appliquerPatch, filtrer, indexUsage, nettoyerPut, presenter, schemaCreation, schemaPatch } from './exercices.js'
 import { slug } from './util.js'
+import { versionDe } from '../../src/data/versions.js'
 
 const SESSION_MS = 12 * 3600e3
 const JSON_MAX = 1024 * 1024
@@ -157,7 +158,17 @@ const ROUTES_RESA = [
 
 // Corps JSON : seulement un objet (null, tableau ou valeur simple -> 400).
 const estObjet = (v) => v !== null && typeof v === 'object' && !Array.isArray(v)
-class Erreur extends Error { constructor(statut, code) { super(code); this.statut = statut; this.code = code } }
+class Erreur extends Error { constructor(statut, code, extra) { super(code); this.statut = statut; this.code = code; this.extra = extra } }
+
+/** Version attendue par l'écran (en-tête If-Match : 3, "3" ou W/"3") ; absente = pas de contrôle (anciens clients, outils). */
+function versionAttendue(req) {
+  const v = req.headers['if-match']
+  if (v === undefined) return undefined
+  const m = /^(?:W\/)?"?([1-9]\d{0,8})"?$/.exec(String(v).trim())
+  if (!m) throw new Erreur(400, 'invalide')
+  return Number(m[1])
+}
+const estConflit = (e) => e?.name === 'ErreurData' && e.code === 'CONFLIT'
 
 function lireBrut(req, max) {
   return new Promise((resolve, reject) => {
@@ -280,8 +291,10 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
       return envoyer(res, 200, { item: pourLecteur(entite, existant, u) })
     }
     if (req.method === 'PUT') {
+      const attendue = versionAttendue(req)
       let obj = await lireJson(req)
       if (!obj || typeof obj !== 'object' || Array.isArray(obj) || obj.id !== id) throw new Erreur(400, 'invalide')
+      delete obj.version // la version stockée fait foi (src/data/versions.js) ; le contrôle passe par If-Match
       const ecrireLigne = async (existant) => {
       if (entite === 'exercices' && coach) { obj = nettoyerPut(obj, existant); if (!obj) throw new Erreur(400, 'invalide') } // champs calculés retirés, photo du serveur gardée
       if (!coach && ENTITES_SANTE.has(entite) && !accesSante(await store.un('profils', u.profil_id))) throw new Erreur(403, 'consentement_sante')
@@ -306,8 +319,14 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
         // L'archivage, lui, est lu sur le profil à chaque requête (session et connexion) : effet immédiat.
         throw new Erreur(400, 'identifiant_ou_role_non_modifiable')
       }
-      try { await store.ecrire(entite, obj) } catch { throw new Erreur(400, 'invalide') } // ex. client_id inexistant
-      return envoyer(res, 200, { item: pourLecteur(entite, obj, u) })
+      let stocke
+      try { stocke = await store.ecrire(entite, obj, { versionAttendue: attendue }) } catch (e) {
+        if (estConflit(e)) throw new Erreur(409, 'conflit', { actuel: e.actuel && lisible(entite, e.actuel, u) ? pourLecteur(entite, e.actuel, u) : null })
+        throw new Erreur(400, 'invalide') // ex. client_id inexistant
+      }
+      // Lien vidéo changé par le coach : validé d'office (seuls les liens posés par les outils MCP restent « proposés »).
+      if (entite === 'exercices' && coach && obj.lienVideo && obj.lienVideo !== existant?.lienVideo && idYoutube(obj.lienVideo)) validerLienCoach(obj.nom, obj.lienVideo)
+      return envoyer(res, 200, { item: pourLecteur(entite, stocke ?? obj, u) })
       }
       // Exercices : le corps est lu, puis la ligne est relue SOUS le verrou des écritures (audit N1 : une photo posée entre-temps n'est pas écrasée).
       return entite === 'exercices' && coach ? enSerie(async () => ecrireLigne(await store.un(entite, id))) : ecrireLigne(existant)
@@ -339,11 +358,23 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
     const usage = coach ? indexUsage(await store.tout('workouts'), await store.tout('programmes')) : null
     return liste.map((e) => presenter(e, { coach, usage, biblio }))
   }
-  /** Lien YouTube sous sa forme canonique. Renvoie le rattachement à la bibliothèque (« proposée »), à appeler APRÈS l'écriture de l'exercice (audit M8). */
-  function lienCanonique(corps, nom) {
+  /** Le coach a saisi ce lien lui-même : entrée de la bibliothèque créée si besoin puis « validée » (les autres vidéos de l'exercice passent « remplace »). */
+  function validerLienCoach(nom, url) {
+    try {
+      if (!biblio) return
+      const e = biblio.chercher(nom).find((x) => x.video.url === url) ?? biblio.proposer({ nom, url, justification: 'Saisie par le coach', score: 100 })
+      if (e.statut !== 'valide') biblio.valider(e.id)
+    } catch { /* bibliothèque indisponible : le lien reste enregistré */ }
+  }
+  /**
+   * Lien YouTube sous sa forme canonique. Renvoie le rattachement à la bibliothèque, à appeler APRÈS l'écriture de l'exercice (audit M8).
+   * Routes réservées au coach : un lien nouveau ou changé (≠ `ancien`) est validé d'office ; un lien renvoyé tel quel garde son statut.
+   */
+  function lienCanonique(corps, nom, ancien) {
     if (!corps.lienVideo) return () => {}
     corps.lienVideo = `https://www.youtube.com/watch?v=${idYoutube(corps.lienVideo)}`
     const url = corps.lienVideo
+    if (url !== ancien) return () => validerLienCoach(nom, url)
     return () => { try { if (biblio && !biblio.chercher(nom).some((e) => e.video.url === url)) biblio.proposer({ nom, url }) } catch { /* bibliothèque indisponible : le lien reste enregistré */ } }
   }
   const entier = (v, min, max, defaut) => {
@@ -383,9 +414,9 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
         const rattacher = lienCanonique(champs, champs.nom)
         const ex = appliquerPatch({ id: nouvelId, categories: [] }, champs)
         if (!ENTITES.exercices.valider(ex).ok) throw new Erreur(400, 'invalide')
-        await store.ecrire('exercices', ex)
+        const stocke = await store.ecrire('exercices', ex)
         rattacher()
-        return rendre(201, ex)
+        return rendre(201, stocke ?? ex)
       }
       throw new Erreur(405, 'methode')
     }
@@ -393,17 +424,21 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
       if (req.method === 'GET') return rendre(200, await lire())
       if (req.method === 'PATCH') {
         if (!coach) throw new Erreur(403, 'interdit')
+        const attendue = versionAttendue(req)
         await lire() // 404 avant de lire le corps
         const parse = schemaPatch.safeParse(await lireJson(req))
         if (!parse.success) throw new Erreur(400, 'invalide')
         return enSerie(async () => {
           const actuel = await lire() // relue sous verrou : la photo courante n'est jamais remplacée par une ancienne
-          const rattacher = lienCanonique(parse.data, parse.data.nom ?? actuel.nom)
+          const conflit = async (ligne) => new Erreur(409, 'conflit', { actuel: (await presenterExercices([ligne], coach))[0] })
+          if (attendue !== undefined && attendue !== versionDe(actuel)) throw await conflit(actuel)
+          const rattacher = lienCanonique(parse.data, parse.data.nom ?? actuel.nom, actuel.lienVideo)
           const ex = appliquerPatch(actuel, parse.data)
           if (!ENTITES.exercices.valider(ex).ok) throw new Erreur(400, 'invalide')
-          await store.ecrire('exercices', ex)
+          let stocke
+          try { stocke = await store.ecrire('exercices', ex, { versionAttendue: attendue }) } catch (e) { if (estConflit(e) && e.actuel) throw await conflit(e.actuel); throw e }
           rattacher()
-          return rendre(200, ex)
+          return rendre(200, stocke ?? ex)
         })
       }
       throw new Erreur(405, 'methode')
@@ -431,9 +466,9 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
         const courant = await lire()
         if (!courant.photo) return rendre(200, courant)
         const { photo, ...sans } = courant
-        await store.ecrire('exercices', sans)
+        const stocke = await store.ecrire('exercices', sans)
         supprimerPhoto(photo)
-        return rendre(200, sans)
+        return rendre(200, stocke ?? sans)
       })
     }
     const type = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase()
@@ -448,9 +483,10 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
       mkdirSync(dossierPhotos(), { recursive: true })
       writeFileSync(fichier, buf)
       const ex = { ...courant, photo: { id: photoId, url: `/api/app/fichiers?chemin=${encodeURIComponent(`${DOSSIER_PHOTOS}/${photoId}.${ext}`)}` } }
-      try { await store.ecrire('exercices', ex) } catch (e) { rmSync(fichier, { force: true }); throw e }
+      let stocke
+      try { stocke = await store.ecrire('exercices', ex) } catch (e) { rmSync(fichier, { force: true }); throw e }
       supprimerPhoto(courant.photo)
-      return rendre(200, ex)
+      return rendre(200, stocke ?? ex)
     })
   }
 
@@ -616,7 +652,7 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
       // Corps trop gros : réponse 413 avec « Connection: close » (le client ne réutilise pas la connexion), puis coupure.
       if (e?.code === 'trop_gros') { res.once('finish', () => req.destroy()); return envoyer(res, 413, { erreur: e.code }, { Connection: 'close' }), true }
       if (e instanceof URIError) envoyer(res, 400, { erreur: 'invalide' }) // %xx mal formé dans l'adresse
-      else if (e instanceof Erreur) envoyer(res, e.statut, { erreur: e.code })
+      else if (e instanceof Erreur) envoyer(res, e.statut, { erreur: e.code, ...e.extra })
       else envoyer(res, 500, { erreur: 'interne' })
       return true
     }

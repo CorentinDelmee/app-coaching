@@ -24,10 +24,11 @@ export function avecSynchroApi(api, url, { fetchFn = (...a) => globalThis.fetch(
     const ids = memorises()
     for (const e of ENTITES_SYNCHRO) {
       const o = originaux[e]
-      const distants = etat[e] || []
+      const distants = (etat[e] || []).map(({ version: _v, ...x }) => x) // la version locale est propre à cet appareil
       for (const x of distants) {
         try {
-          const local = await o.lire(x.id)
+          const lu = await o.lire(x.id)
+          const local = lu && (({ version: _v, ...reste }) => reste)(lu)
           if (e === 'programmes' && local) await o.modifier(x.id, Object.fromEntries(CHAMPS_PLACEMENT.filter((k) => k in x).map((k) => [k, x[k]])))
           else if (!local || JSON.stringify(local) !== JSON.stringify(x)) await (local ? o.modifier(x.id, x) : o.creer(x)).catch((err) => {
             if (!(err instanceof ErreurData) || err.code !== 'EXISTE') throw err

@@ -68,10 +68,10 @@ describe('création, lecture, patch', () => {
     const r = await appel('GET', `${E}/ex-ancien`, { cookie: coach })
     expect(r.json.item).toMatchObject({ id: 'ex-ancien', nom: 'Ancien', categories: ['jambes'], photo: null, video: null, utiliseDans: 1, utiliseDansProgrammes: 1 })
   })
-  it('POST : 201, id généré, champs conservés, lien rattaché à la bibliothèque', async () => {
+  it('POST : 201, id généré, champs conservés, lien rattaché à la bibliothèque (validé : saisi par le coach)', async () => {
     const r = await appel('POST', E, { cookie: coach, corps: { nom: 'Squat gobelet', categorie: 'Renforcement', musclesPrincipaux: ['jambes'], materiel: ['Haltères'], niveau: 'debutant', tempo: '3-1-1', reposConseille: 60, notesPrivees: 'genou', lienVideo: 'https://youtu.be/mKREc_xl_j8' } })
     expect(r.statut).toBe(201)
-    expect(r.json.item).toMatchObject({ id: 'ex-squat-gobelet', categories: [], lienVideo: LIEN, notesPrivees: 'genou', reposConseille: 60, utiliseDans: 0, video: { url: LIEN, statut: 'propose', titre: null, chaine: null, duree: null } })
+    expect(r.json.item).toMatchObject({ id: 'ex-squat-gobelet', categories: [], lienVideo: LIEN, notesPrivees: 'genou', reposConseille: 60, utiliseDans: 0, version: 1, video: { url: LIEN, statut: 'valide', titre: null, chaine: null, duree: null } })
     expect(biblio.chercher('Squat gobelet')).toHaveLength(1)
   })
   it('POST : 409 si id existe, 400 si invalide (nom manquant, clé inconnue, champ calculé)', async () => {
@@ -103,7 +103,7 @@ describe('liste et filtres', () => {
     const f = async (q) => (await appel('GET', `${E}?${q}`, { cookie: coach })).json
     expect((await f('q=GOBELET')).items).toHaveLength(1)
     expect((await f('muscle=jambes&materiel=haltères&niveau=confirme')).total).toBe(1)
-    expect((await f('video=propose')).total).toBe(1); expect((await f('video=aucune')).total).toBe(1)
+    expect((await f('video=valide')).total).toBe(1); expect((await f('video=propose')).total).toBe(0); expect((await f('video=aucune')).total).toBe(1)
     expect(await f('limite=1&decalage=1')).toMatchObject({ total: 2, items: [{ nom: 'Squat gobelet' }] })
     for (const q of ['niveau=x', 'video=x', 'limite=0', 'limite=501', 'decalage=-1']) expect((await appel('GET', `${E}?${q}`, { cookie: coach })).statut).toBe(400)
   })
