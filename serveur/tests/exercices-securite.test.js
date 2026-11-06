@@ -168,6 +168,23 @@ describe('M7 PUT tolérant et clés inconnues d\'anciennes lignes', () => {
   })
 })
 
+describe('valider-video', () => {
+  it('coach : proposée -> validée dans la bibliothèque ; client 403 ; sans vidéo 409 ; inconnu 404', async () => {
+    writeFileSync(join(dossier, 'bib.json'), '[]')
+    await store.ecrire('exercices', { id: 'ex-vv', nom: 'Vv', categories: [], lienVideo: 'https://www.youtube.com/watch?v=mKREc_xl_j8' })
+    await store.ecrire('exercices', { id: 'ex-vv0', nom: 'Vv0', categories: [] })
+    const v = (id, cookie) => appel('POST', `${E}/${id}/valider-video`, { cookie })
+    expect((await v('ex-vv', client)).statut).toBe(403)
+    expect((await v('ex-vv0', coach)).statut).toBe(409)
+    expect((await v('inconnu', coach)).statut).toBe(404)
+    expect((await appel('GET', `${E}/ex-vv`, { cookie: coach })).json.item.video.statut).toBe('propose')
+    const r = await v('ex-vv', coach)
+    expect(r.statut).toBe(200)
+    expect(r.json.item.video.statut).toBe('valide')
+    expect((await appel('GET', `${E}/ex-vv`, { cookie: client })).json.item.video.statut).toBe('valide')
+  })
+})
+
 describe('M8 bibliothèque après validation', () => {
   it('un PATCH refusé ne laisse pas de proposition dans la bibliothèque', async () => {
     writeFileSync(join(dossier, 'bib.json'), '[]')

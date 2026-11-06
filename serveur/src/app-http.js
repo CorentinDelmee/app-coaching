@@ -377,6 +377,20 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
       }
       throw new Erreur(405, 'methode')
     }
+    // Validation de la vidéo : /exercices/:id/valider-video (proposée -> validée dans la bibliothèque)
+    if (sousRoute === 'valider-video') {
+      if (req.method !== 'POST') throw new Erreur(405, 'methode')
+      if (!coach) throw new Erreur(403, 'interdit')
+      const ex = await lire()
+      if (!ex.lienVideo || !idYoutube(ex.lienVideo)) throw new Erreur(409, 'sans_video')
+      if (!biblio) throw new Erreur(503, 'bibliotheque_indisponible')
+      try {
+        let e = biblio.chercher(ex.nom).find((x) => x.video.url === ex.lienVideo)
+        if (!e) e = biblio.proposer({ nom: ex.nom, url: ex.lienVideo })
+        biblio.valider(e.id)
+      } catch { throw new Erreur(503, 'bibliotheque_indisponible') }
+      return rendre(200, ex)
+    }
     // Photo : /exercices/:id/photo
     if (req.method !== 'POST' && req.method !== 'DELETE') throw new Erreur(405, 'methode')
     if (!coach) throw new Erreur(403, 'interdit')
@@ -547,7 +561,7 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
         envoyer(res, 200, { ok: true })
         return true
       }
-      const mX = /^\/exercices(?:\/([^/]+)(?:\/(photo))?)?$/.exec(route)
+      const mX = /^\/exercices(?:\/([^/]+)(?:\/(photo|valider-video))?)?$/.exec(route)
       if (mX) { await exercices(req, res, u, mX[1] === undefined ? undefined : decodeURIComponent(mX[1]), mX[2], url); return true }
       const mE = /^\/e\/([^/]+)(?:\/([^/]+))?$/.exec(route)
       if (mE) { await entites(req, res, u, decodeURIComponent(mE[1]), mE[2] === undefined ? undefined : decodeURIComponent(mE[2])); return true }
