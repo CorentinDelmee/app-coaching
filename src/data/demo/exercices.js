@@ -1,3 +1,5 @@
+import { FICHES } from './exercices-fiches.js'
+
 // 80 exercices courants, en français, sans vidéo (Corentin complète les liens dans la bibliothèque).
 // [nom, catégories, description]
 const LISTE = [
@@ -92,7 +94,7 @@ const LISTE = [
 const slug = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
 export const EXERCICES = LISTE.map(([nom, categories, description]) => ({
-  id: `ex-${slug(nom)}`, nom, description, lienVideo: null, categories
+  id: `ex-${slug(nom)}`, nom, description, lienVideo: null, categories, ...FICHES[nom]
 }))
 
 /** id d'exercice à partir de son nom (pour écrire les séances de démo). */

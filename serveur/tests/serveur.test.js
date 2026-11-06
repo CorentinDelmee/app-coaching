@@ -67,6 +67,7 @@ describe('séances', () => {
   let seanceId
   it("crée une séance au format de l'app (valide), avec circuits et vidéo de la bibliothèque", async () => {
     app.biblio.proposer({ nom: 'Squat', url: VIDEO, chaine: 'Test', duree: 60, titre: 'Squat', score: 90 })
+    await app.service.api.exercices.modifier('ex-squat', { lienVideo: null }) // la démo a désormais un lien sur le Squat : on repart sans vidéo
     const r = await outil('creer_seance', {
       client: 'client-thomas-bernard', nom: 'Séance du jeudi', date: '2026-10-29',
       blocs: [
