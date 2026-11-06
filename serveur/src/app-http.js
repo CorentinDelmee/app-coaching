@@ -160,13 +160,13 @@ const ROUTES_RESA = [
 const estObjet = (v) => v !== null && typeof v === 'object' && !Array.isArray(v)
 class Erreur extends Error { constructor(statut, code, extra) { super(code); this.statut = statut; this.code = code; this.extra = extra } }
 
-/** Version attendue par l'écran (en-tête If-Match : 3, "3" ou W/"3") ; absente = pas de contrôle (anciens clients, outils). */
+/** Version attendue par l'écran (en-tête If-Match : 3, "3" ou W/"3", rien d'autre) ; absente = pas de contrôle (anciens clients, outils). */
 function versionAttendue(req) {
   const v = req.headers['if-match']
   if (v === undefined) return undefined
-  const m = /^(?:W\/)?"?([1-9]\d{0,8})"?$/.exec(String(v).trim())
+  const m = /^(?:W\/"([1-9]\d{0,8})"|"([1-9]\d{0,8})"|([1-9]\d{0,8}))$/.exec(String(v))
   if (!m) throw new Erreur(400, 'invalide')
-  return Number(m[1])
+  return Number(m[1] ?? m[2] ?? m[3])
 }
 const estConflit = (e) => e?.name === 'ErreurData' && e.code === 'CONFLIT'
 
@@ -291,12 +291,20 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
       return envoyer(res, 200, { item: pourLecteur(entite, existant, u) })
     }
     if (req.method === 'PUT') {
-      const attendue = versionAttendue(req)
+      // Profil écrit par son client : sans If-Match, la version lue AVANT le corps fait foi (audit I1) -> toute écriture intercalée du coach donne 409.
+      const attendue = versionAttendue(req) ?? (!coach && entite === 'profils' ? versionDe(existant) : undefined)
       let obj = await lireJson(req)
       if (!obj || typeof obj !== 'object' || Array.isArray(obj) || obj.id !== id) throw new Erreur(400, 'invalide')
       delete obj.version // la version stockée fait foi (src/data/versions.js) ; le contrôle passe par If-Match
       const ecrireLigne = async (existant) => {
+      if (!coach && entite === 'profils' && existant && attendue !== undefined && attendue !== versionDe(existant)) {
+        throw new Erreur(409, 'conflit', { actuel: lisible(entite, existant, u) ? pourLecteur(entite, existant, u) : null }) // avant tout 403 : l'état a changé, le client doit recharger
+      }
       if (entite === 'exercices' && coach) { obj = nettoyerPut(obj, existant); if (!obj) throw new Erreur(400, 'invalide') } // champs calculés retirés, photo du serveur gardée
+      let rattacher = () => {}
+      if (entite === 'exercices' && coach && obj.lienVideo && idYoutube(obj.lienVideo)) { // lien hérité non YouTube : laissé tel quel, la validation décide
+        rattacher = lienCanonique(obj, obj.nom, existant?.lienVideo) // même forme canonique que le PATCH (audit M1)
+      }
       if (!coach && ENTITES_SANTE.has(entite) && !accesSante(await store.un('profils', u.profil_id))) throw new Erreur(403, 'consentement_sante')
       if (!ENTITES[entite].valider(obj).ok) throw new Erreur(400, 'invalide')
       if (Buffer.byteLength(JSON.stringify(obj)) > QUOTAS.octetsLigne) throw new Erreur(413, 'quota')
@@ -325,11 +333,11 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
         throw new Erreur(400, 'invalide') // ex. client_id inexistant
       }
       // Lien vidéo changé par le coach : validé d'office (seuls les liens posés par les outils MCP restent « proposés »).
-      if (entite === 'exercices' && coach && obj.lienVideo && obj.lienVideo !== existant?.lienVideo && idYoutube(obj.lienVideo)) validerLienCoach(obj.nom, obj.lienVideo)
+      rattacher()
       return envoyer(res, 200, { item: pourLecteur(entite, stocke ?? obj, u) })
       }
       // Exercices : le corps est lu, puis la ligne est relue SOUS le verrou des écritures (audit N1 : une photo posée entre-temps n'est pas écrasée).
-      return entite === 'exercices' && coach ? enSerie(async () => ecrireLigne(await store.un(entite, id))) : ecrireLigne(existant)
+      return entite === 'exercices' && coach ? enSerie(async () => ecrireLigne(await store.un(entite, id))) : ecrireLigne(await store.un(entite, id)) // ligne relue APRÈS le corps (audit I1 : un corps lent ne doit pas valider contre un état périmé)
     }
     if (req.method === 'DELETE') {
       const supprimerLigne = async (existant) => {

@@ -9,6 +9,7 @@ import { ErreurService } from '../service.js'
 import { hacherCode } from '../app-http.js'
 import { norm } from '../util.js'
 import { ENTITES } from '../../../src/data/entites.js'
+import { versionDe } from '../../../src/data/versions.js'
 import { ajouterJours, jourLocal, lundiDe } from '../../../src/domain/dates.js'
 import { etatSemaine, numeroSemaine } from '../../../src/domain/programme.js'
 import { alertesClient } from '../../../src/domain/alertes.js'
@@ -62,11 +63,17 @@ export function outilsClients(ctx) {
   const vue = (p) => ({ id: p.id, nom: p.nom, identifiant: p.identifiant, tarif: p.tarif, lieuDefaut: p.lieuDefaut, modules: p.modules, archive: !!p.archive })
 
   /** Écrit le profil après la validation de l'app (mêmes règles que /api/app/profils). */
-  async function ecrireProfil(p) {
-    const v = ENTITES.profils.valider(p)
-    if (!v.ok) throw new ErreurService(`Profil invalide : ${v.erreurs.join(' ; ')}`, 'VALIDATION')
-    await backend.ecrire('profils', p)
-    return p
+  async function ecrireProfil(p, transformer = (x) => x) {
+    // Écriture avec la version lue : si l'écran du coach a écrit entre-temps (CONFLIT), on relit et on réapplique UNE fois (audit M2).
+    for (let essai = 0; ; essai++) {
+      const maj = transformer(p)
+      const v = ENTITES.profils.valider(maj)
+      if (!v.ok) throw new ErreurService(`Profil invalide : ${v.erreurs.join(' ; ')}`, 'VALIDATION')
+      try { await backend.ecrire('profils', maj, { versionAttendue: versionDe(p) }); return maj } catch (e) {
+        if (e?.code !== 'CONFLIT' || essai) throw e
+        p = (await backend.un('profils', p.id)) ?? p
+      }
+    }
   }
 
   /** Nouveau code : haché, sessions révoquées (sv + 1). Le code en clair n'est jamais conservé. */
@@ -106,8 +113,7 @@ export function outilsClients(ctx) {
         .refine((a) => ['nom', 'tarif', 'lieuDefaut', 'modules'].some((k) => a[k] !== undefined), { message: 'Précise au moins un champ à modifier (nom, tarif, lieuDefaut, modules)' }),
       async ({ client, nom, tarif, lieuDefaut, modules }) => {
         const p = await resoudre(client)
-        const maj = { ...p, ...(nom !== undefined ? { nom } : {}), ...(tarif !== undefined ? { tarif } : {}), ...(lieuDefaut ? { lieuDefaut } : {}), ...(modules ? { modules: { ...p.modules, ...modules } } : {}) }
-        await ecrireProfil(maj)
+        const maj = await ecrireProfil(p, (x) => ({ ...x, ...(nom !== undefined ? { nom } : {}), ...(tarif !== undefined ? { tarif } : {}), ...(lieuDefaut ? { lieuDefaut } : {}), ...(modules ? { modules: { ...x.modules, ...modules } } : {}) }))
         return { id: maj.id, client: vue(maj) }
       }, { mutation: true }),
 
@@ -157,7 +163,7 @@ export function outilsClients(ctx) {
         const cle = `archiver_client:${p.id}`
         if (!j) return confirmations.demander(cle, `Archiver ${p.nom} (${p.identifiant}) : connexion impossible, données conservées, réactivable.`)
         if (!confirmations.verifier(cle, j)) throw new ErreurService('Jeton invalide ou expiré : rappelle avec exactement les mêmes arguments que le premier appel (avec le jeton), ou demande un nouveau jeton : redemande l\'archivage sans jeton.', 'JETON_INVALIDE')
-        await ecrireProfil({ ...p, archive: true })
+        await ecrireProfil(p, (x) => ({ ...x, archive: true }))
         db().prepare('UPDATE comptes SET archive = 1, sv = sv + 1 WHERE profil_id = ?').run(p.id)
         return { id: p.id, archive: true, message: `${p.nom} est archivé : il ne peut plus se connecter. Ses données sont conservées.` }
       }, { mutation: true }),
@@ -166,7 +172,7 @@ export function outilsClients(ctx) {
       z.object({ client: ref }).strict(),
       async ({ client }) => {
         const p = await resoudre(client, 'archive')
-        await ecrireProfil({ ...p, archive: false })
+        await ecrireProfil(p, (x) => ({ ...x, archive: false }))
         db().prepare('UPDATE comptes SET archive = 0 WHERE profil_id = ?').run(p.id)
         return { id: p.id, archive: false, message: `${p.nom} est réactivé.` }
       }, { mutation: true }),

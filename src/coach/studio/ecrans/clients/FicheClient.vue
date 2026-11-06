@@ -116,7 +116,7 @@ const lignesReponse = (r) => {
     valeur: Array.isArray(v) ? v.join(', ') : typeof v === 'object' && v !== null ? JSON.stringify(v) : String(v)
   }))
 }
-const estPhoto = (v) => typeof v === 'string' && /^(data:image\/|blob:|https?:)/.test(v)
+const estPhoto = (v) => typeof v === 'string' && /^(data:image\/|blob:|\/api\/app\/fichiers)/.test(v)
 
 // --- Suivi (courbes) --------------------------------------------------------------------------------------
 const courbePoids = computed(() => pointsPoids(d.mesures, d.reponses))

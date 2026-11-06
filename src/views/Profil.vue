@@ -46,9 +46,21 @@ const libelleConsentement = computed(() => {
 })
 const lieu = computed(() => (user.value?.lieuDefaut === 'salle' ? 'En salle' : 'À domicile'))
 
+// Le serveur refuse (409) d'écraser un profil modifié entre-temps par le coach ; data.profils.modifier relit et réessaie déjà une fois.
+// Si ça échoue encore (ou si le compte a été archivé), on le dit au lieu d'échouer en silence.
+const erreurPrefs = ref('')
 async function enregistrerPrefs(patch) {
+  erreurPrefs.value = ''
+  const avant = prefs.value
   prefs.value = { ...prefs.value, ...patch }
-  const maj = await data.profils.modifier(user.value.id, { preferences: { ...(user.value.preferences || {}), ...prefs.value, ambiance: apparence.ambiance, grand: apparence.grand } })
+  let maj
+  try {
+    maj = await data.profils.modifier(user.value.id, { preferences: { ...(user.value.preferences || {}), ...prefs.value, ambiance: apparence.ambiance, grand: apparence.grand } })
+  } catch (e) {
+    prefs.value = avant
+    erreurPrefs.value = e?.code === 'CONFLIT' ? 'Votre profil vient d\'être modifié ailleurs. Réessayez dans un instant.' : 'Impossible d\'enregistrer ce réglage. Réessayez.'
+    return
+  }
   user.value = maj
   reglerSon(maj.preferences)
   if (patch.son === true) SONS.valide()
@@ -190,6 +202,7 @@ async function deconnecter() {
 
         <div class="bloc" data-c>
           <p class="sur-titre">Préférences</p>
+          <p v-if="erreurPrefs" class="cx-erreur" role="alert">{{ erreurPrefs }}</p>
           <div class="pf-ligne">
             <span>Sons</span>
             <button class="interrupteur" type="button" role="switch" :aria-checked="prefs.son" aria-label="Sons" @click="enregistrerPrefs({ son: !prefs.son })"><i></i></button>
