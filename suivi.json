@@ -3,7 +3,7 @@
   "phase": "V2 + mission 26/10 + 2e vague : 436 tests verts, audits sécurité et accessibilité corrigés — à toi : secrets et Google, valider les vidéos, essai sur téléphone",
   "objectif": "Remplacer **My PT Hub (52 €/mois)** par ma propre app de coaching, **0 €/mois**, mobile d'abord, très animée.",
   "date_cible": "2026-10-20",
-  "mis_a_jour": "2026-11-03",
+  "mis_a_jour": "2026-11-06",
   "lots": [
     {
       "id": "0",
@@ -608,6 +608,69 @@
       "si_pas_de_reponse": "On construit et teste sur le VPS commun avec des données de démo, aucun vrai client.",
       "statut": "tranchee",
       "reponse": "VPS commun (Corentin, 2026-11-03 : trop de frais sinon) ; risque accepté : les associés root peuvent techniquement lire les données.",
+      "provisoire": false
+    },
+    {
+      "id": "D10",
+      "categorie": "Fonctionnalité",
+      "question": "Ajouter un bouton « Faite » sur les rendez-vous passés de l'écran Aujourd'hui ?",
+      "contexte": "Aujourd'hui, noter une séance faite depuis le téléphone demande ~6 gestes, et les rendez-vous Google ou réservés sur le site ne peuvent pas être marqués faits (ils ne comptent ni dans « payé ce mois » ni dans « dernière séance »).",
+      "options": [
+        {
+          "nom": "Oui, bouton « Faite »",
+          "resume": "1 geste ; pour un rendez-vous Google/site, crée le rendez-vous de coaching au tarif du client"
+        },
+        {
+          "nom": "Non",
+          "resume": "On garde l'onglet Rendez-vous de la fiche"
+        }
+      ],
+      "recommandation": "Oui, bouton « Faite »",
+      "pourquoi": "Geste le plus fréquent de la journée, et les rendez-vous du site comptent enfin dans le suivi des paiements.",
+      "si_pas_de_reponse": "Rien n'est fait en attendant.",
+      "statut": "ouverte",
+      "provisoire": false
+    },
+    {
+      "id": "D11",
+      "categorie": "Fonctionnalité",
+      "question": "Pouvoir glisser une séance modèle directement dans le programme d'un client ?",
+      "contexte": "Pour préparer les programmes de 4 clients le dimanche, il faut aujourd'hui dupliquer chaque modèle vers chaque client depuis l'écran Séances, puis revenir au programme.",
+      "options": [
+        {
+          "nom": "Oui, section « Modèles » dans l'éditeur de programme",
+          "resume": "Glisser un modèle sur un jour crée la copie pour le client ; + dupliquer vers plusieurs clients d'un coup"
+        },
+        {
+          "nom": "Non",
+          "resume": "Duplication depuis Séances, comme maintenant"
+        }
+      ],
+      "recommandation": "Oui, section « Modèles » dans l'éditeur de programme",
+      "pourquoi": "Divise le temps de préparation hebdomadaire.",
+      "si_pas_de_reponse": "Rien n'est fait en attendant.",
+      "statut": "ouverte",
+      "provisoire": false
+    },
+    {
+      "id": "D12",
+      "categorie": "Fonctionnalité",
+      "question": "Ajouter des notifications sur le téléphone des clients (rappel de check-in, nouveau programme) ?",
+      "contexte": "MyPTHub en envoyait ; l'app n'en a pas, tout passe par une relance WhatsApp manuelle. C'est le premier frein pour arrêter MyPTHub. Sur iPhone, il faut que le client ait installé l'app sur l'écran d'accueil.",
+      "options": [
+        {
+          "nom": "Oui, notifications web (gratuit)",
+          "resume": "Notifications push de la PWA, envoyées par le VPS, sans service payant"
+        },
+        {
+          "nom": "Plus tard",
+          "resume": "Relance WhatsApp en attendant"
+        }
+      ],
+      "recommandation": "Oui, notifications web (gratuit)",
+      "pourquoi": "Gratuit, et c’est ce qui manque le plus par rapport à MyPTHub. Gros lot : à faire après la mise en ligne de Studio.",
+      "si_pas_de_reponse": "Plus tard.",
+      "statut": "ouverte",
       "provisoire": false
     }
   ],

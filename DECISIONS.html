@@ -44,7 +44,7 @@ a{color:var(--accent)}
 @media (max-width:640px){td,th{padding:8px 6px}.masquer-mobile{display:none}}
 </style></head>
 <body><div class="page">
-<header class="tete"><div><div class="surtitre">Décisions · app-coaching</div><h1>1 décision à prendre</h1>
+<header class="tete"><div><div class="surtitre">Décisions · app-coaching</div><h1>4 décisions à prendre</h1>
 <p class="sous">Coche ton choix (la recommandation de REX est pré-cochée), ajoute un mot si besoin, puis <strong>Copier mes réponses</strong> et colle-les dans REX.</p></div>
 <a class="btn clair" href="TABLEAU-DE-BORD.html">← Tableau de bord</a></header>
 <form id="f">
@@ -55,11 +55,32 @@ a{color:var(--accent)}
 <span class="nom">Tout aligner sur M5</span><div class="petit muted">Jaune en texte sur fond clair (1,1:1), gris plus pâle (4,0:1)</div><div class="petit"><a href="docs/captures-m5/comparaison.html" target="_blank" rel="noopener">Voir</a></div></label></div>
 <p class="petit"><strong>Pourquoi REX recommande Garder les écarts :</strong> Lisibilité, et tu as déjà refusé le jaune en texte sur fond clair.</p>
 <textarea name="D8-note" placeholder="Une précision ? (facultatif)"></textarea>
-<p class="defaut">Sans réponse : Écarts gardés (appliqué en provisoire).</p></article>
+<p class="defaut">Sans réponse : Écarts gardés (appliqué en provisoire).</p></article><article class="carte decision" data-id="D10"><div class="surtitre">D10 · Fonctionnalité</div>
+<h3>Ajouter un bouton « Faite » sur les rendez-vous passés de l&#39;écran Aujourd&#39;hui ?</h3><p class="muted">Aujourd&#39;hui, noter une séance faite depuis le téléphone demande ~6 gestes, et les rendez-vous Google ou réservés sur le site ne peuvent pas être marqués faits (ils ne comptent ni dans « payé ce mois » ni dans « dernière séance »).</p>
+<div class="options"><label class="option"><input type="radio" name="D10" value="Oui, bouton « Faite »" checked>
+<span class="nom">Oui, bouton « Faite »</span><span class="reco">Recommandé</span><div class="petit muted">1 geste ; pour un rendez-vous Google/site, crée le rendez-vous de coaching au tarif du client</div></label><label class="option"><input type="radio" name="D10" value="Non" >
+<span class="nom">Non</span><div class="petit muted">On garde l&#39;onglet Rendez-vous de la fiche</div></label></div>
+<p class="petit"><strong>Pourquoi REX recommande Oui, bouton « Faite » :</strong> Geste le plus fréquent de la journée, et les rendez-vous du site comptent enfin dans le suivi des paiements.</p>
+<textarea name="D10-note" placeholder="Une précision ? (facultatif)"></textarea>
+<p class="defaut">Sans réponse : Rien n&#39;est fait en attendant.</p></article><article class="carte decision" data-id="D11"><div class="surtitre">D11 · Fonctionnalité</div>
+<h3>Pouvoir glisser une séance modèle directement dans le programme d&#39;un client ?</h3><p class="muted">Pour préparer les programmes de 4 clients le dimanche, il faut aujourd&#39;hui dupliquer chaque modèle vers chaque client depuis l&#39;écran Séances, puis revenir au programme.</p>
+<div class="options"><label class="option"><input type="radio" name="D11" value="Oui, section « Modèles » dans l&#39;éditeur de programme" checked>
+<span class="nom">Oui, section « Modèles » dans l&#39;éditeur de programme</span><span class="reco">Recommandé</span><div class="petit muted">Glisser un modèle sur un jour crée la copie pour le client ; + dupliquer vers plusieurs clients d&#39;un coup</div></label><label class="option"><input type="radio" name="D11" value="Non" >
+<span class="nom">Non</span><div class="petit muted">Duplication depuis Séances, comme maintenant</div></label></div>
+<p class="petit"><strong>Pourquoi REX recommande Oui, section « Modèles » dans l&#39;éditeur de programme :</strong> Divise le temps de préparation hebdomadaire.</p>
+<textarea name="D11-note" placeholder="Une précision ? (facultatif)"></textarea>
+<p class="defaut">Sans réponse : Rien n&#39;est fait en attendant.</p></article><article class="carte decision" data-id="D12"><div class="surtitre">D12 · Fonctionnalité</div>
+<h3>Ajouter des notifications sur le téléphone des clients (rappel de check-in, nouveau programme) ?</h3><p class="muted">MyPTHub en envoyait ; l&#39;app n&#39;en a pas, tout passe par une relance WhatsApp manuelle. C&#39;est le premier frein pour arrêter MyPTHub. Sur iPhone, il faut que le client ait installé l&#39;app sur l&#39;écran d&#39;accueil.</p>
+<div class="options"><label class="option"><input type="radio" name="D12" value="Oui, notifications web (gratuit)" checked>
+<span class="nom">Oui, notifications web (gratuit)</span><span class="reco">Recommandé</span><div class="petit muted">Notifications push de la PWA, envoyées par le VPS, sans service payant</div></label><label class="option"><input type="radio" name="D12" value="Plus tard" >
+<span class="nom">Plus tard</span><div class="petit muted">Relance WhatsApp en attendant</div></label></div>
+<p class="petit"><strong>Pourquoi REX recommande Oui, notifications web (gratuit) :</strong> Gratuit, et c’est ce qui manque le plus par rapport à MyPTHub. Gros lot : à faire après la mise en ligne de Studio.</p>
+<textarea name="D12-note" placeholder="Une précision ? (facultatif)"></textarea>
+<p class="defaut">Sans réponse : Plus tard.</p></article>
 <div class="flottant"><button type="button" class="btn" id="copier">Copier mes réponses</button></div>
 </form>
 <section class="carte"><h2>Déjà tranché</h2><table><tbody><tr><td><strong>D3</strong> · Quelle maquette pour l app client ?</td><td>M5 comme base (RETOURS-MAQUETTES-V1 : « Base : M5 », confirmé par Corentin le 26/10 : app exactement comme M5 sur accueil, menu, jaune, surbrillance)</td></tr><tr><td><strong>D1</strong> · Combien de temps garder les données de santé après la fin du coaching ?</td><td>3 mois <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D2</strong> · Accepter des clients mineurs dans l app ?</td><td>Majeurs seulement <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D4</strong> · Police des chiffres du chrono ?</td><td>Barlow Semi Condensed <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D5</strong> · Message d&#39;accueil du dashboard ?</td><td>« Prêt, Fabien ? » <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D6</strong> · Texte sur l&#39;aplat jaune ?</td><td>Foncé <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D7</strong> · Bouton jaune en ambiance claire : ajouter un liseré ?</td><td>Sans liseré <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D9</strong> · Où héberger les données des clients d&#39;app-coaching (douleurs, mesures, nutrition) ?</td><td>VPS commun (Corentin, 2026-11-03 : trop de frais sinon) ; risque accepté : les associés root peuvent techniquement lire les données.</td></tr></tbody></table></section>
-<footer>Généré par REX · 03/11/2026 15:23:10 · Pour un PDF : Imprimer → Enregistrer au format PDF</footer></div><script>
+<footer>Généré par REX · 06/11/2026 12:43:34 · Pour un PDF : Imprimer → Enregistrer au format PDF</footer></div><script>
 document.getElementById("copier")?.addEventListener("click",async()=>{
  const lignes=["Réponses aux décisions (app-coaching) :"];
  document.querySelectorAll("article.decision").forEach(a=>{const id=a.dataset.id;const c=a.querySelector("input:checked");const n=a.querySelector("textarea").value.trim();
