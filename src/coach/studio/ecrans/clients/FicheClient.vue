@@ -15,6 +15,7 @@ import { HABITUDES_DEFAUT, parserHabitudes, seriesDisponibles, pointsSerie } fro
 import { maintenant, rafraichir, uuid, etat, marquerVue, messageErreur } from '../../../store.js'
 import { chargesRealisees, dateFr, pointsPoids, adresseApp } from '../../../logique.js'
 import { useSauvegardeAuto } from '../../useSauvegardeAuto.js'
+import { useRafraichirAuRetour } from '../../useRafraichirAuRetour.js'
 import { toast } from '../../toast.js'
 import IconeSt from '../../IconeSt.vue'
 import Puce from '../../Puce.vue'
@@ -58,7 +59,12 @@ async function charger() {
     data.reponses.lister(f), data.questionnaires.lister({}, { archives: true }), data.mesures.lister(f), data.douleurs.lister(f), data.exercices.lister()
   ])
   Object.assign(d, { programmes, workouts, realisations, seances, mots, reponses, questionnaires, mesures, douleurs, exercices })
-  if (profil.value?.id !== p.id) remplirReglages(p)
+  // Réglages remplis à l'ouverture, ou quand le profil a changé ailleurs (Claude, autre appareil) et qu'aucune saisie n'attend.
+  // Saisie en attente : on garde la version lue, la sauvegarde signalera le conflit au lieu d'écraser.
+  if (profil.value?.id !== p.id || (p.version !== profil.value?.version && !sauvegarde.occupe())) {
+    remplirReglages(p)
+    sauvegarde.suivreVersion(p.version)
+  }
   profil.value = p
 }
 
@@ -189,11 +195,14 @@ function remplirReglages(p) {
   nouvelle.lieu = p.lieuDefaut
   nextTick(() => { reglagesPrets = true })
 }
-const sauvegarde = useSauvegardeAuto(async (v) => {
-  await data.profils.modifier(props.id, v)
-  profil.value = { ...profil.value, ...v }
+// Conflit (Claude ou un autre appareil a modifié le profil) : voir src/coach/studio/LISEZMOI.md « Conflits ».
+const sauvegarde = useSauvegardeAuto(async (v, opts) => {
+  const r = await data.profils.modifier(props.id, v, opts)
+  profil.value = r ?? { ...profil.value, ...v }
   emit('change')
-}, { delai: 700 })
+  return r
+}, { delai: 700, recharger: (p) => { profil.value = p; remplirReglages(p) }, resumer: (v) => `${v.nom}, ${v.tarif} €` })
+useRafraichirAuRetour(charger, { sauvegarde })
 const nomVide = computed(() => !reglages.nom.trim())
 // Numéro WhatsApp : vide (effacé) ou reconnu ; un texte non reconnu n'est pas enregistré (l'ancien numéro reste).
 const telephoneInvalide = computed(() => !!reglages.telephone.trim() && !normaliserTelephone(reglages.telephone))
@@ -550,7 +559,7 @@ onBeforeUnmount(() => {
           <div v-else class="st-clients-reglages">
             <div class="st-clients-reglages-tete">
               <h3 class="st-clients-h3">Réglages du client</h3>
-              <IndicateurSauvegarde :etat="sauvegarde.etat.value" @reessayer="sauvegarde.reessayer" />
+              <IndicateurSauvegarde :etat="sauvegarde.etat.value" :conflit="sauvegarde.conflit.value" @reessayer="sauvegarde.reessayer" @recharger="sauvegarde.recharger" />
             </div>
             <div class="st-clients-champs">
               <label class="st-clients-champ is-large">Nom<input v-model="reglages.nom" required :aria-invalid="nomVide" /></label>

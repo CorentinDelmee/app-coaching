@@ -197,3 +197,13 @@ export function voisin(liste, id, d) {
   if (i < 0) return null
   return liste[i + d] || null
 }
+
+/**
+ * Conflit de sauvegarde (409) : un des champs du patch a-t-il aussi été changé ailleurs (Claude, autre appareil) ?
+ * base = exercice tel que la fiche le connaissait, actuel = exercice à jour renvoyé par le serveur.
+ * Non -> on peut renvoyer le même patch sur la version à jour sans rien écraser ; oui -> le coach doit recharger.
+ */
+export function champsTouchesChangesAilleurs(base, actuel, patch) {
+  const fb = versFormulaire(base), fa = versFormulaire(actuel)
+  return Object.keys(patch).some((c) => (TOUS_CHAMPS.includes(c) ? !memeValeur(c, fb[c], fa[c]) : JSON.stringify(base?.[c]) !== JSON.stringify(actuel?.[c])))
+}
