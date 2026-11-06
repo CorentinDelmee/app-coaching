@@ -213,7 +213,7 @@
       "statut": "fait",
       "avancement": 100,
       "qui": "REX + 20 agents",
-      "note": "Toutes les pages coach en Studio sur main (c27ea4a), 775 tests, banc e2e 263/263, 4 audits sécurité (0 critique restant), protection contre les écrasements Claude/2e appareil. Validé par Corentin le 2026-11-06 ; anciens écrans supprimés. Reste : mise en ligne (deployer.sh)."
+      "note": "Toutes les pages coach en Studio sur main (c27ea4a), 775 tests, banc e2e 263/263, 4 audits sécurité (0 critique restant), protection contre les écrasements Claude/2e appareil. Validé par Corentin le 2026-11-06 ; anciens écrans supprimés. En ligne depuis le 2026-11-06 14 h 10."
     }
   ],
   "taches_humaines": [
@@ -398,11 +398,11 @@
     },
     {
       "titre": "Mettre Studio en ligne (après validation)",
-      "qui": "Corentin",
+      "qui": "REX",
       "echeance": "",
       "duree": "10 min",
-      "statut": "a_faire",
-      "comment": "`ssh root@IP \"bash /opt/app-coaching/deployer.sh\"` : sauvegarde d'abord (s'arrête si elle échoue), puis code, Caddy (cache des photos, miniatures YouTube), migrations (versions, photos _exercices). Vérifier ensuite `curl -I` sur une photo d'exercice : un seul Cache-Control. Lister les clés JSON des exercices sur une copie de la base avant (deploiement/LISEZMOI.md § 6)."
+      "statut": "fait",
+      "comment": "Déployé par REX le 2026-11-06 à 14 h 10 (1ee1808) sur https://delmeecorentin.fr/app/ ; sauvegarde prise juste avant ; app. redirige vers /app/."
     },
     {
       "titre": "Supprimer les exports MyPTHub (données de santé)",
@@ -411,6 +411,14 @@
       "duree": "5 min",
       "statut": "a_faire",
       "comment": "PC : C:\\Users\\coren\\.config\\app-coaching\\import-mypthub\\ ; serveur : /var/lib/app-coaching/import/ (dont codes-mypthub.txt une fois les codes transmis)."
+    },
+    {
+      "titre": "Autoriser la clé SSH du Mac : fait",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "",
+      "statut": "fait",
+      "comment": "Clé du Mac ajoutée sur le VPS le 2026-11-06 ; REX peut déployer depuis le Mac."
     }
   ],
   "decisions": [
@@ -827,6 +835,10 @@
     {
       "date": "2026-11-06",
       "texte": "Refonte coach Studio terminée sur main : 6 écrans + fondations, testés en vrais clics (ordinateur et téléphone), 4 audits sécurité, protection contre les écrasements par Claude ou un 2e appareil. Pas encore en ligne."
+    },
+    {
+      "date": "2026-11-06",
+      "texte": "Studio en ligne sur https://delmeecorentin.fr/app/ (181 exercices, 25 profils, 50 séances, 3 programmes retrouvés)."
     }
   ],
   "prochaines_etapes": [
