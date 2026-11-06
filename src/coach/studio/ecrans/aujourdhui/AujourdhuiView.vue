@@ -86,7 +86,7 @@ const messageRelance = (r) => `Relancer ${r.nom} sur WhatsApp (${r.raison === 'q
     <header class="st-auj-entete">
       <div>
         <p class="st-auj-date">{{ dateDuJour(jour) }}</p>
-        <h1 class="st-auj-titre">{{ salutation(minutes) }} {{ statut === 'pret' ? prenomCoach : '' }}.</h1>
+        <h1 class="st-auj-titre">{{ salutation(minutes) }}{{ statut === 'pret' ? ' ' + prenomCoach : '' }}.</h1>
         <p v-if="statut === 'pret'" class="st-auj-resume">{{ resumeJour(items, etat.alertes.length) }}</p>
       </div>
       <RouterLink to="/coach/seances/nouveau" class="st-btn st-btn--jaune st-auj-cta"><IconeSt nom="plus" /><span class="st-auj-lbl">Nouvelle séance</span></RouterLink>

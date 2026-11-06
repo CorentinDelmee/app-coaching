@@ -13,7 +13,7 @@
 /* Grille de blocs : 12 colonnes, entrée en cascade (transform + opacity) */
 .st-auj-dash { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
 .st-auj-dash > * { min-width: 0; }
-.st-auj-dash.is-charge > [style*="--i"] { animation: st-cascade var(--st-d-base) var(--st-sortie) both; animation-delay: calc(var(--i) * 40ms); }
+.st-auj-dash.is-charge > [style*="--i"] { animation: st-auj-monte var(--st-d-base) var(--st-sortie) both; animation-delay: calc(var(--i) * 40ms); }
 .st-auj-b--jour { grid-column: span 7; }
 .st-auj-b--alertes { grid-column: span 5; }
 .st-auj-b--tiers { grid-column: span 4; }
@@ -44,7 +44,7 @@
 /* Liste des rendez-vous */
 .st-auj-timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .st-auj-seance { position: relative; display: grid; grid-template-columns: 64px 4px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px 10px 0; border-radius: var(--st-r-m); transition: background var(--st-d-court); }
-.st-auj-dash.is-charge .st-auj-seance { animation: st-cascade var(--st-d-base) var(--st-sortie) both; animation-delay: calc(120ms + var(--n) * 40ms); }
+.st-auj-dash.is-charge .st-auj-seance { animation: st-auj-monte var(--st-d-base) var(--st-sortie) both; animation-delay: calc(120ms + var(--n) * 40ms); }
 .st-auj-seance:hover { background: var(--st-fond); }
 .st-auj-seance.is-en-cours, .st-auj-seance.is-prochain { background: var(--st-fond); }
 .st-auj-seance.is-passe .st-auj-nom, .st-auj-seance.is-passe time { color: var(--st-doux); }
@@ -145,3 +145,8 @@ a.st-auj-nom:hover { text-decoration: underline; text-underline-offset: 3px; }
 .st-auj-mini li:has(a.st-auj-nom):hover { background: var(--st-fond); }
 .st-auj-mini a.st-auj-nom::after { content: ''; position: absolute; inset: 0; border-radius: var(--st-r-m); }
 .st-auj-mini .st-btn, .st-auj-mini .st-puce { position: relative; z-index: 1; }
+/* Entrée : déplacement seul, jamais de fondu d'opacité sur du texte (contraste mesuré en temps réel par le banc) */
+@keyframes st-auj-monte { from { transform: translateY(14px); } }
+/* Cible des noms cliquables portée à 44 px sans changer la mise en page */
+.st-auj a.st-auj-nom { padding: 12px 0; margin: -12px 0; }
+.st-auj .st-auj-date a { display: inline-flex; align-items: center; min-height: 44px; margin: -14px 0; }
