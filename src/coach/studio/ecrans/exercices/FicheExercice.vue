@@ -106,7 +106,7 @@ const utiliseProg = computed(() => ref0.value.utiliseDansProgrammes)
 <template>
   <div class="st-exo-tete">
     <label class="st-sr" :for="p('nom')">Nom de l'exercice</label>
-    <textarea :id="p('nom')" v-model="form.nom" class="st-exo-nom" rows="1" maxlength="120" :aria-invalid="!!erreurs.nom" :aria-describedby="erreurs.nom ? p('e-nom') : undefined" />
+    <textarea :id="p('nom')" v-model="form.nom" data-test="exo-nom" class="st-exo-nom" rows="1" maxlength="120" :aria-invalid="!!erreurs.nom" :aria-describedby="erreurs.nom ? p('e-nom') : undefined" />
     <p v-if="erreurs.nom" :id="p('e-nom')" class="st-exo-err">{{ erreurs.nom }}</p>
     <div class="st-exo-statut">
       <Puce v-if="statut === 'propose'" variante="propose" point>Vidéo proposée par Claude</Puce>

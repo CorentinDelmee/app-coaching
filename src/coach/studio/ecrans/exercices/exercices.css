@@ -4,9 +4,9 @@
 /* Outils collants : recherche + menus + bascule d'affichage. Le panneau est fixe (PanneauLateral) : rien ne le recouvre. */
 .st-exo-outils { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 10px 0 8px; background: linear-gradient(var(--st-fond) 82%, transparent); }
 .st-exo-recherche { flex: 1 1 260px; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 16px; border-radius: 16px; background: var(--st-surface); box-shadow: var(--st-ombre-1); border: 1px solid transparent; transition: border-color var(--st-d-court), box-shadow var(--st-d-court); }
-.st-exo-recherche:focus-within { border-color: var(--st-encre); box-shadow: var(--st-ombre-2); }
+.st-exo-recherche:focus-within { box-shadow: var(--st-ombre-2); }
 .st-exo-recherche svg { width: 18px; height: 18px; color: var(--st-doux); flex: none; }
-.st-exo-recherche input { border: 0; outline: 0; background: none; flex: 1; min-width: 0; font-size: 15px; min-height: 44px; }
+.st-exo-recherche input { border: 0; border-radius: 8px; background: none; flex: 1; min-width: 0; font-size: 15px; min-height: 44px; }
 .st-exo-recherche kbd { font: 600 12px var(--st-sans); padding: 2px 7px; border-radius: 6px; background: var(--st-surface-2); color: var(--st-doux); }
 .st-exo-select { min-height: 44px; padding: 0 12px; border-radius: 22px; border: 1px solid var(--st-filet-fort); background: var(--st-surface); font-weight: 600; font-size: 13.5px; color: var(--st-texte); max-width: 190px; }
 .st-exo-bascule { display: flex; gap: 2px; padding: 3px; border-radius: 14px; background: var(--st-surface-2); }
@@ -91,11 +91,11 @@
 
 @media (max-width: 900px) {
   .st-exo-outils { gap: 8px; }
-  .st-exo-recherche { flex: 1 1 0; min-width: 0; order: 1; }
+  .st-exo-recherche { flex: 1 1 200px; min-width: 0; order: 1; }
   .st-exo-bascule { order: 2; }
   .st-exo-select { order: 3; padding: 0 8px; }
   .st-exo-recherche kbd { display: none; }
-  .st-exo-select { flex: 1 1 0; min-width: 0; max-width: none; }
+  .st-exo-select { flex: 1 1 96px; min-width: 0; max-width: none; }
   .st-exo-grille, .st-reserve-panneau .st-exo-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .st-exo-grille.is-liste { grid-template-columns: 1fr; }
   .st-exo-lire { left: auto; right: 14px; bottom: 14px; }

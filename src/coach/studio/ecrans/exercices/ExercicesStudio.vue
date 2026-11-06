@@ -63,6 +63,8 @@ const idVideo = computed(() => (courant.value ? idVideoDe(courant.value) : null)
 const precedent = computed(() => !!(courant.value && voisin(liste.value, courant.value.id, -1)))
 const suivant = computed(() => !!(courant.value && voisin(liste.value, courant.value.id, 1)))
 
+// Lien direct : /coach/exercices?ex=<id> ouvre l'exercice (ex. depuis Aujourd'hui). L'ouverture ne réécrit pas l'URL :
+// recharger la page rend la grille (le panneau ne recouvre pas tout au retour sur téléphone).
 function majUrl(id) {
   const query = { ...route.query }
   if (id) query.ex = id; else delete query.ex
@@ -72,11 +74,10 @@ function majUrl(id) {
 async function ouvrir(e, elMedia) {
   const deja = !!courantId.value
   if (deja && courantId.value === e.id) return
-  await fiche.value?.enregistrer?.()
+  // L'ancienne fiche est démontée (:key) : son onBeforeUnmount écrit ce qui reste, sans bloquer le changement.
   cascade.value = !deja
   lecture.value = false
   courantId.value = e.id
-  majUrl(e.id)
   await nextTick()
   const cible = panneau.value?.media?.()
   if (!deja && elMedia && cible) volerVers(elMedia, cible, { muscle: muscleDe(e) })
@@ -86,14 +87,13 @@ async function ouvrir(e, elMedia) {
 async function fermer() {
   const id = courantId.value
   if (!id) return
-  await fiche.value?.enregistrer?.()
+  fiche.value?.enregistrer?.() // sans attendre : le panneau se ferme tout de suite, l'écriture finit en arrière-plan
   courantId.value = null
   lecture.value = false
-  majUrl(null)
+  if (route.query.ex) majUrl(null)
   await nextTick()
-  // PanneauLateral rend le focus à l'élément d'avant ; s'il a disparu (exercice changé au clavier), on vise la carte.
-  const carte = document.querySelector(`.st-exo-grille .st-carte[data-id="${CSS.escape(id)}"]`)
-  if (carte && !document.activeElement?.closest?.('.st-exo')) carte.focus({ preventScroll: true })
+  // PanneauLateral rend le focus à la carte d'ouverture ; après ↑ ↓ c'est la dernière carte affichée qui doit l'avoir.
+  document.querySelector(`.st-exo-grille .st-carte[data-id="${CSS.escape(id)}"]`)?.focus({ preventScroll: true })
 }
 
 function aller(d) {
@@ -111,7 +111,7 @@ function surArchive(id) {
   const n = voisin(liste.value, id, 1) || voisin(liste.value, id, -1)
   courantId.value = null
   items.value = items.value.filter((e) => e.id !== id)
-  majUrl(null)
+  if (route.query.ex) majUrl(null)
   if (n) nextTick(() => document.querySelector(`.st-exo-grille .st-carte[data-id="${CSS.escape(n.id)}"]`)?.focus({ preventScroll: true }))
 }
 
@@ -128,6 +128,15 @@ async function nouveau() {
     champ?.focus(); champ?.select()
   } catch (e) { toast(messageErreurExo(e)) }
 }
+
+// Filtre vidéo <-> ?video= (lien « N vidéos proposées par Claude » d'Aujourd'hui, ancienne /coach/bibliotheque)
+watch(video, (v) => {
+  if ((route.query.video || '') === v) return
+  const query = { ...route.query }
+  if (v) query.video = v; else delete query.video
+  router.replace({ query })
+})
+watch(() => route.query.video, (v) => { const n = ['propose', 'valide', 'aucune'].includes(v) ? v : ''; if (n !== video.value) video.value = n })
 
 // ---------- Filtrage : la grille se recompose sans saut (16 premières cartes, 18 ms de décalage) ----------
 const grille = ref(null)
@@ -202,8 +211,8 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', surTouche); anim
     <p v-if="erreur" class="st-exo-alerte" role="alert">{{ erreur }} <button type="button" class="st-btn" @click="charger">Réessayer</button></p>
     <p class="st-sr" role="status" aria-live="polite">{{ charge ? `${liste.length} exercice${liste.length > 1 ? 's' : ''}` : '' }}</p>
 
-    <ul v-if="liste.length" ref="grille" class="st-exo-grille" :class="{ 'is-liste': affichage === 'liste' }">
-      <li v-for="e in liste" :key="e.id"><VignetteExercice :exercice="e" :actif="courantId === e.id" :affichage="affichage" @ouvrir="ouvrir" /></li>
+    <ul v-if="liste.length" ref="grille" class="st-exo-grille" data-test="biblio" :class="{ 'is-liste': affichage === 'liste' }">
+      <li v-for="e in liste" :key="e.id"><VignetteExercice data-test="exercice" :exercice="e" :actif="courantId === e.id" :affichage="affichage" @ouvrir="ouvrir" /></li>
     </ul>
     <div v-else-if="charge && !erreur" class="st-exo-vide">
       <p v-if="!items.length"><b>Ta bibliothèque est vide.</b><br>Crée ton premier exercice ou demande à Claude d'en ajouter.</p>
