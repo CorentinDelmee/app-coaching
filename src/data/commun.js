@@ -14,6 +14,7 @@ import { validerRealisation } from '../domain/modele.js'
 import { alertesAgenda, seancesPourClient } from '../domain/agendaGoogle.js'
 import { fusionnerSeances } from '../domain/fusionSeances.js'
 import { exporter, exporterMesDonnees, preparerImport } from '../domain/echange.js'
+import { CHAMPS_CALCULES, NIVEAUX, appliquerPatch, filtrerExercices, indexUsage, presenterExercice } from '../domain/exercices.js'
 
 const uuidParDefaut = () => globalThis.crypto.randomUUID()
 
@@ -61,6 +62,66 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
         return api[entite].modifier(id, { archive: true })
       }
     }
+  }
+
+  // --- Exercices enrichis (fiche Studio) : recherche, détail, mise à jour partielle, photo ----------------------
+  // api : routes dédiées du serveur (backend.exercices). local : même logique en mémoire (src/domain/exercices.js).
+  const exos = api.exercices
+  const lienVideoLocal = (e) => (e.lienVideo ? { url: e.lienVideo, titre: null, chaine: null, duree: null, statut: 'propose' } : null)
+  async function presenterLocal(liste) {
+    const coach = (await backend.utilisateurCourant())?.role === 'coach'
+    const usage = coach ? indexUsage(await backend.tout('workouts'), await backend.tout('programmes')) : null
+    return liste.map((e) => presenterExercice(e, { coach, usage, video: lienVideoLocal(e) }))
+  }
+  function verifierPatchExercice(patch) {
+    const interdit = Object.keys(patch).find((k) => CHAMPS_CALCULES.includes(k))
+    if (interdit) throw new ErreurData('VALIDATION', `Exercice : le champ « ${interdit} » est géré par l'application`)
+    if (patch.niveau && !NIVEAUX.includes(patch.niveau)) throw new ErreurData('VALIDATION', 'Exercice : niveau inconnu')
+    if (patch.reposConseille != null && !(Number.isInteger(patch.reposConseille) && patch.reposConseille >= 0 && patch.reposConseille <= 600)) throw new ErreurData('VALIDATION', 'Exercice : repos conseillé entre 0 et 600 secondes')
+  }
+  /** { items, total } : filtres q, categorie, muscle, materiel, niveau, video (aucune|propose|valide), limite, decalage. Tri par nom. */
+  exos.recherche = async (filtre = {}) => {
+    if (backend.exercices) return backend.exercices.recherche(filtre)
+    const vus = filtrerExercices(await presenterLocal(await backend.tout('exercices')), filtre)
+    const decalage = filtre.decalage ?? 0
+    return { items: vus.slice(decalage, decalage + (filtre.limite ?? 500)), total: vus.length }
+  }
+  /** Exercice enrichi (avec `utiliseDans` pour le coach) ou null. */
+  exos.detail = async (id) => {
+    if (backend.exercices) return backend.exercices.detail(id)
+    const e = await backend.un('exercices', id)
+    return e ? (await presenterLocal([e]))[0] : null
+  }
+  /** Mise à jour partielle : « » ou null efface un champ. */
+  exos.mettreAJour = async (id, patch) => {
+    if (backend.exercices) return backend.exercices.mettreAJour(id, patch)
+    verifierPatchExercice(patch)
+    const actuel = await backend.un('exercices', id)
+    if (!actuel) throw new ErreurData('INTROUVABLE', `exercices : « ${id} » est introuvable`)
+    const fusion = appliquerPatch(actuel, patch)
+    verifier('exercices', fusion)
+    await backend.ecrire('exercices', fusion)
+    return (await presenterLocal([fusion]))[0]
+  }
+  // Photo : en démo, stockée en data-URL dans l'exercice ; avec le serveur, fichier privé servi par /fichiers.
+  exos.envoyerPhoto = async (id, blob) => {
+    if (backend.exercices) return backend.exercices.envoyerPhoto(id, blob)
+    const actuel = await backend.un('exercices', id)
+    if (!actuel) throw new ErreurData('INTROUVABLE', `exercices : « ${id} » est introuvable`)
+    const octets = new Uint8Array(await blob.arrayBuffer())
+    let bin = ''
+    for (let i = 0; i < octets.length; i += 0x8000) bin += String.fromCharCode(...octets.subarray(i, i + 0x8000))
+    const fusion = { ...actuel, photo: { id: `p-${uuid().replace(/-/g, '').slice(0, 12)}`, url: `data:${blob.type || 'image/jpeg'};base64,${btoa(bin)}` } }
+    await backend.ecrire('exercices', fusion)
+    return (await presenterLocal([fusion]))[0]
+  }
+  exos.retirerPhoto = async (id) => {
+    if (backend.exercices) return backend.exercices.retirerPhoto(id)
+    const actuel = await backend.un('exercices', id)
+    if (!actuel) throw new ErreurData('INTROUVABLE', `exercices : « ${id} » est introuvable`)
+    const { photo: _, ...fusion } = actuel
+    await backend.ecrire('exercices', fusion)
+    return (await presenterLocal([fusion]))[0]
   }
 
   // --- Google Agenda -> séances de coaching ---------------------------------------------------------------
