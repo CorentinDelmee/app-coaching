@@ -129,3 +129,5 @@
   .st-exo-fantome { animation: none; }
   .st-exo-jeton, .st-exo-depot, .st-exo-bascule button { transition: none; }
 }
+/* Conflit : reste visible pendant la saisie d'un champ plus bas dans la fiche */
+.st-exo-conflit { position: sticky; top: 8px; z-index: 2; margin: 0 0 14px; box-shadow: 0 4px 16px rgba(0,0,0,.08); }

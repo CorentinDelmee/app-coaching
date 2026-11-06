@@ -12,6 +12,7 @@ import { LIBELLES_FORMAT, PARAMS_FORMAT, copie, nouveauBloc, paramsAffiches } fr
 import IconeSt from '../../../IconeSt.vue'
 import IndicateurSauvegarde from '../../../IndicateurSauvegarde.vue'
 import { useSauvegardeAuto } from '../../../useSauvegardeAuto.js'
+import { useRafraichirAuRetour } from '../../../useRafraichirAuRetour.js'
 import { toast } from '../../../toast.js'
 import ListeTriable from '../commun/ListeTriable.vue'
 import Poignee from '../commun/Poignee.vue'
@@ -58,6 +59,7 @@ async function charger(id) {
       workout.value = w ? { consignes: '', ...copie(w) } : null
       cree = !!w
       dernierEcrit = w ? JSON.stringify(nettoyerSeance(workout.value)) : ''
+      s.suivreVersion(w?.version)
     }
   } catch (e) {
     erreurChargement.value = messageErreur(e)
@@ -71,19 +73,37 @@ onMounted(() => charger(props.id))
 watch(() => props.id, (id) => { if (id !== 'nouveau' && id !== workout.value?.id) charger(id) })
 
 // ------------------------------------------------------------------ sauvegarde automatique
-const s = useSauvegardeAuto(async (w) => {
+// Conflit (Claude ou un autre appareil a modifié la séance) : voir src/coach/studio/LISEZMOI.md « Conflits ».
+const s = useSauvegardeAuto(async (w, opts) => {
+  let r
   if (!cree) {
     try {
-      await data.workouts.creer(w)
+      r = await data.workouts.creer(w)
     } catch (e) {
       if (e?.code !== 'EXISTE') throw e
-      await data.workouts.modifier(w.id, w) // 1re écriture déjà passée (réponse perdue) : pas de doublon
+      r = await data.workouts.modifier(w.id, w) // 1re écriture déjà passée (réponse perdue) : pas de doublon
     }
     cree = true
+    s.suivreVersion(r?.version) // la séance existe : les écritures suivantes sont contrôlées
     if (/\/nouveau$/.test(location.pathname)) remplacerAdresse(`/coach/seances/${w.id}`)
-  } else await data.workouts.modifier(w.id, w)
+  } else r = await data.workouts.modifier(w.id, w, opts)
   dernierEcrit = JSON.stringify(w)
-}, { delai: 700 })
+  return r
+}, { delai: 700, recharger: appliquer, resumer: (w) => w.nom })
+
+/** Remplace la séance affichée par la version enregistrée (après « Recharger » ou au retour sur l'onglet). */
+function appliquer(w) {
+  workout.value = { consignes: '', ...copie(w) }
+  dernierEcrit = JSON.stringify(nettoyerSeance(workout.value))
+}
+// Retour sur l'onglet / la fenêtre : relit la séance si elle a changé ailleurs (jamais pendant une saisie non enregistrée).
+useRafraichirAuRetour(async () => {
+  if (!cree || !workout.value) return
+  const w = await data.workouts.lire(workout.value.id)
+  if (!w || w.version === workout.value.version || s.occupe()) return
+  appliquer(w)
+  s.suivreVersion(w.version)
+}, { sauvegarde: s })
 
 const probleme = computed(() => problemeSeance(workout.value))
 const nonEcrit = () => workout.value && JSON.stringify(nettoyerSeance(workout.value)) !== dernierEcrit
@@ -104,13 +124,14 @@ async function avantDeQuitter(to) {
   if (forcer || !workout.value) return true
   await s.maintenant()
   if (s.etat.value === 'erreur') { sortie.value = { vers: to.fullPath, raison: 'La dernière modification n\'a pas pu être enregistrée.' }; return false }
+  if (s.etat.value === 'conflit') { sortie.value = { vers: to.fullPath, raison: 'Séance modifiée ailleurs : ta dernière saisie n\'est pas enregistrée.' }; return false }
   if (probleme.value && (cree ? nonEcrit() : aDuContenu())) { sortie.value = { vers: to.fullPath, raison: `Non enregistré : ${probleme.value}` }; return false }
   return true
 }
 onBeforeRouteLeave(avantDeQuitter)
 onBeforeRouteUpdate((to) => (to.params.id === workout.value?.id ? true : avantDeQuitter(to)))
 function quitterQuandMeme() { forcer = true; const v = sortie.value.vers; sortie.value = null; router.push(v).finally(() => { forcer = false }) }
-const avantFermeture = (e) => { if (s.etat.value === 'attente' || s.etat.value === 'encours' || s.etat.value === 'erreur') { e.preventDefault(); e.returnValue = '' } }
+const avantFermeture = (e) => { if (s.etat.value === 'attente' || s.etat.value === 'encours' || s.etat.value === 'erreur' || s.etat.value === 'conflit') { e.preventDefault(); e.returnValue = '' } }
 onMounted(() => window.addEventListener('beforeunload', avantFermeture))
 onBeforeUnmount(() => { window.removeEventListener('beforeunload', avantFermeture); s.arreter(); g.detruire() })
 
@@ -276,7 +297,7 @@ const nbExos = computed(() => nbExercices(workout.value))
           <input id="st-prog-s-nom" v-model="workout.nom" class="st-prog-s-nom" placeholder="Nom de la séance" autocomplete="off" />
         </div>
         <div class="st-actions">
-          <IndicateurSauvegarde :etat="s.etat.value" @reessayer="s.reessayer" />
+          <IndicateurSauvegarde :etat="s.etat.value" :conflit="s.conflit.value" @reessayer="s.reessayer" @recharger="s.recharger" />
         </div>
       </header>
 

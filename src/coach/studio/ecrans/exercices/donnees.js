@@ -19,7 +19,8 @@ export async function chargerTous() {
 
 export const detail = (id) => ex().detail(id)
 
-export const mettreAJour = (id, patch) => ex().mettreAJour(id, patch)
+/** opts.version : version lue par la fiche ; CONFLIT si l'exercice a changé ailleurs depuis (voir LISEZMOI « Conflits »). */
+export const mettreAJour = (id, patch, opts) => ex().mettreAJour(id, patch, opts)
 
 export const creer = (obj) => ex().creer(obj)
 export const archiver = (id) => ex().archiver(id)

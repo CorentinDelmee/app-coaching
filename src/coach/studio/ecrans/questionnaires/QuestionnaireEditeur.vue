@@ -8,6 +8,7 @@ import { FREQUENCES } from '../../../../domain/modele.js'
 import { etat, rafraichir, uuid, messageErreur } from '../../../store.js'
 import { TYPES_QUESTION_LIBELLES, cleDepuisLibelle, copie, deplacer, nouvelleQuestion } from '../../../logique.js'
 import { useSauvegardeAuto } from '../../useSauvegardeAuto.js'
+import { useRafraichirAuRetour } from '../../useRafraichirAuRetour.js'
 import { remplacerAdresse } from '../programmes/commun/adresse.js'
 import { toast } from '../../toast.js'
 import IndicateurSauvegarde from '../../IndicateurSauvegarde.vue'
@@ -29,16 +30,40 @@ let pret = false
 let uid = 0
 const nouvelUid = () => ++uid
 
-const sauve = useSauvegardeAuto(async (doc) => {
+// Conflit (Claude ou un autre appareil a modifié le questionnaire) : voir src/coach/studio/LISEZMOI.md « Conflits ».
+const sauve = useSauvegardeAuto(async (doc, opts) => {
   if (!existe) {
-    await data.questionnaires.creer(documentPropre(doc, { creation: true }))
+    const r = await data.questionnaires.creer(documentPropre(doc, { creation: true }))
     existe = true; existeRef.value = true
+    sauve.suivreVersion(r?.version) // il existe : les écritures suivantes sont contrôlées
     remplacerAdresse(`/coach/questionnaires/${idDoc}`)
-  } else {
-    const propre = documentPropre(doc)
-    await data.questionnaires.modifier(idDoc, { ...propre, clientId: propre.clientId })
+    return r
   }
-}, { delai: 600 })
+  const propre = documentPropre(doc)
+  return data.questionnaires.modifier(idDoc, { ...propre, clientId: propre.clientId }, opts)
+}, { delai: 600, recharger: (lu) => remplacer(lu), resumer: (d) => d.nom })
+
+/** Questionnaire lu -> état de l'éditeur. Les questions déjà publiées gardent leur clé : renommer le texte ne casse pas les réponses. */
+function preparer(lu) {
+  const v = copie(lu)
+  v.questions.forEach((x) => { x.cleFigee = true; x._u = nouvelUid(); if (x.type === 'curseur') x.etiquettes ||= ['', ''] })
+  return v
+}
+/** Version enregistrée ailleurs (« Recharger » ou retour sur l'onglet) : remplace l'éditeur sans réécrire. */
+async function remplacer(lu) {
+  pret = false
+  brut.value = {}
+  q.value = preparer(lu)
+  await nextTick()
+  pret = true
+}
+useRafraichirAuRetour(async () => {
+  if (!existe || !q.value) return
+  const lu = await data.questionnaires.lire(idDoc)
+  if (!lu || lu.version === q.value.version || sauve.occupe()) return
+  await remplacer(lu)
+  sauve.suivreVersion(lu.version)
+}, { sauvegarde: sauve })
 
 async function charger() {
   q.value = undefined
@@ -49,9 +74,8 @@ async function charger() {
       q.value = { id: idDoc, clientId: null, nom: '', frequence: 'ponctuel', questions: [] }
     } else {
       const lu = await data.questionnaires.lire(props.id)
-      q.value = lu ? copie(lu) : null
-      // Les questions déjà publiées gardent leur clé : renommer le texte ne casse pas les réponses existantes.
-      q.value?.questions.forEach((x) => { x.cleFigee = true; x._u = nouvelUid(); if (x.type === 'curseur') x.etiquettes ||= ['', ''] })
+      q.value = lu ? preparer(lu) : null
+      sauve.suivreVersion(lu?.version)
       const reps = await data.reponses.lister({ questionnaireId: props.id }).catch(() => [])
       nbReponses.value = reps.length
     }
@@ -72,13 +96,14 @@ async function avantDeQuitter(to) {
   await sauve.maintenant()
   const contenu = existe || q.value.nom.trim() || q.value.questions.length
   if (sauve.etat.value === 'erreur') { sortie.value = { vers: to.fullPath, raison: 'La dernière modification n’a pas pu être enregistrée.' }; return false }
+  if (sauve.etat.value === 'conflit') { sortie.value = { vers: to.fullPath, raison: 'Questionnaire modifié ailleurs : ta dernière saisie n’est pas enregistrée.' }; return false }
   if (manque.value && contenu) { sortie.value = { vers: to.fullPath, raison: `Non enregistré : ${manque.value}` }; return false }
   return true
 }
 onBeforeRouteLeave(avantDeQuitter)
 onBeforeRouteUpdate((to) => (to.params.id === idDoc ? true : avantDeQuitter(to)))
 function quitterQuandMeme() { forcer = true; const v = sortie.value.vers; sortie.value = null; router.push(v).finally(() => { forcer = false }) }
-const avantFermeture = (e) => { if (['attente', 'encours', 'erreur'].includes(sauve.etat.value) || (manque.value && (existe || q.value?.nom.trim() || q.value?.questions.length))) { e.preventDefault(); e.returnValue = '' } }
+const avantFermeture = (e) => { if (['attente', 'encours', 'erreur', 'conflit'].includes(sauve.etat.value) || (manque.value && (existe || q.value?.nom.trim() || q.value?.questions.length))) { e.preventDefault(); e.returnValue = '' } }
 onMounted(() => window.addEventListener('beforeunload', avantFermeture))
 onBeforeUnmount(() => { window.removeEventListener('beforeunload', avantFermeture); sauve.arreter() })
 
@@ -149,7 +174,7 @@ const apercuCurseur = (qu) => qu.etiquettes || ['', '']
         <span class="st-qs-etiq">Nom du questionnaire</span>
         <input v-model="q.nom" class="st-qs-titre-input" placeholder="Bilan de fin de mois" maxlength="120" autocomplete="off" />
       </label>
-      <IndicateurSauvegarde class="st-qs-sauve" :etat="sauve.etat.value" @reessayer="sauve.reessayer" />
+      <IndicateurSauvegarde class="st-qs-sauve" :etat="sauve.etat.value" :conflit="sauve.conflit.value" @reessayer="sauve.reessayer" @recharger="sauve.recharger" />
     </header>
 
     <div v-if="sortie" class="st-qs-sortie" role="alertdialog" aria-labelledby="st-qs-sortie-t">
