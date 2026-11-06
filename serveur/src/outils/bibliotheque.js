@@ -6,11 +6,16 @@ import { idYoutube } from '../../../src/domain/video.js'
 import { ErreurService } from '../service.js'
 import { norm, slug } from '../util.js'
 import { chercherYoutube, DUREE_MAX } from '../youtube.js'
+import { CHAMPS, appliquerPatch, filtrer } from '../exercices.js'
 import { creerConfirmations } from './confirmer.js'
 import { def } from './def.js'
 
 const SCORE_MINI_AUTO = 40 // en dessous, une vidéo trouvée n'est pas rattachée automatiquement
 const ref = (d) => z.string().trim().min(1).max(120).describe(d)
+// Champs enrichis du Studio (fiche exercice) : mêmes règles que l'API de l'app. Une chaîne vide « » efface le champ.
+const ENRICHIS = ['categorie', 'musclesPrincipaux', 'musclesSecondaires', 'materiel', 'niveau', 'consignes', 'erreursFrequentes', 'varianteFacile', 'varianteDifficile', 'tempo', 'reposConseille', 'notesPrivees']
+const champsEnrichis = Object.fromEntries(ENRICHIS.map((k) => [k, CHAMPS[k].optional()]))
+const extraire = (args) => Object.fromEntries(ENRICHIS.filter((k) => args[k] !== undefined).map((k) => [k, args[k]]))
 const LIEN_INVALIDE = 'Seuls les liens YouTube sont acceptés (youtube.com/watch?v=…, youtu.be/…, /shorts/…).'
 
 export function outilsBibliotheque(ctx) {
@@ -34,7 +39,7 @@ export function outilsBibliotheque(ctx) {
     const entree = biblio.chercher(ex.nom).find((e) => e.video.url === ex.lienVideo)
     return { url: ex.lienVideo, statut: entree?.statut ?? 'propose', duree: entree?.video.duree ?? null, titre: entree?.video.titre ?? null }
   }
-  const resume = (ex) => ({ id: ex.id, nom: ex.nom, description: ex.description ?? '', categories: ex.categories ?? [], video: videoDe(ex) })
+  const resume = (ex) => ({ id: ex.id, nom: ex.nom, description: ex.description ?? '', categories: ex.categories ?? [], ...extraire(ex), photo: !!ex.photo, video: videoDe(ex) })
 
   /** Recherche YouTube (≤ 2 recherches) et rattachement de la meilleure en « proposée ». Ne lève jamais. */
   async function proposerVideoAuto(ex, nomEn) {
@@ -61,22 +66,23 @@ export function outilsBibliotheque(ctx) {
 
   return {
     lister_exercices: def('Liste les exercices de la bibliothèque (nom, id, catégories, vidéo et son statut : proposée / validée par le coach). `recherche` filtre sur le nom ; `sansVideo` ne garde que ceux sans vidéo.',
-      z.object({ recherche: z.string().trim().max(120).optional(), sansVideo: z.boolean().optional(), limite: z.number().int().min(1).max(200).optional() }).strict(),
-      async ({ recherche, sansVideo, limite = 50 }) => {
+      z.object({ recherche: z.string().trim().max(120).optional(), sansVideo: z.boolean().optional(), categorie: z.string().max(40).optional(), muscle: z.string().max(40).optional(), materiel: z.string().max(40).optional(), niveau: CHAMPS.niveau.optional(), limite: z.number().int().min(1).max(200).optional() }).strict(),
+      async ({ recherche, sansVideo, categorie, muscle, materiel, niveau, limite = 50 }) => {
         const n = recherche ? norm(recherche) : ''
-        const tous = (await api.exercices.lister()).filter((e) => (!n || norm(e.nom).includes(n)) && (!sansVideo || !e.lienVideo))
+        const tous = filtrer((await api.exercices.lister()).map((e) => ({ ...e, video: videoDe(e) })), { categorie, muscle, materiel, niveau })
+          .filter((e) => (!n || norm(e.nom).includes(n)) && (!sansVideo || !e.lienVideo))
         return { total: tous.length, exercices: tous.slice(0, limite).map(resume) }
       }),
 
-    creer_exercice: def(`Crée un exercice dans la bibliothèque. Obligatoire : nom. Facultatif : description, categories (ex. ["jambes"]), lienVideo (lien YouTube). Sans lienVideo, cherche automatiquement une vidéo de démonstration (${DUREE_MAX} s maximum, intégrable, français d'abord) et rattache la meilleure en « proposée » (à valider avec valider_video). nomAnglais (ex. « goblet squat ») améliore la recherche de repli. Renvoie l'id.`,
-      z.object({ nom: z.string().trim().min(1).max(120), description: z.string().max(1000).optional(), categories: z.array(z.string().trim().min(1).max(40)).max(10).optional(), lienVideo: z.string().url().max(300).optional(), nomAnglais: z.string().trim().max(120).optional() }).strict(),
-      async ({ nom, description, categories, lienVideo, nomAnglais }) => {
+    creer_exercice: def(`Crée un exercice dans la bibliothèque. Obligatoire : nom. Facultatif : description, categories (ex. ["jambes"]), lienVideo (lien YouTube), et la fiche Studio : categorie, musclesPrincipaux, musclesSecondaires, materiel, niveau (debutant|intermediaire|confirme), consignes, erreursFrequentes, varianteFacile, varianteDifficile, tempo (« 3-1-1 »), reposConseille (secondes), notesPrivees (jamais vues du client). Sans lienVideo, cherche automatiquement une vidéo de démonstration (${DUREE_MAX} s maximum, intégrable, français d'abord) et rattache la meilleure en « proposée » (à valider avec valider_video). nomAnglais (ex. « goblet squat ») améliore la recherche de repli. Renvoie l'id.`,
+      z.object({ nom: z.string().trim().min(1).max(120), description: z.string().max(1000).optional(), categories: z.array(z.string().trim().min(1).max(40)).max(10).optional(), lienVideo: z.string().url().max(300).optional(), nomAnglais: z.string().trim().max(120).optional(), ...champsEnrichis }).strict(),
+      async ({ nom, description, categories, lienVideo, nomAnglais, ...enrichis }) => {
         if (lienVideo && !idYoutube(lienVideo)) throw new ErreurService(LIEN_INVALIDE, 'LIEN_INVALIDE')
         const existant = (await api.exercices.lister()).find((e) => norm(e.nom) === norm(nom))
         if (existant) throw new ErreurService(`L'exercice « ${existant.nom} » existe déjà (id ${existant.id}). Utilise modifier_exercice.`, 'EXISTE')
         let id = `ex-${slug(nom)}`
         if (await api.exercices.lire(id)) id += `-${now().toString(36).slice(-4)}`
-        const ex = await api.exercices.creer({ id, nom, categories: categories ?? [], ...(description ? { description } : {}) })
+        const ex = await api.exercices.creer(appliquerPatch({ id, nom, categories: categories ?? [], ...(description ? { description } : {}) }, extraire(enrichis)))
         let video = null
         let avertissement
         if (lienVideo) video = await service.rattacherVideo({ exercice: ex.nom, url: lienVideo })
@@ -84,15 +90,17 @@ export function outilsBibliotheque(ctx) {
         return { id: ex.id, exercice: resume(await api.exercices.lire(ex.id)), video, ...(avertissement ? { avertissement } : {}) }
       }, { mutation: true }),
 
-    modifier_exercice: def('Modifie un exercice (désigné par son nom exact ou son id) : nom, description, categories (remplace la liste) et/ou lienVideo (lien YouTube, rattaché en « proposée » ; refusé si le coach a déjà validé une autre vidéo).',
-      z.object({ exercice: ref('Nom exact ou id de l\'exercice'), nom: z.string().trim().min(1).max(120).optional(), description: z.string().max(1000).optional(), categories: z.array(z.string().trim().min(1).max(40)).max(10).optional(), lienVideo: z.string().url().max(300).optional() }).strict()
-        .refine((a) => a.nom !== undefined || a.description !== undefined || a.categories !== undefined || a.lienVideo !== undefined, { message: 'Précise au moins un champ à modifier (nom, description, categories, lienVideo)' }),
-      async ({ exercice, nom, description, categories, lienVideo }) => {
+    modifier_exercice: def('Modifie un exercice (désigné par son nom exact ou son id) : nom, description, categories (remplace la liste), les champs de la fiche Studio (categorie, musclesPrincipaux, musclesSecondaires, materiel, niveau, consignes, erreursFrequentes, varianteFacile, varianteDifficile, tempo, reposConseille, notesPrivees ; « » ou [] efface) et/ou lienVideo (lien YouTube, rattaché en « proposée » ; refusé si le coach a déjà validé une autre vidéo).',
+      z.object({ exercice: ref('Nom exact ou id de l\'exercice'), nom: z.string().trim().min(1).max(120).optional(), description: z.string().max(1000).optional(), categories: z.array(z.string().trim().min(1).max(40)).max(10).optional(), lienVideo: z.string().url().max(300).optional(), ...champsEnrichis }).strict()
+        .refine((a) => Object.keys(a).length > 1, { message: 'Précise au moins un champ à modifier (nom, description, categories, lienVideo, fiche Studio)' }),
+      async ({ exercice, nom, description, categories, lienVideo, ...enrichis }) => {
         const ex = await trouver(exercice)
         if (lienVideo && !idYoutube(lienVideo)) throw new ErreurService(LIEN_INVALIDE, 'LIEN_INVALIDE')
         if (nom && norm(nom) !== norm(ex.nom) && (await api.exercices.lister()).some((e) => norm(e.nom) === norm(nom))) throw new ErreurService(`Un exercice « ${nom} » existe déjà.`, 'EXISTE')
         const patch = { ...(nom ? { nom } : {}), ...(description !== undefined ? { description } : {}), ...(categories ? { categories } : {}) }
-        const maj = Object.keys(patch).length ? await api.exercices.modifier(ex.id, patch) : ex
+        const modifs = { ...patch, ...extraire(enrichis) }
+        let maj = ex
+        if (Object.keys(modifs).length) { maj = appliquerPatch(ex, modifs); await backend.ecrire('exercices', maj) } // appliquerPatch gère l'effacement des champs
         const video = lienVideo ? await service.rattacherVideo({ exercice: maj.nom, url: lienVideo }) : undefined
         return { id: ex.id, exercice: resume(await api.exercices.lire(ex.id)), ...(video ? { video } : {}) }
       }, { mutation: true }),

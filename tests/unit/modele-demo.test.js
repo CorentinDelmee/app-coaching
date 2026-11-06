@@ -3,6 +3,9 @@ import { genererDemo, COMPTES_DEMO } from '../../src/data/demo/index.js'
 import * as M from '../../src/domain/modele.js'
 import { numeroSemaine, etatSemaine } from '../../src/domain/programme.js'
 import { jourLocal } from '../../src/domain/dates.js'
+import { idYoutube } from '../../src/domain/video.js'
+import { NIVEAUX } from '../../src/domain/exercices.js'
+import { FICHES } from '../../src/data/demo/exercices-fiches.js'
 
 const NOW = new Date(2026, 9, 20, 10, 0).getTime() // mardi 20 octobre 2026
 const demo = genererDemo(NOW)
@@ -45,11 +48,18 @@ describe('validateurs du modèle', () => {
 })
 
 describe('données factices', () => {
-  it('80 exercices aux noms uniques, sans vidéo, catégories variées', () => {
+  it('80 exercices aux noms uniques, catégories variées, 20+ fiches enrichies avec lien YouTube', () => {
     expect(demo.exercices).toHaveLength(80)
     expect(new Set(demo.exercices.map((e) => e.nom)).size).toBe(80)
     expect(new Set(demo.exercices.map((e) => e.id)).size).toBe(80)
-    expect(demo.exercices.every((e) => e.lienVideo === null)).toBe(true)
+    const fiches = demo.exercices.filter((e) => e.niveau)
+    expect(fiches.length).toBeGreaterThanOrEqual(20)
+    for (const e of fiches) {
+      expect(idYoutube(e.lienVideo), e.nom).toBeTruthy()
+      expect(e.musclesPrincipaux.length, e.nom).toBeGreaterThan(0)
+      expect(NIVEAUX).toContain(e.niveau)
+    }
+    expect(demo.exercices.filter((e) => !e.niveau).every((e) => e.lienVideo === null)).toBe(true)
     const cats = new Set(demo.exercices.flatMap((e) => e.categories))
     for (const c of ['jambes', 'poussee', 'tirage', 'gainage', 'cardio', 'mobilite']) expect(cats.has(c)).toBe(true)
   })
@@ -113,5 +123,12 @@ describe('données factices', () => {
     expect(s.total).toBe(3)
     expect(COMPTES_DEMO.map((c) => c.identifiant)).toEqual(['corentin', 'fabien.vincent', 'lea.martin', 'thomas.bernard'])
     expect(Object.keys(demo.comptes)).toHaveLength(4)
+  })
+})
+
+describe('fiches de démo', () => {
+  it('chaque fiche correspond à un exercice existant', () => {
+    const noms = new Set(demo.exercices.map((e) => e.nom))
+    for (const n of Object.keys(FICHES)) expect(noms.has(n), n).toBe(true)
   })
 })
