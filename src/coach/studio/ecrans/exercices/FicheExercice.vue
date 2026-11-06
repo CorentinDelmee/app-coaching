@@ -7,11 +7,13 @@
 // Émet : etat (état de sauvegarde), invalides (champs à corriger), maj (exercice), archive (id archivé).
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useSauvegardeAuto } from '../../useSauvegardeAuto.js'
+import { useRafraichirAuRetour } from '../../useRafraichirAuRetour.js'
+import IndicateurSauvegarde from '../../IndicateurSauvegarde.vue'
 import { toast } from '../../toast.js'
 import Puce from '../../Puce.vue'
 import { NOMS_MUSCLES, TEINTES_STUDIO, NIVEAUX, statutVideo, teinteDe, dureeCourte, urlPhoto } from '../../medias.js'
 import { CATEGORIES, libelleCategorie } from '../../../logique.js'
-import { versFormulaire, construirePatch, basculer, messageErreurExo, champsDifferents, memeValeur, TOUS_CHAMPS, proposeeParClaude, cleMateriel } from './logique.js'
+import { versFormulaire, construirePatch, basculer, messageErreurExo, champsDifferents, memeValeur, TOUS_CHAMPS, proposeeParClaude, cleMateriel, champsTouchesChangesAilleurs } from './logique.js'
 import * as D from './donnees.js'
 
 const props = defineProps({
@@ -35,6 +37,7 @@ const ID_CHAMP = { nom: 'nom', lienVideo: 'yt', reposConseille: 'repos', tempo: 
 function appliquerServeur(item) {
   if (!item) return
   serveur.value = { ...serveur.value, ...item }
+  if (Number.isInteger(item.version)) s.suivreVersion(item.version) // photo, validation, sauvegarde : la version suit le serveur
   emit('maj', item)
   const f = versFormulaire(serveur.value)
   for (const c of TOUS_CHAMPS) {
@@ -44,9 +47,38 @@ function appliquerServeur(item) {
   }
 }
 
-const s = useSauvegardeAuto(async ({ id: idExo, patch }) => appliquerServeur(await D.mettreAJour(idExo, patch)), { delai: 500 })
+// Conflits (voir src/coach/studio/LISEZMOI.md) : la fiche envoie la version lue. Si Claude (ou un autre appareil) n'a changé que
+// D'AUTRES champs que ceux touchés ici, rien n'est écrasé : on reprend sa version et on renvoie le même patch (une fois).
+// S'il a changé un champ que le coach est en train de modifier : bandeau « Modifié ailleurs » + Recharger.
+const s = useSauvegardeAuto(async ({ id: idExo, patch }, opts) => {
+  let item
+  try {
+    item = await D.mettreAJour(idExo, patch, opts)
+  } catch (e) {
+    if (e?.code !== 'CONFLIT' || !e.actuel || champsTouchesChangesAilleurs(serveur.value, e.actuel, patch)) throw e
+    item = await D.mettreAJour(idExo, patch, { version: e.actuel.version })
+  }
+  appliquerServeur(item)
+  return item
+}, { delai: 500, recharger: recharger, resumer: ({ patch }) => Object.values(patch).map((v) => (Array.isArray(v) ? v.join(', ') : String(v ?? ''))).filter(Boolean).join(' · ').slice(0, 120) })
+s.suivreVersion(props.exercice.version)
+
+/** « Recharger » après un conflit : la fiche reprend l'exercice à jour, les champs touchés non enregistrés sont abandonnés. */
+function recharger(actuel) {
+  sales.clear()
+  erreurs.value = {}
+  serveur.value = { ...actuel }
+  const f = versFormulaire(actuel)
+  for (const c of TOUS_CHAMPS) { form[c] = copie(f[c]); vu[c] = copie(f[c]) }
+  emit('maj', actuel)
+}
+// Retour sur l'onglet / la fenêtre : relit l'exercice (champs non touchés mis à jour, jamais pendant une saisie).
+useRafraichirAuRetour(async () => {
+  const item = await D.detail(id)
+  if (item && item.version !== serveur.value.version && !s.occupe()) appliquerServeur(item)
+}, { sauvegarde: s })
 watch(s.etat, (e) => emit('etat', e), { immediate: true })
-watch(s.erreur, (e) => { if (e) toast(messageErreurExo(e)) })
+watch(s.erreur, (e) => { if (e && e.code !== 'CONFLIT') toast(messageErreurExo(e)) }) // le conflit a son bandeau
 watch(erreurs, (e) => emit('invalides', Object.keys(e)), { immediate: true })
 
 function planifier() {
@@ -139,6 +171,7 @@ const utiliseProg = computed(() => serveur.value.utiliseDansProgrammes)
 </script>
 
 <template>
+  <IndicateurSauvegarde v-if="s.etat.value === 'conflit'" class="st-exo-conflit" etat="conflit" :conflit="s.conflit.value" @recharger="s.recharger" />
   <div class="st-exo-tete">
     <label class="st-sr" :for="p('nom')">Nom de l'exercice</label>
     <textarea :id="p('nom')" v-model="form.nom" data-test="exo-nom" class="st-exo-nom" rows="1" maxlength="120" :aria-invalid="!!erreurs.nom" :aria-describedby="erreurs.nom ? p('e-nom') : undefined" />

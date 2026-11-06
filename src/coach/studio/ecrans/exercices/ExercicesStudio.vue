@@ -280,7 +280,7 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', surTouche); anim
 
     <PanneauLateral
       ref="panneau" :ouvert="!!courant" :etiquette="courant?.nom || 'Exercice'" :muscle="courant ? muscleDe(courant) : null"
-      :sauvegarde="invalides.length ? '' : etatSauve" :precedent="precedent" :suivant="suivant" :cascade="cascade"
+      :sauvegarde="invalides.length || etatSauve === 'conflit' ? '' : etatSauve" :precedent="precedent" :suivant="suivant" :cascade="cascade"
       @fermer="fermer" @precedent="aller(-1)" @suivant="aller(1)" @reessayer="fiche?.reessayer()"
     >
       <template #media>

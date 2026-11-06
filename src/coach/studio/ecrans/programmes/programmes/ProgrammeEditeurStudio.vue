@@ -10,6 +10,7 @@ import { copie, resumeWorkout, retirerWorkoutDuProgramme } from '../../../../log
 import IconeSt from '../../../IconeSt.vue'
 import IndicateurSauvegarde from '../../../IndicateurSauvegarde.vue'
 import { useSauvegardeAuto } from '../../../useSauvegardeAuto.js'
+import { useRafraichirAuRetour } from '../../../useRafraichirAuRetour.js'
 import { toast } from '../../../toast.js'
 import { creerGlisser, AIDE_GLISSER } from '../commun/glisser.js'
 import ListeTriable from '../commun/ListeTriable.vue'
@@ -39,22 +40,40 @@ const quitterVers = ref('')
 let forcerSortie = false
 
 // ------------------------------------------------------------------ sauvegarde automatique
-const s = useSauvegardeAuto(async (p) => {
+// Conflit (Claude ou un autre appareil a modifié le programme) : voir src/coach/studio/LISEZMOI.md « Conflits ».
+const s = useSauvegardeAuto(async (p, opts) => {
   if (estNouveau && !cree) {
+    let r
     try {
-      await data.programmes.creer(p)
+      r = await data.programmes.creer(p)
     } catch (e) {
       if (e?.code !== 'EXISTE') throw e
-      await data.programmes.modifier(p.id, p)
+      r = await data.programmes.modifier(p.id, p)
     }
+    s.suivreVersion(r?.version) // le programme existe : les écritures suivantes sont contrôlées
     cree = true
     estCree.value = true
     // Adresse mise à jour sans navigation : l'éditeur n'est pas remonté (saisie, glisser et semaine courante conservés).
     if (/\/nouveau$/.test(location.pathname)) remplacerAdresse(`/coach/programmes/${p.id}`)
-  } else {
-    await data.programmes.modifier(p.id, p)
+    return r
   }
-})
+  return data.programmes.modifier(p.id, p, opts)
+}, { recharger: remplacerProgramme, resumer: (p) => p.nom })
+
+// Programme enregistré ailleurs (après « Recharger » ou au retour sur l'onglet) : remplace l'affichage, sans réécrire.
+let sansSauvegarde = false
+function remplacerProgramme(p) {
+  sansSauvegarde = true
+  programme.value = { joursFixes: {}, ...copie(p) }
+  if (programme.value.mode === 'parSemaine') semaine.value = Math.min(semaine.value, Math.max(0, (programme.value.semaines?.length || 1) - 1))
+}
+useRafraichirAuRetour(async () => {
+  if (!programme.value || (estNouveau && !cree)) return
+  const p = await data.programmes.lire(programme.value.id)
+  if (!p || p.version === programme.value.version || s.occupe()) return
+  remplacerProgramme(p)
+  s.suivreVersion(p.version)
+}, { sauvegarde: s })
 const estCree = ref(!estNouveau)
 const raison = computed(() => (programme.value ? raisonInvalide(programme.value) : ''))
 const messageErreurSauve = computed(() => (s.etat.value === 'erreur' ? messageErreur(s.erreur.value) : ''))
@@ -70,6 +89,7 @@ onMounted(async () => {
   } else {
     const p = await data.programmes.lire(props.id)
     programme.value = p ? { joursFixes: {}, ...copie(p) } : null
+    s.suivreVersion(p?.version)
   }
   if (!programme.value) return
   const r = reprise.get(props.id)
@@ -80,6 +100,7 @@ onMounted(async () => {
   }
   watch(programme, (v) => {
     if (!v) return
+    if (sansSauvegarde) { sansSauvegarde = false; return }
     if (raisonInvalide(v)) { nonEnregistre.value = true; return }
     nonEnregistre.value = false
     s.planifier(pourEcriture(v))
@@ -185,12 +206,12 @@ function supprimerSemaine() {
 onBeforeRouteLeave(async (to) => {
   if (forcerSortie || !programme.value) return true
   try { await s.maintenant() } catch { /* l'état passe en erreur */ }
-  if (s.etat.value === 'erreur' || nonEnregistre.value) { quitterVers.value = to.fullPath; return false }
+  if (s.etat.value === 'erreur' || s.etat.value === 'conflit' || nonEnregistre.value) { quitterVers.value = to.fullPath; return false }
   return true
 })
 function quitterQuandMeme() { forcerSortie = true; router.push(quitterVers.value) }
 const avantDecharger = (e) => {
-  if (nonEnregistre.value || ['attente', 'encours', 'erreur'].includes(s.etat.value)) { e.preventDefault(); e.returnValue = '' }
+  if (nonEnregistre.value || ['attente', 'encours', 'erreur', 'conflit'].includes(s.etat.value)) { e.preventDefault(); e.returnValue = '' }
 }
 window.addEventListener('beforeunload', avantDecharger)
 onBeforeUnmount(() => {
@@ -210,13 +231,13 @@ onBeforeUnmount(() => {
       </div>
       <div class="st-actions">
         <span v-if="raison && nonEnregistre" class="st-puce st-puce--alerte st-prog-p-invalide" role="status">Non enregistré : {{ raison }}</span>
-        <IndicateurSauvegarde v-else :etat="s.etat.value" @reessayer="s.reessayer" />
+        <IndicateurSauvegarde v-else :etat="s.etat.value" :conflit="s.conflit.value" @reessayer="s.reessayer" @recharger="s.recharger" />
       </div>
     </header>
 
     <p v-if="messageErreurSauve" class="st-prog-p-erreur" role="alert">Non enregistré : {{ messageErreurSauve }}</p>
     <div v-if="quitterVers" class="st-prog-p-quitter" role="alertdialog" aria-labelledby="st-prog-p-quitter-t">
-      <p id="st-prog-p-quitter-t"><strong>Des changements ne sont pas enregistrés.</strong> {{ raison ? `Il faut d'abord : ${raison}.` : 'L’enregistrement a échoué.' }}</p>
+      <p id="st-prog-p-quitter-t"><strong>Des changements ne sont pas enregistrés.</strong> {{ raison ? `Il faut d'abord : ${raison}.` : s.etat.value === 'conflit' ? 'Programme modifié ailleurs (Claude ou un autre appareil) : recharge-le.' : 'L’enregistrement a échoué.' }}</p>
       <div>
         <button type="button" class="st-btn st-btn--encre" @click="quitterVers = ''">Rester</button>
         <button type="button" class="st-btn st-btn--fantome" @click="quitterQuandMeme">Quitter sans enregistrer</button>
