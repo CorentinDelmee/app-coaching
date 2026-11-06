@@ -67,7 +67,7 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
   // --- Exercices enrichis (fiche Studio) : recherche, détail, mise à jour partielle, photo ----------------------
   // api : routes dédiées du serveur (backend.exercices). local : même logique en mémoire (src/domain/exercices.js).
   const exos = api.exercices
-  const lienVideoLocal = (e) => (e.lienVideo ? { url: e.lienVideo, titre: null, chaine: null, duree: null, statut: 'propose' } : null)
+  const lienVideoLocal = (e) => (e.lienVideo ? { url: e.lienVideo, titre: null, chaine: null, duree: null, statut: e.videoValidee ? 'valide' : 'propose' } : null)
   async function presenterLocal(liste) {
     const coach = (await backend.utilisateurCourant())?.role === 'coach'
     const usage = coach ? indexUsage(await backend.tout('workouts'), await backend.tout('programmes')) : null
@@ -120,6 +120,17 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
     const actuel = await backend.un('exercices', id)
     if (!actuel) throw new ErreurData('INTROUVABLE', `exercices : « ${id} » est introuvable`)
     const { photo: _, ...fusion } = actuel
+    await backend.ecrire('exercices', fusion)
+    return (await presenterLocal([fusion]))[0]
+  }
+
+  /** Passe la vidéo de l'exercice de « proposée » à « validée » ; renvoie l'exercice coach mis à jour. */
+  exos.validerVideo = async (id) => {
+    if (backend.exercices) return backend.exercices.validerVideo(id)
+    const actuel = await backend.un('exercices', id)
+    if (!actuel) throw new ErreurData('INTROUVABLE', `exercices : « ${id} » est introuvable`)
+    if (!actuel.lienVideo) throw new ErreurData('VALIDATION', 'Exercice : pas de vidéo à valider')
+    const fusion = { ...actuel, videoValidee: true }
     await backend.ecrire('exercices', fusion)
     return (await presenterLocal([fusion]))[0]
   }

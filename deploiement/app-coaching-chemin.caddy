@@ -14,7 +14,7 @@ handle /api/app/* {
 		Referrer-Policy "strict-origin-when-cross-origin"
 		X-Frame-Options "DENY"
 		X-Robots-Tag "noindex, nofollow"
-		Cache-Control "no-store"
+		?Cache-Control "no-store" # « ? » : ne pose la valeur que si le serveur n'en a pas mis (photos : private, max-age + ETag)
 		-Server
 	}
 	request_body {

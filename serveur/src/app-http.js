@@ -1,7 +1,7 @@
 // API de l'app (navigateur) : /api/app/*. Session par cookie signé, règles d'accès = policies RLS de supabase/schema.sql.
 // Contrat : docs/CONTRAT-VPS.md (« Formes JSON exactes » fait foi). Magasin : SQLite (magasin-sqlite.js).
 import { createHash, createHmac, randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
-import { mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { join, posix } from 'node:path'
 import { ENTITES, clientDe, visiblePar } from '../../src/data/entites.js'
 import { accesSante } from '../../src/domain/consentement.js'
@@ -16,6 +16,26 @@ const FICHIER_MAX = 5 * 1024 * 1024
 const PHOTO_MAX = 3 * 1024 * 1024 // photos d'exercices (l'écran réduit avant l'envoi)
 const PHOTO_EXT = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }
 const RE_PHOTO_ID = /^p-[0-9a-f]{12}$/
+// Photos d'exercices : dossier public « _exercices ». Le « _ » est impossible dans un UUID de profil : aucun dossier privé ne peut le porter (audit M5).
+const DOSSIER_PHOTOS = '_exercices'
+const IDS_PROFIL_RESERVES = new Set(['exercices', DOSSIER_PHOTOS])
+
+/** Migration unique (idempotente) : l'ancien dossier public « exercices » devient « _exercices », et les URL de photos suivent. */
+export async function migrerPhotos({ store, fichiersDir }) {
+  const ancien = join(fichiersDir, 'exercices'), nouveau = join(fichiersDir, DOSSIER_PHOTOS)
+  if (existsSync(ancien)) {
+    if (!existsSync(nouveau)) renameSync(ancien, nouveau)
+    else {
+      for (const f of readdirSync(ancien)) renameSync(join(ancien, f), join(nouveau, f))
+      rmSync(ancien, { recursive: true, force: true })
+    }
+  }
+  for (const ex of await store.tout('exercices')) {
+    if (typeof ex.photo?.url === 'string' && ex.photo.url.includes('chemin=exercices%2F')) {
+      await store.ecrire('exercices', { ...ex, photo: { ...ex.photo, url: ex.photo.url.replace('chemin=exercices%2F', `chemin=${DOSSIER_PHOTOS}%2F`) } })
+    }
+  }
+}
 const RE_IDENTIFIANT = /^[a-z0-9][a-z0-9._-]{1,39}$/
 // Plafonds par client (un compte client compromis ne remplit pas le disque). Le coach n'a que la limite par ligne.
 export const QUOTAS = { lignes: 5000, octetsLigne: 64 * 1024, fichiers: 200, octetsFichiers: 200 * 1024 * 1024 }
@@ -102,7 +122,7 @@ export function signatureOk(type, buf) {
 /** « <client_id>/<nom>.<ext> » normalisé, sans « .. » ni barre initiale ; null sinon. */
 export function cheminFichier(brut) {
   const c = String(brut ?? '')
-  const m = /^([A-Za-z0-9-]{1,64})\/([A-Za-z0-9_-]{1,80})\.(jpg|jpeg|png|webp|pdf)$/.exec(c)
+  const m = /^(_exercices|[A-Za-z0-9-]{1,64})\/([A-Za-z0-9_-]{1,80})\.(jpg|jpeg|png|webp|pdf)$/.exec(c)
   if (!m || posix.normalize(c) !== c) return null
   return { proprietaire: m[1], ext: m[3], relatif: c }
 }
@@ -147,6 +167,7 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
   if (!config.sessionSecret || config.sessionSecret.length < 32) throw new Error('SESSION_SECRET manquant ou trop court (32 caractères minimum)')
   const secure = !!config.production
   const optsCookie = `HttpOnly; SameSite=Strict; Path=/${secure ? '; Secure' : ''}`
+  const migration = migrerPhotos({ store, fichiersDir: config.fichiersDir }).catch(() => {}) // les routes d'exercices et de fichiers l'attendent
   const NOM_COOKIE = secure ? '__Host-sid' : 'sid' // __Host- : Secure, Path=/, sans Domain (non posable par un sous-domaine)
   const RE_COOKIE = new RegExp(`(?:^|;\\s*)${NOM_COOKIE}=([^;]+)`)
   // Connexion : seuls les ÉCHECS comptent. IP+compte 5 / 15 min ; compte seul 50 (un tiers ne verrouille pas le compte) ; IP seule 30.
@@ -277,7 +298,9 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
   }
 
   // ---------- Exercices enrichis (contrat : docs/CONTRAT-EXERCICES-STUDIO.md) ----------
-  const dossierPhotos = () => join(config.fichiersDir, 'exercices')
+  const dossierPhotos = () => join(config.fichiersDir, DOSSIER_PHOTOS)
+  let verrouPhotos = Promise.resolve() // une photo à la fois : pas de fichier orphelin quand deux envois se croisent (audit M3)
+  const enSerie = (fn) => { const suite = verrouPhotos.then(fn, fn); verrouPhotos = suite.catch(() => {}); return suite }
   /** Supprime le fichier d'une photo ; l'identifiant est revérifié avant tout rmSync. */
   function supprimerPhoto(photo) {
     const ext = /\.(jpg|png|webp)$/.exec(decodeURIComponent(String(photo?.url ?? '')))?.[1]
@@ -288,11 +311,12 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
     const usage = coach ? indexUsage(await store.tout('workouts'), await store.tout('programmes')) : null
     return liste.map((e) => presenter(e, { coach, usage, biblio }))
   }
-  /** Lien YouTube sous sa forme canonique ; un lien nouveau est rattaché à la bibliothèque en « proposée ». */
+  /** Lien YouTube sous sa forme canonique. Renvoie le rattachement à la bibliothèque (« proposée »), à appeler APRÈS l'écriture de l'exercice (audit M8). */
   function lienCanonique(corps, nom) {
-    if (!corps.lienVideo) return
+    if (!corps.lienVideo) return () => {}
     corps.lienVideo = `https://www.youtube.com/watch?v=${idYoutube(corps.lienVideo)}`
-    try { if (biblio && !biblio.chercher(nom).some((e) => e.video.url === corps.lienVideo)) biblio.proposer({ nom, url: corps.lienVideo }) } catch { /* bibliothèque indisponible : le lien reste enregistré */ }
+    const url = corps.lienVideo
+    return () => { try { if (biblio && !biblio.chercher(nom).some((e) => e.video.url === url)) biblio.proposer({ nom, url }) } catch { /* bibliothèque indisponible : le lien reste enregistré */ } }
   }
   const entier = (v, min, max, defaut) => {
     if (v === null) return defaut
@@ -300,6 +324,7 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
     return Number(v)
   }
   async function exercices(req, res, u, id, sousRoute, url) {
+    await migration
     const coach = u.role === 'coach'
     const lire = async () => { const e = id && (await store.un('exercices', id)); if (!e) throw new Erreur(404, 'introuvable'); return e }
     const rendre = async (statut, ex) => envoyer(res, statut, { item: (await presenterExercices([ex], coach))[0] })
@@ -308,8 +333,13 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
         const q = url.searchParams, f = Object.fromEntries(['q', 'categorie', 'muscle', 'materiel', 'niveau', 'video'].map((k) => [k, q.get(k) || '']))
         if ((f.niveau && !NIVEAUX.includes(f.niveau)) || (f.video && !['aucune', 'propose', 'valide'].includes(f.video))) throw new Erreur(400, 'invalide')
         const limite = entier(q.get('limite'), 1, 500, 500), decalage = entier(q.get('decalage'), 0, 1e6, 0)
-        const vus = filtrer(await presenterExercices(await store.tout('exercices'), coach), f)
-        return envoyer(res, 200, { items: vus.slice(decalage, decalage + limite), total: vus.length })
+        // Filtres sans vidéo avant la préparation : seule la page demandée est préparée (le filtre « video » exige la vidéo calculée de chacun).
+        if (f.video) {
+          const vus = filtrer(await presenterExercices(await store.tout('exercices'), coach), f)
+          return envoyer(res, 200, { items: vus.slice(decalage, decalage + limite), total: vus.length })
+        }
+        const vus = filtrer(await store.tout('exercices'), f)
+        return envoyer(res, 200, { items: await presenterExercices(vus.slice(decalage, decalage + limite), coach), total: vus.length })
       }
       if (req.method === 'POST') {
         if (!coach) throw new Erreur(403, 'interdit')
@@ -322,10 +352,11 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
           nouvelId = `ex-${slug(champs.nom) || randomBytes(3).toString('hex')}`.slice(0, 80)
           if (await store.un('exercices', nouvelId)) nouvelId = `${nouvelId.slice(0, 70)}-${randomBytes(2).toString('hex')}`
         }
-        lienCanonique(champs, champs.nom)
+        const rattacher = lienCanonique(champs, champs.nom)
         const ex = appliquerPatch({ id: nouvelId, categories: [] }, champs)
         if (!ENTITES.exercices.valider(ex).ok) throw new Erreur(400, 'invalide')
         await store.ecrire('exercices', ex)
+        rattacher()
         return rendre(201, ex)
       }
       throw new Erreur(405, 'methode')
@@ -337,13 +368,28 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
         const actuel = await lire()
         const parse = schemaPatch.safeParse(await lireJson(req))
         if (!parse.success) throw new Erreur(400, 'invalide')
-        lienCanonique(parse.data, parse.data.nom ?? actuel.nom)
+        const rattacher = lienCanonique(parse.data, parse.data.nom ?? actuel.nom)
         const ex = appliquerPatch(actuel, parse.data)
         if (!ENTITES.exercices.valider(ex).ok) throw new Erreur(400, 'invalide')
         await store.ecrire('exercices', ex)
+        rattacher()
         return rendre(200, ex)
       }
       throw new Erreur(405, 'methode')
+    }
+    // Validation de la vidéo : /exercices/:id/valider-video (proposée -> validée dans la bibliothèque)
+    if (sousRoute === 'valider-video') {
+      if (req.method !== 'POST') throw new Erreur(405, 'methode')
+      if (!coach) throw new Erreur(403, 'interdit')
+      const ex = await lire()
+      if (!ex.lienVideo || !idYoutube(ex.lienVideo)) throw new Erreur(409, 'sans_video')
+      if (!biblio) throw new Erreur(503, 'bibliotheque_indisponible')
+      try {
+        let e = biblio.chercher(ex.nom).find((x) => x.video.url === ex.lienVideo)
+        if (!e) e = biblio.proposer({ nom: ex.nom, url: ex.lienVideo })
+        biblio.valider(e.id)
+      } catch { throw new Erreur(503, 'bibliotheque_indisponible') }
+      return rendre(200, ex)
     }
     // Photo : /exercices/:id/photo
     if (req.method !== 'POST' && req.method !== 'DELETE') throw new Erreur(405, 'methode')
@@ -361,13 +407,17 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
     if (!ext) throw new Erreur(415, 'type_refuse')
     const buf = await lireBrut(req, PHOTO_MAX)
     if (!signatureOk(type, buf)) throw new Erreur(415, 'type_refuse')
-    const photoId = `p-${randomBytes(6).toString('hex')}` // nom généré ici, jamais celui du client
-    mkdirSync(dossierPhotos(), { recursive: true })
-    writeFileSync(join(dossierPhotos(), `${photoId}.${ext}`), buf)
-    const ex = { ...actuel, photo: { id: photoId, url: `/api/app/fichiers?chemin=${encodeURIComponent(`exercices/${photoId}.${ext}`)}` } }
-    await store.ecrire('exercices', ex)
-    supprimerPhoto(actuel.photo)
-    return rendre(200, ex)
+    return enSerie(async () => {
+      const courant = await lire() // relu sous verrou : l'ancienne photo à supprimer est bien la dernière enregistrée
+      const photoId = `p-${randomBytes(6).toString('hex')}` // nom généré ici, jamais celui du client
+      const fichier = join(dossierPhotos(), `${photoId}.${ext}`)
+      mkdirSync(dossierPhotos(), { recursive: true })
+      writeFileSync(fichier, buf)
+      const ex = { ...courant, photo: { id: photoId, url: `/api/app/fichiers?chemin=${encodeURIComponent(`${DOSSIER_PHOTOS}/${photoId}.${ext}`)}` } }
+      try { await store.ecrire('exercices', ex) } catch (e) { rmSync(fichier, { force: true }); throw e }
+      supprimerPhoto(courant.photo)
+      return rendre(200, ex)
+    })
   }
 
   const TABLES_CLIENT = [...new Set(Object.entries(ENTITES).filter(([e]) => e !== 'profils').map(([, d]) => d.table))]
@@ -401,10 +451,11 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
 
   // ---------- Fichiers ----------
   async function fichiers(req, res, u, url) {
+    await migration
     const f = cheminFichier(url.searchParams.get('chemin'))
     if (!f) throw new Erreur(400, 'chemin_invalide')
     // Photos d'exercices : lisibles par tous les connectés, écrites seulement par les routes /exercices/:id/photo.
-    const publique = f.proprietaire === 'exercices'
+    const publique = f.proprietaire === DOSSIER_PHOTOS
     if (publique && req.method !== 'GET') throw new Erreur(403, 'interdit')
     if (u.role !== 'coach' && !publique && f.proprietaire !== u.profil_id) throw new Erreur(403, 'interdit')
     const disque = join(config.fichiersDir, f.proprietaire, f.relatif.split('/')[1])
@@ -416,14 +467,14 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
       // Plafonds par client (dossier du propriétaire), quel que soit l'auteur de l'envoi.
       const usage = usageFichiers(join(config.fichiersDir, f.proprietaire))
       let deja = 0
-      try { deja = statSync(disque).size } catch { /* nouveau fichier */ }
+      try { const st = lstatSync(disque); if (st.isSymbolicLink()) throw new Erreur(403, 'interdit'); deja = st.size } catch (e) { if (e instanceof Erreur) throw e /* sinon : nouveau fichier */ }
       if ((!deja && usage.n >= QUOTAS.fichiers) || usage.octets - deja + buf.length > QUOTAS.octetsFichiers) throw new Erreur(413, 'quota')
       mkdirSync(join(config.fichiersDir, f.proprietaire), { recursive: true })
       writeFileSync(disque, buf)
       return envoyer(res, 201, { ok: true })
     }
     let existe = false
-    try { existe = statSync(disque).isFile() } catch { /* absent */ }
+    try { existe = lstatSync(disque).isFile() } catch { /* absent */ } // lstat : un lien symbolique n'est jamais suivi (audit M4)
     if (!existe) throw new Erreur(404, 'introuvable')
     if (req.method === 'GET' && publique) {
       const etag = `"${f.relatif.split('/')[1]}"` // le nom change à chaque nouvelle photo : il tient lieu de version
@@ -491,6 +542,7 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
         const { identifiant, code, profil } = await lireJson(req)
         if (!RE_IDENTIFIANT.test(String(identifiant)) || typeof code !== 'string' || code.length < LONGUEUR_CODE_MIN || code.length > 200) throw new Erreur(400, 'invalide')
         if (!profil || profil.identifiant !== identifiant || !ENTITES.profils.valider(profil).ok) throw new Erreur(400, 'invalide')
+        if (IDS_PROFIL_RESERVES.has(String(profil.id))) throw new Erreur(400, 'invalide')
         if (compte(identifiant) || (await store.un('profils', profil.id))) throw new Erreur(409, 'existe_deja')
         const hash = await hacherCode(code)
         try { await store.ecrire('profils', profil) } catch { throw new Erreur(409, 'existe_deja') }
@@ -509,7 +561,7 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
         envoyer(res, 200, { ok: true })
         return true
       }
-      const mX = /^\/exercices(?:\/([^/]+)(?:\/(photo))?)?$/.exec(route)
+      const mX = /^\/exercices(?:\/([^/]+)(?:\/(photo|valider-video))?)?$/.exec(route)
       if (mX) { await exercices(req, res, u, mX[1] === undefined ? undefined : decodeURIComponent(mX[1]), mX[2], url); return true }
       const mE = /^\/e\/([^/]+)(?:\/([^/]+))?$/.exec(route)
       if (mE) { await entites(req, res, u, decodeURIComponent(mE[1]), mE[2] === undefined ? undefined : decodeURIComponent(mE[2])); return true }
