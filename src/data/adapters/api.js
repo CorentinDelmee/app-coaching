@@ -39,6 +39,7 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
     }
     if (statut === 403) return new ErreurData('INTERDIT', message || 'Accès refusé')
     if (statut === 404) return new ErreurData('INTROUVABLE', message || 'Introuvable')
+    if (statut === 409) return new ErreurData('EXISTE', message || 'Existe déjà')
     if (statut === 400 || statut === 413 || statut === 415) return new ErreurData('VALIDATION', message || 'Données invalides')
     if (statut === 429) return new ErreurData('ECHEC', message || 'Trop d\'essais, réessayez dans quelques minutes')
     if (statut === 502 || statut === 503) return new ErreurData('ECHEC', message === 'reservation_indisponible' ? 'Le service de réservation est indisponible' : (message || 'Service indisponible'))
@@ -124,6 +125,26 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
       },
       async supprimer(chemins) {
         for (const c of chemins) await appel('DELETE', `/fichiers?chemin=${enc(c)}`)
+      }
+    },
+    // Exercices enrichis : routes dédiées (docs/CONTRAT-EXERCICES-STUDIO.md). Les droits sont appliqués par le serveur.
+    exercices: {
+      async recherche(filtre = {}) {
+        const qs = new URLSearchParams(Object.entries(filtre).filter(([, v]) => v !== undefined && v !== null && v !== '').map(([k, v]) => [k, String(v)])).toString()
+        const r = await appel('GET', `/exercices${qs ? `?${qs}` : ''}`)
+        return { items: r?.items ?? [], total: r?.total ?? 0 }
+      },
+      async detail(id) {
+        try { return (await appel('GET', `/exercices/${enc(id)}`))?.item ?? null } catch (e) { if (e.code === 'INTROUVABLE') return null; throw e }
+      },
+      async mettreAJour(id, patch) {
+        return (await appel('PATCH', `/exercices/${enc(id)}`, { corps: patch }))?.item
+      },
+      async envoyerPhoto(id, blob) {
+        return (await appel('POST', `/exercices/${enc(id)}/photo`, { brut: blob, type: blob.type })).item
+      },
+      async retirerPhoto(id) {
+        return (await appel('DELETE', `/exercices/${enc(id)}/photo`))?.item
       }
     },
     agenda: {
