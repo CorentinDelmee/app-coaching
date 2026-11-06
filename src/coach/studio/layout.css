@@ -1,0 +1,70 @@
+/* Cadre Studio (CoachLayout) : barre latérale, barre d'onglets, feuille « Plus », pont vers les anciennes vues, calques communs. */
+.st-cadre { display: grid; grid-template-columns: var(--st-nav) minmax(0, 1fr); min-height: 100vh; min-height: 100dvh; }
+.st-evitement { position: absolute; left: 12px; top: -60px; z-index: 100; padding: 10px 14px; border-radius: 12px; background: var(--st-encre); color: #fff; font-weight: 700; }
+.st-evitement:focus { top: 12px; }
+
+.st-nav { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow-y: auto; padding: 22px 14px; display: flex; flex-direction: column; gap: 4px; border-right: 1px solid var(--st-filet); background: var(--st-fond); }
+.st-marque { display: flex; align-items: center; gap: 10px; padding: 4px 10px 22px; font-family: var(--st-titre); font-weight: 600; font-size: 17px; letter-spacing: -.02em; color: var(--st-encre); }
+.st-marque i { width: 34px; height: 34px; border-radius: 11px; background: var(--st-encre); display: grid; place-items: center; }
+.st-marque i::after { content: ''; width: 14px; height: 14px; border-radius: 50%; background: var(--st-jaune); }
+.st-nav a { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border-radius: 12px; color: var(--st-doux); text-decoration: none; font-weight: 500; transition: background var(--st-d-court), color var(--st-d-court); }
+.st-nav a svg { flex: none; }
+.st-nav a:hover { background: var(--st-surface-2); color: var(--st-encre); }
+.st-nav a[aria-current="page"] { background: var(--st-surface); color: var(--st-encre); box-shadow: var(--st-ombre-1); }
+.st-nav .st-nav-2 { min-height: 40px; font-size: 14px; }
+.st-nav-titre { margin: 18px 12px 4px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--st-doux); font-weight: 700; }
+.st-pastille { margin-left: auto; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; background: var(--st-jaune); color: var(--st-jaune-texte); font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+.st-sep { flex: 1; min-height: 16px; }
+.st-moi { display: flex; align-items: center; gap: 10px; padding: 8px 6px 8px 10px; border-radius: 14px; background: var(--st-surface); box-shadow: var(--st-ombre-1); font-size: 13px; color: var(--st-doux); }
+.st-moi > div { flex: 1; min-width: 0; }
+.st-moi b { display: block; color: var(--st-encre); font-size: 14px; }
+.st-av { flex: none; width: var(--t, 36px); height: var(--t, 36px); border-radius: 50%; display: grid; place-items: center; background: var(--mc); color: var(--mi); font-weight: 700; font-size: 13px; }
+
+.st-main { min-width: 0; padding: 28px clamp(16px, 3vw, 40px) 60px; outline: none; }
+.st-page { min-width: 0; }
+.st-page-enter-active { animation: st-entree var(--st-d-base) var(--st-sortie) both; }
+.st-page-leave-active { transition: opacity 100ms ease-in; }
+.st-page-leave-to { opacity: 0; }
+
+/* PONT : anciennes vues (.coach, thème sombre) dans le cadre Studio, en attendant leur refonte. */
+.st-app .coach.c-pont { display: block; min-height: 0; border-radius: var(--st-r-xl); overflow: hidden; box-shadow: var(--st-ombre-2); }
+.st-app .coach.c-pont > .c-main { max-width: none; padding: 28px clamp(16px, 3vw, 36px) 48px; }
+.st-app .coach.c-pont :focus-visible { outline-color: var(--texte); }
+
+/* Barre d'onglets + feuille « Plus » (téléphone) */
+.st-tabbar, .st-voile-plus, .st-feuille-plus { display: none; }
+@media (max-width: 900px) {
+  .st-cadre { grid-template-columns: minmax(0, 1fr); }
+  .st-nav { display: none; }
+  .st-main { padding: 14px 16px calc(96px + env(safe-area-inset-bottom)); }
+  .st-app .coach.c-pont { border-radius: var(--st-r-l); margin: 0 -6px; }
+  .st-app .coach.c-pont > .c-main { padding: 18px 14px 28px; }
+
+  .st-tabbar { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); position: fixed; left: 10px; right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); z-index: var(--st-z-barre); padding: 6px; border-radius: 24px; background: rgba(35,37,43,.94); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: var(--st-ombre-3); }
+  .st-tabbar a, .st-tabbar button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 52px; min-width: 0; padding: 0 2px; border: 0; border-radius: 18px; background: none; color: #C9C6BF; text-decoration: none; font-size: 11px; font-weight: 600; position: relative; transition: color var(--st-d-court), transform var(--st-d-appui) ease-out; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .st-tabbar a:active, .st-tabbar button:active { transform: scale(.94); }
+  .st-tabbar svg { width: 22px; height: 22px; transition: transform var(--st-d-court) var(--st-ressort); }
+  .st-tabbar [aria-current="page"] { color: var(--st-jaune-texte); background: var(--st-jaune); }
+  .st-tabbar [aria-current="page"] svg { transform: translateY(-1px) scale(1.08); }
+  .st-tabbar .st-pastille { position: absolute; top: 4px; right: calc(50% - 22px); margin: 0; min-width: 18px; height: 18px; border-radius: 9px; font-size: 10.5px; padding: 0 5px; }
+  .st-tabbar [aria-current="page"] .st-pastille { background: var(--st-encre); color: #fff; }
+  .st-app :focus-visible { outline-offset: 2px; }
+  .st-tabbar :focus-visible { outline-color: var(--st-jaune); }
+
+  .st-voile-plus { display: block; position: fixed; inset: 0; z-index: var(--st-z-voile); background: rgba(35,37,43,.45); opacity: 0; pointer-events: none; transition: opacity var(--st-d-base) var(--st-vaul); }
+  .st-voile-plus.is-vu { opacity: 1; pointer-events: auto; }
+  .st-feuille-plus { display: flex; flex-direction: column; gap: 2px; position: fixed; z-index: var(--st-z-panneau); left: 0; right: 0; bottom: 0; max-height: 80dvh; overflow-y: auto; overscroll-behavior: contain; padding: 10px 12px calc(16px + env(safe-area-inset-bottom)); border-radius: 26px 26px 0 0; background: var(--st-surface); box-shadow: var(--st-ombre-3); transform: translateY(105%); visibility: hidden; transition: transform var(--st-d-panneau) var(--st-vaul), visibility 0s var(--st-d-panneau); }
+  .st-feuille-plus.is-vu { transform: none; visibility: visible; transition: transform var(--st-d-panneau) var(--st-vaul), visibility 0s; }
+  .st-feuille-tete { display: flex; align-items: center; justify-content: space-between; padding: 4px 4px 8px 10px; font-family: var(--st-titre); font-size: 22px; font-weight: 500; color: var(--st-encre); }
+  .st-feuille-plus a, .st-feuille-sortir { display: flex; align-items: center; gap: 14px; min-height: 52px; padding: 0 12px; border: 0; border-radius: 14px; background: none; color: var(--st-encre); text-decoration: none; font-weight: 600; text-align: left; }
+  .st-feuille-plus a[aria-current="page"] { background: var(--st-fond); }
+  .st-feuille-sortir { margin-top: 8px; border-top: 1px solid var(--st-filet); border-radius: 0; color: var(--st-alerte); }
+}
+
+/* Calque de l'élément partagé (transitionPartagee.js) */
+.st-volant { position: fixed; z-index: var(--st-z-volant); overflow: hidden; pointer-events: none; background: radial-gradient(120% 90% at 30% 10%, rgba(255,255,255,.55), transparent 60%), var(--mc); will-change: transform; contain: layout paint; }
+.st-volant-in { position: absolute; inset: 0; transform-origin: 50% 50%; will-change: transform; }
+.st-volant-in > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+.st-volant-in img { object-fit: cover; }
+.st-volant-in > .st-fig { inset: 6% 30% 0; width: 40%; height: 94%; }
+.st-volant .st-puce, .st-volant .st-duree, .st-volant .st-lecture { display: none; }
