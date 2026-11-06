@@ -33,6 +33,8 @@ const mobile = typeof matchMedia === 'function' ? matchMedia('(max-width: 900px)
 const reduit = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false }
 
 const racine = ref(null)
+// Feuille plein écran (téléphone) : rendue dans #st-calques du CoachLayout Studio s'il existe.
+const enCalque = ref(mobile.matches && typeof document !== 'undefined' && !!document.getElementById('st-calques'))
 const profil = ref(undefined)
 const d = reactive({ programmes: [], workouts: [], realisations: [], seances: [], mots: [], reponses: [], questionnaires: [], mesures: [], douleurs: [], exercices: [] })
 const aujourdhui = jourLocal(maintenant())
@@ -322,9 +324,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div v-if="mobile.matches" class="st-clients-voile" :class="{ 'is-vu': vu }" aria-hidden="true" @click="fermer" />
+  <Teleport defer to="#st-calques" :disabled="!enCalque">
+  <div v-if="enCalque" class="st-clients st-clients-voile" :class="{ 'is-vu': vu }" aria-hidden="true" @click="fermer" />
   <article
-    ref="racine" class="st-clients-fiche" :class="{ 'is-vu': vu, 'is-glisse': glisse }" :style="styleFeuille" :data-m="teinte"
+    ref="racine" class="st-clients st-clients-fiche" :class="{ 'is-vu': vu, 'is-glisse': glisse }" :style="styleFeuille" :data-m="teinte"
     :aria-labelledby="profil ? 'st-clients-fiche-nom' : undefined" :aria-label="profil ? undefined : 'Fiche client'"
     @pointerdown="debutGlisse" @pointermove="moveGlisse" @pointerup="finGlisse" @pointercancel="finGlisse"
   >
@@ -547,4 +550,5 @@ onBeforeUnmount(() => {
     </div>
     <div v-else class="st-clients-corps st-clients-chargement" aria-busy="true">Chargement…</div>
   </article>
+  </Teleport>
 </template>

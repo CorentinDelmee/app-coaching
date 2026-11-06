@@ -13,11 +13,9 @@ import { toast } from '../../toast.js'
 import IconeSt from '../../IconeSt.vue'
 import Puce from '../../Puce.vue'
 import Filtres from '../../Filtres.vue'
-import ToastSt from '../../ToastSt.vue'
 import IdentifiantsCrees from './IdentifiantsCrees.vue'
 import { rendreFocus } from './retourFocus.js'
 import { LIBELLES_STATUT, VARIANTE_STATUT, compterFiltres, filtrerClients, initiales, libelleDepuis, resumeClient, teinteClient } from './logique.js'
-import '../../tokens.css'
 import './clients.css'
 
 const route = useRoute()
@@ -127,16 +125,13 @@ async function restaurer(p) {
   } catch (e) { toast(messageErreur(e)) }
 }
 
-// Le toast est monté par le CoachLayout Studio ; tant qu'il n'est pas là (ancien layout), l'écran monte le sien.
-const toastLocal = ref(false)
-onMounted(() => { toastLocal.value = !document.querySelector('.st-toast') })
 </script>
 
 <template>
-  <div class="st-app st-clients" :class="{ 'is-fiche': ouvert }">
+  <section class="st-clients" :class="{ 'is-fiche': ouvert }" aria-labelledby="st-clients-titre">
     <header class="st-entete st-clients-entete">
       <div>
-        <h1>Clients</h1>
+        <h1 id="st-clients-titre">Clients</h1>
         <p v-if="charge">{{ compteurs.actifs }} client{{ compteurs.actifs > 1 ? 's' : '' }} suivi{{ compteurs.actifs > 1 ? 's' : '' }}<template v-if="compteurs.attention"> · {{ compteurs.attention }} demande{{ compteurs.attention > 1 ? 'nt' : '' }} ton attention</template></p>
       </div>
       <div class="st-actions">
@@ -220,6 +215,5 @@ onMounted(() => { toastLocal.value = !document.querySelector('.st-toast') })
         <component :is="Component" v-if="Component" :key="route.params.id" @change="charger" />
       </RouterView>
     </div>
-    <ToastSt v-if="toastLocal" />
-  </div>
+  </section>
 </template>
