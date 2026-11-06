@@ -1,5 +1,6 @@
 // Routes du tableau de bord coach, montées sous « /coach » (ajoutées au routeur par une seule ligne).
 import { ouvrirSessionCoach } from './store.js'
+import ecranAujourdhui from './studio/ecrans/aujourdhui/routes.js'
 import ecranAgenda from './studio/ecrans/agenda/routes.js'
 import ecranQuestionnaires from './studio/ecrans/questionnaires/routes.js'
 
@@ -14,12 +15,11 @@ export const routeCoach = {
   children: [
     { path: '', redirect: '/coach/aujourdhui' },
     // Studio : une route refaite porte meta.studio (sinon CoachLayout la rend dans le pont .coach des anciennes vues).
-    { path: 'aujourdhui', component: () => import('./studio/AujourdhuiView.vue'), meta: { studio: true } },
+    ...studio(ecranAujourdhui),
     // Démo des composants Studio (vignette, panneau, élément partagé) : en développement seulement.
     ...(import.meta.env.DEV ? [{ path: 'studio-demo', component: () => import('./studio/DemoComposants.vue'), meta: { studio: true } }] : []),
     { path: 'clients', component: () => import('./views/ClientsView.vue') },
     { path: 'clients/:id', component: () => import('./views/ClientView.vue'), props: true },
-    { path: 'alertes', component: () => import('./views/AlertesView.vue') },
     { path: 'exercices', component: () => import('./views/ExercicesView.vue') },
     { path: 'bibliotheque', component: () => import('./views/BibliothequeVideosView.vue') },
     { path: 'seances', component: () => import('./views/SeancesView.vue') },
