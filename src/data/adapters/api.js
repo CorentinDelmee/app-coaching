@@ -3,6 +3,7 @@
 // Les droits sont appliqués par le serveur (équivalent des anciennes règles RLS), pas par ce fichier.
 import { creerApi } from '../commun.js'
 import { ErreurData, MESSAGES } from '../erreurs.js'
+import { erreurConflit, versionAttendueDe } from '../versions.js'
 
 const CLE_FILE = 'cdc-coaching/1:file'
 const BASE = '/api/app'
@@ -12,8 +13,10 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
   let profilCache = null
 
   // Une requête JSON. Traduit les statuts HTTP en ErreurData ; `contexte` précise le sens d'un 401 (connexion = mauvais code).
-  async function appel(methode, chemin, { corps, brut, contexte, type } = {}) {
+  // `version` : envoyée en en-tête If-Match ; le serveur répond 409 { erreur: 'conflit', actuel } si la ligne a changé depuis.
+  async function appel(methode, chemin, { corps, brut, contexte, type, version } = {}) {
     const init = { method: methode, credentials: 'same-origin', headers: {} }
+    if (versionAttendueDe(version) !== undefined) init.headers['If-Match'] = String(version)
     if (brut !== undefined) { init.body = brut; init.headers['Content-Type'] = type || 'application/octet-stream' }
     else if (corps !== undefined) { init.body = JSON.stringify(corps); init.headers['Content-Type'] = 'application/json' }
     let res
@@ -27,9 +30,10 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
       if (contexte === 'binaire') return res
       try { return await res.json() } catch { return null }
     }
-    let message = ''
-    try { message = (await res.json())?.erreur || '' } catch { /* corps absent ou illisible */ }
-    throw erreurHttp(res.status, message, contexte)
+    let corpsErreur = null
+    try { corpsErreur = await res.json() } catch { /* corps absent ou illisible */ }
+    if (res.status === 409 && corpsErreur?.erreur === 'conflit') throw erreurConflit(corpsErreur.actuel ?? null)
+    throw erreurHttp(res.status, corpsErreur?.erreur || '', contexte)
   }
 
   function erreurHttp(statut, message, contexte) {
@@ -60,8 +64,8 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
         throw e
       }
     },
-    async ecrire(entite, obj) {
-      await appel('PUT', `/e/${enc(entite)}/${enc(obj.id)}`, { corps: obj })
+    async ecrire(entite, obj, { versionAttendue } = {}) {
+      return (await appel('PUT', `/e/${enc(entite)}/${enc(obj.id)}`, { corps: obj, version: versionAttendue }))?.item ?? undefined
     },
     async supprimer(entite, id) {
       try {
@@ -137,8 +141,8 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
       async detail(id) {
         try { return (await appel('GET', `/exercices/${enc(id)}`))?.item ?? null } catch (e) { if (e.code === 'INTROUVABLE') return null; throw e }
       },
-      async mettreAJour(id, patch) {
-        return (await appel('PATCH', `/exercices/${enc(id)}`, { corps: patch }))?.item
+      async mettreAJour(id, patch, { version } = {}) {
+        return (await appel('PATCH', `/exercices/${enc(id)}`, { corps: patch, version }))?.item
       },
       async envoyerPhoto(id, blob) {
         return (await appel('POST', `/exercices/${enc(id)}/photo`, { brut: blob, type: blob.type })).item

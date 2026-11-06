@@ -4,6 +4,7 @@ import { creerApi } from '../commun.js'
 import { visiblePar } from '../entites.js'
 import { ErreurData, MESSAGES } from '../erreurs.js'
 import { genererDemo } from '../demo/index.js'
+import { avecVersion, versionner } from '../versions.js'
 import { creerFauxGoogle, HOMONYMES_DEMO, ALIAS_DEMO } from '../demo/agendaGoogle.js'
 import { creerReservationsDemo } from '../reservations-demo.js'
 import { etatVide, evaluer, synchroniser } from '../../domain/agendaGoogle.js'
@@ -67,18 +68,22 @@ export function creerAdapterLocal({ storage = globalThis.localStorage || stockag
     mode: 'local',
     async tout(entite) {
       const user = profilCourant()
-      return charger()[entite].filter((o) => visiblePar(entite, o, user)).map((o) => structuredClone(o))
+      return charger()[entite].filter((o) => visiblePar(entite, o, user)).map((o) => avecVersion(entite, structuredClone(o)))
     },
     async un(entite, id) {
       const o = charger()[entite].find((x) => x.id === id)
-      return o && visiblePar(entite, o, profilCourant()) ? structuredClone(o) : null
+      return o && visiblePar(entite, o, profilCourant()) ? avecVersion(entite, structuredClone(o)) : null
     },
-    async ecrire(entite, obj) {
+    // Version contrôlée et incrémentée dans la même opération que l'écriture (voir versions.js).
+    async ecrire(entite, obj, { versionAttendue } = {}) {
+      let stocke
       sauver((etat) => {
         const i = etat[entite].findIndex((x) => x.id === obj.id)
-        if (i >= 0) etat[entite][i] = structuredClone(obj)
-        else etat[entite].push(structuredClone(obj))
+        stocke = structuredClone(versionner(entite, i >= 0 ? etat[entite][i] : null, obj, versionAttendue))
+        if (i >= 0) etat[entite][i] = stocke
+        else etat[entite].push(stocke)
       })
+      return structuredClone(stocke)
     },
     async supprimer(entite, id) {
       sauver((etat) => { etat[entite] = etat[entite].filter((x) => x.id !== id) })

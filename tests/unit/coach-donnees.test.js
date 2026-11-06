@@ -90,6 +90,6 @@ describe('parcours coach (adaptateur local)', () => {
     const [ex] = await data.exercices.lister()
     const w = { id: uuid(), nom: 'Test', clientId: null, blocs: [nouveauBloc('exercice', uuid, ex.id), nouveauBloc('superset', uuid, ex.id), nouveauBloc('circuit', uuid)] }
     await data.workouts.creer(w)
-    expect(await data.workouts.lire(w.id)).toEqual(w)
+    expect(await data.workouts.lire(w.id)).toEqual({ ...w, version: 1 })
   })
 })

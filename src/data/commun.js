@@ -1,7 +1,8 @@
 // Construit l'interface de données (identique pour tous les adaptateurs) à partir de primitives de stockage.
 //
 // Un « backend » fournit :
-//   mode, tout(entite), un(entite, id), ecrire(entite, obj)            -> lecture / écriture brutes (async)
+//   mode, tout(entite), un(entite, id), ecrire(entite, obj, { versionAttendue }) -> lecture / écriture brutes (async)
+//   (ecrire renvoie l'objet stocké, avec sa nouvelle `version` pour les entités versionnées : voir versions.js)
 //   connecter, deconnecter, utilisateurCourant, changerCode, creerCompte(identifiant, code, profil) -> session
 //   (profilCreeParCompte = true si creerCompte crée aussi la ligne de profil, comme le serveur de l'adaptateur api)
 //   reinitialiserDemo(), file { lire(), ecrire(liste) }                  -> démo et file d'attente hors connexion
@@ -46,16 +47,15 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
         }
         verifier(entite, complet)
         if (await backend.un(entite, id)) throw new ErreurData('EXISTE', `${entite} : l'identifiant « ${id} » existe déjà`)
-        await backend.ecrire(entite, complet)
-        return complet
+        return (await backend.ecrire(entite, complet)) ?? complet
       },
-      async modifier(id, patch) {
+      /** modifier(id, patch, { version }) : avec `version` (celle lue par l'écran), refuse d'écraser une écriture faite ailleurs (CONFLIT). */
+      async modifier(id, patch, { version } = {}) {
         const actuel = await backend.un(entite, id)
         if (!actuel) throw new ErreurData('INTROUVABLE', `${entite} : « ${id} » est introuvable`)
         const fusion = { ...actuel, ...patch, id }
         verifier(entite, fusion)
-        await backend.ecrire(entite, fusion)
-        return fusion
+        return (await backend.ecrire(entite, fusion, { versionAttendue: version })) ?? fusion
       },
       /** Archivage doux : rien n'est supprimé. */
       async archiver(id) {
@@ -92,16 +92,17 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
     const e = await backend.un('exercices', id)
     return e ? (await presenterLocal([e]))[0] : null
   }
-  /** Mise à jour partielle : « » ou null efface un champ. */
-  exos.mettreAJour = async (id, patch) => {
-    if (backend.exercices) return backend.exercices.mettreAJour(id, patch)
+  /** Mise à jour partielle : « » ou null efface un champ. Option { version } : comme modifier (CONFLIT si modifié ailleurs). */
+  exos.mettreAJour = async (id, patch, { version } = {}) => {
+    if (backend.exercices) return backend.exercices.mettreAJour(id, patch, { version })
     verifierPatchExercice(patch)
     const actuel = await backend.un('exercices', id)
     if (!actuel) throw new ErreurData('INTROUVABLE', `exercices : « ${id} » est introuvable`)
     const fusion = appliquerPatch(actuel, patch)
+    // Un lien saisi par le coach est validé d'office (seuls les liens posés par Claude restent « proposés »).
+    if (patch.lienVideo && patch.lienVideo !== actuel.lienVideo) fusion.videoValidee = true
     verifier('exercices', fusion)
-    await backend.ecrire('exercices', fusion)
-    return (await presenterLocal([fusion]))[0]
+    return (await presenterLocal([(await backend.ecrire('exercices', fusion, { versionAttendue: version })) ?? fusion]))[0]
   }
   // Photo : en démo, stockée en data-URL dans l'exercice ; avec le serveur, fichier privé servi par /fichiers.
   exos.envoyerPhoto = async (id, blob) => {
@@ -112,16 +113,14 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
     let bin = ''
     for (let i = 0; i < octets.length; i += 0x8000) bin += String.fromCharCode(...octets.subarray(i, i + 0x8000))
     const fusion = { ...actuel, photo: { id: `p-${uuid().replace(/-/g, '').slice(0, 12)}`, url: `data:${blob.type || 'image/jpeg'};base64,${btoa(bin)}` } }
-    await backend.ecrire('exercices', fusion)
-    return (await presenterLocal([fusion]))[0]
+    return (await presenterLocal([(await backend.ecrire('exercices', fusion)) ?? fusion]))[0]
   }
   exos.retirerPhoto = async (id) => {
     if (backend.exercices) return backend.exercices.retirerPhoto(id)
     const actuel = await backend.un('exercices', id)
     if (!actuel) throw new ErreurData('INTROUVABLE', `exercices : « ${id} » est introuvable`)
     const { photo: _, ...fusion } = actuel
-    await backend.ecrire('exercices', fusion)
-    return (await presenterLocal([fusion]))[0]
+    return (await presenterLocal([(await backend.ecrire('exercices', fusion)) ?? fusion]))[0]
   }
 
   /** Passe la vidéo de l'exercice de « proposée » à « validée » ; renvoie l'exercice coach mis à jour. */
@@ -131,8 +130,7 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
     if (!actuel) throw new ErreurData('INTROUVABLE', `exercices : « ${id} » est introuvable`)
     if (!actuel.lienVideo) throw new ErreurData('VALIDATION', 'Exercice : pas de vidéo à valider')
     const fusion = { ...actuel, videoValidee: true }
-    await backend.ecrire('exercices', fusion)
-    return (await presenterLocal([fusion]))[0]
+    return (await presenterLocal([(await backend.ecrire('exercices', fusion)) ?? fusion]))[0]
   }
 
   // --- Google Agenda -> séances de coaching ---------------------------------------------------------------

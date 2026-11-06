@@ -8,6 +8,7 @@ import { dirname } from 'node:path'
 import { genererDemo } from '../../src/data/demo/index.js'
 // (adaptateur Supabase retiré du front : chargé seulement si le mode Supabase est utilisé)
 import { ENTITES } from '../../src/data/entites.js'
+import { avecVersion, versionner } from '../../src/data/versions.js'
 
 export function creerStoreFichier(fichier, now = () => Date.now()) {
   mkdirSync(dirname(fichier), { recursive: true })
@@ -23,15 +24,18 @@ export function creerStoreFichier(fichier, now = () => Date.now()) {
   }
   return {
     mode: 'fichier',
-    async tout(entite) { return structuredClone(lire()[entite] || []) },
-    async un(entite, id) { return structuredClone((lire()[entite] || []).find((x) => x.id === id) || null) },
-    async ecrire(entite, obj) {
+    async tout(entite) { return structuredClone(lire()[entite] || []).map((o) => avecVersion(entite, o)) },
+    async un(entite, id) { return avecVersion(entite, structuredClone((lire()[entite] || []).find((x) => x.id === id) || null)) },
+    // Version contrôlée (versionAttendue) et incrémentée : voir src/data/versions.js. Renvoie l'objet stocké.
+    async ecrire(entite, obj, { versionAttendue } = {}) {
       const etat = lire()
       const liste = (etat[entite] ||= [])
       const i = liste.findIndex((x) => x.id === obj.id)
-      if (i >= 0) liste[i] = structuredClone(obj)
-      else liste.push(structuredClone(obj))
+      const stocke = structuredClone(versionner(entite, i >= 0 ? liste[i] : null, obj, versionAttendue))
+      if (i >= 0) liste[i] = stocke
+      else liste.push(stocke)
       ecrire(etat)
+      return structuredClone(stocke)
     },
     async supprimer(entite, id) {
       const etat = lire()

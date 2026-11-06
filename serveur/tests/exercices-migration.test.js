@@ -45,8 +45,9 @@ describe('migration des exercices existants', () => {
     const actifs = anciens.filter((e) => !e.archive)
     expect(r.total).toBe(actifs.length)
     for (const item of r.items) {
-      const { photo, video, utiliseDans, utiliseDansProgrammes, ...origine } = item
+      const { photo, video, utiliseDans, utiliseDansProgrammes, version, ...origine } = item
       expect(origine).toEqual(sansNull(anciens.find((e) => e.id === item.id)))
+      expect(version).toBe(1) // migration : les lignes existantes partent de la version 1
       expect(photo).toBeNull(); expect(utiliseDans).toBe(0); expect(utiliseDansProgrammes).toBe(0)
     }
     expect((await req('GET', '/api/app/e/exercices')).json.items).toHaveLength(181) // route générique : tout, archivés compris
@@ -54,7 +55,7 @@ describe('migration des exercices existants', () => {
   it('PUT générique (ancienne UI) accepte chaque ancienne ligne, sans perte', async () => {
     for (const e of anciens) expect((await req('PUT', `/api/app/e/exercices/${e.id}`, e)).statut, e.id).toBe(200)
     // seul changement toléré : « lienVideo: null » devient simplement absent (même sens)
-    for (const e of anciens) expect(await store.un('exercices', e.id)).toEqual(sansNull(e))
+    for (const e of anciens) expect(await store.un('exercices', e.id)).toEqual({ ...sansNull(e), version: 2 }) // + version (1 -> 2 : une écriture)
   })
   it('PATCH sur une ancienne ligne ajoute les nouveaux champs sans perdre les anciens', async () => {
     const e = anciens[7] // description longue importée

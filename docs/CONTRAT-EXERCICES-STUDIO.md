@@ -3,6 +3,8 @@
 > - Testé : tests Vitest (615 verts), migration sur 181 exercices hérités, test HTTP réel curl sur le port 5415.
 > - Précisions (pas de changement de forme) : `lienVideo` est enregistré sous la forme `https://www.youtube.com/watch?v=<id>` ; une ancienne valeur `lienVideo: null` est renvoyée comme champ absent ; `PUT /e/exercices/:id` reste tolérant (anciens liens non YouTube, descriptions longues) ; l'adaptateur api traduit 409 en `ErreurData('EXISTE')` ; la photo en mode local est une data-URL (`photo.url`).
 
+> - **Ajout 2026-11-06 (lot conflits, rétrocompatible)** : chaque exercice renvoyé porte `"version": <entier>` ; `PATCH /exercices/:id` et `PUT /e/exercices/:id` acceptent l'en-tête `If-Match: <version>` → `409 { "erreur": "conflit", "actuel": <exercice à jour> }` si la ligne a changé (If-Match mal formé : 400). Un `lienVideo` nouveau ou changé par le coach est renvoyé avec `video.statut: "valide"`. Voir src/coach/studio/LISEZMOI.md « Conflits ».
+
 # Contrat — exercices enrichis (refonte coach « Studio ») — 2026-11-05
 
 Lot serveur (`studio-exo-serveur`). Le lot écran n'appelle QUE `data.exercices.*` (voir « src/data »), jamais `fetch`.
