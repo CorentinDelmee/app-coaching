@@ -1,6 +1,9 @@
 # Studio (refonte coach d3) — fondations LOT 0
 
 > **État au 2026-11-06 ~12 h 50 : lot 0 terminé** (branche `studio-l0`, poussée). Tout est utilisable par les lots d'écrans.
+> **Correctifs L0 (banc, 06/11 après-midi)** : `.st-btn--danger` = **contour** (texte alerte sur surface) et nouveau `.st-btn--danger-plein` (blanc sur alerte) ;
+> `st-entree` / `st-cascade` partent d'une opacité .9 (plus de texte en fondu illisible) ; entrée de page 220 ms ; liens secondaires de la barre latérale à 44 px ;
+> onglets du bas sans transition de couleur. Règle : pas de fondu d'opacité < .9 sur du texte qui entre (voir DECISIONS.md).
 > **Changements d'API depuis le WIP du 05/11** (à lire si tu as fusionné avant) :
 > - `medias.js` accepte maintenant la forme du contrat (`musclesPrincipaux`, `photo {url}`, `video {statut, duree}`) ; ajouts : `teinteDe`, `nomMuscleDe`, `mouvementDe`, `urlPhoto`, `statutVideo`, `dureeCourte`, `idVideoDe`, `NOMS_MUSCLES`, `NIVEAUX`. `mediaDe` / `muscleDe` / `miniatureYoutube` gardent la même signature.
 > - `tokens.css` : les remises à zéro (`button`, `input`, `:focus-visible`, `box-sizing`) sont en `:where()` → spécificité nulle, une classe de composant gagne toujours (corrige `.st-btn--encre`/`--jaune` illisibles). Ajout `.st-btn--danger`.
@@ -125,8 +128,8 @@ Un nouvel écran avec une nouvelle URL : demande à REX de l'ajouter ici (fichie
 
 ### `tokens.css` (classes communes)
 Variables `--st-*` (couleurs, rayons, ombres, courbes `--st-ressort|--st-sortie|--st-vaul`, durées `--st-d-*`), teintes `data-m="jambes|dos|pecs|epaules|bras|gainage|mobilite|cardio"` → `--mc` (pastel) / `--mi` (encre).
-Classes : `.st-entete` (+ `.st-actions`), `.st-btn` (`--jaune`, `--encre`, `--danger`, `--rond`, `--fantome`), `.st-bloc`, `.st-sr` (texte pour lecteur d'écran).
-Animations : `st-entree`, `st-cascade`, `st-tourne`, `st-trace`. Mouvement réduit : tout est ramené à 1 ms sous `.st-app`.
+Classes : `.st-entete` (+ `.st-actions`), `.st-btn` (`--jaune`, `--encre`, `--danger` contour, `--danger-plein`, `--rond`, `--fantome`), `.st-bloc`, `.st-sr` (texte pour lecteur d'écran).
+Animations : `st-entree`, `st-cascade` (translation + opacité depuis .9 : n'ajoute jamais de fondu depuis 0 sur du texte), `st-tourne`, `st-trace`. Mouvement réduit : tout est ramené à 1 ms sous `.st-app`.
 
 ## Tests et vérifications du lot 0
 - `tests/unit/studio-fondations.test.js` (16 tests : médias au contrat, navigation, sauvegarde auto, Bézier, FLIP + contre-échelle).

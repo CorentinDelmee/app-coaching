@@ -74,7 +74,8 @@
 .st-btn:active { transform: scale(.96); transition-duration: 80ms; }
 .st-btn--jaune { background: var(--st-jaune); color: var(--st-jaune-texte); border-color: transparent; }
 .st-btn--encre { background: var(--st-encre); color: #fff; border-color: transparent; }
-.st-btn--danger { background: var(--st-alerte); color: #fff; border-color: transparent; }
+.st-btn--danger { color: var(--st-alerte); border-color: rgba(162, 59, 42, .35); }            /* contour : texte alerte sur surface, 6,6:1 */
+.st-btn--danger-plein { background: var(--st-alerte); color: #fff; border-color: transparent; } /* plein : blanc sur alerte, 6,6:1 */
 .st-btn--rond { width: 44px; padding: 0; border-radius: 50%; }
 .st-btn--fantome { background: transparent; border-color: transparent; }
 .st-btn--fantome:hover { background: var(--st-surface-2); }
@@ -84,8 +85,9 @@
 .st-bloc h2 { font-family: var(--st-titre); font-weight: 500; font-size: 20px; letter-spacing: -.02em; margin: 0 0 12px; color: var(--st-encre); }
 
 /* Entrée de vue */
-@keyframes st-entree { from { opacity: 0; transform: translateY(10px); } }
-@keyframes st-cascade { from { opacity: 0; transform: translateY(12px); } }
+/* Entrées : translation courte, opacité qui part de .9 (un texte ne passe jamais sous 4,5:1 pendant l'animation). */
+@keyframes st-entree { from { opacity: .9; transform: translateY(8px); } }
+@keyframes st-cascade { from { opacity: .9; transform: translateY(10px); } }
 @keyframes st-tourne { to { transform: rotate(1turn); } }
 @keyframes st-trace { to { stroke-dashoffset: 0; } }
 

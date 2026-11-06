@@ -11,7 +11,7 @@
 .st-nav a svg { flex: none; }
 .st-nav a:hover { background: var(--st-surface-2); color: var(--st-encre); }
 .st-nav a[aria-current="page"] { background: var(--st-surface); color: var(--st-encre); box-shadow: var(--st-ombre-1); }
-.st-nav .st-nav-2 { min-height: 40px; font-size: 14px; }
+.st-nav .st-nav-2 { min-height: 44px; font-size: 14px; }
 .st-nav-titre { margin: 18px 12px 4px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--st-doux); font-weight: 700; }
 .st-pastille { margin-left: auto; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; background: var(--st-jaune); color: var(--st-jaune-texte); font-size: 12px; font-weight: 700; display: grid; place-items: center; }
 .st-sep { flex: 1; min-height: 16px; }
@@ -22,7 +22,9 @@
 
 .st-main { min-width: 0; padding: 28px clamp(16px, 3vw, 40px) 60px; outline: none; }
 .st-page { min-width: 0; }
-.st-page-enter-active { animation: st-entree var(--st-d-base) var(--st-sortie) both; }
+/* Changement de page : la page qui sort disparaît en 100 ms ; celle qui entre glisse de 8 px avec une opacité qui part de .9
+   (jamais de texte en fondu illisible : DECISIONS.md, règle de contraste en temps réel). */
+.st-page-enter-active { animation: st-entree var(--st-d-court) var(--st-sortie) both; }
 .st-page-leave-active { transition: opacity 100ms ease-in; }
 .st-page-leave-to { opacity: 0; }
 
@@ -41,7 +43,7 @@
   .st-app .coach.c-pont > .c-main { padding: 18px 14px 28px; }
 
   .st-tabbar { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); position: fixed; left: 10px; right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); z-index: var(--st-z-barre); padding: 6px; border-radius: 24px; background: rgba(35,37,43,.94); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: var(--st-ombre-3); }
-  .st-tabbar a, .st-tabbar button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 52px; min-width: 0; padding: 0 2px; border: 0; border-radius: 18px; background: none; color: #C9C6BF; text-decoration: none; font-size: 11px; font-weight: 600; position: relative; transition: color var(--st-d-court), transform var(--st-d-appui) ease-out; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .st-tabbar a, .st-tabbar button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 52px; min-width: 0; padding: 0 2px; border: 0; border-radius: 18px; background: none; color: #C9C6BF; text-decoration: none; font-size: 11px; font-weight: 600; position: relative; transition: transform var(--st-d-appui) ease-out; /* jamais de transition de couleur : le fond change d'un coup, le texte aussi (contraste constant) */ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .st-tabbar a:active, .st-tabbar button:active { transform: scale(.94); }
   .st-tabbar svg { width: 22px; height: 22px; transition: transform var(--st-d-court) var(--st-ressort); }
   .st-tabbar [aria-current="page"] { color: var(--st-jaune-texte); background: var(--st-jaune); }

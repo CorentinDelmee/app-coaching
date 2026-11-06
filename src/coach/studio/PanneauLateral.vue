@@ -119,8 +119,8 @@ defineExpose({ media: () => elMedia.value, racine: () => racine.value })
 
 /* entrée / sortie (ordinateur) */
 .st-pan-enter-active { transition: transform var(--st-d-base) var(--st-sortie), opacity var(--st-d-base) var(--st-sortie); }
-.st-pan-leave-active { transition: transform 200ms ease-in, opacity 200ms ease-in; }
-.st-pan-enter-from { opacity: 0; transform: translateX(24px); }
+.st-pan-leave-active { transition: transform 120ms ease-in, opacity 120ms ease-in; }
+.st-pan-enter-from { opacity: .9; transform: translateX(24px); } /* pas de texte en fondu à l'entrée (contraste en temps réel) */
 .st-pan-leave-to { opacity: 0; transform: translateX(20px); }
 
 /* L'écran réserve la place du panneau : ajouter la classe st-reserve-panneau à sa zone de contenu quand il est ouvert. */
