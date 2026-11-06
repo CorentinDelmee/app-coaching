@@ -23,7 +23,7 @@ import { teinte } from '../commun/exercices.js'
 import { remplacerAdresse } from '../commun/adresse.js'
 import BibliothequeExercices from './BibliothequeExercices.vue'
 import ItemExerciceStudio from './ItemExerciceStudio.vue'
-import { blocPour, exoCircuit, nbExercices, nettoyerSeance, problemeSeance, resumeBloc, resynchroniser } from './seance.js'
+import { blocPour, clientDeLien, exoCircuit, nbExercices, nettoyerSeance, problemeSeance, resumeBloc, resynchroniser } from './seance.js'
 
 const props = defineProps({ id: { type: String, required: true } })
 const route = useRoute()
@@ -51,7 +51,7 @@ async function charger(id) {
   try {
     await Promise.all([rafraichir(), chargerExercices()])
     if (id === 'nouveau') {
-      workout.value = { id: uuid(), nom: NOM_DEFAUT, clientId: route.query.client || null, consignes: '', blocs: [] }
+      workout.value = { id: uuid(), nom: NOM_DEFAUT, clientId: clientDeLien(route.query.client, etat.clients), consignes: '', blocs: [] }
       cree = false
       dernierEcrit = ''
     } else {
@@ -168,7 +168,7 @@ const feuille = ref(false)
 const biblio = ref(null)
 const titreBiblio = computed(() => {
   const a = ajout.value
-  if (a.remplacer) return `Remplacer « ${nomExo(itemARemplacer()?.exerciceId) || 'exercice'} »`
+  if (a.remplacer) return itemARemplacer()?.exerciceId ? `Remplacer « ${nomExo(itemARemplacer().exerciceId)} »` : 'Choisir un exercice'
   if (a.vers !== 'blocs') return `Ajouter au circuit « ${blocDe(a.vers)?.nom || 'sans nom'} »`
   return 'Ajouter à la séance'
 })
@@ -246,7 +246,7 @@ function supprimerBloc(i) {
   const avant = copie(workout.value)
   const [b] = workout.value.blocs.splice(i, 1)
   if (ajout.value.vers === `circuit:${b.id}` || ajout.value.remplacer?.blocId === b.id) ajout.value = { vers: 'blocs' }
-  toast(`${libelleBloc(b)} supprimé`, { action: 'Annuler', surAction: () => { workout.value = avant }, duree: 6000 })
+  toast(`${libelleBloc(b)} supprimé`, { action: 'Annuler', surAction: () => { workout.value = avant }, duree: 8000 })
 }
 function dupliquerBloc(i) {
   const c = copie(workout.value.blocs[i])
@@ -259,7 +259,7 @@ function retirerExoCircuit(b, j) {
   const avant = copie(workout.value)
   const [x] = b.exercices.splice(j, 1)
   resynchroniser(b)
-  toast(`${nomExo(x.exerciceId)} retiré du circuit`, { action: 'Annuler', surAction: () => { workout.value = avant } })
+  toast(`${nomExo(x.exerciceId)} retiré du circuit`, { action: 'Annuler', surAction: () => { workout.value = avant }, duree: 8000 })
 }
 function changerFormat(b, format) { b.format = format; b.params = {}; resynchroniser(b) }
 const valeurParam = (b, cle) => paramsAffiches(b.format, b.params)[cle]
@@ -299,9 +299,11 @@ const nbExos = computed(() => nbExercices(workout.value))
           <input id="st-prog-s-nom" v-model="workout.nom" class="st-prog-s-nom" placeholder="Nom de la séance" autocomplete="off" maxlength="80" />
         </div>
         <div class="st-actions">
-          <IndicateurSauvegarde :etat="s.etat.value" :conflit="s.conflit.value" @reessayer="s.reessayer" @recharger="s.recharger" />
+          <IndicateurSauvegarde v-if="s.etat.value !== 'conflit'" :etat="s.etat.value" :conflit="s.conflit.value" @reessayer="s.reessayer" @recharger="s.recharger" />
         </div>
       </header>
+      <!-- « Modifié ailleurs » : collant en haut de l'écran, visible même quand on saisit en bas de la séance -->
+      <IndicateurSauvegarde v-if="s.etat.value === 'conflit'" class="st-prog-conflit" etat="conflit" :conflit="s.conflit.value" @recharger="s.recharger" />
 
       <div v-if="sortie" class="st-prog-s-sortie" role="alertdialog" aria-labelledby="st-prog-s-sortie-t">
         <p id="st-prog-s-sortie-t"><b>{{ sortie.raison }}</b> Si tu quittes, la dernière modification sera perdue.</p>

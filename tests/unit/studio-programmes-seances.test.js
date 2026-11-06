@@ -36,3 +36,15 @@ describe('séance Studio', () => {
     expect(nbExercices({ blocs: [b, { type: 'circuit', exercices: [{}, {}] }] })).toBe(3)
   })
 })
+
+describe('clientDeLien (?client= d\'une nouvelle séance)', () => {
+  it("n'accepte que l'id d'un client connu", async () => {
+    const { clientDeLien } = await import('../../src/coach/studio/ecrans/programmes/seances/seance.js')
+    const clients = [{ id: 'c1' }, { id: 'c2' }]
+    expect(clientDeLien('c2', clients)).toBe('c2')
+    expect(clientDeLien('inconnu', clients)).toBeNull()
+    expect(clientDeLien(['c1'], clients)).toBeNull()
+    expect(clientDeLien(undefined, clients)).toBeNull()
+    expect(clientDeLien('c1', [])).toBeNull()
+  })
+})

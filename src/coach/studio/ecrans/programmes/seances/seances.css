@@ -135,11 +135,15 @@
 .st-prog-s-vide p { margin: 0; }
 .st-prog-s-vide b { color: var(--st-encre); }
 .st-prog-s-ajouts { display: flex; flex-wrap: wrap; gap: 8px; }
+/* Bandeau « Modifié ailleurs » collant : visible même quand on saisit en bas de la séance */
+.st-prog-s .st-prog-conflit { position: sticky; top: 8px; z-index: 8; margin: 0 0 14px; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
 /* Toast de l'éditeur : dans la colonne de la bibliothèque (ordinateur) ou au-dessus des boutons d'ajout collants (téléphone),
    jamais par-dessus « + Exercice / Superset / Circuit ». ToastSt est partagé : surcharge limitée à cette page. */
 @media (min-width: 901px) {
   .st-app:has(.st-prog-s) .st-toast { left: calc(var(--st-nav) + clamp(16px, 3vw, 40px)); width: 300px; max-width: 300px; transform: translateY(calc(100% + 60px)); }
   .st-app:has(.st-prog-s) .st-toast.is-vu { transform: none; }
+  .st-app:has(.st-prog-s) .st-toast { flex-wrap: wrap; justify-content: flex-end; row-gap: 0; padding-top: 12px; }
+  .st-app:has(.st-prog-s) .st-toast > span { flex: 1 1 100%; }
 }
 @media (max-width: 900px) { .st-app:has(.st-prog-s) .st-toast { bottom: calc(156px + env(safe-area-inset-bottom)); } }
 
@@ -167,5 +171,6 @@
   .st-prog-s-bloc { padding: 10px 12px 14px; }
   .st-prog-s-bascule[aria-expanded="false"] { display: none; } /* replié : toucher le résumé l'ouvre */
   .st-prog-s-ajouts { position: sticky; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 5; padding: 8px; margin: 0 -8px; border-radius: 18px; background: rgba(244, 241, 236, .92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-  .st-prog-s-ajouts .st-btn { flex: 1; }
+  .st-prog-s-ajouts { flex-wrap: nowrap; }
+  .st-prog-s-ajouts .st-btn { flex: 1; min-width: 0; padding-inline: 8px; }
 }
