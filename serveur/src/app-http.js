@@ -6,10 +6,16 @@ import { join, posix } from 'node:path'
 import { ENTITES, clientDe, visiblePar } from '../../src/data/entites.js'
 import { accesSante } from '../../src/domain/consentement.js'
 import { LONGUEUR_CODE_MIN } from '../../src/domain/identifiants.js'
+import { idYoutube } from '../../src/domain/video.js'
+import { CHAMPS_COACH, NIVEAUX, appliquerPatch, filtrer, indexUsage, nettoyerPut, presenter, schemaCreation, schemaPatch } from './exercices.js'
+import { slug } from './util.js'
 
 const SESSION_MS = 12 * 3600e3
 const JSON_MAX = 1024 * 1024
 const FICHIER_MAX = 5 * 1024 * 1024
+const PHOTO_MAX = 3 * 1024 * 1024 // photos d'exercices (l'écran réduit avant l'envoi)
+const PHOTO_EXT = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }
+const RE_PHOTO_ID = /^p-[0-9a-f]{12}$/
 const RE_IDENTIFIANT = /^[a-z0-9][a-z0-9._-]{1,39}$/
 // Plafonds par client (un compte client compromis ne remplit pas le disque). Le coach n'a que la limite par ligne.
 export const QUOTAS = { lignes: 5000, octetsLigne: 64 * 1024, fichiers: 200, octetsFichiers: 200 * 1024 * 1024 }
@@ -137,7 +143,7 @@ async function lireJson(req) {
  * Crée le gestionnaire des routes /api/app/*. Retourne (req, res) => Promise<boolean> (vrai si la route est traitée).
  * config : { production, sessionSecret, appOrigin, resaUrl, resaCle, fichiersDir, confianceProxy }
  */
-export function creerAppHttp({ db, store, config, journal = null, now = () => Date.now(), fetchFn = (...a) => globalThis.fetch(...a) }) {
+export function creerAppHttp({ db, store, config, journal = null, biblio = null, now = () => Date.now(), fetchFn = (...a) => globalThis.fetch(...a) }) {
   if (!config.sessionSecret || config.sessionSecret.length < 32) throw new Error('SESSION_SECRET manquant ou trop court (32 caractères minimum)')
   const secure = !!config.production
   const optsCookie = `HttpOnly; SameSite=Strict; Path=/${secure ? '; Secure' : ''}`
@@ -210,10 +216,12 @@ export function creerAppHttp({ db, store, config, journal = null, now = () => Da
   }
   // Les notes du coach (programmes.notes) sont privées : jamais renvoyées à un client.
   // Idem pour la fiche du profil (profils.fiche : contact, notes du coach, source d'import).
+  // Idem pour les notes privées d'un exercice.
   const pourLecteur = (entite, o, u) => {
-    const prive = { programmes: 'notes', profils: 'fiche' }[entite]
-    if (u.role === 'coach' || !prive || !o || !(prive in o)) return o
-    const { [prive]: _, ...reste } = o
+    const prives = { programmes: ['notes'], profils: ['fiche'], exercices: CHAMPS_COACH }[entite]
+    if (u.role === 'coach' || !prives || !o) return o
+    const reste = { ...o }
+    for (const k of prives) delete reste[k]
     return reste
   }
   async function entites(req, res, u, entite, id) {
@@ -230,8 +238,9 @@ export function creerAppHttp({ db, store, config, journal = null, now = () => Da
       return envoyer(res, 200, { item: pourLecteur(entite, existant, u) })
     }
     if (req.method === 'PUT') {
-      const obj = await lireJson(req)
+      let obj = await lireJson(req)
       if (!obj || typeof obj !== 'object' || Array.isArray(obj) || obj.id !== id) throw new Erreur(400, 'invalide')
+      if (entite === 'exercices' && coach) { obj = nettoyerPut(obj, existant); if (!obj) throw new Erreur(400, 'invalide') } // champs calculés retirés, photo du serveur gardée
       if (!coach && ENTITES_SANTE.has(entite) && !accesSante(await store.un('profils', u.profil_id))) throw new Erreur(403, 'consentement_sante')
       if (!ENTITES[entite].valider(obj).ok) throw new Erreur(400, 'invalide')
       if (Buffer.byteLength(JSON.stringify(obj)) > QUOTAS.octetsLigne) throw new Erreur(413, 'quota')
@@ -261,9 +270,104 @@ export function creerAppHttp({ db, store, config, journal = null, now = () => Da
       if (!existant) throw new Erreur(404, 'introuvable')
       if (!coach && (!ECRITURE_CLIENT.has(entite) || clientDe(entite, existant) !== u.profil_id)) throw new Erreur(403, 'interdit')
       await store.supprimer(entite, id)
+      if (entite === 'exercices') supprimerPhoto(existant.photo)
       return envoyer(res, 200, { ok: true })
     }
     throw new Erreur(405, 'methode')
+  }
+
+  // ---------- Exercices enrichis (contrat : docs/CONTRAT-EXERCICES-STUDIO.md) ----------
+  const dossierPhotos = () => join(config.fichiersDir, 'exercices')
+  /** Supprime le fichier d'une photo ; l'identifiant est revérifié avant tout rmSync. */
+  function supprimerPhoto(photo) {
+    const ext = /\.(jpg|png|webp)$/.exec(decodeURIComponent(String(photo?.url ?? '')))?.[1]
+    if (!photo || !RE_PHOTO_ID.test(photo.id) || !ext) return
+    rmSync(join(dossierPhotos(), `${photo.id}.${ext}`), { force: true })
+  }
+  async function presenterExercices(liste, coach) {
+    const usage = coach ? indexUsage(await store.tout('workouts'), await store.tout('programmes')) : null
+    return liste.map((e) => presenter(e, { coach, usage, biblio }))
+  }
+  /** Lien YouTube sous sa forme canonique ; un lien nouveau est rattaché à la bibliothèque en « proposée ». */
+  function lienCanonique(corps, nom) {
+    if (!corps.lienVideo) return
+    corps.lienVideo = `https://www.youtube.com/watch?v=${idYoutube(corps.lienVideo)}`
+    try { if (biblio && !biblio.chercher(nom).some((e) => e.video.url === corps.lienVideo)) biblio.proposer({ nom, url: corps.lienVideo }) } catch { /* bibliothèque indisponible : le lien reste enregistré */ }
+  }
+  const entier = (v, min, max, defaut) => {
+    if (v === null) return defaut
+    if (!/^\d{1,6}$/.test(v) || Number(v) < min || Number(v) > max) throw new Erreur(400, 'invalide')
+    return Number(v)
+  }
+  async function exercices(req, res, u, id, sousRoute, url) {
+    const coach = u.role === 'coach'
+    const lire = async () => { const e = id && (await store.un('exercices', id)); if (!e) throw new Erreur(404, 'introuvable'); return e }
+    const rendre = async (statut, ex) => envoyer(res, statut, { item: (await presenterExercices([ex], coach))[0] })
+    if (id === undefined) {
+      if (req.method === 'GET') {
+        const q = url.searchParams, f = Object.fromEntries(['q', 'categorie', 'muscle', 'materiel', 'niveau', 'video'].map((k) => [k, q.get(k) || '']))
+        if ((f.niveau && !NIVEAUX.includes(f.niveau)) || (f.video && !['aucune', 'propose', 'valide'].includes(f.video))) throw new Erreur(400, 'invalide')
+        const limite = entier(q.get('limite'), 1, 500, 500), decalage = entier(q.get('decalage'), 0, 1e6, 0)
+        const vus = filtrer(await presenterExercices(await store.tout('exercices'), coach), f)
+        return envoyer(res, 200, { items: vus.slice(decalage, decalage + limite), total: vus.length })
+      }
+      if (req.method === 'POST') {
+        if (!coach) throw new Erreur(403, 'interdit')
+        const parse = schemaCreation.safeParse(await lireJson(req))
+        if (!parse.success) throw new Erreur(400, 'invalide')
+        const { id: idDemande, ...champs } = parse.data
+        let nouvelId = idDemande
+        if (nouvelId) { if (await store.un('exercices', nouvelId)) throw new Erreur(409, 'existe_deja') }
+        else {
+          nouvelId = `ex-${slug(champs.nom) || randomBytes(3).toString('hex')}`.slice(0, 80)
+          if (await store.un('exercices', nouvelId)) nouvelId = `${nouvelId.slice(0, 70)}-${randomBytes(2).toString('hex')}`
+        }
+        lienCanonique(champs, champs.nom)
+        const ex = appliquerPatch({ id: nouvelId, categories: [] }, champs)
+        if (!ENTITES.exercices.valider(ex).ok) throw new Erreur(400, 'invalide')
+        await store.ecrire('exercices', ex)
+        return rendre(201, ex)
+      }
+      throw new Erreur(405, 'methode')
+    }
+    if (sousRoute === undefined) {
+      if (req.method === 'GET') return rendre(200, await lire())
+      if (req.method === 'PATCH') {
+        if (!coach) throw new Erreur(403, 'interdit')
+        const actuel = await lire()
+        const parse = schemaPatch.safeParse(await lireJson(req))
+        if (!parse.success) throw new Erreur(400, 'invalide')
+        lienCanonique(parse.data, parse.data.nom ?? actuel.nom)
+        const ex = appliquerPatch(actuel, parse.data)
+        if (!ENTITES.exercices.valider(ex).ok) throw new Erreur(400, 'invalide')
+        await store.ecrire('exercices', ex)
+        return rendre(200, ex)
+      }
+      throw new Erreur(405, 'methode')
+    }
+    // Photo : /exercices/:id/photo
+    if (req.method !== 'POST' && req.method !== 'DELETE') throw new Erreur(405, 'methode')
+    if (!coach) throw new Erreur(403, 'interdit')
+    const actuel = await lire()
+    if (req.method === 'DELETE') {
+      if (!actuel.photo) return rendre(200, actuel)
+      const { photo, ...sans } = actuel
+      await store.ecrire('exercices', sans)
+      supprimerPhoto(photo)
+      return rendre(200, sans)
+    }
+    const type = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase()
+    const ext = PHOTO_EXT[type]
+    if (!ext) throw new Erreur(415, 'type_refuse')
+    const buf = await lireBrut(req, PHOTO_MAX)
+    if (!signatureOk(type, buf)) throw new Erreur(415, 'type_refuse')
+    const photoId = `p-${randomBytes(6).toString('hex')}` // nom généré ici, jamais celui du client
+    mkdirSync(dossierPhotos(), { recursive: true })
+    writeFileSync(join(dossierPhotos(), `${photoId}.${ext}`), buf)
+    const ex = { ...actuel, photo: { id: photoId, url: `/api/app/fichiers?chemin=${encodeURIComponent(`exercices/${photoId}.${ext}`)}` } }
+    await store.ecrire('exercices', ex)
+    supprimerPhoto(actuel.photo)
+    return rendre(200, ex)
   }
 
   const TABLES_CLIENT = [...new Set(Object.entries(ENTITES).filter(([e]) => e !== 'profils').map(([, d]) => d.table))]
@@ -299,7 +403,10 @@ export function creerAppHttp({ db, store, config, journal = null, now = () => Da
   async function fichiers(req, res, u, url) {
     const f = cheminFichier(url.searchParams.get('chemin'))
     if (!f) throw new Erreur(400, 'chemin_invalide')
-    if (u.role !== 'coach' && f.proprietaire !== u.profil_id) throw new Erreur(403, 'interdit')
+    // Photos d'exercices : lisibles par tous les connectés, écrites seulement par les routes /exercices/:id/photo.
+    const publique = f.proprietaire === 'exercices'
+    if (publique && req.method !== 'GET') throw new Erreur(403, 'interdit')
+    if (u.role !== 'coach' && !publique && f.proprietaire !== u.profil_id) throw new Erreur(403, 'interdit')
     const disque = join(config.fichiersDir, f.proprietaire, f.relatif.split('/')[1])
     if (req.method === 'POST') {
       const type = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase()
@@ -318,6 +425,13 @@ export function creerAppHttp({ db, store, config, journal = null, now = () => Da
     let existe = false
     try { existe = statSync(disque).isFile() } catch { /* absent */ }
     if (!existe) throw new Erreur(404, 'introuvable')
+    if (req.method === 'GET' && publique) {
+      const etag = `"${f.relatif.split('/')[1]}"` // le nom change à chaque nouvelle photo : il tient lieu de version
+      const enTetes = { ETag: etag, 'Cache-Control': 'private, max-age=86400', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'" }
+      if (req.headers['if-none-match'] === etag) { res.writeHead(304, enTetes); return res.end() }
+      res.writeHead(200, { 'Content-Type': TYPE_EXT[f.ext], ...enTetes })
+      return res.end(readFileSync(disque))
+    }
     if (req.method === 'GET') {
       res.writeHead(200, { 'Content-Type': TYPE_EXT[f.ext], 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'" })
       return res.end(readFileSync(disque))
@@ -395,6 +509,8 @@ export function creerAppHttp({ db, store, config, journal = null, now = () => Da
         envoyer(res, 200, { ok: true })
         return true
       }
+      const mX = /^\/exercices(?:\/([^/]+)(?:\/(photo))?)?$/.exec(route)
+      if (mX) { await exercices(req, res, u, mX[1] === undefined ? undefined : decodeURIComponent(mX[1]), mX[2], url); return true }
       const mE = /^\/e\/([^/]+)(?:\/([^/]+))?$/.exec(route)
       if (mE) { await entites(req, res, u, decodeURIComponent(mE[1]), mE[2] === undefined ? undefined : decodeURIComponent(mE[2])); return true }
       if (route === '/fichiers') { await fichiers(req, res, u, url); return true }
