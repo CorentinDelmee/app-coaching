@@ -61,6 +61,8 @@ export function creerStoreSqlite(db) {
     async ecrire(entite, o, { versionAttendue } = {}) {
       const attendue = versionAttendueDe(versionAttendue) ?? null
       let r
+      // Version attendue mais ligne disparue (supprimée entre-temps) : conflit, jamais de recréation (audit R1).
+      if (attendue !== null && (entite === 'profils' || ENTITES_VERSIONNEES.has(entite)) && !lire(entite, o.id)) throw erreurConflit(null)
       if (entite === 'profils') {
         r = db.prepare(`INSERT INTO profiles (id, role, identifiant, nom, tarif, lieu_defaut, modules, archive, preferences, consentement_le, cree_le, fiche, version)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1) ON CONFLICT(id) DO UPDATE SET role = excluded.role, identifiant = excluded.identifiant,

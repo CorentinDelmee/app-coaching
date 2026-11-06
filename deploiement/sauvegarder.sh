@@ -13,7 +13,7 @@ DB=$D/app.db
 FICHIERS=$D/fichiers
 OUT=$D/sauvegardes
 ETAT=$D/derniere-sauvegarde.txt
-JOUR=$(date +%F)
+JOUR=$(date +%F-%H%M) # l'heure évite qu'une sauvegarde faite au déploiement écrase celle de la nuit ; la purge (-name 'app-*') est inchangée
 F=$OUT/app-$JOUR.db
 DEST=${BACKUP_AGE_RECIPIENT:-}
 [ -f "$DB" ] || { echo "Pas encore de base ($DB) : rien à sauvegarder."; return 0; }

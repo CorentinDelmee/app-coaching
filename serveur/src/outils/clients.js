@@ -71,7 +71,8 @@ export function outilsClients(ctx) {
       if (!v.ok) throw new ErreurService(`Profil invalide : ${v.erreurs.join(' ; ')}`, 'VALIDATION')
       try { await backend.ecrire('profils', maj, { versionAttendue: versionDe(p) }); return maj } catch (e) {
         if (e?.code !== 'CONFLIT' || essai) throw e
-        p = (await backend.un('profils', p.id)) ?? p
+        p = await backend.un('profils', p.id)
+        if (!p) throw new ErreurService('Ce client vient d\'être supprimé : rien n\'a été écrit.', 'CLIENT_INTROUVABLE')
       }
     }
   }

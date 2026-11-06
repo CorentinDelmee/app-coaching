@@ -24,7 +24,8 @@ export const erreurConflit = (actuel) => new ErreurData('CONFLIT', MESSAGE_CONFL
 export function versionner(entite, actuel, obj, versionAttendue) {
   if (!ENTITES_VERSIONNEES.has(entite)) return obj
   const attendue = versionAttendueDe(versionAttendue)
-  if (attendue !== undefined && actuel && attendue !== versionDe(actuel)) throw erreurConflit(actuel)
+  if (attendue !== undefined && !actuel) throw erreurConflit(null) // ligne supprimée entre-temps : pas de recréation (audit R1)
+  if (attendue !== undefined && attendue !== versionDe(actuel)) throw erreurConflit(actuel)
   return { ...obj, version: actuel ? versionDe(actuel) + 1 : 1 }
 }
 

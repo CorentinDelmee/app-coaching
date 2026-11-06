@@ -71,6 +71,17 @@ if [ -n "$CLE_RESA" ] && [ "$CLE_RESA" != "$(lire RESA_ADMIN_KEY)" ]; then
   echo "ATTENTION : RESA_ADMIN_KEY diffère entre /etc/coaching-resa.env et $ENV_FILE (écran Réservations en erreur)."
 fi
 
+# 0. Sauvegarde AVANT toute modification : le redémarrage de l'étape 5 applique les migrations de la base (audit M5/R2).
+# Échec = arrêt net, rien n'a été touché. Le fichier porte l'heure : il ne remplace pas la sauvegarde de la nuit (voir sauvegarder.sh).
+if systemctl cat app-coaching-sauvegarde.service >/dev/null 2>&1; then
+  if ! systemctl start app-coaching-sauvegarde.service; then
+    echo "ÉCHEC : sauvegarde avant déploiement impossible (journalctl -u app-coaching-sauvegarde -n 30). Rien n'a été modifié ; relance deployer.sh une fois réglé."
+    exit 1
+  fi
+else
+  echo "Unité de sauvegarde absente (première installation ?) : pas de sauvegarde avant déploiement."
+fi
+
 # 1. Nouvelle version testée et construite sur une copie d'essai (avec les dépendances de test et de build)
 sudo -u "$APP_USER" git -C "$DEPOT" fetch -q origin main
 ANCIEN=$(sudo -u "$APP_USER" git -C "$DEPOT" rev-parse HEAD)
@@ -145,11 +156,6 @@ systemctl daemon-reload
 chown -R "$APP_USER:$APP_USER" /var/lib/app-coaching/sauvegardes /var/lib/app-coaching/derniere-sauvegarde.txt 2>/dev/null || true
 systemctl enable app-coaching >/dev/null
 systemctl enable --now app-coaching-sauvegarde.timer >/dev/null
-# Sauvegarde juste avant le redémarrage : c'est lui qui applique les migrations de la base (audit M5). Échec = on s'arrête, l'ancienne version continue de tourner.
-if ! systemctl start app-coaching-sauvegarde.service; then
-  echo "ÉCHEC : sauvegarde avant migration impossible (journalctl -u app-coaching-sauvegarde -n 30). Rien n'est redémarré ; relance deployer.sh une fois réglé."
-  exit 1
-fi
 systemctl restart app-coaching
 OK=0
 for _ in 1 2 3 4 5 6 7 8 9 10; do
