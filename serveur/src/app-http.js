@@ -1,8 +1,8 @@
 // API de l'app (navigateur) : /api/app/*. Session par cookie signé, règles d'accès = policies RLS de supabase/schema.sql.
 // Contrat : docs/CONTRAT-VPS.md (« Formes JSON exactes » fait foi). Magasin : SQLite (magasin-sqlite.js).
 import { createHash, createHmac, randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
-import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
-import { join, posix } from 'node:path'
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, rmdirSync, statSync, writeFileSync } from 'node:fs'
+import { dirname, join, posix, sep } from 'node:path'
 import { ENTITES, clientDe, visiblePar } from '../../src/data/entites.js'
 import { accesSante } from '../../src/domain/consentement.js'
 import { LONGUEUR_CODE_MIN } from '../../src/domain/identifiants.js'
@@ -20,20 +20,41 @@ const RE_PHOTO_ID = /^p-[0-9a-f]{12}$/
 const DOSSIER_PHOTOS = '_exercices'
 const IDS_PROFIL_RESERVES = new Set(['exercices', DOSSIER_PHOTOS])
 
-/** Migration unique (idempotente) : l'ancien dossier public « exercices » devient « _exercices », et les URL de photos suivent. */
-export async function migrerPhotos({ store, fichiersDir }) {
+const RE_PHOTO_FICHIER = /^p-[0-9a-f]{12}\.(jpg|png|webp)$/
+const estLien = (chemin) => { try { return lstatSync(chemin).isSymbolicLink() } catch { return false } }
+
+/**
+ * Migration (idempotente, relançable) : l'ancien dossier public « exercices » devient « _exercices », et les URL de photos suivent.
+ * Seuls les fichiers p-<hex12>.(jpg|png|webp) sont déplacés, un par un, sans jamais écraser ; une URL est réécrite dès que son fichier est en place.
+ * Un dossier qui est un lien symbolique n'est jamais touché. Chaque problème est journalisé, le reste continue.
+ */
+export async function migrerPhotos({ store, fichiersDir, log = (...a) => console.error('[migrerPhotos]', ...a) }) {
   const ancien = join(fichiersDir, 'exercices'), nouveau = join(fichiersDir, DOSSIER_PHOTOS)
+  if (estLien(nouveau)) { log('« _exercices » est un lien symbolique : migration ignorée'); return }
   if (existsSync(ancien)) {
-    if (!existsSync(nouveau)) renameSync(ancien, nouveau)
+    if (estLien(ancien)) log('« exercices » est un lien symbolique : ignoré')
     else {
-      for (const f of readdirSync(ancien)) renameSync(join(ancien, f), join(nouveau, f))
-      rmSync(ancien, { recursive: true, force: true })
+      try {
+        mkdirSync(nouveau, { recursive: true })
+        for (const f of readdirSync(ancien)) {
+          try {
+            if (!RE_PHOTO_FICHIER.test(f) || !lstatSync(join(ancien, f)).isFile()) { log(`fichier ignoré (pas une photo) : ${f}`); continue }
+            if (existsSync(join(nouveau, f))) { log(`fichier déjà présent dans _exercices, non écrasé : ${f}`); continue }
+            renameSync(join(ancien, f), join(nouveau, f))
+          } catch (e) { log(`déplacement impossible : ${f}`, e.message) }
+        }
+        try { rmdirSync(ancien) } catch { /* non vide : on laisse ce qui reste */ }
+      } catch (e) { log('dossier non migré', e.message) }
     }
   }
   for (const ex of await store.tout('exercices')) {
-    if (typeof ex.photo?.url === 'string' && ex.photo.url.includes('chemin=exercices%2F')) {
-      await store.ecrire('exercices', { ...ex, photo: { ...ex.photo, url: ex.photo.url.replace('chemin=exercices%2F', `chemin=${DOSSIER_PHOTOS}%2F`) } })
-    }
+    const url = ex.photo?.url
+    if (typeof url !== 'string' || !url.includes('chemin=exercices%2F')) continue
+    try {
+      const nom = decodeURIComponent(url.split('chemin=exercices%2F')[1] ?? '')
+      if (!RE_PHOTO_FICHIER.test(nom) || !existsSync(join(nouveau, nom))) { log(`URL non réécrite (fichier absent de _exercices) : ${ex.id}`); continue }
+      await store.ecrire('exercices', { ...ex, photo: { ...ex.photo, url: url.replace('chemin=exercices%2F', `chemin=${DOSSIER_PHOTOS}%2F`) } })
+    } catch (e) { log(`URL non réécrite : ${ex.id}`, e.message) }
   }
 }
 const RE_IDENTIFIANT = /^[a-z0-9][a-z0-9._-]{1,39}$/
@@ -167,7 +188,7 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
   if (!config.sessionSecret || config.sessionSecret.length < 32) throw new Error('SESSION_SECRET manquant ou trop court (32 caractères minimum)')
   const secure = !!config.production
   const optsCookie = `HttpOnly; SameSite=Strict; Path=/${secure ? '; Secure' : ''}`
-  const migration = migrerPhotos({ store, fichiersDir: config.fichiersDir }).catch(() => {}) // les routes d'exercices et de fichiers l'attendent
+  const migration = migrerPhotos({ store, fichiersDir: config.fichiersDir }).catch((e) => console.error('[migrerPhotos]', e.message)) // les routes d'exercices et de fichiers l'attendent
   const NOM_COOKIE = secure ? '__Host-sid' : 'sid' // __Host- : Secure, Path=/, sans Domain (non posable par un sous-domaine)
   const RE_COOKIE = new RegExp(`(?:^|;\\s*)${NOM_COOKIE}=([^;]+)`)
   // Connexion : seuls les ÉCHECS comptent. IP+compte 5 / 15 min ; compte seul 50 (un tiers ne verrouille pas le compte) ; IP seule 30.
@@ -261,6 +282,7 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
     if (req.method === 'PUT') {
       let obj = await lireJson(req)
       if (!obj || typeof obj !== 'object' || Array.isArray(obj) || obj.id !== id) throw new Erreur(400, 'invalide')
+      const ecrireLigne = async (existant) => {
       if (entite === 'exercices' && coach) { obj = nettoyerPut(obj, existant); if (!obj) throw new Erreur(400, 'invalide') } // champs calculés retirés, photo du serveur gardée
       if (!coach && ENTITES_SANTE.has(entite) && !accesSante(await store.un('profils', u.profil_id))) throw new Erreur(403, 'consentement_sante')
       if (!ENTITES[entite].valider(obj).ok) throw new Erreur(400, 'invalide')
@@ -286,13 +308,19 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
       }
       try { await store.ecrire(entite, obj) } catch { throw new Erreur(400, 'invalide') } // ex. client_id inexistant
       return envoyer(res, 200, { item: pourLecteur(entite, obj, u) })
+      }
+      // Exercices : le corps est lu, puis la ligne est relue SOUS le verrou des écritures (audit N1 : une photo posée entre-temps n'est pas écrasée).
+      return entite === 'exercices' && coach ? enSerie(async () => ecrireLigne(await store.un(entite, id))) : ecrireLigne(existant)
     }
     if (req.method === 'DELETE') {
-      if (!existant) throw new Erreur(404, 'introuvable')
-      if (!coach && (!ECRITURE_CLIENT.has(entite) || clientDe(entite, existant) !== u.profil_id)) throw new Erreur(403, 'interdit')
-      await store.supprimer(entite, id)
-      if (entite === 'exercices') supprimerPhoto(existant.photo)
-      return envoyer(res, 200, { ok: true })
+      const supprimerLigne = async (existant) => {
+        if (!existant) throw new Erreur(404, 'introuvable')
+        if (!coach && (!ECRITURE_CLIENT.has(entite) || clientDe(entite, existant) !== u.profil_id)) throw new Erreur(403, 'interdit')
+        await store.supprimer(entite, id)
+        if (entite === 'exercices') supprimerPhoto(existant.photo)
+        return envoyer(res, 200, { ok: true })
+      }
+      return entite === 'exercices' && coach ? enSerie(async () => supprimerLigne(await store.un(entite, id))) : supprimerLigne(existant)
     }
     throw new Erreur(405, 'methode')
   }
@@ -331,7 +359,7 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
     if (id === undefined) {
       if (req.method === 'GET') {
         const q = url.searchParams, f = Object.fromEntries(['q', 'categorie', 'muscle', 'materiel', 'niveau', 'video'].map((k) => [k, q.get(k) || '']))
-        if ((f.niveau && !NIVEAUX.includes(f.niveau)) || (f.video && !['aucune', 'propose', 'valide'].includes(f.video))) throw new Erreur(400, 'invalide')
+        if (Object.values(f).some((v) => v.length > 120) || (f.niveau && !NIVEAUX.includes(f.niveau)) || (f.video && !['aucune', 'propose', 'valide'].includes(f.video))) throw new Erreur(400, 'invalide')
         const limite = entier(q.get('limite'), 1, 500, 500), decalage = entier(q.get('decalage'), 0, 1e6, 0)
         // Filtres sans vidéo avant la préparation : seule la page demandée est préparée (le filtre « video » exige la vidéo calculée de chacun).
         if (f.video) {
@@ -365,15 +393,18 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
       if (req.method === 'GET') return rendre(200, await lire())
       if (req.method === 'PATCH') {
         if (!coach) throw new Erreur(403, 'interdit')
-        const actuel = await lire()
+        await lire() // 404 avant de lire le corps
         const parse = schemaPatch.safeParse(await lireJson(req))
         if (!parse.success) throw new Erreur(400, 'invalide')
-        const rattacher = lienCanonique(parse.data, parse.data.nom ?? actuel.nom)
-        const ex = appliquerPatch(actuel, parse.data)
-        if (!ENTITES.exercices.valider(ex).ok) throw new Erreur(400, 'invalide')
-        await store.ecrire('exercices', ex)
-        rattacher()
-        return rendre(200, ex)
+        return enSerie(async () => {
+          const actuel = await lire() // relue sous verrou : la photo courante n'est jamais remplacée par une ancienne
+          const rattacher = lienCanonique(parse.data, parse.data.nom ?? actuel.nom)
+          const ex = appliquerPatch(actuel, parse.data)
+          if (!ENTITES.exercices.valider(ex).ok) throw new Erreur(400, 'invalide')
+          await store.ecrire('exercices', ex)
+          rattacher()
+          return rendre(200, ex)
+        })
       }
       throw new Erreur(405, 'methode')
     }
@@ -396,11 +427,14 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
     if (!coach) throw new Erreur(403, 'interdit')
     const actuel = await lire()
     if (req.method === 'DELETE') {
-      if (!actuel.photo) return rendre(200, actuel)
-      const { photo, ...sans } = actuel
-      await store.ecrire('exercices', sans)
-      supprimerPhoto(photo)
-      return rendre(200, sans)
+      return enSerie(async () => {
+        const courant = await lire()
+        if (!courant.photo) return rendre(200, courant)
+        const { photo, ...sans } = courant
+        await store.ecrire('exercices', sans)
+        supprimerPhoto(photo)
+        return rendre(200, sans)
+      })
     }
     const type = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase()
     const ext = PHOTO_EXT[type]
@@ -456,9 +490,13 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
     if (!f) throw new Erreur(400, 'chemin_invalide')
     // Photos d'exercices : lisibles par tous les connectés, écrites seulement par les routes /exercices/:id/photo.
     const publique = f.proprietaire === DOSSIER_PHOTOS
+    if (!publique && IDS_PROFIL_RESERVES.has(f.proprietaire.toLowerCase())) throw new Erreur(403, 'interdit') // l'ancien « exercices » n'est plus un dossier (audit N2)
     if (publique && req.method !== 'GET') throw new Erreur(403, 'interdit')
     if (u.role !== 'coach' && !publique && f.proprietaire !== u.profil_id) throw new Erreur(403, 'interdit')
     const disque = join(config.fichiersDir, f.proprietaire, f.relatif.split('/')[1])
+    // Le dossier du propriétaire doit être un vrai dossier de fichiersDir, pas un lien vers ailleurs (audit N4).
+    const dossierSain = () => { try { return realpathSync(dirname(disque)) === join(realpathSync(config.fichiersDir), f.proprietaire) } catch { return false } }
+    if (existsSync(dirname(disque)) && !dossierSain()) throw new Erreur(403, 'interdit')
     if (req.method === 'POST') {
       const type = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase()
       if (!TYPES_FICHIER[type]?.includes(f.ext)) throw new Erreur(415, 'type_refuse')

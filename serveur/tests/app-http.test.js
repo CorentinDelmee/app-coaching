@@ -112,7 +112,7 @@ describe('session', () => {
     expect(l.resultat.compte).toMatch(/^[0-9a-f]{12}$/)
     expect(JSON.stringify(journalApp)).not.toMatch(/10\.4\.4|faux-code|alice/)
   })
-  it('attaque distribuée : 60 IP inconnues échouent -> IP connue + bon code passe, IP inconnue reste en 429', async () => {
+  it('attaque distribuée : 60 IP inconnues échouent -> IP connue + bon code passe, IP inconnue reste en 429', { timeout: 30000 }, async () => { // 60 hachages scrypt : lent quand la machine est chargée
     expect((await connecter('coach', 'code-secret-123', '10.8.8.8')).statut).toBe(200) // IP connue
     for (let i = 0; i < 60; i++) await connecter('coach', 'faux', `198.51.100.${i}`)
     expect((await connecter('coach', 'code-secret-123', '198.51.100.200')).statut).toBe(429)
