@@ -27,6 +27,7 @@ describe('medias (forme du contrat et ancienne forme)', () => {
     expect(nomMuscleDe({ musclesPrincipaux: ['fessiers'] })).toBe('Fessiers')
     expect(nomMuscleDe({ categories: ['poussee'] })).toBe('Pectoraux')
     expect(nomMuscleDe({})).toBe('')
+    expect(nomMuscleDe({ musclesPrincipaux: ['epaules'] })).toBe('Épaules')
   })
   it('photo : objet du contrat (chemin same-origin), chaîne, data-URL ; refuse javascript: et //hote', () => {
     expect(urlPhoto(CONTRAT)).toBe(CONTRAT.photo.url)

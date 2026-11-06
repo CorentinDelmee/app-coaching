@@ -39,7 +39,8 @@ export function muscleDe(exercice) {
 /** Nom affiché du groupe : le mot du coach s'il en a écrit un (« Fessiers »), sinon le nom de la teinte, sinon ''. */
 export function nomMuscleDe(exercice) {
   const libre = exercice?.musclesPrincipaux?.[0]
-  if (libre) return libre.charAt(0).toUpperCase() + libre.slice(1)
+  // mot du coach, sauf s'il est exactement le nom d'une teinte (« epaules » -> « Épaules », avec l'accent)
+  if (libre) return NOMS_MUSCLES[normal(libre)] || libre.charAt(0).toUpperCase() + libre.slice(1)
   const t = muscleDe(exercice)
   return t ? NOMS_MUSCLES[t] : ''
 }
