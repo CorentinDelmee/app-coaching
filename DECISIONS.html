@@ -44,7 +44,7 @@ a{color:var(--accent)}
 @media (max-width:640px){td,th{padding:8px 6px}.masquer-mobile{display:none}}
 </style></head>
 <body><div class="page">
-<header class="tete"><div><div class="surtitre">Décisions · app-coaching</div><h1>4 décisions à prendre</h1>
+<header class="tete"><div><div class="surtitre">Décisions · app-coaching</div><h1>5 décisions à prendre</h1>
 <p class="sous">Coche ton choix (la recommandation de REX est pré-cochée), ajoute un mot si besoin, puis <strong>Copier mes réponses</strong> et colle-les dans REX.</p></div>
 <a class="btn clair" href="TABLEAU-DE-BORD.html">← Tableau de bord</a></header>
 <form id="f">
@@ -76,11 +76,18 @@ a{color:var(--accent)}
 <span class="nom">Plus tard</span><div class="petit muted">Relance WhatsApp en attendant</div></label></div>
 <p class="petit"><strong>Pourquoi REX recommande Oui, notifications web (gratuit) :</strong> Gratuit, et c’est ce qui manque le plus par rapport à MyPTHub. Gros lot : à faire après la mise en ligne de Studio.</p>
 <textarea name="D12-note" placeholder="Une précision ? (facultatif)"></textarea>
-<p class="defaut">Sans réponse : Plus tard.</p></article>
+<p class="defaut">Sans réponse : Plus tard.</p></article><article class="carte decision" data-id="D13"><div class="surtitre">D13 · Données</div>
+<h3>Valider d’un coup les liens vidéo importés de MyPTHub ?</h3><p class="muted">Les exercices importés de MyPTHub ont des liens YouTube que tu avais choisis, mais ils apparaissent tous « proposés par Claude » (à valider), ce qui gonfle le bandeau d&#39;Aujourd&#39;hui.</p>
+<div class="options"><label class="option"><input type="radio" name="D13" value="Oui, tout valider à la mise en ligne" checked>
+<span class="nom">Oui, tout valider à la mise en ligne</span><span class="reco">Recommandé</span><div class="petit muted">Un script sur le serveur, avec sauvegarde avant</div></label><label class="option"><input type="radio" name="D13" value="Non, je les valide un par un" >
+<span class="nom">Non, je les valide un par un</span><div class="petit muted">Filtre « Vidéo à valider » dans Exercices</div></label></div>
+<p class="petit"><strong>Pourquoi REX recommande Oui, tout valider à la mise en ligne :</strong> C&#39;est toi qui les avais choisis dans MyPTHub ; seuls les liens posés par Claude doivent rester à valider.</p>
+<textarea name="D13-note" placeholder="Une précision ? (facultatif)"></textarea>
+<p class="defaut">Sans réponse : Rien ne change : ils restent à valider.</p></article>
 <div class="flottant"><button type="button" class="btn" id="copier">Copier mes réponses</button></div>
 </form>
 <section class="carte"><h2>Déjà tranché</h2><table><tbody><tr><td><strong>D3</strong> · Quelle maquette pour l app client ?</td><td>M5 comme base (RETOURS-MAQUETTES-V1 : « Base : M5 », confirmé par Corentin le 26/10 : app exactement comme M5 sur accueil, menu, jaune, surbrillance)</td></tr><tr><td><strong>D1</strong> · Combien de temps garder les données de santé après la fin du coaching ?</td><td>3 mois <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D2</strong> · Accepter des clients mineurs dans l app ?</td><td>Majeurs seulement <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D4</strong> · Police des chiffres du chrono ?</td><td>Barlow Semi Condensed <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D5</strong> · Message d&#39;accueil du dashboard ?</td><td>« Prêt, Fabien ? » <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D6</strong> · Texte sur l&#39;aplat jaune ?</td><td>Foncé <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D7</strong> · Bouton jaune en ambiance claire : ajouter un liseré ?</td><td>Sans liseré <span class="badge attente">provisoire</span></td></tr><tr><td><strong>D9</strong> · Où héberger les données des clients d&#39;app-coaching (douleurs, mesures, nutrition) ?</td><td>VPS commun (Corentin, 2026-11-03 : trop de frais sinon) ; risque accepté : les associés root peuvent techniquement lire les données.</td></tr></tbody></table></section>
-<footer>Généré par REX · 06/11/2026 12:43:34 · Pour un PDF : Imprimer → Enregistrer au format PDF</footer></div><script>
+<footer>Généré par REX · 06/11/2026 13:00:22 · Pour un PDF : Imprimer → Enregistrer au format PDF</footer></div><script>
 document.getElementById("copier")?.addEventListener("click",async()=>{
  const lignes=["Réponses aux décisions (app-coaching) :"];
  document.querySelectorAll("article.decision").forEach(a=>{const id=a.dataset.id;const c=a.querySelector("input:checked");const n=a.querySelector("textarea").value.trim();

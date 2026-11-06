@@ -672,6 +672,27 @@
       "si_pas_de_reponse": "Plus tard.",
       "statut": "ouverte",
       "provisoire": false
+    },
+    {
+      "id": "D13",
+      "categorie": "Données",
+      "question": "Valider d’un coup les liens vidéo importés de MyPTHub ?",
+      "contexte": "Les exercices importés de MyPTHub ont des liens YouTube que tu avais choisis, mais ils apparaissent tous « proposés par Claude » (à valider), ce qui gonfle le bandeau d'Aujourd'hui.",
+      "options": [
+        {
+          "nom": "Oui, tout valider à la mise en ligne",
+          "resume": "Un script sur le serveur, avec sauvegarde avant"
+        },
+        {
+          "nom": "Non, je les valide un par un",
+          "resume": "Filtre « Vidéo à valider » dans Exercices"
+        }
+      ],
+      "recommandation": "Oui, tout valider à la mise en ligne",
+      "pourquoi": "C'est toi qui les avais choisis dans MyPTHub ; seuls les liens posés par Claude doivent rester à valider.",
+      "si_pas_de_reponse": "Rien ne change : ils restent à valider.",
+      "statut": "ouverte",
+      "provisoire": false
     }
   ],
   "avancees": [
