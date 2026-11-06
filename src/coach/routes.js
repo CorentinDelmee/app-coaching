@@ -1,6 +1,7 @@
 // Routes du tableau de bord coach, montées sous « /coach » (ajoutées au routeur par une seule ligne).
 import { ouvrirSessionCoach } from './store.js'
 import ecranAujourdhui from './studio/ecrans/aujourdhui/routes.js'
+import ecranClients from './studio/ecrans/clients/routes.js'
 import ecranAgenda from './studio/ecrans/agenda/routes.js'
 import ecranQuestionnaires from './studio/ecrans/questionnaires/routes.js'
 
@@ -18,8 +19,7 @@ export const routeCoach = {
     ...studio(ecranAujourdhui),
     // Démo des composants Studio (vignette, panneau, élément partagé) : en développement seulement.
     ...(import.meta.env.DEV ? [{ path: 'studio-demo', component: () => import('./studio/DemoComposants.vue'), meta: { studio: true } }] : []),
-    { path: 'clients', component: () => import('./views/ClientsView.vue') },
-    { path: 'clients/:id', component: () => import('./views/ClientView.vue'), props: true },
+    ...studio(ecranClients),
     { path: 'exercices', component: () => import('./views/ExercicesView.vue') },
     { path: 'bibliotheque', component: () => import('./views/BibliothequeVideosView.vue') },
     { path: 'seances', component: () => import('./views/SeancesView.vue') },
