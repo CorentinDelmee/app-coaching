@@ -107,7 +107,8 @@ export function outilsBibliotheque(ctx) {
             maj = appliquerPatch(ex, modifs) // appliquerPatch gère l'effacement des champs
             try { await backend.ecrire('exercices', maj, { versionAttendue: versionDe(ex) }); break } catch (e) {
               if (e?.code !== 'CONFLIT' || essai) throw e
-              ex = (await backend.un('exercices', ex.id)) ?? ex
+              ex = await backend.un('exercices', ex.id)
+              if (!ex) throw new ErreurService('Cet exercice vient d\'être supprimé : rien n\'a été écrit.', 'INTROUVABLE')
             }
           }
         }

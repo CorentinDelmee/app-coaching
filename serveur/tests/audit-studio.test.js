@@ -112,3 +112,21 @@ describe('M2 : les outils MCP n\'écrasent jamais une écriture de l\'écran', (
     expect(await lire('profils', 'alice')).toMatchObject({ nom: 'Alice D.', tarif: 77 })
   })
 })
+
+describe('R1 : une ligne supprimée n\'est jamais recréée par une écriture versionnée', () => {
+  it('magasin : version attendue + ligne absente -> CONFLIT, rien recréé ; sans version -> création normale', async () => {
+    await app.backend.ecrire('exercices', { id: 'ex-r1', nom: 'R1', categories: [] })
+    await app.backend.supprimer('exercices', 'ex-r1')
+    await expect(app.backend.ecrire('exercices', { id: 'ex-r1', nom: 'R1', categories: [] }, { versionAttendue: 1 })).rejects.toMatchObject({ code: 'CONFLIT' })
+    expect(await app.backend.un('exercices', 'ex-r1')).toBeFalsy()
+    await app.backend.ecrire('exercices', { id: 'ex-r1', nom: 'R1', categories: [] })
+    expect(await app.backend.un('exercices', 'ex-r1')).toBeTruthy()
+  })
+  it('outil modifier_exercice : exercice supprimé entre la lecture et l\'écriture -> erreur, pas de résurrection', async () => {
+    await app.backend.ecrire('exercices', { id: 'ex-r1b', nom: 'Rebond', categories: [] })
+    const orig = app.backend.ecrire.bind(app.backend)
+    app.backend.ecrire = async (entite, obj, opt) => { if (entite === 'exercices') { app.backend.ecrire = orig; await app.backend.supprimer('exercices', 'ex-r1b') } return orig(entite, obj, opt) }
+    try { await expect(outil('modifier_exercice', { exercice: 'ex-r1b', description: 'x' })).rejects.toThrow() } finally { app.backend.ecrire = orig }
+    expect(await app.backend.un('exercices', 'ex-r1b')).toBeFalsy()
+  })
+})
