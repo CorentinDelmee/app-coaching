@@ -213,7 +213,7 @@
       "statut": "fait",
       "avancement": 100,
       "qui": "REX + 20 agents",
-      "note": "Toutes les pages coach en Studio sur main (c27ea4a), 775 tests, banc e2e 263/263, 4 audits sécurité (0 critique restant), protection contre les écrasements Claude/2e appareil. Non déployé : attend ta validation."
+      "note": "Toutes les pages coach en Studio sur main (c27ea4a), 775 tests, banc e2e 263/263, 4 audits sécurité (0 critique restant), protection contre les écrasements Claude/2e appareil. Validé par Corentin le 2026-11-06 ; anciens écrans supprimés. Reste : mise en ligne (deployer.sh)."
     }
   ],
   "taches_humaines": [
@@ -393,8 +393,8 @@
       "qui": "Corentin",
       "echeance": "",
       "duree": "20 min",
-      "statut": "a_faire",
-      "comment": "Dans Projets/app-coaching : `npm run dev` puis http://localhost:5173/coach (données de démo). Revue critique : revues/studio-coach-2026-11-06.md."
+      "statut": "fait",
+      "comment": "Validé par Corentin le 2026-11-06."
     },
     {
       "titre": "Mettre Studio en ligne (après validation)",
