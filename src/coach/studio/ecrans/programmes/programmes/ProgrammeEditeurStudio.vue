@@ -17,12 +17,12 @@ import Poignee from '../commun/Poignee.vue'
 import { NOMS_MUSCLES, teintesSeance } from '../commun/exercices.js'
 import { COLONNES, JOURS, colonnes, convertirMode, ecrireSemaine, idsSemaine, nomColonne, poser, pourEcriture, raisonInvalide } from './planning.js'
 
-// CoachLayout remonte la vue quand le chemin change (clé = r.path) : après la création (/nouveau -> /<id>),
-// on retrouve la semaine et le jour ciblé grâce à ce mémo de module.
+// Mémo de module (semaine, jour ciblé) : reste utile si la vue est remontée (même chemin rouvert).
 const reprise = new Map()
 </script>
 
 <script setup>
+import { remplacerAdresse } from '../commun/adresse.js'
 const props = defineProps({ id: { type: String, required: true } })
 const route = useRoute()
 const router = useRouter()
@@ -49,8 +49,8 @@ const s = useSauvegardeAuto(async (p) => {
     }
     cree = true
     estCree.value = true
-    reprise.set(p.id, { semaine: semaine.value, jourActif: jourActif.value })
-    router.replace(`/coach/programmes/${p.id}`)
+    // Adresse mise à jour sans navigation : l'éditeur n'est pas remonté (saisie, glisser et semaine courante conservés).
+    if (/\/nouveau$/.test(location.pathname)) remplacerAdresse(`/coach/programmes/${p.id}`)
   } else {
     await data.programmes.modifier(p.id, p)
   }
