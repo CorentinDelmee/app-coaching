@@ -127,7 +127,7 @@ export function aRelancer({ clients = [], questionnaires = [], reponses = [], to
       const message = `Bonjour ${prenom}, petit rappel : le questionnaire « ${q.nom} » t'attend dans l'appli. Merci !`
       sortie.push({
         id: `q:${c.id}:${q.id}`, clientId: c.id, nom: c.nom, raison: 'questionnaire',
-        detail: `${q.frequence === 'hebdo' ? 'Bilan de la semaine' : 'Questionnaire'} « ${q.nom} » à remplir`, message, lienWhatsApp: lienWhatsApp('', message)
+        detail: `« ${q.nom} » à remplir${q.frequence === 'hebdo' ? ' cette semaine' : ''}`, message, lienWhatsApp: lienWhatsApp('', message)
       })
     }
     const aVenir = tous.some((r) => r.clientId === c.id && r.date >= jour && !r.faite)

@@ -27,7 +27,7 @@
 .st-auj-ok { margin: 0; display: flex; align-items: center; gap: 8px; color: var(--st-ok); font-weight: 600; min-height: 44px; }
 
 /* Frise de la journée : le moment fort */
-.st-auj-frise { position: relative; margin: 4px 0 18px; padding-top: 10px; }
+.st-auj-frise { position: relative; margin: 4px 0 18px; padding-top: 10px; overflow-x: clip; }
 .st-auj-piste { position: relative; height: 14px; border-radius: 7px; background: var(--st-surface-2); overflow: hidden; }
 .st-auj-plot { position: absolute; top: 0; bottom: 0; border-radius: 7px; background: var(--st-encre); transform-origin: left center; transform: scaleX(0); transition: transform 620ms var(--st-vaul); transition-delay: calc(240ms + var(--n) * 60ms); }
 .st-auj-plot.is-passe { background: #A9A59E; }
@@ -139,3 +139,9 @@ a.st-auj-nom:hover { text-decoration: underline; text-underline-offset: 3px; }
   .st-auj-plot, .st-auj-curseur { transition: none !important; }
   .st-auj-squelette { animation: none !important; }
 }
+
+/* Lignes des petites listes : toute la ligne mène à la fiche (cible large), les boutons restent au-dessus */
+.st-auj-mini li { position: relative; border-radius: var(--st-r-m); padding: 4px 6px; margin: 0 -6px; transition: background var(--st-d-court); }
+.st-auj-mini li:has(a.st-auj-nom):hover { background: var(--st-fond); }
+.st-auj-mini a.st-auj-nom::after { content: ''; position: absolute; inset: 0; border-radius: var(--st-r-m); }
+.st-auj-mini .st-btn, .st-auj-mini .st-puce { position: relative; z-index: 1; }

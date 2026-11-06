@@ -82,7 +82,7 @@ const messageRelance = (r) => `Relancer ${r.nom} sur WhatsApp (${r.raison === 'q
 </script>
 
 <template>
-  <div class="st-app st-auj">
+  <div class="st-auj">
     <header class="st-auj-entete">
       <div>
         <p class="st-auj-date">{{ dateDuJour(jour) }}</p>

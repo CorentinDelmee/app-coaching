@@ -19,7 +19,7 @@ onMounted(charger)
 </script>
 
 <template>
-  <div class="st-app st-auj st-auj-alertes-page">
+  <div class="st-auj st-auj-alertes-page">
     <header class="st-auj-entete">
       <div>
         <p class="st-auj-date"><RouterLink to="/coach/aujourdhui">Aujourd’hui</RouterLink> · Alertes</p>
