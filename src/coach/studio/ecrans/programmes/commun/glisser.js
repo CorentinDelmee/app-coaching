@@ -40,7 +40,7 @@ export function creerGlisser({ surDeposer, surAjouter = () => false, capturer, r
   function conclure(message, avant) {
     if (!message) return
     annoncer(message)
-    toast(message, { action: 'Annuler', surAction: () => { restaurer(avant); annoncer('Déplacement annulé') }, duree: 5000 })
+    toast(message, { action: 'Annuler', surAction: () => { restaurer(avant); annoncer('Déplacement annulé') }, duree: 8000 })
   }
 
   // ---------------------------------------------------------------- pointeur

@@ -11,7 +11,7 @@
 }
 .st-prog .st-prog-s-nom:hover { border-color: var(--st-filet); }
 .st-prog .st-prog-s-nom:focus-visible { border-color: var(--st-filet-fort); background: var(--st-surface); box-shadow: none; outline: 2.5px solid var(--st-encre); outline-offset: 2px; }
-@media (max-width: 900px) { .st-prog .st-prog-s-nom { font-size: 28px; } }
+@media (max-width: 900px) { .st-prog .st-prog-s-nom { font-size: 28px; min-height: 44px; } }
 
 .st-prog-s-probleme { display: flex; align-items: center; gap: 8px; margin: -8px 0 16px; padding: 10px 14px; border-radius: 14px; background: var(--st-propose-fond); color: var(--st-propose); font-weight: 600; font-size: 14px; }
 .st-prog-s-probleme svg { flex: none; }
@@ -135,6 +135,13 @@
 .st-prog-s-vide p { margin: 0; }
 .st-prog-s-vide b { color: var(--st-encre); }
 .st-prog-s-ajouts { display: flex; flex-wrap: wrap; gap: 8px; }
+/* Toast de l'éditeur : dans la colonne de la bibliothèque (ordinateur) ou au-dessus des boutons d'ajout collants (téléphone),
+   jamais par-dessus « + Exercice / Superset / Circuit ». ToastSt est partagé : surcharge limitée à cette page. */
+@media (min-width: 901px) {
+  .st-app:has(.st-prog-s) .st-toast { left: calc(var(--st-nav) + clamp(16px, 3vw, 40px)); width: 300px; max-width: 300px; transform: translateY(calc(100% + 60px)); }
+  .st-app:has(.st-prog-s) .st-toast.is-vu { transform: none; }
+}
+@media (max-width: 900px) { .st-app:has(.st-prog-s) .st-toast { bottom: calc(156px + env(safe-area-inset-bottom)); } }
 
 .st-prog-s-charge { display: grid; gap: 14px; margin-top: 16px; }
 .st-prog-s-charge span { height: 120px; border-radius: var(--st-r-l); background: var(--st-surface-2); animation: st-prog-pulse 1.2s ease-in-out infinite alternate; }

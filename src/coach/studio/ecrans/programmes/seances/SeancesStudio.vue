@@ -12,6 +12,7 @@ import Puce from '../../../Puce.vue'
 import Filtres from '../../../Filtres.vue'
 import { toast } from '../../../toast.js'
 import { NOMS_MUSCLES, sansAccents, teintesSeance } from '../commun/exercices.js'
+import { ignorerClics } from '../commun/clics.js'
 
 const router = useRouter()
 const workouts = ref([])
@@ -70,6 +71,7 @@ async function dupliquer() {
     const copie = dupliquerWorkout(workout, cible || null, uuid, nom)
     await data.workouts.creer(copie)
     duplication.value = null
+    ignorerClics() // double-clic sur « Dupliquer » : le 2e clic ne doit pas ouvrir la carte qui remonte
     await charger()
     toast(`Séance copiée ${cible ? `pour ${nomClient(cible)}` : 'en modèle'}`, { action: 'Ouvrir', surAction: () => router.push(`/coach/seances/${copie.id}`) })
   } catch (e) {
@@ -125,7 +127,7 @@ async function archiver(w) {
           </select>
         </label>
         <button class="st-btn st-btn--encre" type="submit" :disabled="enCours">{{ enCours ? 'Copie…' : 'Dupliquer' }}</button>
-        <button class="st-btn" type="button" @click="duplication = null">Annuler</button>
+        <button class="st-btn" type="button" @click="duplication = null; ignorerClics()">Annuler</button>
       </div>
     </form>
     <p v-if="erreur" class="st-prog-l-erreur" role="alert">{{ erreur }}</p>

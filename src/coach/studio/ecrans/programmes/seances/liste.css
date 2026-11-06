@@ -26,7 +26,7 @@
 .st-prog-l-lien:focus-visible { outline: 2.5px solid var(--st-encre); outline-offset: -4px; border-radius: 16px; }
 .st-prog-l-carte:has(.st-prog-l-lien:focus-visible) { box-shadow: var(--st-ombre-2); }
 @keyframes st-prog-monte { from { transform: translateY(14px); } }
-.st-prog-l-lien h2 { margin: 0 0 6px; font-family: var(--st-titre); font-weight: 500; font-size: 21px; line-height: 1.15; letter-spacing: -.025em; color: var(--st-encre); }
+.st-prog-l-lien h2 { overflow-wrap: anywhere; margin: 0 0 6px; font-family: var(--st-titre); font-weight: 500; font-size: 21px; line-height: 1.15; letter-spacing: -.025em; color: var(--st-encre); }
 .st-prog-l-resume { margin: 0; font-size: 13.5px; font-weight: 600; color: var(--st-texte); }
 .st-prog-l-noms { margin: 4px 0 0; font-size: 13.5px; color: var(--st-doux); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .st-prog-l-muscles { margin: 6px 18px 0; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--st-doux); }
