@@ -43,14 +43,14 @@ const sauvegarde = useSauvegardeAuto(async () => { await new Promise((r) => setT
 
 async function ouvrir(e, elMedia) {
   const deja = !!ouvert.value
-  if (deja) await sauvegarde.maintenant()
+  if (deja) sauvegarde.maintenant() // pas d'attente : la sauvegarde finit en arrière-plan
   cascade.value = !deja
   lecture.value = false
   ouvert.value = e.id
   await nextTick()
   if (!deja && elMedia) volerVers(elMedia, panneau.value?.media(), { muscle: muscleDe(e) })
 }
-async function fermer() { await sauvegarde.maintenant(); ouvert.value = null }
+function fermer() { sauvegarde.maintenant(); ouvert.value = null }
 function voisin(d) {
   const n = liste.value[index.value + d]
   if (n) ouvrir(n, null)

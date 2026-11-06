@@ -1,5 +1,10 @@
 // Routes du tableau de bord coach, montées sous « /coach » (ajoutées au routeur par une seule ligne).
 import { ouvrirSessionCoach } from './store.js'
+import ecranAgenda from './studio/ecrans/agenda/routes.js'
+import ecranQuestionnaires from './studio/ecrans/questionnaires/routes.js'
+
+// Écrans Studio : chaque lot exporte ses routes (relatives à /coach) ; meta.studio ajouté ici.
+const studio = (routes) => routes.map((r) => ({ ...r, meta: { ...(r.meta || {}), studio: true } }))
 
 export const routeCoach = {
   path: '/coach',
@@ -21,10 +26,7 @@ export const routeCoach = {
     { path: 'seances/:id', component: () => import('./views/SeanceEditeur.vue'), props: true },
     { path: 'programmes', component: () => import('./views/ProgrammesView.vue') },
     { path: 'programmes/:id', component: () => import('./views/ProgrammeEditeur.vue'), props: true },
-    { path: 'questionnaires', component: () => import('./views/QuestionnairesView.vue') },
-    { path: 'questionnaires/:id', component: () => import('./views/QuestionnaireEditeur.vue'), props: true },
-    { path: 'agenda', component: () => import('./views/AgendaView.vue') },
-    { path: 'reservations', component: () => import('./views/ReservationsView.vue') },
-    { path: 'donnees', component: () => import('./views/DonneesView.vue') }
+    ...studio(ecranQuestionnaires),
+    ...studio(ecranAgenda)
   ]
 }

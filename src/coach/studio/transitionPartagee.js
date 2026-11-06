@@ -60,6 +60,20 @@ export function etapeFlip(a, b, p, { rayonDepart = 20, rayonArrivee = 28 } = {})
 
 const rect = (x) => (x && typeof x.getBoundingClientRect === 'function' ? x.getBoundingClientRect() : x)
 
+/**
+ * Rectangle d'arrivée « au repos » : le panneau est souvent encore en train d'entrer (translateY(100%) sur téléphone,
+ * translateX(24px) sur ordinateur) quand on mesure. On retire les translations des ancêtres pour viser sa place finale.
+ */
+export function rectFinal(el) {
+  const r = el.getBoundingClientRect()
+  let dx = 0, dy = 0
+  for (let n = el; n && n !== document.body; n = n.parentElement) {
+    const t = getComputedStyle(n).transform
+    if (t && t !== 'none') { const m = new DOMMatrixReadOnly(t); dx += m.m41; dy += m.m42 }
+  }
+  return { left: r.left - dx, top: r.top - dy, width: r.width, height: r.height }
+}
+
 export const mouvementReduit = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /**
@@ -74,7 +88,7 @@ export function volerVers(depuis, vers, o = {}) {
   const rien = { fini: Promise.resolve(), annuler() {} }
   if (!vers || typeof document === 'undefined' || mouvementReduit()) return rien
   const a = rect(depuis)
-  const b = vers.getBoundingClientRect()
+  const b = rectFinal(vers)
   if (!a || !a.width || !b.width || !b.height) return rien
   const { duree = 500, muscle = null, rayonDepart = 20, rayonArrivee = 28 } = o
 
