@@ -15,6 +15,7 @@ const { racine, couche, ouvrir, partir, retour } = usePageAnimee('/bienvenue')
 const identifiant = ref('')
 const code = ref('')
 const voir = ref(false)
+const resterConnecte = ref(true)
 const erreur = ref('')
 const occupe = ref(false)
 const bouton = ref(null)
@@ -46,7 +47,7 @@ async function envoyer() {
   if (!identifiant.value.trim() || !code.value) { erreur.value = 'Entrez votre identifiant et votre code.'; secouer(); return }
   occupe.value = true
   try {
-    const user = await data.connecter(identifiant.value.trim(), code.value)
+    const user = await data.connecter(identifiant.value.trim(), code.value, { resterConnecte: resterConnecte.value })
     // succès : un cercle d'accent naît du bouton, puis on entre dans l'app (le tableau de bord a sa propre entrée)
     const aller = () => { partir(); sauterFermeture(); router.replace(user.role === 'coach' ? '/coach' : '/') }
     ouvrirCercle(rideau.value, bouton.value, { onFini: aller })
@@ -83,6 +84,10 @@ async function envoyer() {
               <input v-model="code" :type="voir ? 'text' : 'password'" name="code" autocomplete="current-password" autocapitalize="none" spellcheck="false" placeholder="Votre code" />
               <button type="button" class="voir" :aria-pressed="voir" @click="voir = !voir">{{ voir ? 'Masquer' : 'Afficher' }}</button>
             </span>
+          </label>
+          <label class="cx-rester">
+            <input v-model="resterConnecte" type="checkbox" name="rester-connecte" />
+            <span>Rester connecté<small>Décochez sur un appareil partagé.</small></span>
           </label>
           <p v-if="erreur" class="cx-erreur" role="alert">{{ erreur }}</p>
           <button ref="bouton" class="gros" type="submit" :disabled="occupe">Se connecter</button>

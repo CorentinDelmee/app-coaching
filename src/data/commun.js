@@ -181,7 +181,8 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
   api.reservations = backend.reservations
 
   // --- Session ---------------------------------------------------------------------------------
-  api.connecter = (identifiant, code) => backend.connecter(identifiant.trim().toLowerCase(), code)
+  // options.resterConnecte (défaut true) : session de 30 jours prolongée à l'usage, sinon session du navigateur (12 h max).
+  api.connecter = (identifiant, code, options = {}) => backend.connecter(identifiant.trim().toLowerCase(), code, { resterConnecte: options.resterConnecte !== false })
   // À la déconnexion, la file hors connexion (séances non envoyées) est vidée : pas de données de santé qui restent sur un appareil partagé (audit M6).
   // L'interface prévient avant, tant que tailleFile() > 0.
   api.deconnecter = async () => {

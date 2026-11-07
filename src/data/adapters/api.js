@@ -74,8 +74,8 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
         if (e.code !== 'INTROUVABLE') throw e // déjà supprimé = succès
       }
     },
-    async connecter(identifiant, code) {
-      const r = await appel('POST', '/connexion', { corps: { identifiant, code }, contexte: 'connexion' })
+    async connecter(identifiant, code, { resterConnecte = true } = {}) {
+      const r = await appel('POST', '/connexion', { corps: { identifiant, code, resterConnecte }, contexte: 'connexion' })
       profilCache = r?.utilisateur
       if (!profilCache || profilCache.archive) {
         profilCache = null

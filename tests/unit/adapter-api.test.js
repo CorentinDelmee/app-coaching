@@ -22,7 +22,7 @@ describe('adaptateur api', () => {
     const { api, appels } = faux({ 'POST /api/app/connexion': [200, { utilisateur: coach }], 'POST /api/app/deconnexion': [200, {}], 'GET /api/app/moi': [401, {}] })
     expect((await api.connecter(' Corentin ', 'abc')).id).toBe('c0')
     expect(appels[0].credentials).toBe('same-origin')
-    expect(JSON.parse(appels[0].body)).toEqual({ identifiant: 'corentin', code: 'abc' })
+    expect(JSON.parse(appels[0].body)).toEqual({ identifiant: 'corentin', code: 'abc', resterConnecte: true })
     expect((await api.utilisateurCourant()).id).toBe('c0')
     await api.deconnecter()
     expect(await api.utilisateurCourant()).toBeNull() // 401 de /moi

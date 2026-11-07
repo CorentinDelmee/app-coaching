@@ -68,12 +68,39 @@ beforeAll(async () => {
 afterAll(() => { serveur?.close(); resa?.close(); rmSync(dossier, { recursive: true, force: true }) })
 
 describe('session', () => {
-  it('connexion : forme du contrat, cookie HttpOnly SameSite=Strict 12 h', async () => {
+  it('connexion : forme du contrat, cookie HttpOnly SameSite=Strict, « rester connecté » par défaut (30 jours)', async () => {
     const r = await connecter('alice', 'code-secret-123', '10.0.1.1')
     expect(r.statut).toBe(200)
     expect(r.json).toEqual({ utilisateur: { id: 'pa', identifiant: 'alice', role: 'client', profil_id: 'pa' } })
-    expect(r.setCookie).toMatch(/HttpOnly/); expect(r.setCookie).toMatch(/SameSite=Strict/); expect(r.setCookie).toMatch(/Max-Age=43200/)
-    expect((await appel('GET', '/api/app/moi', { cookie: r.cookie })).json.utilisateur.identifiant).toBe('alice')
+    expect(r.setCookie).toMatch(/HttpOnly/); expect(r.setCookie).toMatch(/SameSite=Strict/); expect(r.setCookie).toMatch(/Max-Age=2592000/)
+    const moi = await appel('GET', '/api/app/moi', { cookie: r.cookie })
+    expect(moi.json).toEqual({ utilisateur: { id: 'pa', identifiant: 'alice', role: 'client', profil_id: 'pa' } }) // ni compte ni session exposés
+    expect(moi.setCookie).toBe('') // session neuve : pas de renouvellement
+  })
+  it('resterConnecte: false : cookie de navigateur (sans Max-Age), 12 h côté serveur, jamais prolongé', async () => {
+    const r = await appel('POST', '/api/app/connexion', { corps: { identifiant: 'alice', code: 'code-secret-123', resterConnecte: false }, entetes: { 'X-Forwarded-For': '10.0.1.1', 'X-Proxy-Cle': PROXY } })
+    expect(r.statut).toBe(200)
+    expect(r.setCookie).not.toMatch(/Max-Age/)
+    expect((await appel('GET', '/api/app/moi', { cookie: r.cookie })).statut).toBe(200)
+    const vieille = `sid=${encodeURIComponent(signerSession('alice', 0, SECRET, Date.now() - 11 * 3600e3))}`
+    const m = await appel('GET', '/api/app/moi', { cookie: vieille })
+    expect(m.statut).toBe(200); expect(m.setCookie).toBe('')
+    expect((await appel('GET', '/api/app/moi', { cookie: `sid=${encodeURIComponent(signerSession('alice', 0, SECRET, Date.now() - 13 * 3600e3))}` })).statut).toBe(401)
+  })
+  it('session longue : prolongée à l\'usage après 1 jour, expirée après 30 jours sans usage, « L » non falsifiable', async () => {
+    const jour = 864e5
+    const ancienne = `sid=${encodeURIComponent(signerSession('alice', 0, SECRET, Date.now() - 2 * jour, true))}`
+    const m = await appel('GET', '/api/app/moi', { cookie: ancienne })
+    expect(m.statut).toBe(200)
+    expect(m.setCookie).toMatch(/Max-Age=2592000/)
+    expect(m.cookie).not.toBe(ancienne)
+    expect((await appel('GET', '/api/app/moi', { cookie: m.cookie })).statut).toBe(200)
+    expect((await appel('GET', '/api/app/moi', { cookie: `sid=${encodeURIComponent(signerSession('alice', 0, SECRET, Date.now() - 31 * jour, true))}` })).statut).toBe(401)
+    // Transformer une session courte en longue (ajouter « L ») casse la signature.
+    const courte = signerSession('alice', 0, SECRET).split('.')
+    expect(courte[courte.length - 2].startsWith('L')).toBe(false)
+    courte[courte.length - 2] = `L${Date.now() + 29 * jour}`
+    expect((await appel('GET', '/api/app/moi', { cookie: `sid=${encodeURIComponent(courte.join('.'))}` })).statut).toBe(401)
   })
   it('mauvais code : 401 générique ; sans cookie : 401', async () => {
     expect((await connecter('alice', 'faux', '10.0.1.2')).json).toEqual({ erreur: 'identifiants' })

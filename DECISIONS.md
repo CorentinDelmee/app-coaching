@@ -128,3 +128,4 @@
 - 2026-11-07 (Corentin) Import Notion, suite : créer un compte pour chaque fiche Notion sans client (codes dans un fichier privé hors dépôt) et aligner l'archivage sur Notion pour tous (« Actif » = actif, tout autre statut = archivé, profil et compte). Rapprochements « prénom seul » de l'essai acceptés (dont Didier Goreau = Didier de la fiche Christine & Didier).
 - 2026-11-07 (Corentin) Exceptions d'archivage : Muriel Darmon reste active, Sylvain Balandrade reste archivé ; Denis et Didier réactivés.
 - 2026-11-07 (Corentin) Natacha Lepaule (statut Notion vide, créée active par l'import) : archivée (profil + compte).
+- 2026-11-07 (Corentin) « Rester connecté » coché par défaut à la connexion : session de 30 jours prolongée à chaque usage (au plus 1 fois/jour), donc déconnexion seulement après 30 jours sans ouvrir l'app ; décoché : cookie de navigateur, 12 h max. Déconnexion et changement de code révoquent toujours toutes les sessions (sv).

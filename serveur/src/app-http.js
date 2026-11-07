@@ -12,6 +12,10 @@ import { slug } from './util.js'
 import { versionDe } from '../../src/data/versions.js'
 
 const SESSION_MS = 12 * 3600e3
+// « Rester connecté » (coché par défaut, demande de Corentin du 2026-11-07) : 30 jours, prolongés à chaque usage
+// (au plus une fois par jour) ; la session n'expire qu'après 30 jours sans ouvrir l'app. Révocable par sv comme avant.
+export const SESSION_LONGUE_MS = 30 * 864e5
+const RENOUVELER_APRES_MS = 864e5
 const JSON_MAX = 1024 * 1024
 const FICHIER_MAX = 5 * 1024 * 1024
 const PHOTO_MAX = 3 * 1024 * 1024 // photos d'exercices (l'écran réduit avant l'envoi)
@@ -75,8 +79,9 @@ export async function verifierCode(code, stocke) {
   return ref.length === test.length && timingSafeEqual(ref, test)
 }
 // Cookie sans état : « identifiant.sv.expiration.signature » (HMAC-SHA256). sv permet de révoquer.
-export function signerSession(identifiant, sv, secret, now = Date.now()) {
-  const corps = `${identifiant}.${sv}.${now + SESSION_MS}`
+// Session longue : expiration préfixée de « L » (signée comme le reste ; les anciens cookies restent valides).
+export function signerSession(identifiant, sv, secret, now = Date.now(), longue = false) {
+  const corps = `${identifiant}.${sv}.${longue ? `L${now + SESSION_LONGUE_MS}` : now + SESSION_MS}`
   return `${corps}.${createHmac('sha256', secret).update(corps).digest('base64url')}`
 }
 export function lireSession(valeur, secret, now = Date.now()) {
@@ -86,8 +91,10 @@ export function lireSession(valeur, secret, now = Date.now()) {
   const bonne = createHmac('sha256', secret).update(`${identifiant}.${sv}.${exp}`).digest('base64url')
   const a = Buffer.from(sig), b = Buffer.from(bonne)
   if (a.length !== b.length || !timingSafeEqual(a, b)) return null
-  if (!(Number(exp) >= now)) return null
-  return { identifiant, sv: Number(sv) }
+  const longue = exp.startsWith('L')
+  const fin = Number(longue ? exp.slice(1) : exp)
+  if (!(fin >= now)) return null
+  return { identifiant, sv: Number(sv), longue, fin }
 }
 
 // Limiteur glissant en mémoire (connexion : essais ratés et réussis comptés d'avance).
@@ -222,7 +229,8 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
     res.writeHead(statut, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', ...enTetes })
     res.end(JSON.stringify(corps))
   }
-  const cookieSession = (c) => `${NOM_COOKIE}=${encodeURIComponent(signerSession(c.identifiant, c.sv, config.sessionSecret, now()))}; Max-Age=${SESSION_MS / 1000}; ${optsCookie}`
+  // Session courte : cookie de navigateur (sans Max-Age, effacé à la fermeture) qui expire aussi côté serveur après 12 h.
+  const cookieSession = (c, longue = false) => `${NOM_COOKIE}=${encodeURIComponent(signerSession(c.identifiant, c.sv, config.sessionSecret, now(), longue))}; ${longue ? `Max-Age=${SESSION_LONGUE_MS / 1000}; ` : ''}${optsCookie}`
 
   // Utilisateur de la requête : cookie valide, compte actif, version de session à jour, profil non archivé.
   async function utilisateurDe(req) {
@@ -235,7 +243,7 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
     if (!c || c.sv !== s.sv || c.archive) return null
     const p = await store.un('profils', c.profil_id)
     if (!p || p.archive) return null
-    return { ...utilisateurPublic(c), compte: c }
+    return { ...utilisateurPublic(c), compte: c, session: s }
   }
 
   async function connexion(req, res, ip) {
@@ -257,7 +265,7 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
     parCouple.effacer(`${ip}|${identifiant}`)
     if (!connue) { parCompte.annuler(identifiant); parIp.annuler(ip) }
     retenirIp(identifiant, ip)
-    envoyer(res, 200, { utilisateur: utilisateurPublic(c) }, { 'Set-Cookie': cookieSession(c) })
+    envoyer(res, 200, { utilisateur: utilisateurPublic(c) }, { 'Set-Cookie': cookieSession(c, corps.resterConnecte !== false) })
   }
 
   // ---------- Entités ----------
@@ -610,13 +618,15 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
       const u = await utilisateurDe(req)
       if (!u) throw new Erreur(401, 'non_connecte')
       const coach = u.role === 'coach'
-      if (req.method === 'GET' && route === '/moi') { const { compte: _c, ...pub } = u; envoyer(res, 200, { utilisateur: pub }); return true }
+      // Session longue utilisée : prolongée (au plus une fois par jour). Une route qui pose son propre cookie l'emporte.
+      if (u.session.longue && u.session.fin - now() < SESSION_LONGUE_MS - RENOUVELER_APRES_MS) res.setHeader('Set-Cookie', cookieSession(u.compte, true))
+      if (req.method === 'GET' && route === '/moi') { const { compte: _c, session: _s, ...pub } = u; envoyer(res, 200, { utilisateur: pub }); return true }
       if (req.method === 'POST' && route === '/code') {
         const { ancien, nouveau } = await lireJson(req)
         if (typeof nouveau !== 'string' || nouveau.length < LONGUEUR_CODE_MIN || nouveau.length > 200) throw new Erreur(400, 'code_trop_court')
         if (!(await verifierCode(String(ancien ?? '').slice(0, 200), u.compte.hash))) throw new Erreur(403, 'ancien_code_faux')
         db.prepare('UPDATE comptes SET hash = ?, sv = sv + 1 WHERE identifiant = ?').run(await hacherCode(nouveau), u.identifiant)
-        envoyer(res, 200, { ok: true }, { 'Set-Cookie': cookieSession(compte(u.identifiant)) }) // les autres sessions sont révoquées
+        envoyer(res, 200, { ok: true }, { 'Set-Cookie': cookieSession(compte(u.identifiant), u.session.longue) }) // les autres sessions sont révoquées
         return true
       }
       if (req.method === 'POST' && route === '/comptes') {

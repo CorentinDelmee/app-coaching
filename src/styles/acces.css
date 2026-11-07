@@ -31,6 +31,11 @@
 .champ-code { position: relative; display: block; }
 .champ-code input { padding-right: 112px; }
 .champ-code .voir { position: absolute; right: 6px; top: 6px; bottom: 6px; min-width: 96px; border-radius: 16px; background: var(--surface-2); font-size: 14px; font-weight: 600; }
+.cx-rester { display: flex; align-items: center; gap: 14px; min-height: var(--cible); padding: 4px 2px; cursor: pointer; font-size: 16px; font-weight: 600; color: var(--texte); }
+.cx-rester input { flex: none; width: 26px; height: 26px; margin: 0; accent-color: var(--texte); cursor: pointer; }
+.cx-rester input:focus-visible { outline: 2px solid var(--accent-lisible); outline-offset: 3px; }
+.cx-rester span { display: flex; flex-direction: column; gap: 2px; }
+.cx-rester small { font-size: 14px; font-weight: 400; color: var(--texte-doux); }
 .cx-erreur { color: var(--texte); background: var(--surbrillance); border-radius: 16px; padding: 12px 16px; font-size: 15px; font-weight: 600; }
 .cx-demo { margin-top: 22px; display: flex; flex-direction: column; gap: 8px; }
 .cx-compte { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; min-height: 60px; padding: 10px 16px; border-radius: 18px; background: var(--surface-2); text-align: left; font-weight: 600; font-size: 16px; }
