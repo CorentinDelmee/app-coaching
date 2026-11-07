@@ -4,7 +4,8 @@
 //   DB_FILE=/var/lib/app-coaching/app.db node serveur/scripts/importer-notion.mjs <recap.md> --essai
 //   DB_FILE=/var/lib/app-coaching/app.db node serveur/scripts/importer-notion.mjs <recap.md>
 // Options : --creer (crée les clients absents ; hors --essai, --codes <fichier-prive> HORS du dépôt, jamais écrasé)
-//           --aligner-archivage (Notion « Actif » -> actif, tout autre statut -> archivé).
+//           --aligner-archivage (Notion « Actif » -> actif, tout autre statut -> archivé)
+//           --archivage-inchange "Nom App 1,Nom App 2" (exceptions : état d'archivage gardé tel quel).
 // --essai : transaction annulée, compte rendu de ce qui SERAIT fait. Sinon : sauvegarde (VACUUM INTO) puis import.
 import { DatabaseSync } from 'node:sqlite'
 import { existsSync, readFileSync, writeFileSync, chmodSync } from 'node:fs'
@@ -16,9 +17,11 @@ const essai = args.includes('--essai')
 const apercu = args.includes('--apercu')
 const creer = args.includes('--creer')
 const alignerArchivage = args.includes('--aligner-archivage')
+const iGarde = args.indexOf('--archivage-inchange')
+const archivageInchange = iGarde >= 0 ? String(args[iGarde + 1] || '').split(',').map((s) => s.trim()).filter(Boolean) : []
 const iCodes = args.indexOf('--codes')
 const fichierCodes = iCodes >= 0 ? args[iCodes + 1] : null
-const entree = args.find((a, i) => !a.startsWith('--') && (iCodes < 0 || i !== iCodes + 1))
+const entree = args.find((a, i) => !a.startsWith('--') && (iCodes < 0 || i !== iCodes + 1) && (iGarde < 0 || i !== iGarde + 1))
 const stop = (m) => { console.error(m); process.exit(2) }
 if (!entree || !existsSync(entree)) stop('Usage : [DB_FILE=…] node serveur/scripts/importer-notion.mjs <recap.md> (--apercu | --essai | rien = import réel)')
 const normalise = normaliser(readFileSync(entree, 'utf8'))
@@ -58,7 +61,7 @@ if (!essai) {
   db.prepare('VACUUM INTO ?').run(sauvegarde)
   try { chmodSync(sauvegarde, 0o600) } catch { /* */ }
 }
-const bilan = await importer({ db, backend: creerStoreSqlite(db) }, normalise, { essai, creer, alignerArchivage, avantValidation: ecrireCodes })
+const bilan = await importer({ db, backend: creerStoreSqlite(db) }, normalise, { essai, creer, alignerArchivage, archivageInchange, avantValidation: ecrireCodes })
 db.close()
 
 console.log(essai ? 'ESSAI : rien n\'a été écrit (transaction annulée).' : `Import terminé. Sauvegarde avant import : ${sauvegarde}`)

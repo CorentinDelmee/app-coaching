@@ -149,6 +149,11 @@ describe('importer --creer --aligner-archivage (base temporaire)', () => {
     await p('leon', 'Léon Souale', false) // Actif -> reste actif
     await p('marc', 'Marc Petit', false) // « Marc » Actif
   })
+  it('--archivage-inchange : l\'exception garde son état', async () => {
+    const b = await importer({ db, backend }, normaliser(MD), { essai: true, alignerArchivage: true, archivageInchange: ['zoé testeuse'] })
+    expect(b.lignes.find((l) => l.app === 'Zoé Testeuse').archivage).toBe('')
+    expect(b.lignes.find((l) => l.app === 'Zoé Testeuse').archive).toBe(true)
+  })
   afterAll(() => { db?.close(); rmSync(dossier, { recursive: true, force: true }) })
   const compte = (id) => db.prepare('SELECT * FROM comptes WHERE profil_id = ?').get(id)
 

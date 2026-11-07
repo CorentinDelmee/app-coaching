@@ -19,7 +19,7 @@ const TARIF_DEFAUT = 35
 const mots = (s) => norm(s).split(/[^a-z0-9]+/).filter(Boolean)
 export const estActif = (statut) => norm(statut || '') === 'actif'
 
-export async function importer({ db, backend }, normalise, { essai = false, creer = false, alignerArchivage = false, now = () => Date.now(), avantValidation = null } = {}) {
+export async function importer({ db, backend }, normalise, { essai = false, creer = false, alignerArchivage = false, archivageInchange = [], now = () => Date.now(), avantValidation = null } = {}) {
   if (normalise?.version !== 1 || normalise.source !== 'notion' || !Array.isArray(normalise.clients)) throw new Error('Fichier normalisé Notion invalide.')
   const api = creerApi(backend, { now })
   const bilan = { essai, lignes: [], nonTrouves: [], ambigus: [] }
@@ -120,7 +120,9 @@ export async function importer({ db, backend }, normalise, { essai = false, cree
     if (JSON.stringify(fiche) !== JSON.stringify(actuelle)) patch.fiche = fiche
     if (f.lieuDefaut && f.lieuDefaut !== p.lieuDefaut) patch.lieuDefaut = f.lieuDefaut
     let archivage = ''
-    if (alignerArchivage) {
+    // Exceptions de Corentin (--archivage-inchange) : ces clients gardent leur état actuel.
+    const garde = archivageInchange.some((n) => norm(n) === norm(p.nom))
+    if (alignerArchivage && !garde) {
       const voulu = !estActif(f.proprietes.statut)
       if (voulu !== !!p.archive) {
         patch.archive = voulu
