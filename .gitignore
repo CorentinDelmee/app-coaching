@@ -16,3 +16,6 @@ tmp/
 
 # Captures des testeurs (lourdes, régénérables)
 design-coach/*/test-captures/
+
+# Données clients exportées (Notion, santé) : jamais dans Git
+données clients/
