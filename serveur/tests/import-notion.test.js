@@ -134,3 +134,51 @@ describe('importer (base temporaire)', () => {
     expect(b2.lignes.every((l) => l.action === 'déjà à jour')).toBe(true)
   })
 })
+
+describe('importer --creer --aligner-archivage (base temporaire)', () => {
+  let dossier, db, backend
+  beforeAll(async () => {
+    dossier = mkdtempSync(join(tmpdir(), 'import-notion-c-'))
+    db = ouvrirBase(join(dossier, 'app.db'))
+    backend = creerStoreSqlite(db)
+    const p = async (id, nom, archive) => {
+      await backend.ecrire('profils', { id, role: 'client', identifiant: id, nom, archive, creeLe: 1, lieuDefaut: 'domicile', tarif: 35, modules: { habitudes: false, photosRepas: false, calories: false } })
+      db.prepare("INSERT INTO comptes (identifiant, hash, role, profil_id, archive, sv) VALUES (?, 'x', 'client', ?, ?, 0)").run(id, id, archive ? 1 : 0)
+    }
+    await p('zoe', 'Zoé Testeuse', true) // Actif dans Notion, archivé dans l'app -> réactivée
+    await p('leon', 'Léon Souale', false) // Actif -> reste actif
+    await p('marc', 'Marc Petit', false) // « Marc » Actif
+  })
+  afterAll(() => { db?.close(); rmSync(dossier, { recursive: true, force: true }) })
+  const compte = (id) => db.prepare('SELECT * FROM comptes WHERE profil_id = ?').get(id)
+
+  it('essai : rien d\'écrit, pas de code rendu', async () => {
+    const avant = db.prepare('SELECT count(*) n FROM profiles').get().n
+    const b = await importer({ db, backend }, normaliser(MD), { essai: true, creer: true, alignerArchivage: true })
+    expect(b.codes).toEqual([])
+    expect(b.lignes.filter((l) => l.par === 'créé').map((l) => l.app).sort()).toEqual(['Anne Durand', 'Inconnu Total', 'Marc Lebon', 'Paul'])
+    expect(db.prepare('SELECT count(*) n FROM profiles').get().n).toBe(avant)
+    expect((await backend.un('profils', 'zoe')).archive).toBe(true)
+  })
+
+  it('crée les absents (archivés sauf Actif), codes rendus avant validation, archivage aligné profil + compte', async () => {
+    let vus = null
+    const b = await importer({ db, backend }, normaliser(MD), { creer: true, alignerArchivage: true, avantValidation: (c) => { vus = c } })
+    expect(vus.map((c) => c.nom).sort()).toEqual(['Anne Durand', 'Inconnu Total', 'Marc Lebon', 'Paul'])
+    const inconnu = vus.find((c) => c.nom === 'Inconnu Total')
+    expect(inconnu.archive).toBe(true) // Prospect
+    expect(vus.find((c) => c.nom === 'Anne Durand').archive).toBe(false)
+    expect(inconnu.code).toMatch(/^.{8}$/)
+    const pi = (await backend.tout('profils')).find((x) => x.nom === 'Inconnu Total')
+    expect(pi.fiche.notion.statut).toBe('Prospect')
+    expect(compte(pi.id).archive).toBe(1)
+    expect(compte(pi.id).hash).not.toBe(inconnu.code)
+    expect((await backend.un('profils', 'zoe')).archive).toBe(false)
+    expect(compte('zoe').archive).toBe(0)
+    expect(b.lignes.find((l) => l.app === 'Zoé Testeuse').archivage).toBe('RÉACTIVÉ')
+    // 2e passage : plus rien à créer ni à changer.
+    const b2 = await importer({ db, backend }, normaliser(MD), { creer: true, alignerArchivage: true })
+    expect(b2.codes).toEqual([])
+    expect(b2.lignes.every((l) => l.action === 'déjà à jour')).toBe(true)
+  })
+})
