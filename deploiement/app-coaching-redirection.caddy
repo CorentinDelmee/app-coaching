@@ -2,5 +2,23 @@
 # CECI EST UN MODÈLE : deployer.sh remplace A_REMPLACER_DOMAINE et A_REMPLACER_PREFIXE (ex. /app), puis valide la config.
 # Les liens et icônes installés avec https://app.<domaine>/... arrivent sur la nouvelle adresse, chemin conservé.
 app.A_REMPLACER_DOMAINE {
-	redir https://A_REMPLACER_DOMAINEA_REMPLACER_PREFIXE{uri} permanent
+	# Service worker de l'ancienne PWA : un navigateur refuse un sw.js redirigé, l'ancienne app restait donc
+	# bloquée en cache (page blanche, API redirigée = « Failed to fetch »). Ce sw.js « d'arrêt » vide les caches,
+	# se désinstalle et envoie les fenêtres ouvertes vers la nouvelle adresse.
+	handle /sw.js {
+		header Content-Type "text/javascript; charset=utf-8"
+		header Cache-Control "no-cache, no-store"
+		respond `self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (e) => e.waitUntil((async () => {
+  for (const k of await caches.keys()) await caches.delete(k);
+  await self.clients.claim();
+  const fenetres = await self.clients.matchAll({ type: 'window' });
+  await self.registration.unregister();
+  for (const c of fenetres) c.navigate('https://A_REMPLACER_DOMAINEA_REMPLACER_PREFIXE/');
+})()));
+` 200
+	}
+	handle {
+		redir https://A_REMPLACER_DOMAINEA_REMPLACER_PREFIXE{uri} permanent
+	}
 }
