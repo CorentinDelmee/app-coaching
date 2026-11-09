@@ -67,3 +67,13 @@ export function resumeBloc(b, nomExo, libelleFormat = (f) => f) {
 
 /** `?client=` d'une nouvelle séance : accepté seulement si c'est l'id d'un client connu (un lien piégé ne rattache rien). */
 export const clientDeLien = (id, clients = []) => (typeof id === 'string' && clients.some((c) => c.id === id) ? id : null)
+
+/** Fiche d'exercice modifiée dans le panneau : liste d'exercices de l'éditeur à jour (vignettes, noms), sans toucher à la séance. */
+export function fusionnerExercice(liste, item) {
+  if (!item?.id) return liste
+  const i = liste.findIndex((e) => e.id === item.id)
+  if (i < 0) return liste
+  const copieListe = [...liste]
+  copieListe[i] = { ...liste[i], ...item }
+  return copieListe
+}

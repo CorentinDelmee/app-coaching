@@ -23,7 +23,11 @@ import { teinte } from '../commun/exercices.js'
 import { remplacerAdresse } from '../commun/adresse.js'
 import BibliothequeExercices from './BibliothequeExercices.vue'
 import ItemExerciceStudio from './ItemExerciceStudio.vue'
-import { blocPour, clientDeLien, exoCircuit, nbExercices, nettoyerSeance, problemeSeance, resumeBloc, resynchroniser } from './seance.js'
+import IconeFiche from './IconeFiche.vue'
+import PanneauFicheExercice from '../../exercices/PanneauFicheExercice.vue'
+import { volerVers } from '../../../transitionPartagee.js'
+import { muscleDe } from '../../../medias.js'
+import { blocPour, clientDeLien, exoCircuit, fusionnerExercice, nbExercices, nettoyerSeance, problemeSeance, resumeBloc, resynchroniser } from './seance.js'
 
 const props = defineProps({ id: { type: String, required: true } })
 const route = useRoute()
@@ -273,6 +277,26 @@ const cleCircuit = new WeakMap() // les exercices de circuit n'ont pas d'id dans
 let n = 0
 const cleExo = (x) => { const o = x; if (!cleCircuit.has(o)) cleCircuit.set(o, `cx${++n}`); return cleCircuit.get(o) }
 
+// ------------------------------------------------------------------ fiche d'un exercice (panneau, sans quitter la séance)
+// Clic sur la vignette / le nom d'un exercice : sa fiche s'ouvre dans un panneau par-dessus la séance. Elle n'écrit que
+// l'exercice (sa propre sauvegarde, version + 409) ; la séance (workout) n'est jamais touchée, donc ni sauvegardée ni perdue.
+const ficheId = ref(null)
+const ficheExo = computed(() => (ficheId.value ? parId(ficheId.value) : null))
+const panneauFiche = ref(null)
+async function ouvrirFiche(exerciceId, ev) {
+  const exo = parId(exerciceId)
+  if (!exo) return
+  const deja = !!ficheId.value
+  ficheId.value = exo.id
+  if (deja) return
+  const depuis = ev?.currentTarget?.querySelector?.('.st-prog-vig-media')
+  await nextTick()
+  const vers = panneauFiche.value?.media()
+  if (depuis && vers) volerVers(depuis, vers, { muscle: muscleDe(exo), rayonDepart: 10 })
+}
+const fermerFiche = () => { ficheId.value = null } // PanneauLateral rend le focus à la vignette
+const majExercice = (item) => { exercices.value = fusionnerExercice(exercices.value, item) }
+
 const sousTitre = computed(() => (workout.value?.clientId ? `Séance · ${nomClient(workout.value.clientId)}` : 'Séance · Modèle réutilisable'))
 const nbExos = computed(() => nbExercices(workout.value))
 </script>
@@ -355,19 +379,21 @@ const nbExos = computed(() => nbExercices(workout.value))
                   <button type="button" class="st-btn st-btn--fantome st-btn--rond" :aria-label="`Supprimer le bloc ${i + 1}`" title="Supprimer" @click="supprimerBloc(i)"><IconeSt nom="fermer" /></button>
                 </header>
 
-                <!-- Replié : résumé (toute la carte se glisse à la souris) -->
-                <button v-if="!estOuvert(b.id)" type="button" class="st-prog-s-resume" :aria-label="`Modifier le bloc ${i + 1} : ${libelleBloc(b)}`" @click="basculer(b.id)">
-                  <VignetteMini v-if="b.type === 'exercice' && parId(b.exerciceId)" :exercice="parId(b.exerciceId)" tag="span" class="st-prog-s-actuel" />
-                  <span v-else class="st-prog-s-resume-noms">
-                    <template v-if="b.type === 'circuit'">{{ b.nom || 'Circuit sans nom' }}</template>
-                    <template v-else-if="b.type === 'superset'">{{ b.exercices.map((x) => nomExo(x.exerciceId)).join(' + ') }}</template>
-                    <template v-else>Exercice à choisir</template>
+                <!-- Replié : résumé (toute la carte se glisse à la souris). Vignette / noms -> fiche de l'exercice ; le reste déplie le bloc. -->
+                <div v-if="!estOuvert(b.id)" class="st-prog-s-resume">
+                  <VignetteMini v-if="b.type === 'exercice' && parId(b.exerciceId)" :exercice="parId(b.exerciceId)" class="st-prog-s-actuel st-prog-s-ouvrable" @click="ouvrirFiche(b.exerciceId, $event)"><IconeFiche /></VignetteMini>
+                  <span v-else-if="b.type === 'superset'" class="st-prog-s-resume-noms">
+                    <template v-for="(x, j) in b.exercices" :key="x.id"><span v-if="j" aria-hidden="true"> + </span><button v-if="parId(x.exerciceId)" type="button" class="st-prog-s-nomfiche" @click="ouvrirFiche(x.exerciceId)">{{ nomExo(x.exerciceId) }}<span class="st-sr">, ouvrir la fiche</span></button><template v-else>exercice à choisir</template></template>
                   </span>
-                  <span class="st-prog-s-resume-detail">{{ resumeBloc(b, nomExo, (f) => LIBELLES_FORMAT[f]) }}</span>
-                </button>
+                  <button type="button" class="st-prog-s-resume-ouvrir" :aria-label="`Modifier le bloc ${i + 1} : ${libelleBloc(b)}`" @click="basculer(b.id)">
+                    <span v-if="b.type === 'circuit'" class="st-prog-s-resume-noms">{{ b.nom || 'Circuit sans nom' }}</span>
+                    <span v-else-if="b.type === 'exercice' && !parId(b.exerciceId)" class="st-prog-s-resume-noms">Exercice à choisir</span>
+                    <span class="st-prog-s-resume-detail">{{ resumeBloc(b, nomExo, (f) => LIBELLES_FORMAT[f]) }}</span>
+                  </button>
+                </div>
                 <!-- Exercice simple -->
                 <div v-else-if="b.type === 'exercice'" :id="`st-prog-s-corps-${b.id}`" class="st-prog-s-corps">
-                  <ItemExerciceStudio :item="b" :exercice="parId(b.exerciceId)" :remplacement="remplace(b.id)" @maj="Object.assign(b, $event)" @choisir="choisir(b.id)" />
+                  <ItemExerciceStudio :item="b" :exercice="parId(b.exerciceId)" :remplacement="remplace(b.id)" @maj="Object.assign(b, $event)" @choisir="choisir(b.id)" @fiche="ouvrirFiche(b.exerciceId, $event)" />
                   <div class="st-prog-s-ligne">
                     <label class="st-prog-s-court"><span>Repos après chaque série <span class="st-prog-s-unite">s</span></span><input v-model.number="b.repos" type="number" min="0" step="5" inputmode="numeric" /></label>
                     <label class="st-prog-s-large">Consignes de l'exercice<input v-model="b.consignes" placeholder="Facultatif" /></label>
@@ -383,7 +409,7 @@ const nbExos = computed(() => nbExercices(workout.value))
                     <template #default="{ item: x, index: j, poignee: p2 }">
                       <div class="st-prog-s-sousbloc" :data-m="teinte(parId(x.exerciceId)) || undefined">
                         <Poignee v-bind="p2" class="st-prog-s-poignee-sous" />
-                        <ItemExerciceStudio :item="x" :exercice="parId(x.exerciceId)" :titre="String.fromCharCode(65 + j)" :remplacement="remplace(b.id, { itemId: x.id })" @maj="Object.assign(x, $event)" @choisir="choisir(b.id, { itemId: x.id })" />
+                        <ItemExerciceStudio :item="x" :exercice="parId(x.exerciceId)" :titre="String.fromCharCode(65 + j)" :remplacement="remplace(b.id, { itemId: x.id })" @maj="Object.assign(x, $event)" @choisir="choisir(b.id, { itemId: x.id })" @fiche="ouvrirFiche(x.exerciceId, $event)" />
                       </div>
                     </template>
                   </ListeTriable>
@@ -411,7 +437,7 @@ const nbExos = computed(() => nbExercices(workout.value))
                     <template #default="{ item: x, index: j, poignee: p3, tirable: t3 }">
                       <div class="st-prog-s-cx" :data-m="teinte(parId(x.exerciceId)) || undefined" v-bind="t3">
                         <Poignee v-bind="p3" />
-                        <VignetteMini v-if="parId(x.exerciceId)" :exercice="parId(x.exerciceId)" tag="div" class="st-prog-s-actuel" />
+                        <VignetteMini v-if="parId(x.exerciceId)" :exercice="parId(x.exerciceId)" class="st-prog-s-actuel st-prog-s-ouvrable" @click="ouvrirFiche(x.exerciceId, $event)"><IconeFiche /></VignetteMini>
                         <p v-else class="st-prog-s-manque">Aucun exercice choisi</p>
                         <button type="button" class="st-btn st-prog-mini" :class="{ 'st-btn--encre': remplace(b.id, { index: j }) }" @click="choisir(b.id, { index: j })">{{ remplace(b.id, { index: j }) ? 'Choisis…' : 'Changer' }}<span class="st-sr"> {{ nomExo(x.exerciceId) }}</span></button>
                         <label class="st-prog-s-court">Reps<input type="number" min="0" inputmode="numeric" :value="x.reps" @input="x.reps = $event.target.value === '' ? undefined : Number($event.target.value)" /></label>
@@ -441,6 +467,8 @@ const nbExos = computed(() => nbExercices(workout.value))
         </div>
       </div>
     </template>
+
+    <PanneauFicheExercice ref="panneauFiche" :exercice="ficheExo" :exercices="exercices" @fermer="fermerFiche" @maj="majExercice" @archive="fermerFiche" />
   </div>
 </template>
 

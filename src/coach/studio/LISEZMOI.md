@@ -90,7 +90,8 @@ Ordinateur : fixe à droite (440 px ; 400 px de 901 à 1180 px), entrée glissé
 le média vers le bas > 140 px (ou vite) ferme. Téléporté dans `#st-calques`.
 - Props : `ouvert` (Boolean) · `etiquette` (nom accessible, ex. nom de l'exercice) · `muscle` (teinte du média) · `sauvegarde`
   (état de `useSauvegardeAuto`, `''` = pas d'indicateur) · `precedent`, `suivant` (Boolean : affiche/active ↑ ↓) · `cascade` (défaut true ;
-  passe à false quand on change d'élément panneau ouvert).
+  passe à false quand on change d'élément panneau ouvert) · `modal` (par-dessus un autre écran : ≈ moitié droite sur ordinateur,
+  voile léger dont le clic ferme, Tab piégé, `aria-modal` ; ex. `ecrans/exercices/PanneauFicheExercice.vue` ouvert depuis l'éditeur de séance).
 - Événements : `fermer`, `precedent`, `suivant`, `reessayer`.
 - Slots : `media` (en-tête 16:9 : `<img>`, `<LecteurVideo>`, `<FigureMouvement>` en enfant direct) · `barre` (boutons en plus, après ↑ ↓) · défaut (contenu défilant, cascade 40 ms par enfant direct).
 - Expose (ref) : `media()` → élément d'en-tête (cible de `volerVers`), `racine()`.

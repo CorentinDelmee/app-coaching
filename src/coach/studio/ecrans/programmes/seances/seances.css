@@ -105,6 +105,16 @@
 .st-prog-s-sousbloc .st-prog-s-actuel { background: var(--st-surface); }
 .st-prog-s-actuel:hover { box-shadow: none; }
 .st-prog-s-actuel:active { transform: none; }
+/* Vignette ouvrable : clic -> fiche de l'exercice dans un panneau (sans quitter la séance) */
+.st-prog-s-actuel.st-prog-s-ouvrable { cursor: pointer; position: relative; padding-right: 44px; }
+.st-prog-s-actuel.st-prog-s-ouvrable:hover { box-shadow: var(--st-ombre-2); background: var(--st-surface); }
+.st-prog-s-actuel.st-prog-s-ouvrable:active { transform: scale(.98); }
+.st-prog-s-fiche-ico { position: absolute; right: 8px; top: 50%; width: 30px; height: 30px; margin-top: -15px; display: grid; place-items: center; border-radius: 9px; color: var(--st-doux); transition: color var(--st-d-court), background var(--st-d-court); }
+.st-prog-s-fiche-ico svg { width: 18px; height: 18px; }
+.st-prog-s-ouvrable:hover .st-prog-s-fiche-ico, .st-prog-s-ouvrable:focus-visible .st-prog-s-fiche-ico { color: var(--st-encre); background: var(--st-surface-2); }
+.st-prog-s-resume-ouvrir { flex: 1 1 200px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 52px; padding: 0 6px; border: 0; background: none; text-align: left; cursor: inherit; border-radius: 12px; color: inherit; }
+.st-prog-s-nomfiche { min-height: 44px; padding: 0 4px; border: 0; background: none; font: inherit; color: var(--st-encre); text-decoration: underline; text-decoration-color: var(--st-filet-fort); text-underline-offset: 4px; cursor: pointer; border-radius: 8px; }
+.st-prog-s-nomfiche:hover { text-decoration-color: currentColor; }
 .st-prog-s-lettre { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--st-encre); color: #fff; font: 500 15px var(--st-titre); flex: none; }
 .st-prog-s-manque { flex: 1 1 200px; margin: 0; padding: 14px; border-radius: 14px; border: 1.5px dashed var(--st-alerte); color: var(--st-alerte); font-weight: 600; font-size: 14px; }
 .st-prog-s-pas { grid-template-columns: auto auto; align-items: center; }
@@ -169,7 +179,6 @@
   .st-prog-s-fermer { display: inline-flex; }
   .st-prog-s-voile { display: block; position: fixed; inset: 0; z-index: var(--st-z-voile); background: rgba(35, 37, 43, .32); animation: st-entree var(--st-d-court) ease-out; }
   .st-prog-s-bloc { padding: 10px 12px 14px; }
-  .st-prog-s-bascule[aria-expanded="false"] { display: none; } /* replié : toucher le résumé l'ouvre */
   .st-prog-s-ajouts { position: sticky; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 5; padding: 8px; margin: 0 -8px; border-radius: 18px; background: rgba(244, 241, 236, .92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
   .st-prog-s-ajouts { flex-wrap: nowrap; }
   .st-prog-s-ajouts .st-btn { flex: 1; min-width: 0; padding-inline: 8px; }

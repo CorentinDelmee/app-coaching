@@ -5,6 +5,8 @@
 // Contenu (slot par défaut) défilant, entrée en cascade (40 ms). Téléporté dans #st-calques (CoachLayout).
 // Clavier : Échap ferme (dans un champ : le 1er Échap quitte le champ, le 2e ferme) ; ↑ ↓ (hors champ de saisie) = précédent / suivant. Le focus va sur « Fermer » à l'ouverture
 // et revient à l'élément qui avait le focus avant (la vignette) à la fermeture.
+// modal (ex. fiche d'exercice ouverte depuis une séance) : panneau large (~moitié droite), voile léger aussi sur ordinateur
+// (clic dehors = fermer), Tab / Maj+Tab restent dans le panneau (aria-modal).
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import IconeSt from './IconeSt.vue'
 import IndicateurSauvegarde from './IndicateurSauvegarde.vue'
@@ -16,7 +18,8 @@ const props = defineProps({
   sauvegarde: { type: String, default: '' },           // état de useSauvegardeAuto ('' = pas d'indicateur)
   precedent: { type: Boolean, default: false },        // affiche/active « Précédent »
   suivant: { type: Boolean, default: false },
-  cascade: { type: Boolean, default: true }            // false : pas de cascade (ex. passage à l'exercice suivant)
+  cascade: { type: Boolean, default: true },           // false : pas de cascade (ex. passage à l'exercice suivant)
+  modal: { type: Boolean, default: false }             // par-dessus un autre écran : large, voile partout, focus piégé
 })
 const emit = defineEmits(['fermer', 'precedent', 'suivant', 'reessayer'])
 
@@ -47,8 +50,22 @@ function finGlisse() {
 const styleGlisse = computed(() => (glisse.value && decalage.value ? { transform: `translateY(${decalage.value}px)`, transition: 'none' } : null))
 const styleVoile = computed(() => (glisse.value && decalage.value ? { opacity: String(Math.max(0, 1 - decalage.value / 600)) } : null))
 
+const FOCUSABLES = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])'
+/** Mode modal : Tab boucle dans le panneau. */
+function pieger(ev) {
+  const r = racine.value
+  if (!r) return
+  const els = [...r.querySelectorAll(FOCUSABLES)].filter((el) => el.getClientRects().length)
+  if (!els.length) { ev.preventDefault(); r.focus(); return }
+  const premier = els[0], dernier = els[els.length - 1], actif = document.activeElement
+  if (!r.contains(actif)) { ev.preventDefault(); (ev.shiftKey ? dernier : premier).focus(); return }
+  if (ev.shiftKey && (actif === premier || actif === r)) { ev.preventDefault(); dernier.focus() }
+  else if (!ev.shiftKey && actif === dernier) { ev.preventDefault(); premier.focus() }
+}
+
 function surTouche(ev) {
   if (!props.ouvert) return
+  if (ev.key === 'Tab' && props.modal) { pieger(ev); return }
   const champ = ev.target.closest?.('input, textarea, select, [contenteditable="true"]')
   if (ev.key === 'Escape') {
     ev.preventDefault()
@@ -82,9 +99,9 @@ defineExpose({ media: () => elMedia.value, racine: () => racine.value })
 
 <template>
   <Teleport defer to="#st-calques">
-    <Transition name="st-voile"><div v-if="ouvert" class="st-pan-voile" :style="styleVoile" aria-hidden="true" @click="emit('fermer')" /></Transition>
+    <Transition name="st-voile"><div v-if="ouvert" class="st-pan-voile" :class="{ 'is-modal': modal }":style="styleVoile" aria-hidden="true" @click="emit('fermer')" /></Transition>
     <Transition name="st-pan">
-      <aside v-if="ouvert" ref="racine" data-test="panneau" tabindex="-1" class="st-panneau" :class="{ 'sans-cascade': !cascade }" role="dialog" :aria-label="etiquette" :style="styleGlisse">
+      <aside v-if="ouvert" ref="racine" data-test="panneau" tabindex="-1" class="st-panneau" :class="{ 'sans-cascade': !cascade, 'is-modal': modal }" role="dialog" :aria-modal="modal ? 'true' : undefined" :aria-label="etiquette" :style="styleGlisse">
         <div ref="elMedia" class="st-pan-media" :data-m="muscle || undefined" @pointerdown="debutGlisse" @pointermove="suiteGlisse" @pointerup="finGlisse" @pointercancel="finGlisse">
           <slot name="media" />
         </div>
@@ -132,6 +149,15 @@ defineExpose({ media: () => elMedia.value, racine: () => racine.value })
 /* L'écran réserve la place du panneau : ajouter la classe st-reserve-panneau à sa zone de contenu quand il est ouvert. */
 @media (min-width: 901px) { .st-reserve-panneau { padding-right: 456px; } }
 @media (min-width: 901px) and (max-width: 1180px) { .st-panneau { width: 400px; } .st-reserve-panneau { padding-right: 416px; } }
+
+/* Modal (ordinateur) : environ la moitié droite, voile léger (la page dessous reste lisible) ; clic dessus = fermer. */
+@media (min-width: 901px) {
+  .st-panneau.is-modal { width: clamp(440px, calc(50vw - 24px), 820px); }
+  .st-pan-voile.is-modal { display: block; position: fixed; inset: 0; z-index: var(--st-z-voile); background: rgba(35,37,43,.16); }
+  .st-voile-enter-active { transition: opacity var(--st-d-base) var(--st-sortie); }
+  .st-voile-leave-active { transition: opacity 120ms ease-in; }
+  .st-voile-enter-from, .st-voile-leave-to { opacity: 0; }
+}
 
 @media (max-width: 900px) {
   /* 56 px de voile au-dessus de la feuille : zone « toucher dehors pour fermer » assez grande (≥ 44 px) */

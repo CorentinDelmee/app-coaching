@@ -6,6 +6,7 @@ import { ref } from 'vue'
 import { CHAMPS } from '../../../../../domain/modele.js'
 import { CLES_CHAMPS, basculerChamp, clePerso, estPerso, fixerNbSeries, libelleChamp } from '../../../../logique.js'
 import VignetteMini from '../commun/VignetteMini.vue'
+import IconeFiche from './IconeFiche.vue'
 
 const props = defineProps({
   item: { type: Object, required: true },
@@ -13,7 +14,7 @@ const props = defineProps({
   titre: { type: String, default: '' },          // « A », « B » dans un superset
   remplacement: { type: Boolean, default: false } // la bibliothèque attend le nouvel exercice pour cet item
 })
-const emit = defineEmits(['maj', 'choisir'])
+const emit = defineEmits(['maj', 'choisir', 'fiche']) // fiche : clic sur la vignette -> fiche de l'exercice dans un panneau
 
 const persoTexte = ref('')
 const maj = (patch) => emit('maj', { ...props.item, ...patch })
@@ -44,7 +45,7 @@ const champsOuverts = ref(false)
   <div class="st-prog-s-item">
     <div class="st-prog-s-choix">
       <span v-if="titre" class="st-prog-s-lettre" aria-hidden="true">{{ titre }}</span>
-      <VignetteMini v-if="exercice" :exercice="exercice" tag="div" class="st-prog-s-actuel" />
+      <VignetteMini v-if="exercice" :exercice="exercice" class="st-prog-s-actuel st-prog-s-ouvrable" @click="emit('fiche', $event)"><IconeFiche /></VignetteMini>
       <p v-else class="st-prog-s-manque">{{ item.exerciceId ? 'Exercice introuvable (supprimé ?)' : 'Aucun exercice choisi' }}</p>
       <button type="button" class="st-btn st-prog-mini" :class="{ 'st-btn--encre': remplacement }" :aria-pressed="remplacement" @click="emit('choisir')">
         {{ remplacement ? 'Choisis dans la bibliothèque…' : exercice ? 'Changer' : 'Choisir' }}<span class="st-sr"> l'exercice {{ titre }}</span>
