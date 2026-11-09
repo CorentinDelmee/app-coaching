@@ -59,3 +59,4 @@ Voir `TABLEAU-DE-BORD.html` : Google Cloud + OAuth, `COACH_API_KEY` + `.mcp.json
 - Jamais testé contre un vrai Supabase ni sur un vrai téléphone (fluidité Android moyen, vibrations iOS, sons).
 - Exercices de démo sans lien vidéo ; vidéos de la bibliothèque non visionnées.
 - Tableau de bord de Thomas : défilement de 28 px (872 px pour 844).
+- 2026-11-09 Ancienne adresse app.delmeecorentin.fr : sw.js d'arrêt déployé (6cb983c) ; vérifié dans Chrome : l'ancienne PWA en page blanche bascule seule sur delmeecorentin.fr/app/ et l'app fonctionne.
