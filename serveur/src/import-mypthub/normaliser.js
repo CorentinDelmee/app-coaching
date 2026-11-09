@@ -376,7 +376,7 @@ export function fourchette(v) {
 }
 const nombreFr = (x) => String(x).replace('.', ',')
 
-function exerciceGroupe(e, rapport) {
+export function exerciceGroupe(e, rapport) {
   const ex = e.exercise && typeof e.exercise === 'object' ? e.exercise : {}
   const m = e.meta && typeof e.meta === 'object' ? e.meta : {}
   const nom = texte(ex.name)
