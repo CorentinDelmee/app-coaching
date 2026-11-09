@@ -134,7 +134,8 @@ export function planifierHistorique(dossiers, etat, normalise, { octetsLigne = I
     const ex = exosParNom.get(n)
     if (!ex || !x.description || (ex.description && ex.description !== DESCRIPTION_VIDE) || decrits.has(ex.id)) return
     decrits.add(ex.id)
-    const maj = { ...ex, description: `${x.description}\n\n(Importé de MyPTHub.)` }
+    const { version: _, ...sans } = ex // le serveur refuse `version` dans un PUT
+    const maj = { ...sans, description: `${x.description}\n\n(Importé de MyPTHub.)` }
     exosParId.set(ex.id, maj); exosParNom.set(n, maj)
     plan.exercices.push(maj)
     plan.rapport.exercicesDecrits++
@@ -189,8 +190,8 @@ export function planifierHistorique(dossiers, etat, normalise, { octetsLigne = I
       const ancienne = source?.seances?.find((s) => String(s.sourceId) === String(w.id))
       const cAttendu = ancienne ? canon(comparable(workoutDe(id, pid, ancienne, parNom), (n) => n.slice(1))) : null
       if (cAttendu === cApp) {
-        // Jamais retouchée depuis l'import du 5/11 : on la remplace par la conversion fraîche (version gardée pour If-Match).
-        const maj = { ...workoutDe(id, pid, frais, exoId), ...(app.version !== undefined ? { version: app.version } : {}) }
+        // Jamais retouchée depuis l'import du 5/11 : on la remplace par la conversion fraîche.
+        const maj = workoutDe(id, pid, frais, exoId) // sans `version` : le serveur la refuse dans un PUT
         plan.workouts.push(maj); modeles.set(id, maj); ligne.seancesMisesAJour++
       } else {
         ligne.seancesRetouchees.push({ id, raison: ancienne ? 'retouchée dans l\'app' : 'absente de l\'import du 5/11 (non vérifiable)', differences: differences(JSON.parse(cApp), JSON.parse(cFrais)) })

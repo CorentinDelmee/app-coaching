@@ -90,7 +90,7 @@ describe('planifierHistorique', () => {
     const plan = planifierHistorique([{ contact: '500', workoutsAssignes: [frais, { ...frais, id: 78 }], sessions: [] }], etat, normalise)
     const maj = plan.workouts.find((w) => w.id === `${CLE}-w-77`)
     expect(maj.blocs).toHaveLength(2)
-    expect(maj.version).toBe(3)
+    expect(maj.version).toBeUndefined()
     expect(plan.workouts.some((w) => w.id === `${CLE}-w-78`)).toBe(false)
     const c = plan.rapport.clients[0]
     expect([c.seancesMisesAJour, c.seancesRetouchees.length]).toEqual([1, 1])
