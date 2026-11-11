@@ -106,3 +106,42 @@ describe('data.reservations (démo locale)', () => {
     expect((await r.ecrireRegles({ ...(await r.regles()), dureeMin: 45 })).dureeMin).toBe(45)
   })
 })
+
+// Bug de production (2026-11-11) : /moi ne renvoie que { id, identifiant, role, profil_id } ; la garde lisait ce profil vide
+// et renvoyait le client vers /consentement pour toujours, même après avoir consenti.
+describe('adaptateur api : profil de la session et consentement', () => {
+  const moi = { id: 'p1', identifiant: 'coaching.test', role: 'client', profil_id: 'p1' }
+  function serveurProfil(profil) {
+    const etat = { profil: { ...profil } }
+    const fetchFn = async (url, init) => {
+      const cle = `${init.method} ${url}`
+      if (cle === 'GET /api/app/moi') return Response.json({ utilisateur: moi })
+      if (cle === 'POST /api/app/connexion') return Response.json({ utilisateur: moi })
+      if (cle === 'GET /api/app/e/profils/p1') return Response.json({ item: etat.profil })
+      if (cle === 'PUT /api/app/e/profils/p1') { etat.profil = JSON.parse(init.body); return Response.json({ item: etat.profil }) }
+      return new Response('{}', { status: 404 })
+    }
+    return { etat, creer: () => creerAdapterApi({ fetchFn, storage: stockageMemoire() }) }
+  }
+  // forme exacte d'un profil créé par l'outil MCP creer_client (serveur/src/outils/clients.js)
+  const profilNeuf = { id: 'p1', role: 'client', identifiant: 'coaching.test', nom: 'Test Coaching', tarif: 50, lieuDefaut: 'domicile', modules: { habitudes: false, photosRepas: false, calories: false }, preferences: { son: true, vibration: true, unite: 'kg' }, consentementLe: null, archive: false, creeLe: 1 }
+
+  it('client neuf : redirigé vers /consentement, puis plus après avoir consenti (même session et après rechargement)', async () => {
+    const { redirection } = await import('../../src/router/garde.js')
+    const { patchConsentement } = await import('../../src/domain/consentement.js')
+    const s = serveurProfil(profilNeuf)
+    const api = s.creer()
+    const u = await api.utilisateurCourant()
+    expect(u.nom).toBe('Test Coaching') // profil complet, pas seulement l'identité de session
+    expect(redirection({ user: u, nom: 'programme', chemin: '/programme' })).toBe('/consentement')
+    await api.profils.modifier(u.id, patchConsentement(u, true, 1000))
+    expect(redirection({ user: await api.utilisateurCourant(), nom: 'programme', chemin: '/programme' })).toBeNull()
+    // rechargement de la page = nouvel adaptateur, cache vide : relu depuis le serveur
+    const recharge = s.creer()
+    const u2 = await recharge.utilisateurCourant()
+    expect(u2.role).toBe('client')
+    expect(redirection({ user: u2, nom: 'accueil', chemin: '/' })).toBeNull()
+    // reconnexion : même chose
+    expect(redirection({ user: await s.creer().connecter('coaching.test', 'x'), nom: 'programme', chemin: '/programme' })).toBeNull()
+  })
+})

@@ -50,6 +50,14 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
     return new ErreurData('ECHEC', message || 'Erreur du serveur')
   }
 
+  // /moi et /connexion ne renvoient que { id, identifiant, role, profil_id } : on y ajoute le profil (consentementLe,
+  // preferences, prénom…) que lisent la garde de route et les écrans, comme le fait l'adaptateur local.
+  async function avecProfil(pub) {
+    if (!pub) return null
+    const profil = await backend.un('profils', pub.id)
+    return profil ? { ...profil, ...pub } : pub
+  }
+
   const backend = {
     mode: 'api',
     async tout(entite) {
@@ -65,7 +73,10 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
       }
     },
     async ecrire(entite, obj, { versionAttendue } = {}) {
-      return (await appel('PUT', `/e/${enc(entite)}/${enc(obj.id)}`, { corps: obj, version: versionAttendue }))?.item ?? undefined
+      const item = (await appel('PUT', `/e/${enc(entite)}/${enc(obj.id)}`, { corps: obj, version: versionAttendue }))?.item ?? undefined
+      // Son propre profil modifié (consentement, préférences) : la session en cache suit, sinon la garde relit l'ancien.
+      if (entite === 'profils' && profilCache?.id === obj.id) profilCache = { ...profilCache, ...(item ?? obj), id: profilCache.id, role: profilCache.role }
+      return item
     },
     async supprimer(entite, id) {
       try {
@@ -76,7 +87,7 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
     },
     async connecter(identifiant, code, { resterConnecte = true } = {}) {
       const r = await appel('POST', '/connexion', { corps: { identifiant, code, resterConnecte }, contexte: 'connexion' })
-      profilCache = r?.utilisateur
+      profilCache = await avecProfil(r?.utilisateur)
       if (!profilCache || profilCache.archive) {
         profilCache = null
         throw new ErreurData('IDENTIFIANTS', MESSAGES.IDENTIFIANTS)
@@ -90,7 +101,7 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
     async utilisateurCourant() {
       if (profilCache) return profilCache
       try {
-        profilCache = (await appel('GET', '/moi'))?.utilisateur ?? null
+        profilCache = await avecProfil((await appel('GET', '/moi'))?.utilisateur ?? null)
       } catch (e) {
         if (e.code === 'NON_CONNECTE') return null // pas de session (ou expirée) : utilisateur déconnecté
         throw e
