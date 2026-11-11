@@ -1,0 +1,289 @@
+[
+  {
+    "nom": "Abs Weel",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Back squat barre",
+    "existe": true,
+    "creePourLudo": true,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Band External Rotation + Press",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Cable Woodchopper",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "DB Seal Row",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness - Hip Thrust",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness Adductors /Abductors Machine Seating",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness Dips Machine",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness High Row",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness Incline ChestPress",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness Inclined Leg Press",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness Lat Pulldown",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness Leg Extension",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness Lying LegCurl",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness Pec-Deck Butterfly",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness Preacher Curl Machine",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness Reverse ButterFly",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness Seated Cable Row",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness Seated LegCurl",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness Shoulder Press",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Danse&Fitness Standing Calves Raises",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": true,
+    "video": "propose"
+  },
+  {
+    "nom": "Dead Bug",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Développé couché haltères prise neutre",
+    "existe": true,
+    "creePourLudo": true,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Face pull à la poulie",
+    "existe": true,
+    "creePourLudo": true,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Hanging Leg Raises",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Inclined Biceps Curl",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Landmine Press",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Pull Ups (Neutral Grip)",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Rameur",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Seated Calf Raises",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "valide"
+  },
+  {
+    "nom": "Shoulder Wall Slide",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Soulevé de terre roumain barre",
+    "existe": true,
+    "creePourLudo": true,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Squat bulgare haltères",
+    "existe": true,
+    "creePourLudo": true,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Stairmaster",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Standing Alternate Rotating Bicep Curls",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Standing Dumbbell Overhead Tricep Extension",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Standing Hammer Curls",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Tricep Extension (Rope)",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Walking - Treadmill",
+    "existe": true,
+    "creePourLudo": false,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Élévations latérales haltères",
+    "existe": true,
+    "creePourLudo": true,
+    "machineSalle": false,
+    "video": "propose"
+  },
+  {
+    "nom": "Élévations latérales à la poulie",
+    "existe": true,
+    "creePourLudo": true,
+    "machineSalle": false,
+    "video": "propose"
+  }
+]

@@ -1,0 +1,173 @@
+[
+  {
+    "nom": "Back squat barre",
+    "nomAnglais": "barbell back squat",
+    "categorie": "jambes",
+    "musclesPrincipaux": [
+      "quadriceps",
+      "fessiers"
+    ],
+    "musclesSecondaires": [
+      "adducteurs",
+      "ischio-jambiers",
+      "érecteurs du rachis",
+      "abdominaux"
+    ],
+    "materiel": [
+      "barre",
+      "rack à squat",
+      "disques"
+    ],
+    "niveau": "intermediaire",
+    "consignes": "Barre posée sur le haut des trapèzes (barre haute), mains un peu plus larges que les épaules, coudes sous la barre. Pieds largeur d'épaules, pointes légèrement ouvertes. Inspire, gaine le ventre, puis descends en poussant les genoux dans l'axe des pieds et en gardant le dos neutre, au moins jusqu'à cuisses parallèles. Remonte en poussant le sol, la poitrine monte en même temps que les hanches. Sécurités du rack réglées juste sous le point bas.",
+    "erreursFrequentes": "Genoux qui rentrent vers l'intérieur ; talons qui décollent ; bassin qui monte avant la poitrine (« good morning ») ; perte du gainage en bas (dos qui s'arrondit) ; amplitude trop courte pour charger plus lourd.",
+    "varianteFacile": "Goblet squat avec un haltère tenu contre la poitrine, ou squat sur box pour fixer la profondeur.",
+    "varianteDifficile": "Squat avec pause de 2 s en bas, ou tempo 4-0-1-0.",
+    "tempo": "3-0-1-0",
+    "reposConseille": 180
+  },
+  {
+    "nom": "Soulevé de terre roumain barre",
+    "nomAnglais": "barbell romanian deadlift",
+    "categorie": "jambes",
+    "musclesPrincipaux": [
+      "ischio-jambiers",
+      "fessiers"
+    ],
+    "musclesSecondaires": [
+      "érecteurs du rachis",
+      "adducteurs",
+      "avant-bras",
+      "trapèzes"
+    ],
+    "materiel": [
+      "barre",
+      "disques"
+    ],
+    "niveau": "intermediaire",
+    "consignes": "Debout, barre en main (prise largeur d'épaules, en pronation ou avec sangles), pieds largeur de hanches. Genoux légèrement fléchis et fixes pendant tout le mouvement. Pousse les fesses vers l'arrière en gardant le dos neutre : la barre glisse le long des cuisses puis des tibias. Descends jusqu'à sentir un fort étirement des ischios (en général mi-tibia), sans arrondir le dos. Remonte en poussant les hanches vers l'avant et en serrant les fessiers, sans basculer le buste en arrière en haut.",
+    "erreursFrequentes": "Dos qui s'arrondit en bas ; genoux qui se plient de plus en plus (ça devient un soulevé de terre classique) ; barre qui s'éloigne des jambes ; descente trop basse au prix du dos ; hyperextension lombaire en haut.",
+    "varianteFacile": "Soulevé de terre roumain aux haltères, charge légère, ou au bâton pour apprendre la charnière de hanche.",
+    "varianteDifficile": "Tempo 4-1-1-0 avec pause de 1 s en bas, ou version sur une jambe aux haltères.",
+    "tempo": "3-0-1-0",
+    "reposConseille": 150
+  },
+  {
+    "nom": "Squat bulgare haltères",
+    "nomAnglais": "dumbbell bulgarian split squat",
+    "categorie": "jambes",
+    "musclesPrincipaux": [
+      "quadriceps",
+      "fessiers"
+    ],
+    "musclesSecondaires": [
+      "adducteurs",
+      "ischio-jambiers",
+      "abdominaux"
+    ],
+    "materiel": [
+      "haltères",
+      "banc"
+    ],
+    "niveau": "intermediaire",
+    "consignes": "Dos au banc, pose le dessus du pied arrière sur le banc, un haltère dans chaque main. Pied avant assez loin pour que le genou arrière descende presque au sol. Descends verticalement, buste légèrement penché en avant, genou avant qui avance au-dessus des orteils. Remonte en poussant dans tout le pied avant. Fais toutes les reps d'une jambe, puis change ; commence par la jambe la plus faible.",
+    "erreursFrequentes": "Pied avant trop proche (talon qui décolle) ou trop loin (étirement de la hanche arrière, pas de travail du quadriceps) ; pousser avec la jambe arrière ; genou avant qui rentre ; perte d'équilibre faute de gainage.",
+    "varianteFacile": "Fente arrière au sol sans charge, ou split squat pied arrière au sol.",
+    "varianteDifficile": "Pied avant surélevé sur un disque (plus d'amplitude) ou tempo 3-1-1-0.",
+    "tempo": "2-0-1-0",
+    "reposConseille": 90
+  },
+  {
+    "nom": "Élévations latérales haltères",
+    "nomAnglais": "dumbbell lateral raise",
+    "categorie": "épaules",
+    "musclesPrincipaux": [
+      "deltoïde latéral"
+    ],
+    "musclesSecondaires": [
+      "deltoïde antérieur",
+      "trapèzes supérieurs",
+      "sus-épineux"
+    ],
+    "materiel": [
+      "haltères"
+    ],
+    "niveau": "debutant",
+    "consignes": "Debout, buste très légèrement penché en avant, haltères le long des cuisses, coudes à peine fléchis. Monte les bras sur les côtés en menant avec les coudes jusqu'à l'horizontale, petits doigts au niveau des pouces ou légèrement plus hauts. Redescends lentement en 2 s sans laisser tomber. Épaules basses, loin des oreilles.",
+    "erreursFrequentes": "Élan du buste ou des jambes ; haussement des épaules (les trapèzes prennent le relais) ; charge trop lourde qui réduit l'amplitude ; poignets plus hauts que les coudes.",
+    "varianteFacile": "Assis sur un banc pour supprimer l'élan, charge légère.",
+    "varianteDifficile": "Partielles en fin de série (demi-amplitude haute jusqu'à l'échec) ou pause de 1 s en haut.",
+    "tempo": "2-0-1-1",
+    "reposConseille": 60
+  },
+  {
+    "nom": "Élévations latérales à la poulie",
+    "nomAnglais": "single arm cable lateral raise",
+    "categorie": "épaules",
+    "musclesPrincipaux": [
+      "deltoïde latéral"
+    ],
+    "musclesSecondaires": [
+      "deltoïde antérieur",
+      "sus-épineux",
+      "trapèzes supérieurs"
+    ],
+    "materiel": [
+      "poulie"
+    ],
+    "niveau": "intermediaire",
+    "consignes": "Poulie réglée au plus bas, poignée simple. Place-toi de profil, la poulie à côté de la jambe opposée au bras qui travaille, câble qui passe derrière ou devant le corps. Main libre en appui sur la machine. Monte le bras sur le côté jusqu'à l'horizontale en menant avec le coude, redescends lentement sans laisser la charge se reposer : la tension reste continue. Toutes les reps d'un bras, puis l'autre.",
+    "erreursFrequentes": "S'incliner loin de la poulie pour tricher ; tirer avec le trapèze ; laisser la plaque toucher entre deux reps ; bras tendu verrouillé (stress du coude).",
+    "varianteFacile": "Élévations latérales haltères assis, charge légère.",
+    "varianteDifficile": "Buste incliné en tenant la machine (plus d'étirement au départ) ou pause de 1 s en haut.",
+    "tempo": "2-0-1-1",
+    "reposConseille": 60
+  },
+  {
+    "nom": "Face pull à la poulie",
+    "nomAnglais": "cable face pull",
+    "categorie": "épaules",
+    "musclesPrincipaux": [
+      "deltoïde postérieur",
+      "coiffe des rotateurs"
+    ],
+    "musclesSecondaires": [
+      "trapèzes moyens et inférieurs",
+      "rhomboïdes"
+    ],
+    "materiel": [
+      "poulie",
+      "corde"
+    ],
+    "niveau": "debutant",
+    "consignes": "Poulie réglée à hauteur du front, corde tenue pouces vers l'arrière. Recule d'un pas, buste droit, gainé. Tire la corde vers le visage en écartant les mains et en montant les coudes à hauteur des épaules, puis tourne les avant-bras vers le haut (rotation externe) : en fin de mouvement, mains à côté des oreilles, omoplates serrées. 1 s de pause, retour lent. Charge légère : c'est un exercice de posture, la qualité prime.",
+    "erreursFrequentes": "Charge trop lourde qui fait basculer le buste en arrière ; tirer vers le menton ou la poitrine (ça devient un rowing) ; coudes qui tombent sous les épaules ; épaules qui montent vers les oreilles ; oublier la rotation externe en fin de mouvement.",
+    "varianteFacile": "Face pull à l'élastique, ou tirage poulie haute sans rotation externe.",
+    "varianteDifficile": "Face pull à genoux (plus de gainage) avec pause de 2 s en fin de mouvement.",
+    "tempo": "2-0-1-1",
+    "reposConseille": 60
+  },
+  {
+    "nom": "Développé couché haltères prise neutre",
+    "nomAnglais": "neutral grip dumbbell bench press",
+    "categorie": "pectoraux",
+    "musclesPrincipaux": [
+      "pectoraux",
+      "triceps"
+    ],
+    "musclesSecondaires": [
+      "deltoïde antérieur"
+    ],
+    "materiel": [
+      "haltères",
+      "banc"
+    ],
+    "niveau": "intermediaire",
+    "consignes": "Allongé sur banc plat, haltères posés sur les cuisses puis amenés au-dessus de la poitrine en t'allongeant. Paumes face à face (prise neutre), omoplates serrées et basses, pieds ancrés. Descends les haltères contrôlé jusqu'à ce qu'ils frôlent les côtés de la poitrine, coudes à environ 30-45° du buste, sans aller plus bas que l'étirement confortable de l'épaule. Pousse en rapprochant légèrement les haltères en haut. Prise neutre = moins de contrainte sur l'avant de l'épaule.",
+    "erreursFrequentes": "Coudes écartés à 90° ; descente trop profonde qui tire sur l'avant de l'épaule ; omoplates qui se décollent du banc ; haltères qui tombent sur les côtés en fin de série (les reposer sur les cuisses en se relevant).",
+    "varianteFacile": "Presse pectorale à la machine (convergente), amplitude contrôlée.",
+    "varianteDifficile": "Tempo 4-1-1-0 avec pause de 1 s en bas.",
+    "tempo": "3-1-1-0",
+    "reposConseille": 150
+  }
+]

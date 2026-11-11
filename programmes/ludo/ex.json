@@ -1,0 +1,3073 @@
+{
+ "total": 192,
+ "exercices": [
+  {
+   "id": "ex-45-degree-leg-press-shoulder-width-stance",
+   "nom": "45 Degree Leg Press Shoulder Width Stance",
+   "description": "Using a 45 degree leg press machine, take a seat and place your feet at a shoulder width stance.\nGently press the foot plate away from you as you unhook the lock bars. You will take the weight at this point, ensure your knees are not locked and your joints remain slightly flexed. This will be your starting position.\nAs you inhale, slowly lower the platform until your upper and lower legs make a 90-degree angle.\nAs you exhale, press through your heels to push the foot plate away from you, engaging your quadriceps and glutes in order to do so.\nRepeat for the recommended amount of repetitions and ensure to lock the safety pins properly once you are done.\n\nCaution: Always securely lock the safety bars once you have finished.\n\nVariations: Barbell Squats or Dumbbell Squats.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=q4W4_VJbKW0",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "How To Do A 45 Degree Leg Press"
+   }
+  },
+  {
+   "id": "ex-90-90-pigeon-stretch",
+   "nom": "90 / 90 Pigeon Stretch",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=2fw5GA3W7rc",
+    "statut": "propose",
+    "duree": 16,
+    "titre": "90-90 Pigeon Stretch"
+   }
+  },
+  {
+   "id": "ex-abs-weel",
+   "nom": "Abs Weel",
+   "description": "Roulette abdominale : gainage dynamique en extension, le corps s'allonge vers l'avant puis revient.",
+   "categories": [],
+   "musclesPrincipaux": [
+    "Abdominaux",
+    "Grand droit"
+   ],
+   "musclesSecondaires": [
+    "Épaules",
+    "Grand dorsal",
+    "Obliques"
+   ],
+   "materiel": [
+    "Roue abdominale"
+   ],
+   "niveau": "confirme",
+   "consignes": "Départ à genoux, bassin légèrement enroulé (rétroversion), abdos serrés. Roule vers l'avant en gardant le dos plat sans creuser, avance seulement aussi loin que le bassin reste verrouillé, puis reviens en contractant les abdos. Expire à l'aller, inspire au retour.",
+   "erreursFrequentes": "Creuser le bas du dos, laisser le bassin tomber, aller trop loin trop tôt, tirer avec les bras au retour plutôt qu'avec les abdos.",
+   "varianteFacile": "Amplitude réduite, ou roue contre un mur pour limiter la course.",
+   "varianteDifficile": "Départ debout, ou roue sur une seule jambe.",
+   "tempo": "3-0-1",
+   "reposConseille": 60,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=DA2QGI0NPWU",
+    "statut": "propose",
+    "duree": 12,
+    "titre": "Ab Wheel Rollout"
+   }
+  },
+  {
+   "id": "ex-adductor-stretch",
+   "nom": "Adductor Stretch",
+   "description": "Lie on your back with your feet raised towards the ceiling. \r\n Have your partner hold your feet or ankles. Abduct your legs as far as you can. This will be your starting position. \r\n Attempt to squeeze your legs together for 10 or more seconds, while your partner prevents you from doing so. \r\n Now, relax the muscles in your legs as your partner pushes your feet apart, stretching as far as is comfortable for you. Be sure to let your partner know when the stretch is adequate to prevent overstretching or injury.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=2n2NRG5VqMA",
+    "statut": "propose",
+    "duree": 20,
+    "titre": "Adductor Rock Back Stretch"
+   }
+  },
+  {
+   "id": "ex-alternating-dumbbell-press-up-renegade-rows",
+   "nom": "Alternating Dumbbell Press Up Renegade Rows",
+   "description": "1) Start in a high plank position with a dumbbell in each hand.\n2) Perform a push-up, then row one dumbbell up towards your hip while balancing on the opposite hand.\n3) Lower the dumbbell back down and repeat on the other side.\n4) Continue alternating rows while maintaining a stable plank position keeping the hips still.\n5) Focus on keeping your core engaged and hips level throughout the exercise.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=Q28cLuweLv4",
+    "statut": "propose",
+    "duree": 13,
+    "titre": "How To Do A Renegade Row"
+   }
+  },
+  {
+   "id": "ex-amrap",
+   "nom": "AMRAP",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": null
+  },
+  {
+   "id": "ex-australians-tractions",
+   "nom": "Australians Tractions",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=bHO0A4ZF_Zg",
+    "statut": "propose",
+    "duree": 13,
+    "titre": "Australian Pull Up (Bodyweight Row)"
+   }
+  },
+  {
+   "id": "ex-automassage-quadriceps",
+   "nom": "Automassage Quadriceps",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=Bv9vJRYMBJg",
+    "statut": "propose",
+    "duree": 17,
+    "titre": "AUTOMASSAGE QUADRICEPS ROULEAU"
+   }
+  },
+  {
+   "id": "ex-back-squat-barre",
+   "nom": "Back squat barre",
+   "description": "",
+   "categories": [],
+   "categorie": "jambes",
+   "musclesPrincipaux": [
+    "quadriceps",
+    "fessiers"
+   ],
+   "musclesSecondaires": [
+    "adducteurs",
+    "ischio-jambiers",
+    "érecteurs du rachis",
+    "abdominaux"
+   ],
+   "materiel": [
+    "barre",
+    "rack à squat",
+    "disques"
+   ],
+   "niveau": "intermediaire",
+   "consignes": "Barre posée sur le haut des trapèzes (barre haute), mains un peu plus larges que les épaules, coudes sous la barre. Pieds largeur d'épaules, pointes légèrement ouvertes. Inspire, gaine le ventre, puis descends en poussant les genoux dans l'axe des pieds et en gardant le dos neutre, au moins jusqu'à cuisses parallèles. Remonte en poussant le sol, la poitrine monte en même temps que les hanches. Sécurités du rack réglées juste sous le point bas.",
+   "erreursFrequentes": "Genoux qui rentrent vers l'intérieur ; talons qui décollent ; bassin qui monte avant la poitrine (« good morning ») ; perte du gainage en bas (dos qui s'arrondit) ; amplitude trop courte pour charger plus lourd.",
+   "varianteFacile": "Goblet squat avec un haltère tenu contre la poitrine, ou squat sur box pour fixer la profondeur.",
+   "varianteDifficile": "Squat avec pause de 2 s en bas, ou tempo 4-0-1-0.",
+   "tempo": "3-0-1-0",
+   "reposConseille": 180,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=S9iWwaqbD3Q",
+    "statut": "propose",
+    "duree": 9,
+    "titre": "BARBELL SQUAT"
+   }
+  },
+  {
+   "id": "ex-back-supported-hanging-knee-raises",
+   "nom": "Back Supported Hanging Knee Raises",
+   "description": "Position your body on the vertical leg raise bench so that your forearms are resting on the pads next to the torso and holding on to the handles.  Your arms will be bent at a 90 degree angle.\r\n\r\n\t The torso should be straight with the lower back pressed against the pad of the machine and the legs extended pointing towards the floor.  This will be your starting position.\r\n\r\n\t Now as you breathe out, lift your legs up as you keep them extended.  Continue this movement until your legs are roughly parallel to the floor and then hold the contraction for a second.  Tip: Do not use any momentum or swinging as you perform this exercise.\r\n\r\n\t Slowly go back to the starting position as you breathe in.\r\n\r\n\t Repeat for the recommended amount of repetitions.\r\n\nVariations: As you become more advanced you can start to rotate your pelvis forward at the top of the movement to really engage the lower abs. You may also straighten your legs to increase the difficulty of this movement.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=KOvPdxq1n0E",
+    "statut": "propose",
+    "duree": 13,
+    "titre": "Back Supported Hanging Knee Raises"
+   }
+  },
+  {
+   "id": "ex-band-assisted-pull-ups",
+   "nom": "Band Assisted Pull Ups",
+   "description": "Tie a band around the middle of the Pull-Up bar and secure tightly! Once you have done this place one foot within the band and adopt an overhand, wide grip. Keep your arms extended and your back straight, in fact, from your head to your feet should be one straight line. This will be your starting position.To initiate the movement, exhale and pull your body upward by contracting your lats (back muscles) and bending your elbows. The best way to do this is to pull your elbows towards the floor. Continue to pull yourself upwards until your head becomes in line with your hands. Tip: Avoid swinging, twisting or jerking motions as you could cause yourself an injury.After a brief pause, inhale and return your body along the same path back into the starting position.Repeat for the recommended amount of repetitions.Variations: Horizontal Barbell Pull Up or Chin Ups.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=COJxBrntnJY",
+    "statut": "propose",
+    "duree": 6,
+    "titre": "Resistance Band Assisted Pullups"
+   }
+  },
+  {
+   "id": "ex-band-external-rotation-press",
+   "nom": "Band External Rotation + Press",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=AFmoaWJ-DNQ",
+    "statut": "propose",
+    "duree": 10,
+    "titre": "90/90 Band External Rotation w/Press"
+   }
+  },
+  {
+   "id": "ex-band-row",
+   "nom": "Band Row",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=yzCxAbfKImQ",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "Seated Resistance Band Row"
+   }
+  },
+  {
+   "id": "ex-band-yta-extension",
+   "nom": "Band YTA Extension",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": null
+  },
+  {
+   "id": "ex-barbell-bench-press",
+   "nom": "Barbell Bench Press",
+   "description": "Lay flat on a bench with a barbell in the rack above you. Take a medium grip (a grip which creates a 90 degree angle at your elbows half way through the movement) and lift the bar off the rack so that it is directly above your chest. Keep your elbows locked at this point for safety. This will be your starting position.\nWhilst inhaling, start to lower the bar by bending at your elbows until the bar gently touches the middle of your chest.\nAfter a brief pause, exhale and press the bar back into the starting position by contracting your pectoral muscles.\nRepeat the movement for the recommended amount of repetitions.\nWhen you are done, place the bar back in the rack.\n\nCaution: You should always have a spotter when attempting this movement. If a spotter is not available you should be conservative with the weight you are using.\n\nVariations: Smith Machine Chest Press or Flat Dumbbell Chest Press.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=CjHIKDQ4RQo",
+    "statut": "propose",
+    "duree": 16,
+    "titre": "How To Do A Barbell Bench Press Correctly"
+   }
+  },
+  {
+   "id": "ex-barbell-deadlift",
+   "nom": "Barbell Deadlift",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=xNwpvDuZJ3k",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "The PERFECT Deadlift (DO THIS!)"
+   }
+  },
+  {
+   "id": "ex-barbell-press-sit-ups",
+   "nom": "Barbell Press Sit Ups",
+   "description": "Grab a mat and lay down flat on your back. Have your knees bent to create a 90 degree angle with your feet planted on the floor. Take hold of a barbell and keep it close to your chest. Tip: For this movement you may either need a partner to hold your feet down or gently place additional weights on your feet. This will be your starting position.\nTo initiate the movement, exhale and roll your shoulders up and off the mat by contracting your abdominal muscles whilst pressing the barbell directly towards the ceiling at the same time. Continue to sit up as you push the weight as high towards the ceiling as possible.\nOnce your arms are vertical and your abdominal muscles are as tight as they can be, pause briefly, inhale and return your body back along the same path into the starting position.\nRepeat for the recommended amount of repetitions.\n\nVariations: Otis-Up or Crunches.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=CrM9fcsUbI0",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-barbell-stiff-legged-deadlifts",
+   "nom": "Barbell Stiff Legged Deadlifts",
+   "description": "Grab a loaded barbell and adopt a standing position with your feet shoulder width apart. Have your arms in front of you but still perpendicular to the floor (overhand grip, palms facing behind you). Slightly bend at your knees and maintain a straight back throughout. This will be your starting position.\nWhilst keeping your knees stationary, inhale as you lean forwards from your waist (remember to keep a straight back), keeping the barbell close to you as you go. Keep lowering the barbell towards your feet until you feel a stretch in your hamstrings.\nAfter a brief pause bring your torso upright again by pushing your hips forward. Tip: Remember, this whole movement is performed with 'stiff' legs (slight bend at the knee, but no more) and a straight back throughout. Exhale as you perform this part of the movement.\nRepeat for the recommended amount of repetitions.\n\nCaution: This is not an exercise for those with back issues. Avoid jerking motions as this could cause serious injury.\n\nVariation: Dumbbell Stiff Legged Deadlift or Good Mornings.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=CN_7cz3P-1U",
+    "statut": "propose",
+    "duree": 15,
+    "titre": "Stiff Legged Deadlift"
+   }
+  },
+  {
+   "id": "ex-battle-rope-alternating-waves",
+   "nom": "Battle Rope Alternating Waves",
+   "description": "For this exercise you will need a heavy rope anchored at its center 15-20 feet away. Standing in front of the rope, take an end in each hand with your arms extended at your side. This will be your starting position. \n\nInitiate the movement by rapidly raising one arm to shoulder level as quickly as you can.\n\nAs you let that arm drop to the starting position, raise the opposite side. \n\nContinue alternating your left and right arms, whipping the ropes up and down as fast as you can.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=V76MaoTX4WM",
+    "statut": "propose",
+    "duree": 9,
+    "titre": "Battle Ropes with Alternating Waves"
+   }
+  },
+  {
+   "id": "ex-bear-walk",
+   "nom": "Bear Walk",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=SZq9RmO9pVw",
+    "statut": "propose",
+    "duree": 12,
+    "titre": "Bear Walk"
+   }
+  },
+  {
+   "id": "ex-bird-dog",
+   "nom": "Bird Dog",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=Tjo5oYHoS8M",
+    "statut": "propose",
+    "duree": 10,
+    "titre": "BIRD DOG"
+   }
+  },
+  {
+   "id": "ex-bodyweight-squats",
+   "nom": "Bodyweight Squats",
+   "description": "Adopt a wide standing stance with your hands behind your head, elbows relaxed out wide. This will be your starting position.\nTo initiate the movement, inhale and bend at your knees and hips to descend your pelvis either in line or just past your knees. Tip: Keep a straight back throughout and maintain good posture.\nOnce you get to the bottom of the movement, exhale and press through your heels to extend your hip and knee joints, elevating your torso back along the same path into the starting position.\nRepeat for the recommended amount of repetitions.\n\nVariations: Dumbbell Squats or Barbell Squats.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=-5LhNSMBrEs",
+    "statut": "propose",
+    "duree": 9,
+    "titre": "Bodyweight Squats"
+   }
+  },
+  {
+   "id": "ex-bodyweight-walking-lunges",
+   "nom": "Bodyweight Walking Lunges",
+   "description": "Adopt a shoulder width stance with your arms in a comfortable position that will not aid in the movement. This will be your starting position.\nTake a step forward (slightly larger than a normal step) and as you land, drop your body down so that you create two right angles at your knees. Inhale as you do so whilst maintaining a straight torso.\nMake sure that you keep your front knee over your heel and not over your toes. Your front shin should now be perpendicular to the floor.\nAs you exhale, push off the floor with your rear foot to return your body into a standing position.\nAlternate legs as you go (as you walk forwards) and repeat for the recommended amount of repetitions.\n\nVariations: Dumbbell Walking Lunges or Barbell Walking Lunges.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=2ea3_b9rFdM",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "Walking Lunges"
+   }
+  },
+  {
+   "id": "ex-burpees",
+   "nom": "Burpees",
+   "description": "Stand upright with your arms beside your torso and adopt a shoulder width stance. This will be your starting position.\nInhale and descend into a press up position. Place your hands just wider than shoulder width and jump backward with your feet so that your legs are fully extended and your body is supported by your toes and hands.\nContinue to drop your torso downward towards the floor by bending at your elbows until your chest is only a few inches away.\nOnce you get to this point, exhale and aggressively press through your hands by extending your elbow joints and create enough upward motion to be able to jump your legs back underneath your body so that when you take your hands off the floor, you should be in the bottom of a squat.\nNow, press through the middle of your feet by using your thighs and glutes, extending at both your knee and hip joints to generate power for a jumping motion (you can use your arms at this point to emphasise lift).\nAs you land, inhale and go straight into the next repetition.\nRepeat for the recommended amount of repetitions.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=gYiE_2BtSTg",
+    "statut": "propose",
+    "duree": 20,
+    "titre": "Burpees Exercise For Beginners"
+   }
+  },
+  {
+   "id": "ex-cable-woodchopper",
+   "nom": "Cable Woodchopper",
+   "description": "Rotation de tronc à la poulie, en diagonale (haut vers bas ou inverse), pour renforcer la sangle abdominale et la rotation contrôlée.",
+   "categories": [],
+   "musclesPrincipaux": [
+    "Obliques",
+    "Abdominaux"
+   ],
+   "musclesSecondaires": [
+    "Épaules",
+    "Fessiers",
+    "Dos"
+   ],
+   "materiel": [
+    "Poulie",
+    "Poignée"
+   ],
+   "niveau": "intermediaire",
+   "consignes": "Poulie haute, tiens la poignée à deux mains, pieds largeur d'épaules, bras presque tendus. Tire en diagonale vers la hanche opposée en pivotant le tronc et les pieds, bassin stable, abdos gainés. Reviens lentement, sans te laisser tirer par la charge.",
+   "erreursFrequentes": "Tirer avec les bras, charge trop lourde qui fait compenser le dos, bassin qui bouge, retour non contrôlé.",
+   "varianteFacile": "Charge légère, amplitude réduite, ou pallof press.",
+   "varianteDifficile": "Poulie basse vers le haut, en fente ou à genoux.",
+   "tempo": "2-0-2",
+   "reposConseille": 60,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=iWxTGXIViro",
+    "statut": "propose",
+    "duree": 12,
+    "titre": "Cable Woodchopper"
+   }
+  },
+  {
+   "id": "ex-calf-raises-full-amplitude",
+   "nom": "Calf Raises Full Amplitude",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=yXPrslr4Bz4",
+    "statut": "propose",
+    "duree": 13,
+    "titre": "Calf Raise- Full Range"
+   }
+  },
+  {
+   "id": "ex-cat-cow-stretch-thoracic-lombar",
+   "nom": "Cat & Cow Stretch / Thoracic & Lombar",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=LIVJZZyZ2qM",
+    "statut": "propose",
+    "duree": 15,
+    "titre": "Cat - Cow Stretch"
+   }
+  },
+  {
+   "id": "ex-child-pose",
+   "nom": "Child Pose",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=s-HDLc3fTG0",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "Child's Pose Demo"
+   }
+  },
+  {
+   "id": "ex-child-pose-thoracic-opening-stretch",
+   "nom": "Child Pose Thoracic Opening Stretch",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=L7RewwSDiLw",
+    "statut": "propose",
+    "duree": 12,
+    "titre": "Child's Pose Thoracic Rotation"
+   }
+  },
+  {
+   "id": "ex-commando-plank",
+   "nom": "Commando Plank",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=ennvzo71HyM",
+    "statut": "propose",
+    "duree": 12,
+    "titre": "Commando plank"
+   }
+  },
+  {
+   "id": "ex-conditionning-rope",
+   "nom": "Conditionning Rope",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=JwepS5QiAzs",
+    "statut": "propose",
+    "duree": 8,
+    "titre": "How to use Battle Ropes"
+   }
+  },
+  {
+   "id": "ex-cossack-squat",
+   "nom": "Cossack Squat",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=iPZNB5GsOnM",
+    "statut": "propose",
+    "duree": 16,
+    "titre": "Cossack Squat Movement Demo"
+   }
+  },
+  {
+   "id": "ex-cossack-squat-end-range-iso",
+   "nom": "Cossack Squat End Range Iso",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=nFVTuC1jC_I",
+    "statut": "propose",
+    "duree": 10,
+    "titre": "Cossack Squat"
+   }
+  },
+  {
+   "id": "ex-cross-pulley-pulldown",
+   "nom": "Cross-Pulley Pulldown",
+   "description": "Set the weight to the recommended amount and check that the leg brace is set to the correct height. Take a seat facing the machine (tuck your hips in so they are touching the leg brace) and take a wide, overhand grip with your arms extended towards the ceiling. This is your starting position.\nTo initiate the movement, exhale and pull the bar down towards your chest using the muscles across your back and your biceps. Lean back ever so slightly as your pull the weight downwards and lift your chest as much as you can. Continue to pull the bar down until either your muscles are optimally contracted or it is in contact with your chest.\nAfter a brief pause, inhale and return the bar back along the same path into its starting position.\nRepeat for the recommended amount of repetitions.\n\nVariations: Pull-Ups or Cable Pullovers.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=2x9E_reM8cU",
+    "statut": "valide",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-danse-fitness-hip-thrust",
+   "nom": "Danse&Fitness - Hip Thrust",
+   "description": "Poussée de hanches sur machine guidée, pour renforcer fessiers et ischio-jambiers.",
+   "categories": [],
+   "categorie": "Jambes",
+   "musclesPrincipaux": [
+    "Fessiers"
+   ],
+   "musclesSecondaires": [
+    "Ischio-jambiers",
+    "Quadriceps",
+    "Abdominaux"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Dos haut calé contre le banc, ceinture ajustée sur le bassin. Pieds à plat, tibias verticaux en haut du mouvement. Pousse avec les talons jusqu'à aligner épaules, hanches et genoux. Serre les fessiers 1 seconde en haut, redescends lentement.",
+   "erreursFrequentes": "Cambrer le bas du dos en haut. Pieds trop près ou trop loin des fesses. Descendre trop vite et rebondir. Menton qui part vers le plafond.",
+   "varianteFacile": "Charge réduite, amplitude partielle",
+   "varianteDifficile": "Une jambe à la fois ou pause de 2 s en haut",
+   "tempo": "2-1-1",
+   "reposConseille": 90,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=m8g9VogoxMo",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "Hip Thrust Machine"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-adductors-abductors-machine-seating",
+   "nom": "Danse&Fitness Adductors /Abductors Machine Seating",
+   "description": "Machine assise pour travailler l'intérieur (adducteurs) et l'extérieur (abducteurs) des cuisses.",
+   "categories": [],
+   "categorie": "Jambes",
+   "musclesPrincipaux": [
+    "Adducteurs",
+    "Abducteurs"
+   ],
+   "musclesSecondaires": [
+    "Fessiers"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Règle les butées d'amplitude avant de commencer. Dos plaqué, bassin stable, pieds sur les repose-pieds. Écarte (ou resserre) les cuisses de façon contrôlée sans à-coup. Marque une courte pause en fin de mouvement puis reviens lentement.",
+   "erreursFrequentes": "Charge trop lourde avec élan du buste. Amplitude excessive qui tire sur l'aine. Retour incontrôlé qui laisse la charge claquer.",
+   "varianteFacile": "Amplitude réduite, charge légère",
+   "varianteDifficile": "Pause de 2 s en contraction, descente en 4 s",
+   "tempo": "2-1-3",
+   "reposConseille": 60,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=BmMmt-c9aNM",
+    "statut": "propose",
+    "duree": 15,
+    "titre": "Seated Hip Adductors Machine"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-cable-kickback",
+   "nom": "Danse&Fitness Cable Kickback",
+   "description": "Extension de hanche à la poulie, cheville attachée, pour isoler le fessier.",
+   "categories": [],
+   "categorie": "Jambes",
+   "musclesPrincipaux": [
+    "Fessiers"
+   ],
+   "musclesSecondaires": [
+    "Ischio-jambiers",
+    "Abdominaux"
+   ],
+   "materiel": [
+    "machine",
+    "poulie"
+   ],
+   "niveau": "debutant",
+   "consignes": "Sangle à la cheville, mains sur la barre, buste légèrement penché et gainé. Envoie la jambe vers l'arrière en poussant avec le fessier. Garde le bassin face à la machine, sans cambrer. Reviens lentement sans poser la charge.",
+   "erreursFrequentes": "Cambrer le dos pour monter plus haut. Balancer la jambe avec de l'élan. Pivoter le bassin. Charge trop lourde.",
+   "varianteFacile": "Charge légère, appui des deux mains",
+   "varianteDifficile": "Pause de 2 s jambe tendue ou genou fléchi",
+   "tempo": "2-1-2",
+   "reposConseille": 60,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=n-cgsNePyFo",
+    "statut": "propose",
+    "duree": 9,
+    "titre": "How to Properly Perform Cable Glute Kickbacks With Good Form (Exercise Tutorial)"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-declined-chest-press",
+   "nom": "Danse&Fitness Declined Chest Press",
+   "description": "Développé poitrine décliné sur machine guidée, accent sur le bas des pectoraux.",
+   "categories": [],
+   "categorie": "Pectoraux",
+   "musclesPrincipaux": [
+    "Pectoraux"
+   ],
+   "musclesSecondaires": [
+    "Triceps",
+    "Deltoïdes antérieurs"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Règle le siège pour que les poignées soient au bas de la poitrine. Dos plaqué, omoplates serrées vers l'arrière. Pousse sans verrouiller les coudes. Reviens lentement en gardant les pectoraux étirés.",
+   "erreursFrequentes": "Épaules qui montent vers les oreilles. Coudes trop écartés. Fessiers qui décollent du siège. Verrouiller les coudes brutalement.",
+   "varianteFacile": "Charge réduite, amplitude partielle",
+   "varianteDifficile": "Descente en 4 s, ou pause de 1 s en bas",
+   "tempo": "3-0-1",
+   "reposConseille": 90,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=ZKLu3u1itnw",
+    "statut": "propose",
+    "duree": 9,
+    "titre": "Decline chest press machine"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-dips-machine",
+   "nom": "Danse&Fitness Dips Machine",
+   "description": "Machine à dips assise pour renforcer triceps et bas des pectoraux de façon guidée.",
+   "categories": [],
+   "categorie": "Bras",
+   "musclesPrincipaux": [
+    "Triceps"
+   ],
+   "musclesSecondaires": [
+    "Pectoraux",
+    "Deltoïdes antérieurs"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Règle le siège pour que les poignées soient à hauteur du bas des côtes. Coudes près du corps, épaules basses. Pousse vers le bas jusqu'à l'extension sans verrouiller. Remonte lentement jusqu'à 90 degrés au coude.",
+   "erreursFrequentes": "Épaules qui remontent. Coudes qui s'écartent. Remonter trop haut en tirant sur l'épaule. Décoller le dos du dossier.",
+   "varianteFacile": "Charge réduite, amplitude partielle",
+   "varianteDifficile": "Phase de retour en 4 s, ou série dégressive",
+   "tempo": "3-0-1",
+   "reposConseille": 75,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=8CvOC9Db3Yw",
+    "statut": "propose",
+    "duree": 10,
+    "titre": "How to use the seated Tricep Dip machine for bigger triceps and better motion control."
+   }
+  },
+  {
+   "id": "ex-danse-fitness-high-row",
+   "nom": "Danse&Fitness High Row",
+   "description": "Tirage horizontal haut sur machine, pour le haut du dos et l'arrière des épaules.",
+   "categories": [],
+   "categorie": "Dos",
+   "musclesPrincipaux": [
+    "Grand dorsal",
+    "Trapèzes"
+   ],
+   "musclesSecondaires": [
+    "Biceps",
+    "Deltoïdes postérieurs"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Poitrine contre le support, siège réglé pour saisir les poignées bras tendus. Tire les coudes vers l'arrière en serrant les omoplates. Garde le buste immobile. Reviens bras tendus de façon contrôlée.",
+   "erreursFrequentes": "Balancer le buste pour tirer. Hausser les épaules. Tirer avec les biceps plutôt qu'avec le dos. Retour trop rapide.",
+   "varianteFacile": "Charge légère, une pause en fin de tirage",
+   "varianteDifficile": "Pause de 2 s omoplates serrées, ou un bras à la fois",
+   "tempo": "2-1-3",
+   "reposConseille": 90,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=0QN8jx2nEQc",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "HIGH ROW MACHINE | BACK DAY"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-incline-chestpress",
+   "nom": "Danse&Fitness Incline ChestPress",
+   "description": "Développé poitrine incliné sur machine guidée, accent sur le haut des pectoraux.",
+   "categories": [],
+   "categorie": "Pectoraux",
+   "musclesPrincipaux": [
+    "Pectoraux"
+   ],
+   "musclesSecondaires": [
+    "Deltoïdes antérieurs",
+    "Triceps"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Règle le siège pour que les poignées soient à hauteur du haut de la poitrine. Dos plaqué, omoplates serrées. Pousse vers le haut sans verrouiller les coudes. Reviens lentement jusqu'à sentir l'étirement des pectoraux.",
+   "erreursFrequentes": "Épaules qui montent. Dos qui se creuse. Poignets cassés. Rebond en bas du mouvement.",
+   "varianteFacile": "Charge réduite, amplitude partielle",
+   "varianteDifficile": "Descente en 4 s, ou pause de 1 s en bas",
+   "tempo": "3-0-1",
+   "reposConseille": 90,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=WxrKIPbeQP8",
+    "statut": "propose",
+    "duree": 15,
+    "titre": "How to PROPERLY Use The Incline Chest Press Machine At Planet Fitness (Exercise Tutorial)"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-inclined-leg-press",
+   "nom": "Danse&Fitness Inclined Leg Press",
+   "description": "Presse à cuisses inclinée à 45 degrés, exercice de base pour le bas du corps.",
+   "categories": [],
+   "categorie": "Jambes",
+   "musclesPrincipaux": [
+    "Quadriceps",
+    "Fessiers"
+   ],
+   "musclesSecondaires": [
+    "Ischio-jambiers",
+    "Mollets"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Dos et bassin bien collés au dossier, pieds écartés largeur d'épaules sur la plateforme. Descends jusqu'à environ 90 degrés au genou sans décoller le bassin. Pousse avec tout le pied, genoux dans l'axe des orteils. Ne verrouille pas les genoux en haut.",
+   "erreursFrequentes": "Bassin qui décolle en bas (dos arrondi). Genoux qui rentrent vers l'intérieur. Verrouiller les genoux en extension. Amplitude trop courte avec charge excessive.",
+   "varianteFacile": "Charge réduite, amplitude partielle",
+   "varianteDifficile": "Une jambe à la fois, ou descente en 4 s",
+   "tempo": "3-0-1",
+   "reposConseille": 120,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=q4W4_VJbKW0",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "How To Do A 45 Degree Leg Press"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-lat-pulldown",
+   "nom": "Danse&Fitness Lat Pulldown",
+   "description": "Tirage vertical à la poulie haute vers la poitrine, pour élargir le dos.",
+   "categories": [],
+   "categorie": "Dos",
+   "musclesPrincipaux": [
+    "Grand dorsal"
+   ],
+   "musclesSecondaires": [
+    "Biceps",
+    "Trapèzes",
+    "Deltoïdes postérieurs"
+   ],
+   "materiel": [
+    "machine",
+    "poulie"
+   ],
+   "niveau": "debutant",
+   "consignes": "Cuisses bloquées sous les coussins, prise un peu plus large que les épaules. Buste légèrement incliné vers l'arrière, poitrine sortie. Tire la barre vers le haut de la poitrine en menant avec les coudes. Remonte lentement bras tendus sans décoller les épaules.",
+   "erreursFrequentes": "Se balancer d'avant en arrière. Tirer la barre derrière la nuque. Hausser les épaules. Tirer avec les bras seulement.",
+   "varianteFacile": "Charge légère, prise plus large et amplitude réduite",
+   "varianteDifficile": "Pause de 2 s barre à la poitrine, ou prise serrée en supination",
+   "tempo": "2-1-3",
+   "reposConseille": 90,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=nZHhSxwbTtQ",
+    "statut": "propose",
+    "duree": 18,
+    "titre": "Perfect Lat pulldown tutorial !!"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-leg-extension",
+   "nom": "Danse&Fitness Leg Extension",
+   "description": "Extension de jambes assise sur machine, pour isoler les quadriceps.",
+   "categories": [],
+   "categorie": "Jambes",
+   "musclesPrincipaux": [
+    "Quadriceps"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Genoux alignés avec l'axe de la machine, dos calé, coussin sur le bas des tibias. Tends les jambes complètement en contractant les cuisses. Marque 1 seconde en haut. Redescends lentement sans poser la charge.",
+   "erreursFrequentes": "Donner un coup sec pour monter la charge. Fessiers qui décollent du siège. Laisser retomber la charge. Charge excessive pour les genoux.",
+   "varianteFacile": "Charge légère, amplitude partielle",
+   "varianteDifficile": "Une jambe à la fois, ou descente en 4 s",
+   "tempo": "2-1-3",
+   "reposConseille": 60,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=iQ92TuvBqRo",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "The Perfect Leg Extension"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-low-row",
+   "nom": "Danse&Fitness Low Row",
+   "description": "Tirage horizontal bas sur machine à appui thoracique, pour l'épaisseur du dos.",
+   "categories": [],
+   "categorie": "Dos",
+   "musclesPrincipaux": [
+    "Grand dorsal",
+    "Rhomboïdes"
+   ],
+   "musclesSecondaires": [
+    "Biceps",
+    "Deltoïdes postérieurs",
+    "Trapèzes"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Poitrine contre le support, pieds calés, bras tendus sur les poignées. Tire les coudes vers l'arrière le long du corps. Serre les omoplates 1 seconde. Reviens lentement en laissant les omoplates s'écarter.",
+   "erreursFrequentes": "Buste qui se balance. Épaules qui montent. Tirer avec les bras sans engager le dos. Amplitude trop courte.",
+   "varianteFacile": "Charge légère, tirage plus court",
+   "varianteDifficile": "Un bras à la fois, pause de 2 s contractée",
+   "tempo": "2-1-3",
+   "reposConseille": 90,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=Y_F7NlVoJqY",
+    "statut": "propose",
+    "duree": 18,
+    "titre": "How to do the Machine Low Row for Lats Growth"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-lying-legcurl",
+   "nom": "Danse&Fitness Lying LegCurl",
+   "description": "Flexion de jambes allongé sur le ventre, pour isoler les ischio-jambiers.",
+   "categories": [],
+   "categorie": "Jambes",
+   "musclesPrincipaux": [
+    "Ischio-jambiers"
+   ],
+   "musclesSecondaires": [
+    "Mollets",
+    "Fessiers"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Genoux au bord du banc, coussin sur le bas des mollets. Hanches plaquées sur le banc. Ramène les talons vers les fessiers en contractant l'arrière des cuisses. Redescends lentement jusqu'à presque tendre les jambes.",
+   "erreursFrequentes": "Bassin qui se soulève. Élan pour remonter la charge. Descente trop rapide. Charge trop lourde.",
+   "varianteFacile": "Charge légère, amplitude partielle",
+   "varianteDifficile": "Une jambe à la fois, descente en 4 s",
+   "tempo": "2-1-3",
+   "reposConseille": 75,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=I3MdbhUBZ1Q",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "Lying Leg Curl Machine"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-pec-deck-butterfly",
+   "nom": "Danse&Fitness Pec-Deck Butterfly",
+   "description": "Écarté pectoraux sur machine (pec-deck), mouvement d'isolation guidé.",
+   "categories": [],
+   "categorie": "Pectoraux",
+   "musclesPrincipaux": [
+    "Pectoraux"
+   ],
+   "musclesSecondaires": [
+    "Deltoïdes antérieurs"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Siège réglé pour que les poignées soient à hauteur de poitrine, dos plaqué. Coudes légèrement fléchis, ramène les bras devant toi en serrant les pectoraux. Marque 1 seconde de contraction. Reviens lentement sans excès d'amplitude derrière le buste.",
+   "erreursFrequentes": "Étirer trop loin derrière le buste (épaule sollicitée). Épaules qui montent. Charge trop lourde avec élan. Dos qui décolle.",
+   "varianteFacile": "Charge légère, amplitude réduite",
+   "varianteDifficile": "Pause de 2 s bras joints, retour en 4 s",
+   "tempo": "2-1-3",
+   "reposConseille": 60,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=fgXSA2-o0NM",
+    "statut": "propose",
+    "duree": 13,
+    "titre": "How to: Properly Use The Peck Deck Chest Fly Machine With Good Form"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-preacher-curl-machine",
+   "nom": "Danse&Fitness Preacher Curl Machine",
+   "description": "Curl pupitre sur machine, flexion des coudes guidée pour isoler les biceps.",
+   "categories": [],
+   "categorie": "Bras",
+   "musclesPrincipaux": [
+    "Biceps"
+   ],
+   "musclesSecondaires": [
+    "Avant-bras",
+    "Brachial"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Règle le siège pour que les aisselles reposent sur le haut du pupitre. Bras bien appuyés sur le coussin. Fléchis les coudes sans décoller les bras. Redescends lentement jusqu'à presque tendre les bras.",
+   "erreursFrequentes": "Décoller les coudes du pupitre. Épaules qui montent. Tendre brutalement en bas. Charge trop lourde avec élan.",
+   "varianteFacile": "Charge légère, amplitude partielle",
+   "varianteDifficile": "Descente en 4 s, ou un bras à la fois",
+   "tempo": "2-1-3",
+   "reposConseille": 60,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=S4dDLfp3e8w",
+    "statut": "propose",
+    "duree": 9,
+    "titre": "The PERFECT Machine Preacher Curl"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-reverse-butterfly",
+   "nom": "Danse&Fitness Reverse ButterFly",
+   "description": "Écarté inversé sur machine (pec-deck inversé), pour l'arrière des épaules et le haut du dos.",
+   "categories": [],
+   "categorie": "Épaules",
+   "musclesPrincipaux": [
+    "Deltoïdes postérieurs"
+   ],
+   "musclesSecondaires": [
+    "Rhomboïdes",
+    "Trapèzes"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Poitrine contre le coussin, poignées à hauteur d'épaules, bras presque tendus. Écarte les bras vers l'arrière en menant avec les coudes. Serre les omoplates 1 seconde. Reviens lentement sans relâcher la tension.",
+   "erreursFrequentes": "Hausser les épaules. Tirer avec les mains plutôt qu'avec les coudes. Décoller la poitrine du coussin. Charge trop lourde.",
+   "varianteFacile": "Charge légère, amplitude réduite",
+   "varianteDifficile": "Pause de 2 s en contraction, retour en 4 s",
+   "tempo": "2-1-3",
+   "reposConseille": 60,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=vJYkqD7a0gM",
+    "statut": "propose",
+    "duree": 14,
+    "titre": "How to Properly Use The Pec Deck Rear Delt Fly Machine With Good Form"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-seated-cable-row",
+   "nom": "Danse&Fitness Seated Cable Row",
+   "description": "Tirage horizontal assis à la poulie basse, pour le milieu du dos.",
+   "categories": [],
+   "categorie": "Dos",
+   "musclesPrincipaux": [
+    "Grand dorsal",
+    "Rhomboïdes"
+   ],
+   "musclesSecondaires": [
+    "Biceps",
+    "Trapèzes",
+    "Deltoïdes postérieurs"
+   ],
+   "materiel": [
+    "machine",
+    "poulie"
+   ],
+   "niveau": "debutant",
+   "consignes": "Assis, pieds calés, genoux légèrement fléchis, dos droit. Tire la poignée vers le bas du ventre en serrant les omoplates. Garde le buste stable. Reviens bras tendus de façon contrôlée en étirant le dos.",
+   "erreursFrequentes": "Balancer le buste d'avant en arrière. Dos arrondi au retour. Haussement des épaules. Tirer avec les bras seulement.",
+   "varianteFacile": "Charge légère, tirage plus court",
+   "varianteDifficile": "Pause de 2 s omoplates serrées, ou un bras à la fois",
+   "tempo": "2-1-3",
+   "reposConseille": 90,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=BXMjaxXRUuE",
+    "statut": "propose",
+    "duree": 20,
+    "titre": "Seated cable row perfect form tips !!"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-seated-legcurl",
+   "nom": "Danse&Fitness Seated LegCurl",
+   "description": "Flexion de jambes assis sur machine, pour isoler les ischio-jambiers.",
+   "categories": [],
+   "categorie": "Jambes",
+   "musclesPrincipaux": [
+    "Ischio-jambiers"
+   ],
+   "musclesSecondaires": [
+    "Mollets",
+    "Fessiers"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Dos calé, coussin de cuisses ajusté pour bloquer les jambes, genoux dans l'axe de la machine. Ramène les talons sous le siège en contractant l'arrière des cuisses. Pause 1 seconde. Remonte lentement.",
+   "erreursFrequentes": "Fessiers qui décollent du siège. Élan du buste. Retour trop rapide. Charge excessive.",
+   "varianteFacile": "Charge légère, amplitude partielle",
+   "varianteDifficile": "Une jambe à la fois, retour en 4 s",
+   "tempo": "2-1-3",
+   "reposConseille": 75,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=nIj321YZWbo",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "Seated leg curl machine"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-shoulder-press",
+   "nom": "Danse&Fitness Shoulder Press",
+   "description": "Développé épaules assis sur machine guidée, pour renforcer les deltoïdes.",
+   "categories": [],
+   "categorie": "Épaules",
+   "musclesPrincipaux": [
+    "Deltoïdes"
+   ],
+   "musclesSecondaires": [
+    "Triceps",
+    "Trapèzes"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Règle le siège pour que les poignées soient à hauteur d'épaules. Dos plaqué, abdominaux serrés. Pousse vers le haut sans verrouiller les coudes. Redescends lentement jusqu'à hauteur d'oreilles.",
+   "erreursFrequentes": "Cambrer le bas du dos. Hausser les épaules en poussant. Descendre trop bas ou trop vite. Verrouiller les coudes.",
+   "varianteFacile": "Charge réduite, amplitude partielle",
+   "varianteDifficile": "Descente en 4 s, ou série dégressive",
+   "tempo": "3-0-1",
+   "reposConseille": 90,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=6v4nrRVySj0",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "The PERFECT Machine Shoulder Press!"
+   }
+  },
+  {
+   "id": "ex-danse-fitness-standing-calves-raises",
+   "nom": "Danse&Fitness Standing Calves Raises",
+   "description": "Extensions de mollets debout sur machine, pour renforcer les mollets.",
+   "categories": [],
+   "categorie": "Jambes",
+   "musclesPrincipaux": [
+    "Mollets"
+   ],
+   "musclesSecondaires": [
+    "Soléaire"
+   ],
+   "materiel": [
+    "machine"
+   ],
+   "niveau": "debutant",
+   "consignes": "Épaules sous les coussins, avant-pieds sur la plateforme, jambes quasi tendues. Descends les talons pour étirer les mollets. Monte sur la pointe des pieds le plus haut possible. Marque 1 seconde en haut.",
+   "erreursFrequentes": "Rebondir en bas sans étirement. Amplitude trop courte. Plier les genoux pour aider. Monter trop vite.",
+   "varianteFacile": "Charge légère, appui des mains",
+   "varianteDifficile": "Une jambe à la fois, pause de 2 s en haut",
+   "tempo": "2-1-2",
+   "reposConseille": 60,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=95itLfMBG40",
+    "statut": "propose",
+    "duree": 8,
+    "titre": "Standing Calf Raise (Machine)"
+   }
+  },
+  {
+   "id": "ex-db-high-pull",
+   "nom": "DB High Pull",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=o0KJD3Xn3fc",
+    "statut": "propose",
+    "duree": 12,
+    "titre": "Dumbbell High Pull"
+   }
+  },
+  {
+   "id": "ex-db-seal-row",
+   "nom": "DB Seal Row",
+   "description": "Rowing haltères allongé à plat ventre sur un banc surélevé : tirage du dos sans l'aide des jambes ni de l'élan.",
+   "categories": [],
+   "musclesPrincipaux": [
+    "Grand dorsal",
+    "Rhomboïdes"
+   ],
+   "musclesSecondaires": [
+    "Trapèzes",
+    "Deltoïdes postérieurs",
+    "Biceps"
+   ],
+   "materiel": [
+    "Haltères",
+    "Banc surélevé"
+   ],
+   "niveau": "intermediaire",
+   "consignes": "Allonge-toi sur le ventre sur un banc assez haut pour que les haltères pendent sans toucher le sol. Poitrine plaquée, tire les coudes vers les hanches en serrant les omoplates, marque une pause en haut, puis redescends en contrôle.",
+   "erreursFrequentes": "Soulever la poitrine du banc, tirer avec les trapèzes en haussant les épaules, amplitude incomplète, haltères qui cognent le sol.",
+   "varianteFacile": "Rowing haltère à un bras, appui sur un banc.",
+   "varianteDifficile": "Pause de 2 secondes en haut, ou charge plus lourde avec tempo lent.",
+   "tempo": "2-1-2",
+   "reposConseille": 90,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=t43SQgXjXyE",
+    "statut": "propose",
+    "duree": 15,
+    "titre": "Seal Row: Dumbbell Back Training | J2FIT"
+   }
+  },
+  {
+   "id": "ex-db-skull-crusher",
+   "nom": "DB Skull Crusher",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=iuYB_fLp26Q",
+    "statut": "propose",
+    "duree": 13,
+    "titre": "5 Steps to Perfect Dumbbell Skullcrushers"
+   }
+  },
+  {
+   "id": "ex-dead-bug",
+   "nom": "Dead Bug",
+   "description": "Grab a mat and lay down flat on your back. Extend your arms directly above your chest towards the ceiling and maintain their position throughout. For your lower body, create a 90 degree bend at both your hips and knee joints so your lower legs are parallel with the floor, feet in mid air. This will be your starting position.\nTo initiate the movement, inhale and extend one of your legs out and lower towards the floor as you go. Continue until your heel is an inch off the floor.\nAfter a brief pause, exhale and return your leg back along the same path into the starting position.\nAlternate as you go and repeat for the recommended amount of repetitions.\n\nVariations: Cocoons or Reverse Crunches.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=DqLL45uk2Tk",
+    "statut": "propose",
+    "duree": 14,
+    "titre": "Deadbugs"
+   }
+  },
+  {
+   "id": "ex-decline-press-ups",
+   "nom": "Decline Press Ups",
+   "description": "To start this exercise kneel down just in front of a ledge or platform and lean forward so that you are now weight baring on your arms. Have your hands placed just outside of where your chest would be. Now you should come up onto your feet by stepping up onto the ledge or platform behind you so that your body is suspended above the floor. The only points of contact (with the floor) should be your hands and the platform itself. Your body should be in one straight line from head to toe and your arms perpendicular to the floor, under your chest. This will be your starting position.\nWhilst inhaling, slowly lower your chest towards the floor whilst flaring your elbows out wide. Continue to descend until you are only a few inches from the floor.\nPause for a brief movement, exhale and press through your palms to return your body along the same path to the starting position. Tip: Squeeze your pectoral muscles as you do so and when you get to the top of the movement, do not lock your elbows out.\nRepeat the movement for the recommended amount of repetitions.\n\nVariations: Press Ups or Barbell Incline Bench Press - Medium Grip.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=lx-49Yjqm-Q",
+    "statut": "propose",
+    "duree": 7,
+    "titre": "Decline Push-Ups"
+   }
+  },
+  {
+   "id": "ex-deep-squat-hold",
+   "nom": "Deep Squat Hold",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=LPa3LKlQ7eU",
+    "statut": "propose",
+    "duree": 10,
+    "titre": "Deep Squat Hold"
+   }
+  },
+  {
+   "id": "ex-developpe-couche-halteres-prise-neutre",
+   "nom": "Développé couché haltères prise neutre",
+   "description": "",
+   "categories": [],
+   "categorie": "pectoraux",
+   "musclesPrincipaux": [
+    "pectoraux",
+    "triceps"
+   ],
+   "musclesSecondaires": [
+    "deltoïde antérieur"
+   ],
+   "materiel": [
+    "haltères",
+    "banc"
+   ],
+   "niveau": "intermediaire",
+   "consignes": "Allongé sur banc plat, haltères posés sur les cuisses puis amenés au-dessus de la poitrine en t'allongeant. Paumes face à face (prise neutre), omoplates serrées et basses, pieds ancrés. Descends les haltères contrôlé jusqu'à ce qu'ils frôlent les côtés de la poitrine, coudes à environ 30-45° du buste, sans aller plus bas que l'étirement confortable de l'épaule. Pousse en rapprochant légèrement les haltères en haut. Prise neutre = moins de contrainte sur l'avant de l'épaule.",
+   "erreursFrequentes": "Coudes écartés à 90° ; descente trop profonde qui tire sur l'avant de l'épaule ; omoplates qui se décollent du banc ; haltères qui tombent sur les côtés en fin de série (les reposer sur les cuisses en se relevant).",
+   "varianteFacile": "Presse pectorale à la machine (convergente), amplitude contrôlée.",
+   "varianteDifficile": "Tempo 4-1-1-0 avec pause de 1 s en bas.",
+   "tempo": "3-1-1-0",
+   "reposConseille": 150,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=ZjsLh8NIORQ",
+    "statut": "propose",
+    "duree": 10,
+    "titre": "Flat Neutral Grip Dumbbell Bench Press"
+   }
+  },
+  {
+   "id": "ex-dips-stretch",
+   "nom": "Dips Stretch",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=c4x300MW5Cs",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-dumbbell-deadlifts",
+   "nom": "Dumbbell Deadlifts",
+   "description": "Grab two dumbbells and stand with a shoulder width stance, toes pointing slightly outward (palms facing the side of your legs).\nThroughout the movement you should keep your head up and maintain a straight back. This will be your starting position.\nDescend slowly by bending your knees until your thighs are parallel with the floor. Keep a straight back so that your posture is not compromised. Tip: When at the bottom of the movement your knees should be behind your toes.\nOnce you have hit the bottom of the movement, pause for a second before pushing your torso back into the starting position through your heels. As you descend inhale and as you ascend, exhale. You should now be at the starting position, ready to go again.\nRepeat for the recommended amount of repetitions.\n\nCaution: Always be aware of your posture with this exercise as if performed incorrectly, could cause injury.\n\nVariations: Barbell Squats or Smith Machine Squats.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=QbbURJEUALw",
+    "statut": "propose",
+    "duree": 17,
+    "titre": "The PERFECT Dumbbell Romanian Deadlift"
+   }
+  },
+  {
+   "id": "ex-dumbbell-lying-rear-lateral-raise",
+   "nom": "Dumbbell Lying Rear Lateral Raise",
+   "description": "Grab a dumbbell in your left hand and lay face down on an incline bench (around 30-45 degrees) and allow your left arm to hang perpendicular to the floor. Have your head off the end of the bench so that only your torso is supported with your right arm, placed behind your back. This will be your starting position.\nInhale and pull the back of your left hand towards the ceiling.\nOnce the dumbbell is horizontal to the floor, pause for a brief second, exhale and slowly return the dumbbell along the same path, back into its starting position.\nRepeat until you have completed the prescribed amount of repetitions and swap sides.\n\nVariations: Face Pulls or Cable Rear Delt Fly.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=jjWC2mTS0sM",
+    "statut": "propose",
+    "duree": 18,
+    "titre": "Dumbbell Lying Rear Lateral Raise"
+   }
+  },
+  {
+   "id": "ex-dumbbell-shoulder-press",
+   "nom": "Dumbbell Shoulder Press",
+   "description": "Grab a dumbbell in each hand and adopt a shoulder width stance. Without leaning backward or putting your posture into jeopardy, press the dumbbells above your head so that you arms are fully extended, yet slightly flexed/bent at your elbows. Make sure your palms are facing forward at this point. This will be your starting position.\nSlowly and in a controlled fashion, descend the dumbbells until they reach the side of your head (parallel with your ears), creating a 90 degree angle at your elbows. Inhale on the downward motion and flare your elbows out wide.\nAfter a brief pause, exhale and press the dumbbells back along this path to their starting position.\nRepeat for the recommended amount of repetitions.\n\nVariations: Seated Dumbbell Shoulder Press or Cable Shoulder Press.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=n01cXyJ7OSI",
+    "statut": "valide",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-dumbbell-thruster",
+   "nom": "Dumbbell Thruster",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=5p7xFs_Hld4",
+    "statut": "propose",
+    "duree": 8,
+    "titre": "Dumbbell Thruster Demo"
+   }
+  },
+  {
+   "id": "ex-dumbbell-upright-rows",
+   "nom": "Dumbbell Upright Rows",
+   "description": "Grab two dumbbells with an overhand grip. The ends of the dumbbells gently touching one another as they rest on your thighs, arms hanging perpendicular to the floor. Tip: Maintain a straight back and keep the dumbbells as close to your body as possible throughout the movement.\nExhale and pull the dumbbells up towards your chin by contracting your shoulders and flaring your elbows out wide. Continue to pull them upward until you reach your chin. At this point your elbows should be above the dumbbells.\nPause for a brief moment, then inhale and return the dumbbells along the same path towards the starting position.\n\nVariations: Barbell Upright Rows or Smith Machine Upright Row\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=2QTnG_7bKbo",
+    "statut": "propose",
+    "duree": 7,
+    "titre": "Dumbbell Upright Row"
+   }
+  },
+  {
+   "id": "ex-dumbell-plank-pull-across",
+   "nom": "Dumbell Plank Pull Across",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=gg6SMDE4HUE",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "Dumbbell Plank Pull Through"
+   }
+  },
+  {
+   "id": "ex-dynamic-lumbar-extension",
+   "nom": "Dynamic Lumbar Extension",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=_7zRi-WPL-Q",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-elevated-foot-toe-stabilization-split-squat",
+   "nom": "Elevated Foot Toe Stabilization Split Squat",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=72Yzbn5bywY",
+    "statut": "propose",
+    "duree": 9,
+    "titre": "Split Squat, Front Foot Elevated"
+   }
+  },
+  {
+   "id": "ex-elevated-push-up",
+   "nom": "Elevated Push Up",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=epHmy_785ZY",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "Elevated Push-Ups"
+   }
+  },
+  {
+   "id": "ex-elevations-laterales-a-la-poulie",
+   "nom": "Élévations latérales à la poulie",
+   "description": "",
+   "categories": [],
+   "categorie": "épaules",
+   "musclesPrincipaux": [
+    "deltoïde latéral"
+   ],
+   "musclesSecondaires": [
+    "deltoïde antérieur",
+    "sus-épineux",
+    "trapèzes supérieurs"
+   ],
+   "materiel": [
+    "poulie"
+   ],
+   "niveau": "intermediaire",
+   "consignes": "Poulie réglée au plus bas, poignée simple. Place-toi de profil, la poulie à côté de la jambe opposée au bras qui travaille, câble qui passe derrière ou devant le corps. Main libre en appui sur la machine. Monte le bras sur le côté jusqu'à l'horizontale en menant avec le coude, redescends lentement sans laisser la charge se reposer : la tension reste continue. Toutes les reps d'un bras, puis l'autre.",
+   "erreursFrequentes": "S'incliner loin de la poulie pour tricher ; tirer avec le trapèze ; laisser la plaque toucher entre deux reps ; bras tendu verrouillé (stress du coude).",
+   "varianteFacile": "Élévations latérales haltères assis, charge légère.",
+   "varianteDifficile": "Buste incliné en tenant la machine (plus d'étirement au départ) ou pause de 1 s en haut.",
+   "tempo": "2-0-1-1",
+   "reposConseille": 60,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=UswJtGzERy0",
+    "statut": "propose",
+    "duree": 27,
+    "titre": "Élévations latérales à la poulie"
+   }
+  },
+  {
+   "id": "ex-elevations-laterales-halteres",
+   "nom": "Élévations latérales haltères",
+   "description": "",
+   "categories": [],
+   "categorie": "épaules",
+   "musclesPrincipaux": [
+    "deltoïde latéral"
+   ],
+   "musclesSecondaires": [
+    "deltoïde antérieur",
+    "trapèzes supérieurs",
+    "sus-épineux"
+   ],
+   "materiel": [
+    "haltères"
+   ],
+   "niveau": "debutant",
+   "consignes": "Debout, buste très légèrement penché en avant, haltères le long des cuisses, coudes à peine fléchis. Monte les bras sur les côtés en menant avec les coudes jusqu'à l'horizontale, petits doigts au niveau des pouces ou légèrement plus hauts. Redescends lentement en 2 s sans laisser tomber. Épaules basses, loin des oreilles.",
+   "erreursFrequentes": "Élan du buste ou des jambes ; haussement des épaules (les trapèzes prennent le relais) ; charge trop lourde qui réduit l'amplitude ; poignets plus hauts que les coudes.",
+   "varianteFacile": "Assis sur un banc pour supprimer l'élan, charge légère.",
+   "varianteDifficile": "Partielles en fin de série (demi-amplitude haute jusqu'à l'échec) ou pause de 1 s en haut.",
+   "tempo": "2-0-1-1",
+   "reposConseille": 60,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=Fr-T6grtBHw",
+    "statut": "propose",
+    "duree": 27,
+    "titre": "Perfect dumbbell lateral raises !! 😱😱"
+   }
+  },
+  {
+   "id": "ex-emom",
+   "nom": "EMOM",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": null
+  },
+  {
+   "id": "ex-face-pull-a-la-poulie",
+   "nom": "Face pull à la poulie",
+   "description": "",
+   "categories": [],
+   "categorie": "épaules",
+   "musclesPrincipaux": [
+    "deltoïde postérieur",
+    "coiffe des rotateurs"
+   ],
+   "musclesSecondaires": [
+    "trapèzes moyens et inférieurs",
+    "rhomboïdes"
+   ],
+   "materiel": [
+    "poulie",
+    "corde"
+   ],
+   "niveau": "debutant",
+   "consignes": "Poulie réglée à hauteur du front, corde tenue pouces vers l'arrière. Recule d'un pas, buste droit, gainé. Tire la corde vers le visage en écartant les mains et en montant les coudes à hauteur des épaules, puis tourne les avant-bras vers le haut (rotation externe) : en fin de mouvement, mains à côté des oreilles, omoplates serrées. 1 s de pause, retour lent. Charge légère : c'est un exercice de posture, la qualité prime.",
+   "erreursFrequentes": "Charge trop lourde qui fait basculer le buste en arrière ; tirer vers le menton ou la poitrine (ça devient un rowing) ; coudes qui tombent sous les épaules ; épaules qui montent vers les oreilles ; oublier la rotation externe en fin de mouvement.",
+   "varianteFacile": "Face pull à l'élastique, ou tirage poulie haute sans rotation externe.",
+   "varianteDifficile": "Face pull à genoux (plus de gainage) avec pause de 2 s en fin de mouvement.",
+   "tempo": "2-0-1-1",
+   "reposConseille": 60,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=Q_bf9TtWxTU",
+    "statut": "propose",
+    "duree": 18,
+    "titre": "Face pull tutorial !! 😱😱"
+   }
+  },
+  {
+   "id": "ex-farmer-carry",
+   "nom": "Farmer Carry",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=4huya80eWPU",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-fire-hydrant",
+   "nom": "Fire Hydrant",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=xoNvM5FqvvU",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-frog-pose-adductor-stretch",
+   "nom": "Frog Pose Adductor Stretch",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=orMZYFWo9P0",
+    "statut": "propose",
+    "duree": 16,
+    "titre": "Frog Stretch"
+   }
+  },
+  {
+   "id": "ex-full-can",
+   "nom": "Full Can",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=irX1qYZow4k",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-ghd-extension-glute-only",
+   "nom": "GHD Extension ( Glute Only )",
+   "description": "Remonter le buste seulement en utilisant les fessiers. Donc garder le buste enroulé au maximum pendant tout le mouvement sans utiliser le bas du dos et bouger la colonne.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=zjaB7ZlJrjI",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-ghd-flexion-extension",
+   "nom": "GHD Flexion Extension",
+   "description": "Remonter en utilisant seulement les muscles du bas du dos pour remonter et descendre. Donc enroulement et déroulement de la colonne.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=zjaB7ZlJrjI",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-glute-bridge",
+   "nom": "Glute Bridge",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=x54_y9c2OVY",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-glute-bridge-walk",
+   "nom": "Glute Bridge Walk",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=bTb2OJ4XLIE",
+    "statut": "propose",
+    "duree": 18,
+    "titre": "Glute Bridge Walkout"
+   }
+  },
+  {
+   "id": "ex-glutebridge-iso-banded-leg-flexion",
+   "nom": "GluteBridge Iso + Banded Leg Flexion",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=ZilleVHzxfk",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-half-kneeling-kb-weightshift",
+   "nom": "Half Kneeling KB WeightShift",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=a7hyAZGddhY",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-half-pistol-squat",
+   "nom": "Half Pistol Squat",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=sHpBSJeHFMs",
+    "statut": "propose",
+    "duree": 8,
+    "titre": "Exercise Library: Pistol Squats / Half Way"
+   }
+  },
+  {
+   "id": "ex-hanging-leg-raises",
+   "nom": "Hanging Leg Raises",
+   "description": "Take hold of a chin up bar/handles and allow your body to hang perpendicular to the floor. This will be your starting position.\nTo initiate the movement, exhale and elevate your legs in front of your body by contracting your abdominal muscles (either keeping them as straight as possible, or bending at the knees) until they create a 90 degree angle with your torso (if you have bent your knees, you should have a 90 degree angle at both your hips and knees).\nAfter a brief pause, inhale and return your legs back along the same path into the starting position. Tip: This movement should be slow and controlled so that you do not swing.\nRepeat for the recommended amount of repetitions.\n\nVariations: Hip Raises or Flat Bench Leg Pull Ins.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=rFE2T5CumXs",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-hip-airplane",
+   "nom": "Hip Airplane",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=AdtmOhS2anM",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-hip-flexion-block",
+   "nom": "Hip Flexion Block",
+   "description": "Chercher à envoyer la jambe le plus haut possible sans la plier. Objectif : rester le plus droit possible, plier le moins possible le bas du dos.\n\nUtiliser un block de yoga, un ballon, ou quoi que ce soit ( voir rien ) pour simuler le block au dessus duquel aller.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=m9Ra-4aidow",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-hip-flexion-end-range-straight-leg",
+   "nom": "Hip Flexion End Range Straight Leg",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=a_TriNH24hA",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-hip-internal-rotation-pails-rails",
+   "nom": "Hip Internal Rotation ( PAILS & RAILS )",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=-Mrf5Xq5pvQ",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-hip-over-the-box-rac",
+   "nom": "Hip Over the Box RAC",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=BzVNw0k60_4",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-hollow-dynamic",
+   "nom": "Hollow Dynamic",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=tWZBamV2tjc",
+    "statut": "propose",
+    "duree": 18,
+    "titre": "How to do a Hollow Body Rock"
+   }
+  },
+  {
+   "id": "ex-incline-press-ups",
+   "nom": "Incline Press Ups",
+   "description": "Stand facing bench or sturdy elevated platform. Place hands on edge of bench or platform, slightly wider than shoulder width. \r\nPosition forefoot back from bench or platform with arms and body straight. Arms should be perpendicular to body. Keeping body straight, lower chest to edge of box or platform by bending arms.\r\n Push body up until arms are extended. Repeat.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=juvyPL3swiw",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-inclined-biceps-curl",
+   "nom": "Inclined Biceps Curl",
+   "description": "Curl biceps haltères sur banc incliné : bras en arrière du corps, le biceps est étiré au départ pour un travail en grande amplitude.",
+   "categories": [],
+   "musclesPrincipaux": [
+    "Biceps"
+   ],
+   "musclesSecondaires": [
+    "Brachial",
+    "Avant-bras"
+   ],
+   "materiel": [
+    "Haltères",
+    "Banc incliné"
+   ],
+   "niveau": "debutant",
+   "consignes": "Banc incliné à 45-60 degrés, dos et épaules plaqués, bras pendants. Fléchis les coudes sans les avancer, supination en montant, contracte en haut, redescends lentement jusqu'à l'étirement complet.",
+   "erreursFrequentes": "Avancer les coudes, décoller les épaules du banc, balancer pour monter, amplitude de descente tronquée.",
+   "varianteFacile": "Curl debout haltères, charge plus légère.",
+   "varianteDifficile": "Curl incliné alterné avec descente en 4 secondes.",
+   "tempo": "3-0-1",
+   "reposConseille": 60,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=8WJX5B6oR4E",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "Incline Dumbbell Curls For Biceps"
+   }
+  },
+  {
+   "id": "ex-jefferson-curl",
+   "nom": "Jefferson Curl",
+   "description": "Développe la colonne, vertèbre par vertèbre, des cervicales puis aux vertèbres thoraciques puis au final lombaire. Faire le chemin inverse en remontant : vertèbres lombaires puis thoraciques puis cervicales.\n\nAvec le poids indiqué sur le programme !\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=2h2ebctW1A4",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-knee-raises-iso",
+   "nom": "Knee Raises + Iso",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=JwFpktkkqfk",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-kneeling-barbell-rollout",
+   "nom": "Kneeling Barbell Rollout",
+   "description": "Grab a barbell and place it on the floor at the end of a mat. Kneel down on the mat and adopt a shoulder width, overhand grip on the barbell. With a bend at your knees and hips, lean your bodyweight forward so that your (straight) arms are holding you upright. This will be your starting position.\nTo initiate the movement, inhale and slowly roll the barbell forward, stretching your arms out as far as you can whilst dropping your pelvis down at the same time.\nAfter a brief pause, exhale and use your abdominal muscles to pull the barbell back along the same path into the starting position.\nRepeat for the recommended amount of repetitions.\n\nCaution: If you suffer from any lower back pain or hernias, this exercise is not suitable.\n\nVariation: Ab Roller.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=PYHUibKnLSM",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-kneeling-quad-stretch",
+   "nom": "Kneeling Quad Stretch",
+   "description": "Adopt a kneeling position on a mat with your knees and heels together.\nLean back until you feel the desired stretch within your thighs. Tip: to emphasise this stretch, look up at the ceiling, arch your lower back gently and pull your shoulders back.\nHold this position for the recommended duration.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=rGSiL5W-90I",
+    "statut": "propose",
+    "duree": 13,
+    "titre": "Half Kneeling Quad Stretch - Rehab 2 Perform"
+   }
+  },
+  {
+   "id": "ex-kneeling-side-plank-hip-lifts",
+   "nom": "Kneeling Side Plank Hip Lifts",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=d_RLZVip5ic",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-landmine-180-s",
+   "nom": "Landmine 180's",
+   "description": "Position a bar into a landmine or securely anchor it in a corner. Load the bar to an appropriate weight.\r\n\r\nRaise the bar from the floor, taking it to shoulder height with both hands with your arms extended in front of you. Adopt a wide stance. This will be your starting position.\r\n\r\nPerform the movement by rotating the trunk and hips as you swing the weight all the way down to one side. Keep your arms extended throughout the exercise. \r\n\r\n\r\nReverse the motion to swing the weight all the way to the opposite side.\r\n\r\nContinue alternating the movement until the set is complete.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=luYHqEgnXbk",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-landmine-press",
+   "nom": "Landmine Press",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=4o8N-u59vCs",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-lateral-front-db-raises",
+   "nom": "Lateral & Front DB Raises",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=uPVafU_ODeQ",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-lateral-box-step-up-one-kb-farmer",
+   "nom": "Lateral Box Step Up One KB Farmer",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=PK4peVLkxAs",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-laying-chest-opening-stretch",
+   "nom": "Laying Chest Opening Stretch",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=_UW6YDWEKiU",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-leg-extension",
+   "nom": "Leg Extension",
+   "description": "Set the machine to the desired weight and set the position of the back rest (when you sit on the machine, the back of your knees should be in contact with the edge of the seat). Next take a seat and lock the shin pad in place and take hold of the handles either side of you. This is your starting position.\nTo initiate the movement, exhale and extend your knees to bring your shins up towards the ceiling. In order to do so, contract your thigh muscles whilst simultaneously pulling your hips into the seat.\nAfter a brief pause, inhale and return your lower legs back along the same path into their starting position.\nRepeat for the recommended amount of repetitions.\n\nVariations: 45 Degree Leg Press Shoulder Width Stance or Alternating Dumbbell Lunges.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=vw7VJ-EBnfM",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-leverage-chest-press",
+   "nom": "Leverage Chest Press",
+   "description": "Take a seat on the machine, facing forwards and adjust the height of the seat so that your hips and knees are at 90 degrees. Load the machine with the desired weight, grip the handles and make sure that your elbows are placed directly behind your wrists. This is your starting position.To initiate the movement, exhale and press the handles forward by flexing your pectoral muscles. It is important to try and relax your shoulders, keep your chest high and make sure your back stays in contact with the back rest. Continue to press the handles forward until either your pectoral muscles are fully contracted or your arms are fully extended (always have a slight bend when extended).After a brief pause, inhale and return the handles back along the same path into their starting position.Repeat for the recommended amount of repetitions.Variations: Dumbbell Bench Press or Smith Machine Bench Press.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=ULsApsh0yu4",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-mountain-climbers",
+   "nom": "Mountain Climbers",
+   "description": "Start off in a press up position with your hands just wider than shoulder width and your toes being the only other point of contact with the floor. Your body should be suspended in a straight line from your heels to your shoulders above the floor. This will be your starting position.\nBring your right knee underneath your body so that it is as close to your chest as you can get it.\nExhale and swap your right leg for your left and as fast as you can.\nContinue to alternate your legs and bring each knee in as close to your chest as possible. Tip: Take shallow breaths whilst you are performing the movement.\nRepeat for the recommended amount of repetitions.\n\nVariations: Ab Bike or High Knees.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=8Av7DoAgxVU",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-narrow-grip-ez-bar-skullcrushers",
+   "nom": "Narrow Grip EZ Bar Skullcrushers",
+   "description": "Grab an EZ bar (overhand grip) and lay flat on a bench with the bar pressed straight up towards the ceiling. Keep your elbows as close together as you can to initiate maximum tricep activity. This will be your starting position.\nInhale as you descend the bar towards your forehead. Be sure to keep your upper arms stationary and your elbows tucked in. When you get to within an inch of your forehead pause for a second.\nThen whilst exhaling, use your triceps to return the bar to the starting position. Your arms should be fully extended once again and pointing towards the ceiling.\nRepeat for the recommended amount of repetitions.\n\nVariations: Narrow Grip Barbell Bench Press or Tricep Rope Extensions.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=r63Xtw-RabY",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-one-arm-farmer-carry",
+   "nom": "One Arm Farmer Carry",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=zhG1BdQ_hIs",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-one-leg-star-touch",
+   "nom": "One Leg Star Touch",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=mjzu4CEkTLE",
+    "statut": "propose",
+    "duree": 15,
+    "titre": "Single Leg Balance Clock"
+   }
+  },
+  {
+   "id": "ex-otis-ups",
+   "nom": "Otis Ups",
+   "description": "Grab a mat and lay down flat on your back. Have your knees bent to create a 90 degree angle with your feet planted on the floor. Take hold of a weight plate and keep it close to your chest. Tip: For this movement you may either need a partner to hold your feet down or gently place additional weights on your feet. This will be your starting position.\nTo initiate the movement, exhale and roll your shoulders up and off the mat by contracting your abdominal muscles whilst pressing the weight plate directly towards the ceiling at the same time. Continue to sit up as you push the weight as high towards the ceiling as possible.\nOnce your arms are vertical and your abdominal muscles are as tight as they can be, pause briefly, inhale and return your body back along the same path into the starting position.\nRepeat for the recommended amount of repetitions.\n\nVariations: Rope Crunches or Cocoons.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=jAkBykVzGBc",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-overhead-side-bend",
+   "nom": "Overhead Side Bend",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=-eyrDO5e50k",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-pall-of-press",
+   "nom": "Pall Of Press",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=e_n3pYpsZUs",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-pallof-press",
+   "nom": "Pallof Press",
+   "description": "Attach a handle to a cable pulley that is at chest height and adopt a shoulder width stance adjacent to the cable machine (on your right side) about a foot away.\nTake hold of the handle with an both hands, bend your elbows and keep your hands tucked in to your chest at this point. This will be your starting position. Tip: Maintain good posture throughout.\nExhale and press your hands out in front of your torso, keeping them parallel to the floor as you go. Continue to press forwards until your arms are at full extension.\nAfter a brief pause, inhale and return the handle back along the same path to its starting position.\nRepeat for the recommended amount of repetitions and swap sides.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=rts4oLM6lGs",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-pallof-press-with-rotation",
+   "nom": "Pallof Press With Rotation",
+   "description": "Attach a handle to a cable pulley that is at chest height and adopt a shoulder width stance adjacent to the cable machine (on your right side) about a foot away.\nTake hold of the handle with an both hands, bend your elbows and keep your hands tucked in to your chest at this point. This will be your starting position. Tip: Maintain good posture throughout.\nExhale and press your hands out in front of your torso, keeping them parallel to the floor as you go. Continue to press forwards until your arms are at full extension.\nOnce at full extension, you then need to twist your torso (and the cable) away from the machine as far as you can without moving your hips. Your arms should remain parallel to the floor throughout and your head following your shoulders.\nAfter a brief pause, inhale and return the handle back along the same path to its starting position.\nRepeat for the recommended amount of repetitions and swap sides.\n\nVariations: Cable Russian Twists or Plate Twists.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=HRiKIeyIByw",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-pectoral-stretch",
+   "nom": "Pectoral Stretch",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=67NlOEz2gNE",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-pigeon-stretch",
+   "nom": "Pigeon Stretch",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=9DoWX8bAzlk",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-piriforme-stretch",
+   "nom": "Piriforme Stretch",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=q6RkVMc39c8",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-plank",
+   "nom": "Plank",
+   "description": "Firstly, place a mat on the floor underneath your torso as you adopt an 'all-fours' position above it. From here you will need to bend your elbows to a 90 degree angle and place your upper body weight onto your forearms. After you have done that, take a step backwards with your feet and place your remaining bodyweight through your toes. At this point your body should be suspended (in a straight line) above the floor with just your forearms and toes as points of contact. This will be your starting position.\nKeep your abdominal muscles tight throughout this exercise and keep your pelvis in line with the rest of your body to minimise risk of injury to your lower back (you can elevate your pelvis slightly to reduce lower back pain).\nHold this position for as long as you can or for the recommended amount of time.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=Zzg5Z-j0Sho",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-plank-with-rotation",
+   "nom": "Plank With Rotation",
+   "description": "Firstly, place a mat on the floor underneath your torso as you adopt an 'all-fours' position above it. From here you will need to bend your elbows to a 90 degree angle and place your upper body weight onto your forearms. After you have done that, take a step backwards with your feet and place your remaining bodyweight through your toes. At this point your body should be suspended (in a straight line) above the floor with just your forearms and toes as points of contact. This will be your starting position.\nKeep your abdominal muscles tight throughout this exercise and keep your pelvis in line with the rest of your body to minimise risk of injury to your lower back (you can elevate your pelvis slightly to reduce lower back pain).\nNext, exhale and lift one of your forearms off the floor whilst roating your torso. You should continue to rotate until your chest is perpendicular to the floor (facing the wall rather than the floor).\nAfter a brief pause, inhale and return your torso back along the same path into the starting position.\nYou can either complete all repetitions on one side first or alternate as you go.\nRepeat for the recommended amount of repetitions.\n\nCaution: If you suffer from back pain, this may not be the most suitable exercise.\n\nVariation: Plank or Push Up to Side Plank.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=po1-UZqcv78",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-plus-push-up-sur-les-coudes",
+   "nom": "Plus Push Up sur les coudes",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=vZFxZLAYC3E",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-press-ups",
+   "nom": "Press Ups",
+   "description": "To start this exercise kneel down on the floor, and lean forward so that you are now weight baring on your arms. Have your hands placed just outside of where your chest would be. Now you should come up onto your feet so that your body is suspended above the floor, the only points of contact (with the floor) should be your hands and feet. Your body should be in one straight line from head to toe and your arms perpendicular to the floor under your chest. This will be your starting position.\nWhilst inhaling, slowly lower your chest towards the ground whist flaring your elbows out wide. When you are about an inch or so from the ground, you should have created a triangle with your hand positions and your eye line.\nPause for a brief movement, exhale and press through your palms to return your body along the same path to the starting position. Tip: Squeeze your pectoral muscles as you do so and when you get to the top of the movement, do not lock your elbows out.\nRepeat the movement for the recommended amount of repetitions.\n\nVariations: Bench Press or Dumbbell Chest Press.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=ukHDKEVwSp8",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-prone-behind-the-neck-presses-elevation",
+   "nom": "Prone Behind The Neck Presses + Elevation",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=xBMnBQF7XK0",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-pull-over-hollow-hold",
+   "nom": "Pull Over Hollow Hold",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=OwBi2QW3Ihc",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-pull-ups-neutral-grip",
+   "nom": "Pull Ups (Neutral Grip)",
+   "description": "Take hold of the pull up bars with a neutral grip (hands should be facing each other).\nBoth arms should be extended as you create a small curvature in your back and push your chest out. This will be your starting position.\nNow, exhale and pull your torso up until your head is at least level with your hands. Concentrate on squeezing your shoulder blades back and down (through your lats) as you reach the fully contracted position.\nAfter a brief pause at the contracted position, inhale as you slowly return your torso to the starting position. Track the same path down as you did up. You are at the starting position when your lats are fully stretched.\nRepeat for the recommended amount of repetitions.\n\nVariation: Wide Grip Pull Ups.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=bxovgJoP3GY",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-push-up-db-rowing",
+   "nom": "Push Up + DB Rowing",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=WtMs-TnDxcQ",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-push-up-eccentric",
+   "nom": "Push Up Eccentric",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=CX2WgRkzxvo",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-pyke-pushup",
+   "nom": "Pyke PushUp",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=-HyBq_m4n4k",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-rameur",
+   "nom": "Rameur",
+   "description": "Rameur ergomètre : cardio complet sollicitant jambes, dos et bras dans un geste fluide jambes-tronc-bras.",
+   "categories": [],
+   "musclesPrincipaux": [
+    "Quadriceps",
+    "Grand dorsal",
+    "Fessiers"
+   ],
+   "musclesSecondaires": [
+    "Ischio-jambiers",
+    "Biceps",
+    "Abdominaux",
+    "Trapèzes"
+   ],
+   "materiel": [
+    "Rameur"
+   ],
+   "niveau": "debutant",
+   "consignes": "Poussée : jambes d'abord, puis buste qui bascule, puis bras. Retour : bras, buste, puis jambes. Dos droit, cadence d'environ 20-26 coups/min, le retour est environ deux fois plus lent que la poussée.",
+   "erreursFrequentes": "Tirer avec les bras avant les jambes, dos arrondi, se pencher trop en arrière, retour précipité.",
+   "varianteFacile": "Allure modérée, intervalles courts avec récupération.",
+   "varianteDifficile": "Intervalles à haute intensité (ex. 500 m), cadence plus élevée.",
+   "reposConseille": 60,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=fP3vXkit0WQ",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "décomposer correctement le geste sur rameur"
+   }
+  },
+  {
+   "id": "ex-renegades-row",
+   "nom": "Renegades Row",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=t67Ml9Cj6xs",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-ring-row",
+   "nom": "Ring Row",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=HSlLMQmMcoc",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-romanian-deadlift-au-baton",
+   "nom": "Romanian Deadlift ( Au baton )",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=IGt0IfvtN0M",
+    "statut": "propose",
+    "duree": 13,
+    "titre": "Barbell RDL"
+   }
+  },
+  {
+   "id": "ex-romanian-deadlift-hold",
+   "nom": "Romanian Deadlift Hold",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=6Re72T-hc7I",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-romanian-deadlift-touch-the-wall",
+   "nom": "Romanian Deadlift Touch The Wall",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=hzcO7PX-cBc",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-rotational-stability-stand",
+   "nom": "Rotational Stability Stand",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=4Y1P_H6jikc",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-rowing-stationary",
+   "nom": "Rowing - Stationary",
+   "description": "Firstly, you need to set the resistance of the rower to the desired amount. Once you have done this, take a seat on the rower and place your feet into the foot holders. Have your heels tucked into the base of the holders and the straps pulled tightly over each of your shoes (just below the base of your toes). After this, you need to set the program you wish to complete from the display unit (if applicable).\nNext you will need to take hold of the oars (handle) by bending at your knees and hip joints and slightly leaning your torso forward whilst maintaining a straight back.\nNow exhale and simultaneously push through the middle of your feet to extend your knee and hip joints so that your legs straighten out (slight bend at your knees) whilst pulling your arms in towards your abdominals. In order to create this movement, retract your shoulders and pull hard with your arm and back muscles. Tip: Your back should remain straight throughout this movement.\nAfter a brief pause, inhale and return the oars back along the same path into the starting position, ready for the next row.\nContinue in this manner until you complete the recommended amount of exercise.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=v0dUsbaa0pI",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-running-outdoors",
+   "nom": "Running - Outdoors",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=SfMaYR5N4lU",
+    "statut": "propose",
+    "duree": 20,
+    "titre": "What perfect running technique looks like (mtn_techne)"
+   }
+  },
+  {
+   "id": "ex-seated-calf-raise-machine",
+   "nom": "Seated Calf Raise Machine",
+   "description": "Place the recommended amount of weight on the machine and take a seat. Once you are seated, place the balls of your feet on the foot plate with your toes pointed forward. Next, adjust the height of the lever pad and place your lower thighs under it. Place your hands on top of the lever pad in order to prevent it from slipping.\nLift the lever slightly by pushing through the balls of your feet and release the safety bar. This will be your starting position.\nInhale as you slowly lower your heels towards the floor and continue until your calves are fully stretched.\nAs you exhale, press through the balls of your feet, contracting the calves until your ankles are as high as possible. Hold and squeeze your calves for a second before repeating the movement for the recommended amount of repetitions.\n\nVariations: Seated Calf Raise Machine (Toes Out) or Seated Calf Raise Machine (Toes In).\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=EVF_inqTYTk",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-seated-calf-raises",
+   "nom": "Seated Calf Raises",
+   "description": "Place the recommended amount of weight on the machine and take a seat. Once you are seated, place the balls of your feet on the foot plate with your toes pointed forward. Next, adjust the height of the lever pad and place your lower thighs under it. Place your hands on top of the lever pad in order to prevent it from slipping.\nLift the lever slightly by pushing through the balls of your feet and release the safety bar. This will be your starting position.\nInhale as you slowly lower your heels towards the floor and continue until your calves are fully stretched.\nAs you exhale, press through the balls of your feet, contracting the calves until your ankles are as high as possible. Hold and squeeze your calves for a second before repeating the movement for the recommended amount of repetitions.\n\nVariations: Seated Calf Raise Machine (Toes Out) or Seated Calf Raise Machine (Toes In).\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=EVF_inqTYTk",
+    "statut": "valide",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-seated-leg-curl",
+   "nom": "Seated Leg Curl",
+   "description": "Set the machine to the desired weight and set the position of the back rest (when you sit on the machine, the back of your knees should be in contact with the edge of the seat). Next take a seat and check that when you rest your legs on the working pad, it is located just below your calves. The last guard to move is the one that gently locks your thighs in position. After you have done this, take hold of the handles in front of you and make sure your back is supported and in contact with the back rest. This is your starting position.\nTo initiate the movement, exhale as you squeeze your heels in towards your glutes in an arcing motion by flexing your knees. Continue to do so until your hamstrings are as tight as can be or that you cannot bend your knees anymore.\nAfter a brief pause, inhale and return the pad back along the same path into its starting position.\nRepeat for the recommended amount of repetitions.\n\nVariations: Lying Hamstring Curls or Natural Glute Ham Raise.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=joImLSPyQWQ",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-seated-thoracic-rotation",
+   "nom": "Seated Thoracic Rotation",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=5-xf_MkyoPU",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-semi-rotations-cubaines",
+   "nom": "Semi Rotations Cubaines",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=eBueeSO4bcI",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-shin-box",
+   "nom": "Shin Box",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=x7Lo8VtyWkc",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-shoulder-cars",
+   "nom": "Shoulder CARS",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=onMvowxs3j0",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-shoulder-wall-slide",
+   "nom": "Shoulder Wall Slide",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=83M3p-2iLUU",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-side-plank",
+   "nom": "Side Plank",
+   "description": "1) Lie on your side with your legs extended, stacking your feet one on top of the other or one behind the other.\n2) Place your elbow directly under your shoulder, forearm perpendicular to your body. This is your starting position.\n3) Engage your core muscles to lift your hips off the ground, creating a straight line from your head to your feet. Keep your top hand resting on your hip or extend it straight up towards the ceiling for added stability.\n4) Ensure your body is in a neutral position, with your head aligned with your spine and your shoulders stacked directly over each other.\n5) Hold this position, maintaining a steady and controlled posture. Focus on engaging your obliques and keeping your hips elevated.\n6) Hold the side plank for the desired amount of time, then gently lower your hips back to the ground.\n7) Switch to the other side and repeat the exercise, maintaining the same form and control.\n8) This side plank exercise helps strengthen your obliques, shoulders, and core muscles, promoting balance and stability.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=YohbrmlrivU",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-sideplank",
+   "nom": "Sideplank",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=EoALK4kZjlM",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-single-arm-standing-dumbbell-shoulder-press",
+   "nom": "Single Arm Standing Dumbbell Shoulder Press",
+   "description": "Grab a dumbbell in each hand and adopt a shoulder width stance. Without leaning backward or putting your posture into jeopardy, press one of the dumbbells above your head so that you arm is fully extended, yet slightly flexed/bent at your elbow. Make sure your palm is facing forward at this point. Allow your other arm to hang perpendicular to the floor by your side. This will be your starting position.\nSlowly and in a controlled fashion, descend the dumbbell until it reaches the side of your head (parallel with your ear), creating a 90 degree angle at your elbow. Inhale throughout this motion and flare your elbow out wide.\nAfter a brief pause, exhale and press the dumbbell back along this path to its starting position.\nRepeat for the recommended amount of repetitions.\n\nVariations: Alternating Kettlebell Press or Arnold Press.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=DqFiyimrMxQ",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-single-leg-glute-bridge",
+   "nom": "Single Leg Glute Bridge",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=QLGzZFiBq2U",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-single-leg-leg-extension",
+   "nom": "Single Leg Leg Extension",
+   "description": "Set the machine to the desired weight and set the position of the back rest (when you sit on the machine, the back of your knees should be in contact with the edge of the seat). Next take a seat and lock the shin pad in place and take hold of the handles either side of you. This is your starting position.\nTo initiate the movement, exhale and extend one of your knees to bring your shin towards the ceiling. In order to do so, contract your thigh muscles whilst simultaneously pulling your hips into the seat.\nAfter a brief pause, inhale and return your lower leg back along the same path into its starting position.\nRepeat for the recommended amount of repetitions and swap sides.\n\nVariations: Leg Press or Alternating Dumbbell Lunges.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=Bf4b-KdQ9fE",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-single-leg-step-down-step",
+   "nom": "Single Leg Step Down ( Step )",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=gv-jorJJQEM",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "Single Leg Stepdown"
+   }
+  },
+  {
+   "id": "ex-skierg",
+   "nom": "SkiErg",
+   "description": "1) Stand in front of the SkiErg machine with your feet shoulder-width apart. Grip the handles firmly with an overhand grip, arms extended overhead. This will be your starting position.\n2) Engage your core muscles and maintain a straight back as you prepare to initiate the movement. Ensure that your knees are slightly bent and your weight is evenly distributed.\n3) Initiate the movement by pulling the handles down in a controlled motion. Begin by bending your knees slightly and hinging at your hips, driving your hips backward while maintaining a straight back.\n4) As you pull the handles down, engage your lats and arms to bring them towards your thighs. Your hands should travel along the sides of your body in a smooth, fluid motion.\n5) At the bottom of the movement, bend your knees further and squat down slightly, allowing your arms to extend fully behind your hips. This position mimics a powerful skiing motion.\n6) Reverse the movement by extending your knees and hips to stand back up, simultaneously guiding the handles back to the starting position with your arms extended overhead.\n7) Repeat the pulling motion for the desired time, calories, metres, maintaining a steady and controlled rhythm.\n8) Focus on engaging your core and legs throughout the exercise. Avoid using only your arms; instead, generate power through your entire body.\nThe SkiErg exercise is an excellent full-body workout that builds cardiovascular endurance and strengthens your upper and lower body.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=acFsGdEDWMw",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-slam-ball",
+   "nom": "Slam Ball",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=0NztChR0yhU",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-sled-pull-arms-only-push",
+   "nom": "Sled Pull ( Arms only ) + Push",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=9OwdiznLHZ0",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-sled-push",
+   "nom": "Sled Push",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=fQqJrssx-aQ",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-snatch-deadlift",
+   "nom": "Snatch Deadlift",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=CpOounnuJG8",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-soft-copenhagen-plank",
+   "nom": "Soft Copenhagen Plank",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=Oro6AVwJDjo",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-sorenson-hold",
+   "nom": "Sorenson Hold",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=XKDwOdO40Oo",
+    "statut": "propose",
+    "duree": 11,
+    "titre": "Sorenson Hold"
+   }
+  },
+  {
+   "id": "ex-souleve-de-terre-roumain-barre",
+   "nom": "Soulevé de terre roumain barre",
+   "description": "",
+   "categories": [],
+   "categorie": "jambes",
+   "musclesPrincipaux": [
+    "ischio-jambiers",
+    "fessiers"
+   ],
+   "musclesSecondaires": [
+    "érecteurs du rachis",
+    "adducteurs",
+    "avant-bras",
+    "trapèzes"
+   ],
+   "materiel": [
+    "barre",
+    "disques"
+   ],
+   "niveau": "intermediaire",
+   "consignes": "Debout, barre en main (prise largeur d'épaules, en pronation ou avec sangles), pieds largeur de hanches. Genoux légèrement fléchis et fixes pendant tout le mouvement. Pousse les fesses vers l'arrière en gardant le dos neutre : la barre glisse le long des cuisses puis des tibias. Descends jusqu'à sentir un fort étirement des ischios (en général mi-tibia), sans arrondir le dos. Remonte en poussant les hanches vers l'avant et en serrant les fessiers, sans basculer le buste en arrière en haut.",
+   "erreursFrequentes": "Dos qui s'arrondit en bas ; genoux qui se plient de plus en plus (ça devient un soulevé de terre classique) ; barre qui s'éloigne des jambes ; descente trop basse au prix du dos ; hyperextension lombaire en haut.",
+   "varianteFacile": "Soulevé de terre roumain aux haltères, charge légère, ou au bâton pour apprendre la charnière de hanche.",
+   "varianteDifficile": "Tempo 4-1-1-0 avec pause de 1 s en bas, ou version sur une jambe aux haltères.",
+   "tempo": "3-0-1-0",
+   "reposConseille": 150,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=QqO4NrDV-cs",
+    "statut": "propose",
+    "duree": 12,
+    "titre": "Soulevé de terre roumain barre - Barbell RDL Romanian Deadlift"
+   }
+  },
+  {
+   "id": "ex-squat-etirement-ischios",
+   "nom": "Squat + Etirement Ischios",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=TeGbW3-ci90",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-squat-avec-ballons",
+   "nom": "Squat avec Ballons",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=jKH6W-pv_rE",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-squat-bulgare-halteres",
+   "nom": "Squat bulgare haltères",
+   "description": "",
+   "categories": [],
+   "categorie": "jambes",
+   "musclesPrincipaux": [
+    "quadriceps",
+    "fessiers"
+   ],
+   "musclesSecondaires": [
+    "adducteurs",
+    "ischio-jambiers",
+    "abdominaux"
+   ],
+   "materiel": [
+    "haltères",
+    "banc"
+   ],
+   "niveau": "intermediaire",
+   "consignes": "Dos au banc, pose le dessus du pied arrière sur le banc, un haltère dans chaque main. Pied avant assez loin pour que le genou arrière descende presque au sol. Descends verticalement, buste légèrement penché en avant, genou avant qui avance au-dessus des orteils. Remonte en poussant dans tout le pied avant. Fais toutes les reps d'une jambe, puis change ; commence par la jambe la plus faible.",
+   "erreursFrequentes": "Pied avant trop proche (talon qui décolle) ou trop loin (étirement de la hanche arrière, pas de travail du quadriceps) ; pousser avec la jambe arrière ; genou avant qui rentre ; perte d'équilibre faute de gainage.",
+   "varianteFacile": "Fente arrière au sol sans charge, ou split squat pied arrière au sol.",
+   "varianteDifficile": "Pied avant surélevé sur un disque (plus d'amplitude) ou tempo 3-1-1-0.",
+   "tempo": "2-0-1-0",
+   "reposConseille": 90,
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=CfW41dujnDY",
+    "statut": "propose",
+    "duree": 21,
+    "titre": "Bulgarian split squat !! 😱😱"
+   }
+  },
+  {
+   "id": "ex-stairmaster",
+   "nom": "Stairmaster",
+   "description": "To begin, step onto the stairmaster and select the desired option from the menu. You can choose a manual setting, or you can select a program to run. Typically, you can enter your age and weight to estimate the amount of calories burned during exercise. \nPump your legs up and down in an established rhythm, driving the pedals down but not all the way to the floor. It is recommended that you maintain your grip on the handles so that you don’t fall. The handles can be used to monitor your heart rate to help you stay at an appropriate intensity.\n\nStairmasters offer convenience, cardiovascular benefits, and usually have less impact than running outside. They are typically much harder than other cardio equipment. A 150 lb person will typically burn over 300 calories in 30 minutes, compared to about 175 calories walking.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=p6GTBhjQjeM",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-standing-alternate-rotating-bicep-curls",
+   "nom": "Standing Alternate Rotating Bicep Curls",
+   "description": "Grab a dumbbell in each hand and adopt an upright, standing position. Have your arms at full extension, relaxed by your sides.\nNext, whilst bending at your elbow, exhale and curl the dumbbell in your right hand up towards your shoulder, rotating your palm towards the ceiling as you go.\nAfter a brief pause, inhale and return the dumbbell along the same path back to your side.\nAgain, exhale but this time lift the dumbbell in your left hand in the same manner.\nAfter a brief pause, inhale and return the dumbbell along the same path back to your side.\nContinue to alternate in this fashion until you have completed the prescribed amount of repetitions.\n\nVariations: Alternate Hammer Curl or Cable Curls.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=YRjr7sYGEyA",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-standing-calf-raise-machine",
+   "nom": "Standing Calf Raise Machine",
+   "description": "Adjust the seat so that your legs are only slightly bent in the start position. The balls of your feet should be firmly on the platform.\r\n Select an appropriate weight, and grasp the handles. This will be your starting position.\r\n Straighten the legs by extending the knees, just barely lifting the weight from the stack. Your ankle should be fully flexed, toes pointing up. Execute the movement by pressing downward through the balls of your feet as far as possible.\r\n After a brief pause, reverse the motion and repeat.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=yd1-V3L49zk",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-standing-dumbbell-overhead-tricep-extension",
+   "nom": "Standing Dumbbell Overhead Tricep Extension",
+   "description": "Grab a dumbbell with both hands and adopt a standing shoulder width stance. Create a diamond shape with your hands by connecting your thumbs to each other and your index fingers to one another. The handle of the dumbbell should sit in the diamond shaped gap that you have made. Once you have done this, allow one end of the dumbbell to slide down down that you now have your palms in contact with the rubber/metal end. Press the dumbbell directly above your head with your palms angled towards to the ceiling. This is your starting position. Tip: Your elbows should remain as close together as possible throughout the movement.\nTo initiate the movement, inhale and control the descent of the dumbbell down behind your head. Bend at your elbows to allow this movement to take place yet keep them as close together as possible. Continue descending until your elbows are at 90 degrees or you can feel a stretch in your triceps.\nAfter a brief pause, exhale and return the dumbbell along the same path back into its starting position by contracting your triceps.\nRepeat for the recommended amount of repetitions.\n\nVariations: EZ Bar Skullcrushers or Dumbbell Kickbacks.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=s-FoAbMyHTc",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-standing-hammer-curls",
+   "nom": "Standing Hammer Curls",
+   "description": "Grab two dumbbells and adopt a shoulder width, upright standing position with your back straight and arms by your side.\nThe palms of your hands should be facing your torso. This will be your starting position.\nWhilst holding the upper arm stationary, exhale as you curl both dumbbells upward, contracting your biceps. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second as you squeeze your biceps. (Tip: Only the forearms should move.)\nInhale as you slowly begin to bring the dumbbells back along the same path, down to the starting position.\nRepeat for the recommended amount of repetitions.\n\nVariations: Seated Hammer Curls or Cable Curls.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=_qAeN7MlScc",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-standing-hip-cars",
+   "nom": "Standing Hip CARS",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=ciUdzrehTVU",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-standing-hip-flexors",
+   "nom": "Standing Hip Flexors",
+   "description": "To get into the starting position for this stretch, you need to drop to the bottom of a lunge position. So, take a big step to split your stance and descend so that your back knee is a couple of inches of the floor. This is your starting position.\nLean forward so that your bodyweight is being driven onto your front foot and towards the floor through the extension of your pelvis.\nHold this position for the recommended duration and swap sides.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=QiXesE9NDXM",
+    "statut": "propose",
+    "duree": 16,
+    "titre": "Standing Hip Flexor Stretch"
+   }
+  },
+  {
+   "id": "ex-standing-lombar-flexion-extension",
+   "nom": "Standing Lombar Flexion Extension",
+   "description": "Développe la colonne, vertèbre par vertèbre, des cervicales puis aux vertèbres thoraciques puis au final lombaire. Faire le chemin inverse en remontant : vertèbres lombaires puis thoraciques puis cervicales.\n\n\"SANS POIDS ADDITIONNEL\" !\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=2h2ebctW1A4",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-starplank",
+   "nom": "StarPlank",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=zEJgq4zuGF0",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-step-down-excentrique",
+   "nom": "Step Down Excentrique",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=_NmugScHEs0",
+    "statut": "propose",
+    "duree": 20,
+    "titre": "SLOW ECCENTRIC STEP DOWN"
+   }
+  },
+  {
+   "id": "ex-step-up",
+   "nom": "Step Up",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=K7Jg5wWPh_U",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-superman-drill",
+   "nom": "Superman Drill",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=8dCAmTCvnek",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-swimmer-to-prisonner",
+   "nom": "Swimmer To Prisonner",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=pz_0hiNUeMI",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-swiss-ball-external-rotation-stabilization",
+   "nom": "Swiss Ball External Rotation Stabilization",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=Xbuy6h2wLFE",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-tap-shoulder",
+   "nom": "Tap Shoulder",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=7eUVksvKXAs",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-tempo-split-squat",
+   "nom": "Tempo Split Squat",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=UH77yijt4g0",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-tibial-raise",
+   "nom": "Tibial Raise",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=pQcvW08rnAk",
+    "statut": "propose",
+    "duree": 15,
+    "titre": "Tibialis Anterior Raises"
+   }
+  },
+  {
+   "id": "ex-tricep-extension-rope",
+   "nom": "Tricep Extension (Rope)",
+   "description": "Place a rope attachment on to a high cable pulley, adopt a neutral grip (palms facing each other) and stand 12 inches away from the machine. Once you have taken hold of the rope, bring your elbows in to the sides of your torso and keep them pinned in place. This is your starting position.\nAs you exhale, push the rope towards the floor and split your little fingers as much as possible until your elbows are fully extended.\nAt this position you should squeeze your triceps and pause for a second.\nThen, as you inhale, reverse the movement until your elbows are flexed at 90 degrees and you have returned to the starting position.\nRepeat for the recommended amount of repetitions.\n\nVariations: Tricep Press Down Machine or Dumbbell Tricep Kickbacks.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=gg-31qQfOag",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-trx-pistol-squats",
+   "nom": "TRX Pistol Squats",
+   "description": "1) Stand facing the TRX suspension trainer, holding both handles with an overhand grip. Adjust the straps to hang at mid-length.\n2) Balance on one leg, lifting the opposite foot off the ground slightly in front of you. Keep your chest up and shoulders back for proper posture.\n3) Lower your body by bending your knee and hip, allowing the suspended foot to extend forward as you descend. Aim to keep your raised foot off the ground throughout the movement.\n4) Lower yourself as far as your flexibility allows, ideally reaching a seated position with your thigh parallel to the floor. Maintain a straight back and avoid rounding your shoulders.\n5) Pause briefly at the bottom position, then push through your heel to return to the starting position, straightening your standing leg.\n6) Maintain control throughout the exercise, engaging your core and focusing on stability. Repeat the movement for the desired number of repetitions on one leg before switching to the other.\nThe TRX pistol squat challenges balance, strength, and flexibility, particularly targeting your quadriceps, glutes, and core muscles.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=QsrNuqCRcvc",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-trx-press-ups",
+   "nom": "TRX Press Ups",
+   "description": "1) Start by adjusting the TRX suspension mid-length and securing them firmly to a stable anchor point overhead.\n2) Stand facing away the anchor point and grasp the handles of the TRX straps with both hands, palms facing down.\n3) Position yourself in a plank position, keeping everything in a straight line. This is your starting position.\n4) Engage your core muscles to maintain a straight line from your head to your heels throughout the exercise.\n5) Bend your elbows and slowly lower your chest towards the ground, maintaining control and stability in your shoulders and core.\n6) Pause briefly once you feel the stretch in your chest muscles.\n7) Push through your palms and straighten your arms to return to the starting position, exhaling as you push up.\n8) Repeat the movement for the desired number of repetitions, focusing on maintaining proper form and control throughout.\nThis exercise targets your chest, shoulders, and triceps while also engaging your core for stability.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=g8KWQplDr2Y",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-twisted-barbell-overhead-swing",
+   "nom": "Twisted Barbell Overhead Swing",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=i_m0KRDNtjU",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-walking-treadmill",
+   "nom": "Walking - Treadmill",
+   "description": "Step on to the treadmill and make sure before you press anything you are in the middle of the band with the safety clip attached to your top.\nNext, select the desired training program. If possible, enter your statistics (age, sex, weight ect.) so you get more precise readings.\nContinue until you have completed the prescribed amount of exercise.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=HCjtPQu2MG8",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-walking-farmer-lunges",
+   "nom": "Walking Farmer Lunges",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=AgRYhnJ0TDI",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-walking-kettlebell-farmer-lunges",
+   "nom": "Walking Kettlebell Farmer Lunges",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=AgRYhnJ0TDI",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-walking-lunges-one-arm-db",
+   "nom": "Walking Lunges One Arm DB",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=TeiBNL3pVnM",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-wall-sit",
+   "nom": "Wall Sit",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=mDdLC-yKudY",
+    "statut": "propose",
+    "duree": 15,
+    "titre": "How to do a wall sit"
+   }
+  },
+  {
+   "id": "ex-wallball-seated-lumbar-flexion-extension",
+   "nom": "WallBall Seated Lumbar Flexion Extension",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=xziAI_WKhsE",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-wide-grip-lat-pulldown",
+   "nom": "Wide Grip Lat Pulldown",
+   "description": "Set the weight to the recommended amount and check that the leg brace is set to the correct height. Take a seat facing the machine (tuck your hips in so they are touching the leg brace) and take a wide, overhand grip with your arms extended towards the ceiling. This is your starting position.\nTo initiate the movement, exhale and pull the bar down towards your chest using the muscles across your back and your biceps. Lean back ever so slightly as your pull the weight downwards and lift your chest as much as you can. Continue to pull the bar down until either your muscles are optimally contracted or it is in contact with your chest.\nAfter a brief pause, inhale and return the bar back along the same path into its starting position.\nRepeat for the recommended amount of repetitions.\n\nVariations: Pull-Ups or Cable Pullovers.\n\n(Importé de MyPTHub.)",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=2x9E_reM8cU",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-world-best-stretch-ischios-version",
+   "nom": "World Best Stretch ( Ischios Version )",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=lAFa6sb6he4",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  },
+  {
+   "id": "ex-world-greatest-stretch",
+   "nom": "World Greatest Stretch",
+   "description": "Importé de MyPTHub (à compléter par le coach).",
+   "categories": [],
+   "photo": false,
+   "video": {
+    "url": "https://www.youtube.com/watch?v=Zzu64RUEthM",
+    "statut": "propose",
+    "duree": null,
+    "titre": null
+   }
+  }
+ ]
+}
