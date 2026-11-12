@@ -9,6 +9,7 @@ import { creerStoreFichier, creerStoreSupabase } from './store.js'
 import { RACINE_SERVEUR } from './config.js'
 import { creerStoreSqlite, ouvrirBase } from './magasin-sqlite.js'
 import { creerAppHttp } from './app-http.js'
+import { creerSynchroAgenda } from './agenda-synchro.js'
 
 export async function assembler(config, { now = () => Date.now(), fetchFn } = {}) {
   const dossier = config.dossierDonnees
@@ -27,6 +28,8 @@ export async function assembler(config, { now = () => Date.now(), fetchFn } = {}
   const service = creerService({ backend, biblio, config, now, fetchFn })
   const outils = creerOutils(service, { service, backend, biblio, config, now, fetchFn })
   // API de l'app (/api/app/*) : seulement avec SQLite et un secret de session.
-  const appHttp = backend.mode === 'sqlite' && config.sessionSecret ? creerAppHttp({ db: backend.db, store: backend, config, journal, biblio, now, fetchFn }) : null
-  return { config, backend, biblio, journal, service, outils, appHttp }
+  // Synchro Google Agenda (SQLite seulement) : lancée par api.mjs (au démarrage + toutes les 15 min), jamais par le MCP.
+  const agendaSynchro = backend.mode === 'sqlite' ? creerSynchroAgenda({ db: backend.db, config, now, ...(fetchFn ? { fetchFn } : {}) }) : null
+  const appHttp = backend.mode === 'sqlite' && config.sessionSecret ? creerAppHttp({ db: backend.db, store: backend, config, journal, biblio, now, fetchFn, agendaSynchro }) : null
+  return { config, backend, biblio, journal, service, outils, appHttp, agendaSynchro }
 }

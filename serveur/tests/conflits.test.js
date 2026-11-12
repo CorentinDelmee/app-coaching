@@ -138,7 +138,7 @@ describe('magasins', () => {
     db.prepare("INSERT INTO workouts (id, client_id, data) VALUES ('w-old', NULL, ?)").run(JSON.stringify({ id: 'w-old', nom: 'Ancienne', blocs: [] }))
     db.close()
     const db2 = ouvrirBase(f)
-    expect(db2.prepare('PRAGMA user_version').get().user_version).toBe(3)
+    expect(db2.prepare('PRAGMA user_version').get().user_version).toBe(4)
     expect(JSON.parse(db2.prepare("SELECT data FROM workouts WHERE id = 'w-old'").get().data)).toEqual({ id: 'w-old', nom: 'Ancienne', blocs: [] })
     expect(db2.prepare("SELECT version FROM workouts WHERE id = 'w-old'").get().version).toBe(1)
     db2.close()

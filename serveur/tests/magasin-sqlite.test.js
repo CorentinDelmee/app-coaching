@@ -8,7 +8,7 @@ describe('magasin SQLite', () => {
   it('migre une seule fois (user_version)', () => {
     const db = ouvrirBase(':memory:')
     expect(db.prepare('PRAGMA user_version').get().user_version).toBe(VERSION_SCHEMA)
-    expect(db.prepare("SELECT count(*) n FROM sqlite_master WHERE type = 'table'").get().n).toBe(17)
+    expect(db.prepare("SELECT count(*) n FROM sqlite_master WHERE type = 'table'").get().n).toBe(18) // + agenda_alias (migration 4)
   })
   it('écrit et relit profils et entités ; mise à jour sans cascade', async () => {
     const s = creerStoreSqlite(ouvrirBase(':memory:'))

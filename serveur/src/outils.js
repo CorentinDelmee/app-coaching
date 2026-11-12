@@ -75,7 +75,7 @@ export function creerOutils(service, ctx = { service }) {
       (a) => service.rattacherVideo(a), { mutation: true }),
     chercher_video_exercice: def('Cherche des vidéos de démonstration pour un exercice : bibliothèque du coach, puis YouTube (durée courte, chaîne reconnue, vues, titre pertinent ; score justifié) si une clé est configurée.',
       z.object({ nom: ref('Nom de l\'exercice'), limite: z.number().int().min(1).max(10).optional() }).strict(), (a) => service.chercherVideoExercice(a)),
-    consulter_agenda: def('Agenda d\'un client entre deux dates (défaut : 15 jours) : séances de coaching et séances programmées.',
+    consulter_agenda: def('Agenda d\'un client entre deux dates (défaut : 15 jours) : séances de coaching (y compris les « Coaching … » de Google Agenda, source google) et séances programmées.',
       z.object({ client: ref('Nom, identifiant ou id du client'), du: jour.optional(), au: jour.optional() }).strict(), (a) => service.consulterAgenda(a)),
     lister_seances: def('Liste les séances (toutes, ou d\'un client).', z.object({ client: ref('Nom, identifiant ou id du client').optional() }).strict(), (a) => service.listerSeances(a)),
     // Automatisation coach (2026-11-05, docs/CONTRAT-OUTILS-COACH.md) : un module par lot ; un nom d'outil n'existe qu'une fois.
