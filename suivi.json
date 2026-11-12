@@ -3,7 +3,7 @@
   "phase": "V2 + mission 26/10 + 2e vague : 436 tests verts, audits sécurité et accessibilité corrigés — à toi : secrets et Google, valider les vidéos, essai sur téléphone",
   "objectif": "Remplacer **My PT Hub (52 €/mois)** par ma propre app de coaching, **0 €/mois**, mobile d'abord, très animée.",
   "date_cible": "2026-10-20",
-  "mis_a_jour": "2026-11-06",
+  "mis_a_jour": "2026-11-12",
   "lots": [
     {
       "id": "0",
@@ -214,6 +214,14 @@
       "avancement": 100,
       "qui": "REX + 20 agents",
       "note": "Toutes les pages coach en Studio sur main (c27ea4a), 775 tests, banc e2e 263/263, 4 audits sécurité (0 critique restant), protection contre les écrasements Claude/2e appareil. Validé par Corentin le 2026-11-06 ; anciens écrans supprimés. En ligne depuis le 2026-11-06 14 h 10."
+    },
+    {
+      "id": "AgendaGoogle",
+      "titre": "Google Agenda → app (coachings passés et à venir)",
+      "statut": "en_cours",
+      "avancement": 95,
+      "qui": "REX + 6 agents",
+      "note": "Prêt sur main (3396a60) : synchro toutes les 15 min via l'API réservation (lecture seule de tes agendas, seuls les « Coaching… »). Coachings passés = séances faites sur la fiche client, à venir = accueil du client, titres douteux → « À attribuer ». 843 tests, 23/23 en navigateur, audit + 2 contre-audits OK. Reste : ta ré-autorisation Google + déploiement."
     }
   ],
   "taches_humaines": [
@@ -309,8 +317,8 @@
       "qui": "Corentin",
       "echeance": "",
       "duree": "30 min (estimation)",
-      "statut": "a_faire",
-      "comment": "docs/GOOGLE-AGENDA.md, encadré « jour J ». Les valeurs se saisissent dans Supabase (supabase secrets set), pas dans le chat. Ensuite, dis à REX « Google est configuré »."
+      "statut": "abandonne",
+      "comment": "Remplacé : on réutilise l'accès Google de l'API réservation (2026-11-12)."
     },
     {
       "titre": "Créer COACH_API_KEY (32 caractères min.) dans serveur/.env et .mcp.json",
@@ -419,6 +427,30 @@
       "duree": "",
       "statut": "fait",
       "comment": "Clé du Mac ajoutée sur le VPS le 2026-11-06 ; REX peut déployer depuis le Mac."
+    },
+    {
+      "titre": "Google Cloud : ajouter la lecture des événements à l'écran de consentement",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "3 min",
+      "statut": "a_faire",
+      "comment": "Google Auth Platform → Accès aux données → ajouter le scope calendar.events.owned.readonly (projet coaching-reservation). Détail : coaching-domicile/reservation/deploiement/LISEZMOI.md § « Ré-autoriser Google »."
+    },
+    {
+      "titre": "Ré-autoriser Google une fois (3 accès) et recopier le jeton sur le VPS",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "5 min",
+      "statut": "a_faire",
+      "comment": "Sur le Mac : node outils/autoriser-google.mjs <client_secret.json> dans coaching-domicile/reservation, cocher les 3 accès, recopier GOOGLE_REFRESH_TOKEN dans /etc/coaching-resa.env, systemctl restart coaching-resa, supprimer le JSON et .env.production.local."
+    },
+    {
+      "titre": "Déployer l'API réservation puis l'app (synchro agenda)",
+      "qui": "Corentin",
+      "echeance": "",
+      "duree": "2 min",
+      "statut": "a_faire",
+      "comment": "ssh root@2.24.51.205 \"bash /opt/coaching-resa/deployer.sh\" puis ssh root@2.24.51.205 \"bash /opt/app-coaching/deployer.sh\""
     }
   ],
   "decisions": [
@@ -733,6 +765,48 @@
       "si_pas_de_reponse": "Rien ne change : ils restent à valider.",
       "statut": "ouverte",
       "provisoire": false
+    },
+    {
+      "id": "D14",
+      "categorie": "Agenda",
+      "question": "Un coaching passé dans Google compte comme « fait » automatiquement ?",
+      "contexte": "À la fin de l'événement, la séance passe « faite » et entre dans « Payé ce mois ». Si le client n'est pas venu et que l'événement reste dans Google, elle compte quand même.",
+      "options": [
+        {
+          "nom": "Oui, automatique",
+          "resume": "Client absent : supprimer/annuler l'événement Google ou passer la séance en « annulée » dans l'app"
+        },
+        {
+          "nom": "Non, « à confirmer »",
+          "resume": "Chaque coaching passé attend ton clic « fait » dans l'app"
+        }
+      ],
+      "recommandation": "Oui, automatique",
+      "pourquoi": "Les absences sont rares et ton agenda est déjà ta référence ; un clic par coaching serait du travail en plus.",
+      "si_pas_de_reponse": "Automatique (appliqué).",
+      "statut": "ouverte",
+      "provisoire": true
+    },
+    {
+      "id": "D15",
+      "categorie": "Agenda",
+      "question": "Carte client « Aucune séance faite » : compter aussi les coachings ?",
+      "contexte": "La carte de la liste Clients compte les séances d'entraînement faites dans l'app ; un client vu en coaching chaque semaine peut afficher « Aucune séance faite ».",
+      "options": [
+        {
+          "nom": "Ajouter « Dernier coaching : date »",
+          "resume": "Les deux informations côte à côte"
+        },
+        {
+          "nom": "Laisser tel quel",
+          "resume": "La carte reste centrée sur l'app"
+        }
+      ],
+      "recommandation": "Ajouter « Dernier coaching : date »",
+      "pourquoi": "Tu vois d'un coup d'œil qui tu suis en vrai, sans mélanger avec l'entraînement en autonomie.",
+      "si_pas_de_reponse": "Rien ne change.",
+      "statut": "ouverte",
+      "provisoire": false
     }
   ],
   "avancees": [
@@ -839,6 +913,10 @@
     {
       "date": "2026-11-06",
       "texte": "Studio en ligne sur https://delmeecorentin.fr/app/ (181 exercices, 25 profils, 50 séances, 3 programmes retrouvés)."
+    },
+    {
+      "date": "2026-11-12",
+      "texte": "Synchro Google Agenda prête (coachings passés sur la fiche client, à venir chez le client) ; en attente de ré-autorisation Google et de déploiement."
     }
   ],
   "prochaines_etapes": [
@@ -870,8 +948,8 @@
       "texte": "Vidéos proposées non visionnées (chaînes peu connues) : elles peuvent être supprimées ou passées en privé."
     },
     {
-      "niveau": "bas",
-      "texte": "Séance Google affichée seulement si aucune séance plus proche n'existe (limite connue)."
+      "niveau": "moyen",
+      "texte": "Première synchro : tout l'historique 2026 des « Coaching … » devient des séances faites (centaines) ; un titre au prénom seul mal reconnu irait au mauvais client → vérifier « À attribuer » et 2-3 fiches après la 1re synchro."
     }
   ],
   "liens": [
