@@ -32,7 +32,7 @@ for (const [id, nom] of CLIENTS) {
   await store.ecrire('profils', { id, role: 'client', identifiant: id, nom, tarif: 40, lieuDefaut: 'domicile', modules: { calories: false }, archive: false, creeLe: 1, consentementLe: 1, preferences: { consentement: { version: VERSION_CONSENTEMENT, sante: true } } })
 }
 const hash = await hacherCode('code-test-5471')
-for (const [id, role] of [['coach', 'coach'], ['fabien', 'client']]) db.prepare('INSERT INTO comptes (identifiant, hash, role, profil_id) VALUES (?, ?, ?, ?)').run(id, hash, role, id)
+for (const [id, role] of [['coach', 'coach'], ['fabien', 'client'], ['christine', 'client']]) db.prepare('INSERT INTO comptes (identifiant, hash, role, profil_id) VALUES (?, ?, ?, ?)').run(id, hash, role, id)
 // Séance déjà saisie à la main par le coach au même créneau qu'un événement Google : ne doit pas être doublée.
 await store.ecrire('seancesCoaching', { id: 'manuelle-fabien', clientId: 'fabien', date: '2026-11-19', heure: '18:30', lieu: 'domicile', statut: 'prevue', tarif: 40 })
 

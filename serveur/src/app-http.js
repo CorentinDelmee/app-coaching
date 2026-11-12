@@ -595,7 +595,10 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
       // Client : seulement les événements où il figure, sans le titre (qui peut nommer un autre client).
       const siens = lignes.filter((l) => l.statut_attribution === 'attribue').map((l) => ({ client: l.client_id, ...JSON.parse(l.data) }))
         .filter((e) => (e.clientIds ?? [e.client]).includes(u.profil_id)).map(({ client: _c, ...e }) => e)
-      return envoyer(res, 200, { evenements: siens.map(({ titre: _t, clientIds: _c, clientNom: _n, candidats: _x, ...e }) => ({ ...e, clientId: u.profil_id })) })
+      return envoyer(res, 200, { evenements: siens.map((e) => ({ // liste blanche : ni titre, ni autres clients, ni marques internes ; lieu Google seulement s'il est seul
+        ...Object.fromEntries(['id', 'debut', 'fin', 'journee', 'date', 'heure', 'finHeure', 'debutMs', 'lieu', 'statut'].filter((k) => k in e).map((k) => [k, e[k]])),
+        ...((e.clientIds?.length ?? 1) === 1 && e.lieuTexte ? { lieuTexte: e.lieuTexte } : {}), clientId: u.profil_id
+      })) })
     }
     if (req.method === 'GET' && quoi === 'derniere-synchro') {
       const { derniereSynchro, bilan } = synchroAgenda.dernierBilan()

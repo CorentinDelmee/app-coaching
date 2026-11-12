@@ -315,6 +315,7 @@ describe('agenda', () => {
     // Le client voit sa séance en base (pas de doublon : le flux Google n'est plus fusionné côté app), sans le titre qui nomme Bob.
     expect((await appel('GET', '/api/app/e/seancesCoaching', { cookie: clientA })).json.items.map((x) => x.id)).toEqual(['google:g1:pa'])
     expect((await appel('GET', '/api/app/agenda/evenements', { cookie: clientA })).json.evenements.find((e) => e.id === 'g1').titre).toBeUndefined()
+    expect((await appel('GET', '/api/app/agenda/evenements', { cookie: clientA })).texte).not.toMatch(/pb|Bob|crees|candidats/) // ni l'autre client, ni les marques internes
     // Audit 1 : ni par l'entité (liste ou détail) : ni titre (« Coaching Alice et Bob »), ni id Google, ni copie de synchro, ni lieu d'une séance partagée.
     for (const corps of [(await appel('GET', '/api/app/e/seancesCoaching', { cookie: clientA })).texte, (await appel('GET', '/api/app/e/seancesCoaching/google%3Ag1%3Apa', { cookie: clientA })).texte]) {
       expect(corps).not.toMatch(/Bob|bob|titre|googleId|synchro|lieuTexte|partagee/)

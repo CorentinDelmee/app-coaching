@@ -89,6 +89,10 @@ async page => {
   ok(!(await page.locator('body').innerText()).includes('Coaching Fabien'), 'client : aucun titre d\'agenda brut affiché')
   const debord = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)
   ok(!debord, 'pas de défilement horizontal')
+  // Audit 1 : Christine, sur « Coaching Christine et Didier », ne lit ni le titre ni le nom de Didier (entités et agenda).
+  await connecter('christine')
+  const brutChristine = (await (await page.request.get(`${B}/api/app/e/seancesCoaching`)).text()) + (await (await page.request.get(`${B}/api/app/agenda/evenements`)).text())
+  ok(brutChristine.includes('google:e1:christine') && !/Didier|didier|Coaching|titre|lieuTexte|synchro/.test(brutChristine), 'client Christine : ses séances sans titre ni nom de Didier')
   await connecter('coach')
   return [...log, ...errs.map((e) => `ERREUR CONSOLE ${e}`)].join('\n')
 }
