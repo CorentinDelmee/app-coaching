@@ -59,7 +59,7 @@ describe('synchroniser', () => {
     expect(Object.keys(s).sort()).toEqual(['google:e-caro:caroline', 'google:e-fab:fabien', 'google:e-guil:guillaume', 'google:e-passe:christine', 'google:e-passe:didier'])
     expect(s['google:e-passe:christine']).toMatchObject({ clientId: 'christine', date: '2026-03-10', heure: '10:00', duree: 60, statut: 'faite', tarif: 40, lieu: 'domicile', source: 'google' })
     expect(s['google:e-guil:guillaume']).toMatchObject({ date: '2026-11-13', heure: '11:30', statut: 'prevue', lieu: 'salle', lieuTexte: 'Danse & Fitness Rambouillet' })
-    expect(synchro.aAttribuer()).toEqual([{ cle: 'coaching bertrand', titre: 'Coaching Bertrand', statut: 'inconnu', nb: 1, premier: '2026-11-14', dernier: '2026-11-14', candidats: [] }])
+    expect(synchro.aAttribuer()).toEqual([{ cle: 'coaching bertrand', titre: 'Coaching Bertrand', statut: 'inconnu', nb: 1, premier: '2026-11-14', dernier: '2026-11-14', candidats: [], actuels: [] }])
     expect(synchro.dernierBilan().derniereSynchro).toBe(new Date(NOW).toISOString())
   })
 
@@ -180,6 +180,21 @@ describe('attribuer', () => {
     expect(() => synchro.attribuer('Coaching Bertrand', [])).toThrow('invalide')
     expect(() => synchro.attribuer('Dentiste', ['sylvain'])).toThrow('invalide')
   })
+  it('audit 3 : titre déjà attribué qui devient ambigu : attribution gardée, rien supprimé, signalé à attribuer', async () => {
+    await synchro.synchroniser()
+    const avant = await seances()
+    await store.ecrire('profils', { id: 'guillaume2', role: 'client', identifiant: 'guillaume2', nom: 'Guillaume Martin', archive: false, creeLe: 1 })
+    expect(compte(await synchro.synchroniser())).toEqual(zero)
+    expect(await seances()).toEqual(avant)
+    const g = synchro.aAttribuer().find((x) => x.cle === 'coaching guillaume')
+    expect(g).toMatchObject({ statut: 'ambigu', nb: 1, actuels: [{ id: 'guillaume', nom: 'Guillaume Petit' }] })
+    expect(g.candidats.map((c) => c.id)).toEqual(['guillaume', 'guillaume2'])
+    // Le coach confirme : plus rien à vérifier, toujours rien supprimé.
+    synchro.attribuer('Coaching Guillaume', ['guillaume'])
+    expect(synchro.aAttribuer().find((x) => x.cle === 'coaching guillaume')).toBeUndefined()
+    expect(await seances()).toEqual(avant)
+  })
+
   it('prénom partagé : à attribuer avec les candidats', async () => {
     await store.ecrire('profils', { id: 'christine2', role: 'client', identifiant: 'christine2', nom: 'Christine Mallet', archive: true, creeLe: 1 })
     evenements.push(ev('e-chr', 'Coaching Christine (domicile)', '2026-11-16T10:00:00+01:00', '2026-11-16T11:00:00+01:00'))

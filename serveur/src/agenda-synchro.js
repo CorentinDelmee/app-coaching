@@ -127,7 +127,15 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
           continue
         }
         b.evenements++
-        const att = reconnaitreClients(ev.titre, clients, alias)
+        let att = reconnaitreClients(ev.titre, clients, alias)
+        // Déjà attribué et devenu ambigu (ex. un 2e « Guillaume » créé) : on garde l'attribution précédente, rien n'est
+        // supprimé ; l'événement est seulement signalé dans « À attribuer » (audit 3).
+        const precedent = agenda.get(ev.id)?.clientIds
+        let aVerifier = null
+        if (att.statut === 'ambigu' && precedent?.length && precedent.every((id) => parId.has(id) && att.candidats.includes(id))) {
+          aVerifier = { statut: 'ambigu', candidats: att.candidats }
+          att = { statut: 'attribue', clientIds: precedent }
+        }
         const ids = att.statut === 'attribue' ? att.clientIds : []
         const lieuTexte = String(ev.lieu ?? '')
         const ligne = {
@@ -135,7 +143,8 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
           date: m.date, heure: m.heure, finHeure: ev.journee ? null : m.finHeure, debutMs: m.debutMs, lieuTexte,
           lieu: SALLE.test(lieuTexte) ? 'salle' : 'domicile', statut: att.statut,
           ...(ids.length ? { clientId: ids[0], clientIds: ids, clientNom: ids.map((id) => parId.get(id)?.nom).join(', ') } : {}),
-          ...(att.candidats ? { candidats: att.candidats } : {})
+          ...(att.candidats ? { candidats: att.candidats } : {}),
+          ...(aVerifier ? { aVerifier } : {})
         }
         if (JSON.stringify(agenda.get(ev.id)) !== JSON.stringify(ligne)) { ecrireAgenda.run(ev.id, ids[0] ?? null, att.statut, JSON.stringify(ligne), t); agenda.set(ev.id, ligne) }
         // Séances : une par client attribué ; les clients retirés du titre perdent la leur.
@@ -202,13 +211,14 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
   function groupesAAttribuer(lignes = lignesAgenda().values()) {
     const groupes = new Map()
     for (const l of lignes) {
-      if (l.statut === 'attribue' || !l.titre || !l.date) continue // lignes d'avant la synchro (sans titre ni date) ignorées
+      if ((l.statut === 'attribue' && !l.aVerifier) || !l.titre || !l.date) continue // lignes d'avant la synchro (sans titre ni date) ignorées
       const cle = cleTitre(l.titre)
-      const g = groupes.get(cle) ?? { cle, titre: l.titre, statut: l.statut, nb: 0, premier: l.date, dernier: l.date, candidats: [] }
+      const g = groupes.get(cle) ?? { cle, titre: l.titre, statut: l.aVerifier?.statut ?? l.statut, nb: 0, premier: l.date, dernier: l.date, candidats: [], actuels: [] }
       g.nb++
       if (l.date < g.premier) g.premier = l.date
       if (l.date > g.dernier) g.dernier = l.date
-      for (const c of l.candidats ?? []) if (!g.candidats.includes(c)) g.candidats.push(c)
+      for (const c of l.aVerifier?.candidats ?? l.candidats ?? []) if (!g.candidats.includes(c)) g.candidats.push(c)
+      if (l.aVerifier) for (const c of l.clientIds) if (!g.actuels.includes(c)) g.actuels.push(c) // attribution gardée en attendant le coach
       groupes.set(cle, g)
     }
     return [...groupes.values()].sort((a, b) => b.dernier.localeCompare(a.dernier))
@@ -216,7 +226,8 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
 
   function aAttribuer() {
     const noms = new Map(db.prepare("SELECT id, nom, archive FROM profiles WHERE role = 'client'").all().map((c) => [c.id, c]))
-    return groupesAAttribuer().map((g) => ({ ...g, candidats: g.candidats.filter((id) => noms.has(id)).map((id) => ({ id, nom: noms.get(id).nom, archive: !!noms.get(id).archive })) }))
+    const nommer = (ids) => ids.filter((id) => noms.has(id)).map((id) => ({ id, nom: noms.get(id).nom, archive: !!noms.get(id).archive }))
+    return groupesAAttribuer().map((g) => ({ ...g, candidats: nommer(g.candidats), actuels: nommer(g.actuels) }))
   }
 
   /** Le coach attribue un titre à 1 à 6 clients : alias retenu, puis les événements de ce titre sont réappliqués (sans réseau). */
