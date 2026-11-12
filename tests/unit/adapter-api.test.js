@@ -48,15 +48,36 @@ describe('adaptateur api', () => {
     await expect(api.douleurs.lister()).rejects.toMatchObject({ code: 'VALIDATION', message: 'mauvais' })
     await expect(api.nutrition.lister()).rejects.toMatchObject({ code: 'NON_CONNECTE' })
   })
-  it('agenda : evenements triés, derniere synchro, synchroniser (202) renvoie le message', async () => {
-    const { api } = faux({
+  it('agenda : evenements triés, dernière synchro + bilan, synchroniser renvoie le bilan, à attribuer, attribuer', async () => {
+    const { api, appels } = faux({
       'GET /api/app/agenda/evenements': [200, { evenements: [{ id: 'b', debutMs: 2 }, { id: 'a', debutMs: 1 }] }],
-      'GET /api/app/agenda/derniere-synchro': [200, { derniereSynchro: 5 }],
-      'POST /api/app/agenda/synchroniser': [202, { message: 'Tout de suite.' }]
+      'GET /api/app/agenda/derniere-synchro': [200, { derniereSynchro: '2026-11-12T10:00:00.000Z', bilan: { ok: true, crees: 3 } }],
+      'POST /api/app/agenda/synchroniser': [200, { bilan: { ok: true, crees: 2 } }],
+      'GET /api/app/agenda/a-attribuer': [200, { groupes: [{ cle: 'coaching x', titre: 'Coaching X', nb: 2 }] }],
+      'POST /api/app/agenda/attribuer': [200, { bilan: { crees: 2 } }]
     })
     const etat = await api.agenda.etat()
     expect(etat.evenements.map((e) => e.id)).toEqual(['a', 'b'])
-    expect(etat.derniereSynchro).toBe(5)
+    expect(etat.derniereSynchro).toBe(Date.parse('2026-11-12T10:00:00.000Z'))
+    expect(etat.bilan).toEqual({ ok: true, crees: 3 })
+    expect(await api.agenda.aAttribuer()).toHaveLength(1)
+    expect(await api.agenda.attribuer('Coaching X', ['c1'])).toEqual({ crees: 2 })
+    expect(JSON.parse(appels.at(-1).body)).toEqual({ titre: 'Coaching X', clientIds: ['c1'] })
+  })
+  it('agenda : 503 google_lecture_non_autorisee -> GOOGLE_AUTORISATION « Autorisation Google à renouveler »', async () => {
+    const { api } = faux({ 'GET /api/app/moi': [200, { utilisateur: coach }], 'GET /api/app/e/profils/c0': [200, { item: coach }], 'POST /api/app/agenda/synchroniser': [503, { erreur: 'google_lecture_non_autorisee' }] })
+    await expect(api.agenda.synchroniser()).rejects.toMatchObject({ code: 'GOOGLE_AUTORISATION', message: expect.stringMatching(/^Autorisation Google à renouveler/) })
+  })
+  it('client : ses coachings viennent seulement de la base (aucune fusion du flux Google, pas de doublon)', async () => {
+    const client = { id: 'p1', role: 'client', identifiant: 'fabien', nom: 'Fabien', archive: false, creeLe: 1 }
+    const s = { id: 'google:g1:p1', clientId: 'p1', date: '2099-01-01', heure: '10:00', lieu: 'domicile', statut: 'prevue', tarif: 40, source: 'google', googleId: 'g1' }
+    const { api, appels } = faux({
+      'GET /api/app/moi': [200, { utilisateur: client }], 'GET /api/app/e/profils/p1': [200, { item: client }],
+      'GET /api/app/e/seancesCoaching': [200, { items: [s] }],
+      'GET /api/app/agenda/evenements': [200, { evenements: [{ id: 'g1', statut: 'attribue', clientId: 'p1', date: '2099-01-01', heure: '10:00', debutMs: 4070912400000 }] }]
+    })
+    expect((await api.seancesCoaching.lister({ clientId: 'p1' })).map((x) => x.id)).toEqual(['google:g1:p1'])
+    expect(appels.some((a) => a.url.includes('/agenda/'))).toBe(false)
   })
   it('réservations : chaque méthode vise le bon endpoint', async () => {
     const { api, appels } = faux({

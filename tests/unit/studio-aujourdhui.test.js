@@ -37,6 +37,23 @@ describe('rendezVous', () => {
   })
 })
 
+describe('rendezVous : coachings Google en base', () => {
+  it('un événement déjà devenu séance (googleId) n’apparaît qu’une fois, même déplacé ou annulé à la main', () => {
+    const tous = rendezVous({
+      clients,
+      seances: [
+        { id: 'google:g1:c1', googleId: 'g1', clientId: 'c1', date: JOUR, heure: '19:00', lieu: 'domicile', statut: 'prevue' }, // heure changée à la main
+        { id: 'google:g2:c2', googleId: 'g2', clientId: 'c2', date: JOUR, heure: '09:00', lieu: 'domicile', statut: 'annulee' }
+      ],
+      evenements: [
+        { id: 'g1', statut: 'attribue', clientId: 'c1', date: JOUR, heure: '18:30' },
+        { id: 'g2', statut: 'attribue', clientId: 'c2', date: JOUR, heure: '09:00' }
+      ]
+    })
+    expect(tous.map((r) => r.id)).toEqual(['appli-google:g1:c1'])
+  })
+})
+
 describe('programmeDuJour', () => {
   const tous = [
     { id: 'a', date: JOUR, heure: '08:00', fin: '' },

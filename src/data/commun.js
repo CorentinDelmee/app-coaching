@@ -147,7 +147,8 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
   // --- Google Agenda -> séances de coaching ---------------------------------------------------------------
   // Le client voit ses séances « Coaching <son nom> » créées dans l'agenda du coach, mêlées à ses séances habituelles
   // (futures et prévues, marquées source:'google'). Si l'agenda est injoignable, l'accueil ne casse pas : on n'ajoute rien.
-  if (backend.agenda) {
+  // Avec le serveur, les coachings Google sont déjà des séances en base (synchro serveur) : pas de fusion, donc pas de doublon.
+  if (backend.agenda && !backend.agenda.seancesEnBase) {
     const listerBase = api.seancesCoaching.lister
     api.seancesCoaching.lister = async (filtre = {}, options) => {
       const base = await listerBase(filtre, options)
@@ -165,9 +166,19 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
   api.agenda = {
     disponible: !!backend.agenda,
     async etat() {
-      if (!backend.agenda) return { derniereSynchro: null, evenements: [], alertes: [] }
+      if (!backend.agenda) return { derniereSynchro: null, bilan: null, evenements: [], alertes: [] }
       const evenements = await backend.agenda.evenements()
-      return { derniereSynchro: await backend.agenda.derniereSynchro(), evenements, alertes: alertesAgenda(evenements, now()) }
+      const synchro = backend.agenda.synchroEtat ? await backend.agenda.synchroEtat() : { derniereSynchro: await backend.agenda.derniereSynchro(), bilan: null }
+      return { ...synchro, evenements, alertes: alertesAgenda(evenements, now()) }
+    },
+    /** Événements « Coaching » non attribués, regroupés par titre (serveur seulement ; la démo n'en a pas). */
+    async aAttribuer() {
+      return backend.agenda?.aAttribuer ? backend.agenda.aAttribuer() : []
+    },
+    /** Attribue un titre à un ou plusieurs clients ; le serveur retient l'alias pour les synchros suivantes. */
+    async attribuer(titre, clientIds) {
+      if (!backend.agenda?.attribuer) throw new ErreurData('NON_SUPPORTE', 'Attribution disponible seulement avec le serveur')
+      return backend.agenda.attribuer(titre, clientIds)
     },
     async synchroniser() {
       const user = await backend.utilisateurCourant()

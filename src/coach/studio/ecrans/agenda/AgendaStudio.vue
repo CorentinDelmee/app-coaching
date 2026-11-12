@@ -1,16 +1,23 @@
 <script setup>
-// Agenda Google (Studio) : dernière synchro, rendez-vous attribués par jour, alertes (nom inconnu, ambigu, sans nom).
-// Les événements « Coaching <nom du client> » du Google Agenda du coach apparaissent dans la case Coaching de l'appli du client.
-import { computed, onMounted, ref } from 'vue'
+// Agenda Google (Studio) : dernière synchro et son bilan, rendez-vous attribués par jour, « à attribuer » (nom inconnu,
+// prénom partagé, sans nom) avec choix du ou des clients. Avec le serveur, chaque « Coaching <client> » devient une séance
+// de coaching en base (fiche client, appli du client) ; en démo, les alertes du faux agenda restent affichées.
+import { computed, onMounted, reactive, ref } from 'vue'
 import data from '../../../../data/index.js'
 import { etat as etatCoach, maintenant, messageErreur, nomClient, rafraichir } from '../../../store.js'
 import IconeSt from '../../IconeSt.vue'
 import Puce from '../../Puce.vue'
-import { CONSEIL_ALERTE, LIB_ALERTE, grouperEvenements, libelleHeureEvt, libelleSynchro, partiesDate } from './agendaOutils.js'
+import { CONSEIL_ALERTE, LIB_ALERTE, grouperEvenements, libelleBilan, libelleHeureEvt, libelleSynchro, partiesDate } from './agendaOutils.js'
 import './ecran.css'
 
 const PAQUET = 8 // jours affichés avant « Voir la suite »
-const agenda = ref({ derniereSynchro: null, evenements: [], alertes: [] })
+const agenda = ref({ derniereSynchro: null, bilan: null, evenements: [], alertes: [] })
+const serveur = data.mode !== 'local' // attribution « à attribuer » : seulement avec le serveur
+const groupes = ref([])
+const choix = reactive({}) // clé du titre -> ids de clients cochés
+const ajout = reactive({}) // clé du titre -> id choisi dans « Autre client »
+const enCours = ref('') // clé du titre en cours d'attribution
+const autorisation = computed(() => agenda.value.bilan?.ok === false && agenda.value.bilan.erreur === 'google_lecture_non_autorisee')
 const chargement = ref(true)
 const synchro = ref(false)
 const message = ref('')
@@ -21,11 +28,45 @@ const aVenir = computed(() => agenda.value.evenements.filter((e) => e.debutMs >=
 const attribuees = computed(() => aVenir.value.filter((e) => e.statut === 'attribue'))
 const jours = computed(() => grouperEvenements(attribuees.value))
 const joursVisibles = computed(() => jours.value.slice(0, nbJours.value))
-const nomDe = (e) => (nomClient(e.clientId) !== 'Modèle' ? nomClient(e.clientId) : e.clientNom || 'Client')
+const nomDe = (e) => (e.clientIds?.length > 1 ? e.clientNom : nomClient(e.clientId) !== 'Modèle' ? nomClient(e.clientId) : e.clientNom || 'Client')
+
+// Cases proposées pour un titre : candidats (y compris archivés), puis les clients ajoutés à la main.
+function options(g) {
+  const liste = [...g.candidats]
+  for (const id of choix[g.cle] ?? []) if (!liste.some((c) => c.id === id)) liste.push({ id, nom: nomClient(id) })
+  return liste
+}
+function ajouterClient(g) {
+  const id = ajout[g.cle]
+  if (!choix[g.cle]) choix[g.cle] = []
+  if (id && !choix[g.cle].includes(id)) choix[g.cle].push(id)
+  ajout[g.cle] = ''
+}
+const periode = (g) => (g.premier === g.dernier ? partiesDate(g.premier).court : `du ${partiesDate(g.premier).court} au ${partiesDate(g.dernier).court}`)
+
+async function attribuer(g) {
+  enCours.value = g.cle
+  message.value = ''
+  erreur.value = ''
+  try {
+    const b = await data.agenda.attribuer(g.titre, choix[g.cle])
+    message.value = `« ${g.titre} » attribué : ${b.crees || 0} séance(s) ajoutée(s). Les prochains rendez-vous de ce titre suivront.`
+    delete choix[g.cle]
+    await charger()
+  } catch (e) {
+    erreur.value = messageErreur(e)
+  } finally {
+    enCours.value = ''
+  }
+}
 
 async function charger() {
   try {
     agenda.value = await data.agenda.etat()
+    if (serveur) {
+      groupes.value = await data.agenda.aAttribuer()
+      for (const g of groupes.value) if (!choix[g.cle]) choix[g.cle] = []
+    }
     erreur.value = ''
   } catch (e) {
     erreur.value = messageErreur(e)
@@ -34,18 +75,24 @@ async function charger() {
   }
 }
 
+// Démo (faux agenda) : bilan d'événements ajoutés / modifiés / supprimés.
+function libelleDemo(b) {
+  const parties = [b.ajoutes && `${b.ajoutes} ajoutée(s)`, b.modifies && `${b.modifies} modifiée(s)`, b.supprimes && `${b.supprimes} supprimée(s)`].filter(Boolean)
+  return parties.length ? `Synchronisé : ${parties.join(', ')}.` : 'Synchronisé : rien de nouveau.'
+}
+
 async function synchroniser() {
   synchro.value = true
   message.value = ''
   erreur.value = ''
   try {
     const b = await data.agenda.synchroniser()
-    const parties = [b.ajoutes && `${b.ajoutes} ajoutée(s)`, b.modifies && `${b.modifies} modifiée(s)`, b.supprimes && `${b.supprimes} supprimée(s)`].filter(Boolean)
-    message.value = b.message || (parties.length ? `Synchronisé : ${parties.join(', ')}.` : 'Synchronisé : rien de nouveau.')
+    message.value = serveur ? libelleBilan(b) : libelleDemo(b)
     await charger()
     await rafraichir()
   } catch (e) {
-    erreur.value = messageErreur(e)
+    if (e?.code === 'GOOGLE_AUTORISATION') await charger() // le bandeau « Autorisation Google à renouveler » suffit
+    else erreur.value = messageErreur(e)
   } finally {
     synchro.value = false
   }
@@ -60,7 +107,7 @@ onMounted(async () => { await rafraichir(); await charger() })
       <div>
         <h1>Agenda</h1>
         <p>
-          Créez « Coaching Prénom Nom » dans Google Agenda : le rendez-vous apparaît dans l'appli du client.
+          Crée « Coaching Prénom » dans Google Agenda : le rendez-vous devient une séance de coaching (fiche du client et son appli).
           <Puce v-if="data.mode === 'local'" variante="propose">Démo : faux agenda</Puce>
         </p>
       </div>
@@ -73,13 +120,45 @@ onMounted(async () => { await rafraichir(); await charger() })
       </div>
     </header>
 
+    <p v-if="autorisation" class="st-ag-msg st-ag-msg--err" role="alert" data-testid="autorisation-google">
+      <span><b>Autorisation Google à renouveler.</b> L'agenda ne peut plus être lu : les séances déjà en base sont gardées, rien n'est supprimé. Ré-autorise l'accès Google de l'API réservation, puis synchronise.</span>
+    </p>
     <p v-if="message" class="st-ag-msg st-ag-msg--ok" role="status">{{ message }}</p>
     <p v-if="erreur" class="st-ag-msg st-ag-msg--err" role="alert">{{ erreur }}<button class="st-btn" type="button" @click="charger">Réessayer</button></p>
 
     <div v-if="chargement" aria-hidden="true"><div class="st-ag-squelette" /><div class="st-ag-squelette" /></div>
 
     <div v-else class="st-ag-cols">
-      <section aria-labelledby="ag-alertes">
+      <section v-if="serveur" aria-labelledby="ag-attribuer">
+        <h2 id="ag-attribuer" class="st-ag-titre">À attribuer <span class="st-ag-n">{{ groupes.length }}</span></h2>
+        <p v-if="agenda.bilan?.ok" class="st-ag-meta st-ag-bilan" data-testid="bilan-synchro">Dernière synchro : {{ libelleBilan(agenda.bilan).replace('Synchronisé : ', '') }}</p>
+        <ul v-if="groupes.length" class="st-ag-alertes" data-testid="a-attribuer">
+          <li v-for="(g, i) in groupes" :key="g.cle" class="st-ag-alerte" :style="{ '--i': i }">
+            <Puce variante="alerte" point>{{ LIB_ALERTE[g.statut] || 'À vérifier' }}</Puce>
+            <strong>{{ g.titre }}</strong>
+            <span class="st-ag-meta">{{ g.nb }} rendez-vous · {{ periode(g) }}</span>
+            <form class="st-ag-attrib" @submit.prevent="attribuer(g)">
+              <fieldset v-if="options(g).length" class="st-ag-cases">
+                <legend>Pour</legend>
+                <label v-for="c in options(g)" :key="c.id" class="st-ag-case">
+                  <input v-model="choix[g.cle]" type="checkbox" :value="c.id" />{{ c.nom }}<small v-if="c.archive">&nbsp;(archivé)</small>
+                </label>
+              </fieldset>
+              <label class="st-ag-champ">{{ options(g).length ? 'Autre client' : 'Client' }}
+                <select v-model="ajout[g.cle]" @change="ajouterClient(g)">
+                  <option value="">Choisir…</option>
+                  <option v-for="c in etatCoach.clients" :key="c.id" :value="c.id">{{ c.nom }}</option>
+                </select>
+              </label>
+              <button class="st-btn st-btn--encre" type="submit" :disabled="!choix[g.cle]?.length || enCours === g.cle">{{ enCours === g.cle ? 'Attribution…' : 'Attribuer' }}</button>
+            </form>
+            <p>Retenu pour ce titre : les prochains « {{ g.titre }} » iront aux mêmes clients.</p>
+          </li>
+        </ul>
+        <p v-else class="st-ag-ok"><IconeSt nom="check" />Tous les événements « Coaching » sont attribués.</p>
+      </section>
+
+      <section v-else aria-labelledby="ag-alertes">
         <h2 id="ag-alertes" class="st-ag-titre">À corriger <span class="st-ag-n">{{ agenda.alertes.length }}</span></h2>
         <ul v-if="agenda.alertes.length" class="st-ag-alertes" data-testid="alertes-agenda">
           <li v-for="(a, i) in agenda.alertes" :key="a.id" class="st-ag-alerte" :style="{ '--i': i }">
@@ -114,9 +193,9 @@ onMounted(async () => { await rafraichir(); await charger() })
     </div>
 
     <p class="st-ag-aide">
-      <b>Homonymes :</b> ajoutez un identifiant court au titre ou à la description (ex. « Coaching Marc Dupont #md2 »).
-      Un événement modifié ou supprimé dans Google Agenda est mis à jour à la prochaine synchro (toutes les 15 min).
-      {{ etatCoach.clients.length }} clients actifs pris en compte.
+      <b>Reconnaissance :</b> nom complet, ou prénom seul s'il n'est porté que par un client. Un prénom partagé n'est jamais deviné : il passe « à attribuer ».
+      Un événement modifié ou supprimé dans Google Agenda est mis à jour à la prochaine synchro (toutes les 15 min, depuis le 1er janvier 2026).
+      Une séance que tu modifies à la main (statut, heure, lieu) garde ta modification.
     </p>
   </div>
 </template>

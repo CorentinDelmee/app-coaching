@@ -48,8 +48,10 @@ export function rendezVous({ seances = [], evenements = [], reservations = [], c
       lien: `/coach/clients/${s.clientId}`
     })
   }
+  // Événements Google déjà devenus des séances en base (synchro serveur, même annulées ou déplacées à la main) : une seule ligne.
+  const deGoogle = new Set(seances.map((s) => s.googleId).filter(Boolean))
   for (const e of evenements) {
-    if (e.statut !== 'attribue' || !e.date) continue
+    if (e.statut !== 'attribue' || !e.date || deGoogle.has(e.id)) continue
     const heure = e.journee ? '' : e.heure
     if (cle.has(`${e.clientId}|${e.date}|${heure}`)) continue
     cle.add(`${e.clientId}|${e.date}|${heure}`)

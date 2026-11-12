@@ -35,6 +35,19 @@
 .st-ag-alerte p { margin: 4px 0 0; color: var(--st-doux); font-size: 13.5px; }
 .st-ag-ok { display: flex; gap: 12px; align-items: center; background: var(--st-ok-fond); color: var(--st-ok); padding: 14px 16px; border-radius: var(--st-r-l); font-weight: 600; }
 .st-ag-ok svg { width: 22px; height: 22px; flex: none; }
+/* À attribuer : choix du ou des clients d'un titre « Coaching … » (serveur). */
+.st-ag-bilan { margin: -4px 0 12px; }
+.st-ag-attrib { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.st-ag-cases { display: flex; flex-wrap: wrap; gap: 6px 8px; border: 0; padding: 0; margin: 0; }
+.st-ag-cases legend { width: 100%; padding: 0; margin-bottom: 2px; font-size: 12.5px; font-weight: 600; color: var(--st-doux); }
+.st-ag-case { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 22px; background: var(--st-surface-2); font-weight: 600; font-size: 14px; cursor: pointer; }
+.st-ag-case:has(input:checked) { background: var(--st-encre); color: #fff; }
+.st-ag-case input { width: 18px; height: 18px; margin: 0; accent-color: var(--st-encre); }
+.st-ag-case small { font-weight: 400; }
+.st-ag-champ { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--st-doux); }
+.st-ag-champ select { min-height: 46px; width: 100%; padding: 10px 14px; border-radius: var(--st-r-m); border: 1px solid var(--st-filet-fort); background: var(--st-surface); font: 400 15px/1.35 var(--st-sans); color: var(--st-encre); }
+.st-ag-champ select:focus-visible { border-color: var(--st-encre); box-shadow: 0 0 0 3px rgba(35,37,43,.12); outline: none; }
+.st-ag-attrib .st-btn { align-self: flex-start; min-height: 44px; }
 
 .st-ag-jours { display: flex; flex-direction: column; gap: 14px; margin: 0; padding: 0; list-style: none; }
 .st-ag-jour { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; animation: st-cascade var(--st-d-base) var(--st-sortie) both; animation-delay: calc(var(--i, 0) * 40ms); }
