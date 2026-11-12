@@ -7,7 +7,7 @@ import data from '../../../../data/index.js'
 import { etat as etatCoach, maintenant, messageErreur, nomClient, rafraichir } from '../../../store.js'
 import IconeSt from '../../IconeSt.vue'
 import Puce from '../../Puce.vue'
-import { CONSEIL_ALERTE, LIB_ALERTE, grouperEvenements, libelleBilan, libelleHeureEvt, libelleSynchro, partiesDate } from './agendaOutils.js'
+import { CONSEIL_ALERTE, LIB_ALERTE, RAISON_GARDEE, grouperEvenements, libelleBilan, libelleHeureEvt, libelleSynchro, partiesDate } from './agendaOutils.js'
 import './ecran.css'
 
 const PAQUET = 8 // jours affichés avant « Voir la suite »
@@ -154,7 +154,7 @@ onMounted(async () => { await rafraichir(); await charger() })
               </label>
               <button class="st-btn st-btn--encre" type="submit" :disabled="!choix[g.cle]?.length || enCours === g.cle">{{ enCours === g.cle ? 'Attribution…' : 'Attribuer' }}</button>
             </form>
-            <p v-if="g.actuels?.length" data-testid="attribution-gardee">Gardé pour l'instant : {{ g.actuels.map((c) => c.nom).join(', ') }} (un autre client porte ce prénom). Confirme ou corrige.</p>
+            <p v-if="g.actuels?.length" data-testid="attribution-gardee">Gardé pour l'instant : {{ g.actuels.map((c) => c.nom).join(', ') }} ({{ RAISON_GARDEE[g.statut] || 'à vérifier' }}). Rien n'est supprimé : confirme ou corrige.</p>
             <p>Retenu pour ce titre : les prochains « {{ g.titre }} » iront aux mêmes clients.</p>
           </li>
         </ul>

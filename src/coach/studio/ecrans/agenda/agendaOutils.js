@@ -34,6 +34,12 @@ export const CONSEIL_ALERTE = {
   ambigu: 'Plusieurs clients correspondent : ajoutez un identifiant court (ex. #md2).',
   'sans-nom': 'Ajoutez le prénom et le nom du client après « Coaching ».'
 }
+/** Pourquoi une attribution précédente est gardée en attendant le coach (« Gardé pour l'instant : … »). */
+export const RAISON_GARDEE = {
+  ambigu: 'un autre client porte ce prénom',
+  inconnu: 'le titre ne correspond plus à aucun client',
+  'sans-nom': 'le titre ne contient plus de nom'
+}
 /** Bilan d'une synchro serveur en une phrase : « Synchronisé : 12 coachings lus, 3 séances créées, 1 modifiée · 2 titres à attribuer. » */
 export function libelleBilan(b) {
   if (!b) return ''

@@ -133,12 +133,13 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
         }
         b.evenements++
         let att = reconnaitreClients(ev.titre, clients, alias)
-        // Déjà attribué et devenu ambigu (ex. un 2e « Guillaume » créé) : on garde l'attribution précédente, rien n'est
-        // supprimé ; l'événement est seulement signalé dans « À attribuer » (audit 3).
-        const precedent = agenda.get(ev.id)?.clientIds
+        // Déjà attribué et devenu ambigu, inconnu ou sans nom (2e « Guillaume » créé, client renommé « Fabienne », titre
+        // réduit à « Coaching ») : on garde l'attribution précédente, rien n'est supprimé (séances passées facturées) ;
+        // l'événement est seulement signalé dans « À attribuer ». Seule une attribution à d'AUTRES clients retire (audits 3 et 11).
+        const precedent = agenda.get(ev.id)?.clientIds?.filter((id) => parId.has(id))
         let aVerifier = null
-        if (att.statut === 'ambigu' && precedent?.length && precedent.every((id) => parId.has(id) && att.candidats.includes(id))) {
-          aVerifier = { statut: 'ambigu', candidats: att.candidats }
+        if (att.statut !== 'attribue' && precedent?.length) {
+          aVerifier = { statut: att.statut, candidats: att.candidats ?? [] }
           att = { statut: 'attribue', clientIds: precedent }
         }
         const ids = att.statut === 'attribue' ? att.clientIds : []

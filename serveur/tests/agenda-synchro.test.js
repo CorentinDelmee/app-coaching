@@ -248,6 +248,24 @@ describe('attribuer', () => {
     expect(await seances()).toEqual(avant)
   })
 
+  it('contre-audit 1 : client renommé ou titre réduit à « Coaching » : séances (passées comprises) gardées, signalé à attribuer', async () => {
+    await synchro.synchroniser()
+    const avant = await seances()
+    await store.ecrire('profils', { id: 'fabien', role: 'client', identifiant: 'fabien', nom: 'Fabienne Vincent', tarif: 40, lieuDefaut: 'domicile', archive: false, creeLe: 1 })
+    evenements = evenements.map((e) => (e.id === 'e-passe' ? { ...e, titre: 'Coaching' } : e)) // passé, déjà « faite »
+    expect(compte(await synchro.synchroniser())).toEqual({ ...zero, modifies: 2 }) // seulement le titre recopié
+    const sansTitre = (o) => Object.fromEntries(Object.entries(o).map(([k, { titre: _t, ...v }]) => [k, v]))
+    expect(sansTitre(await seances())).toEqual(sansTitre(avant))
+    const groupes = synchro.aAttribuer()
+    expect(groupes.find((g) => g.cle === 'coaching fabien')).toMatchObject({ statut: 'inconnu', actuels: [{ id: 'fabien', nom: 'Fabienne Vincent' }] })
+    expect(groupes.find((g) => g.cle === 'coaching')).toMatchObject({ statut: 'sans-nom', actuels: [{ id: 'christine' }, { id: 'didier' }] })
+    expect(compte(await synchro.synchroniser())).toEqual(zero) // stable
+    // Attribué à d'AUTRES clients : là seulement l'ancienne séance passée non modifiée part.
+    evenements = evenements.map((e) => (e.id === 'e-passe' ? { ...e, titre: 'Coaching Sylvain' } : e))
+    expect(compte(await synchro.synchroniser())).toEqual({ ...zero, crees: 1, supprimes: 2 })
+    expect(Object.keys(await seances()).filter((id) => id.startsWith('google:e-passe'))).toEqual(['google:e-passe:sylvain'])
+  })
+
   it('prénom partagé : à attribuer avec les candidats', async () => {
     await store.ecrire('profils', { id: 'christine2', role: 'client', identifiant: 'christine2', nom: 'Christine Mallet', archive: true, creeLe: 1 })
     evenements.push(ev('e-chr', 'Coaching Christine (domicile)', '2026-11-16T10:00:00+01:00', '2026-11-16T11:00:00+01:00'))
