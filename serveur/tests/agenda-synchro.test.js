@@ -101,16 +101,49 @@ describe('synchroniser', () => {
     expect((await seances())['google:e-guil:guillaume']).toMatchObject({ heure: '12:00', date: '2026-11-13' })
   })
 
-  it('annulé : séance future supprimée, passée marquée annulée (dates vides tolérées)', async () => {
+  it('annulé : séance future supprimée ; passée « faite » jamais annulée d\'office, signalée (dates vides tolérées)', async () => {
     await synchro.synchroniser()
     evenements[1] = { id: 'e-guil', titre: '', debut: '', fin: '', journee: false, lieu: '', annule: true, maj: null }
-    evenements[0] = { ...evenements[0], annule: true }
+    evenements[0] = { id: 'e-passe', titre: '', debut: '', fin: '', journee: false, lieu: '', annule: true, maj: null } // série supprimée : occurrences passées annulées
     const b = await synchro.synchroniser()
-    expect(compte(b)).toEqual({ ...zero, supprimes: 1, annules: 2 })
+    expect(compte(b)).toEqual({ ...zero, supprimes: 1 })
+    expect(b.annulesAVerifier).toBe(2)
     const s = await seances()
     expect(s['google:e-guil:guillaume']).toBeUndefined()
-    expect(s['google:e-passe:christine'].statut).toBe('annulee')
+    expect(s['google:e-passe:christine'].statut).toBe('faite')
+    expect(s['google:e-passe:didier'].statut).toBe('faite')
     expect(db.prepare("SELECT 1 FROM seances_agenda WHERE id = 'e-guil'").get()).toBeUndefined()
+    expect(db.prepare("SELECT statut_attribution s FROM seances_agenda WHERE id = 'e-passe'").get().s).toBe('inconnu') // hors agenda du client (data.statut = annule)
+    expect(synchro.aAttribuer().find((g) => g.statut === 'annule')).toMatchObject({ cle: 'annule:coaching christine et didier', titre: 'Coaching Christine et Didier', nb: 1, actuels: [{ id: 'christine' }, { id: 'didier' }] })
+    expect(compte(await synchro.synchroniser())).toEqual(zero) // stable
+  })
+
+  it('contre-audit 3 : annulé dans Google, séance passée faite : le coach l\'annule ou la garde, plus signalée ensuite', async () => {
+    evenements.push(ev('e-p4', 'Coaching Sylvain', '2026-10-06T10:00:00+02:00', '2026-10-06T11:00:00+02:00'))
+    await synchro.synchroniser()
+    evenements = evenements.map((e) => (['e-passe', 'e-p4'].includes(e.id) ? { ...e, annule: true } : e))
+    await synchro.synchroniser()
+    expect(synchro.aAttribuer().filter((g) => g.statut === 'annule').map((g) => g.cle).sort()).toEqual(['annule:coaching christine et didier', 'annule:coaching sylvain'])
+    // Sylvain : le coach la passe en annulée -> plus signalée tout de suite, et la synchro ne la touche plus.
+    const sy = (await seances())['google:e-p4:sylvain']
+    await store.ecrire('seancesCoaching', { ...sy, statut: 'annulee' })
+    expect(synchro.aAttribuer().map((g) => g.cle)).not.toContain('annule:coaching sylvain')
+    await synchro.synchroniser()
+    expect((await seances())['google:e-p4:sylvain'].statut).toBe('annulee')
+    // Christine et Didier : le coach confirme qu'elle a eu lieu.
+    expect(synchro.garderFaites('Coaching Christine et Didier')).toEqual({ gardees: 1 })
+    expect(synchro.aAttribuer().filter((g) => g.statut === 'annule')).toEqual([])
+    expect(compte(await synchro.synchroniser())).toEqual(zero)
+    expect(synchro.aAttribuer().filter((g) => g.statut === 'annule')).toEqual([])
+    expect((await seances())['google:e-passe:christine'].statut).toBe('faite')
+    // Une attribution du même titre ne « ressuscite » pas l'événement annulé.
+    synchro.attribuer('Coaching Christine et Didier', ['christine', 'didier'])
+    expect(db.prepare("SELECT statut_attribution s FROM seances_agenda WHERE id = 'e-passe'").get().s).toBe('inconnu')
+    // Rétabli dans Google : redevient un rendez-vous normal.
+    evenements = evenements.map((e) => (e.id === 'e-passe' ? { ...e, annule: false } : e))
+    await synchro.synchroniser()
+    expect(db.prepare("SELECT statut_attribution s FROM seances_agenda WHERE id = 'e-passe'").get().s).toBe('attribue')
+    expect(() => synchro.garderFaites('')).toThrow('invalide')
   })
 
   it('statut changé à la main puis événement annulé ou supprimé : séance gardée (annulée si l\'événement est annulé)', async () => {

@@ -47,7 +47,8 @@ Choix de Corentin : (1) réutiliser l'accès Google de l'API réservation (coach
 - Pour chaque (événement, client) attribué : une séance de coaching en base, clé unique `google:<id événement>:<clientId>`,
   statut `faite` si fin < maintenant, sinon `prevue` ; heure/date/durée/lieu mis à jour si l'événement change ;
   événement annulé ou disparu → séance future supprimée (une séance passée déjà `faite` n'est jamais supprimée,
-  elle est marquée annulée seulement si l'événement est annulé). Une séance modifiée à la main par le coach
+  ni passée en annulée d'office : si l'événement est annulé, elle reste `faite` et est signalée « Annulé dans Google »
+  dans « à attribuer » ; le coach l'annule à la main ou la garde par `POST /api/app/agenda/garder-faites {titre}`). Une séance modifiée à la main par le coach
   (note, statut) n'est pas écrasée sur ces champs.
 - Pas de doublon côté client : la séance Google ne doit apparaître qu'une fois (base OU flux Google, pas les deux).
 - Visible : fiche client (coachings passés + à venir), Aujourd'hui/Agenda coach, Accueil client (prochain coaching),

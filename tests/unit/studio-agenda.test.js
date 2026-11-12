@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { grouperEvenements, heureLisible, libelleHeureEvt, libelleSynchro, partiesDate } from '../../src/coach/studio/ecrans/agenda/agendaOutils.js'
+import { grouperEvenements, heureLisible, libelleBilan, libelleHeureEvt, libelleSynchro, partiesDate } from '../../src/coach/studio/ecrans/agenda/agendaOutils.js'
 import routes from '../../src/coach/studio/ecrans/agenda/routes.js'
 
 describe('agendaOutils', () => {
@@ -21,6 +21,9 @@ describe('agendaOutils', () => {
     expect(grouperEvenements(beaucoup)).toHaveLength(30)
   })
   it('synchro jamais faite', () => { expect(libelleSynchro(null)).toBe('Jamais synchronisé') })
+  it('bilan : séances faites annulées dans Google signalées', () => {
+    expect(libelleBilan({ evenements: 3, annulesAVerifier: 2, aAttribuer: 1 })).toBe('Synchronisé : 3 coachings lus, 2 séances faites annulée(s) dans Google à vérifier · 1 titre à attribuer.')
+  })
   it('routes : mêmes URL que les anciennes vues', () => {
     expect(routes.map((r) => r.path)).toEqual(['agenda', 'reservations', 'donnees'])
   })

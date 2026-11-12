@@ -614,6 +614,12 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
       try { bilan = synchroAgenda.attribuer(titre, clientIds) } catch (e) { traduire(e) }
       return envoyer(res, 200, { bilan })
     }
+    if (req.method === 'POST' && quoi === 'garder-faites') { // annulé dans Google, séance passée confirmée « faite » par le coach
+      const { titre } = await lireJson(req)
+      let r
+      try { r = synchroAgenda.garderFaites(titre) } catch (e) { traduire(e) }
+      return envoyer(res, 200, r)
+    }
     throw new Erreur(404, 'route_inconnue')
   }
 

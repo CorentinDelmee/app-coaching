@@ -204,6 +204,9 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
       },
       async attribuer(titre, clientIds) {
         return (await appel('POST', '/agenda/attribuer', { corps: { titre, clientIds } }))?.bilan ?? {}
+      },
+      async garderFaites(titre) {
+        return (await appel('POST', '/agenda/garder-faites', { corps: { titre } })) ?? {}
       }
     },
     // Réservations du site vitrine (coach uniquement), relayées par le serveur.

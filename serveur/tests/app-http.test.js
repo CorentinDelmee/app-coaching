@@ -308,7 +308,7 @@ describe('agenda', () => {
     expect((await appel('GET', '/api/app/agenda/derniere-synchro', { cookie: coach })).json).toEqual({ derniereSynchro: '2026-11-02T19:00:00.000Z', bilan: null })
   })
   it('synchroniser, à attribuer, attribuer : coach seulement ; 503 « autorisation Google » relayé', async () => {
-    for (const [m, r] of [['POST', 'synchroniser'], ['GET', 'a-attribuer'], ['POST', 'attribuer']]) expect((await appel(m, `/api/app/agenda/${r}`, { cookie: clientA, ...(m === "POST" ? { corps: {} } : {}) })).statut).toBe(403)
+    for (const [m, r] of [['POST', 'synchroniser'], ['GET', 'a-attribuer'], ['POST', 'attribuer'], ['POST', 'garder-faites']]) expect((await appel(m, `/api/app/agenda/${r}`, { cookie: clientA, ...(m === "POST" ? { corps: {} } : {}) })).statut).toBe(403)
     const s = await appel('POST', '/api/app/agenda/synchroniser', { cookie: coach })
     expect(s.statut).toBe(200); expect(s.json.bilan).toMatchObject({ ok: true, evenements: 2, crees: 2, aAttribuer: 1 })
     expect(resaRecu.headers['x-resa-admin-key']).toBe('k'.repeat(40))
@@ -327,6 +327,8 @@ describe('agenda', () => {
     expect((await appel('POST', '/api/app/agenda/attribuer', { cookie: coach, corps: { titre: 'Coaching Zoé', clientIds: ['pc'] } })).json).toEqual({ erreur: 'client_inconnu' })
     const a = await appel('POST', '/api/app/agenda/attribuer', { cookie: coach, corps: { titre: 'Coaching Zoé', clientIds: ['pb'] } })
     expect(a.statut).toBe(200); expect(a.json.bilan).toMatchObject({ crees: 1, aAttribuer: 0 })
+    expect((await appel('POST', '/api/app/agenda/garder-faites', { cookie: coach, corps: { titre: 'Coaching Zoé' } })).json).toEqual({ gardees: 0 }) // rien d'annulé dans Google
+    expect((await appel('POST', '/api/app/agenda/garder-faites', { cookie: coach, corps: {} })).statut).toBe(400)
     agendaReponse = [503, { erreur: 'google_lecture_non_autorisee' }]
     try {
       const e = await appel('POST', '/api/app/agenda/synchroniser', { cookie: coach })

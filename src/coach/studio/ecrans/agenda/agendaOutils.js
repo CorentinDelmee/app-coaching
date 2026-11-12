@@ -28,7 +28,7 @@ export function grouperEvenements(liste) {
   return groupes
 }
 
-export const LIB_ALERTE = { inconnu: 'Nom inconnu', ambigu: 'Nom ambigu', 'sans-nom': 'Sans nom' }
+export const LIB_ALERTE = { inconnu: 'Nom inconnu', ambigu: 'Nom ambigu', 'sans-nom': 'Sans nom', annule: 'Annulé dans Google' }
 export const CONSEIL_ALERTE = {
   inconnu: 'Aucun client ne porte ce nom : corrigez le titre dans Google Agenda.',
   ambigu: 'Plusieurs clients correspondent : ajoutez un identifiant court (ex. #md2).',
@@ -46,7 +46,8 @@ export function libelleBilan(b) {
   const s = (n, un, plusieurs) => `${n} ${n > 1 ? plusieurs : un}`
   const parties = [
     b.crees && s(b.crees, 'séance créée', 'séances créées'), b.modifies && s(b.modifies, 'modifiée', 'modifiées'),
-    b.supprimes && s(b.supprimes, 'supprimée', 'supprimées'), b.annules && s(b.annules, 'annulée', 'annulées')
+    b.supprimes && s(b.supprimes, 'supprimée', 'supprimées'), b.annules && s(b.annules, 'annulée', 'annulées'),
+    b.annulesAVerifier && `${s(b.annulesAVerifier, 'séance faite', 'séances faites')} annulée(s) dans Google à vérifier`
   ].filter(Boolean)
   const lus = s(b.evenements ?? 0, 'coaching lu', 'coachings lus')
   const aAttribuer = b.aAttribuer ? ` · ${s(b.aAttribuer, 'titre', 'titres')} à attribuer` : ''

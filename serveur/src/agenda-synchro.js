@@ -83,7 +83,7 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
    */
   function appliquer(evenements, { complet = false, fen = null } = {}) {
     const t = now()
-    const b = { evenements: 0, crees: 0, modifies: 0, supprimes: 0, annules: 0, jumelles: 0, journees: 0, effaceesParLeCoach: 0 }
+    const b = { evenements: 0, crees: 0, modifies: 0, supprimes: 0, annules: 0, annulesAVerifier: 0, jumelles: 0, journees: 0, effaceesParLeCoach: 0 }
     db.exec('BEGIN IMMEDIATE')
     try {
       const clients = db.prepare("SELECT id, nom, tarif, lieu_defaut FROM profiles WHERE role = 'client'").all()
@@ -102,10 +102,15 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
        * Événement annulé ou disparu : séance future supprimée ; passée gardée (marquée annulée si l'événement est annulé).
        * Séance modifiée à la main par le coach (ex. « faite » posé sur un futur) : jamais supprimée sans trace, gardée,
        * et marquée annulée si l'événement est annulé.
+       * Exception (contre-audit 3) : une séance PASSÉE « faite » (déjà facturée) n'est jamais passée en annulée
+       * automatiquement (ex. série récurrente supprimée dans Google) : elle reste « faite » et la fonction renvoie true
+       * pour qu'elle soit signalée au coach, qui tranche à la main.
        */
       function disparition(s, annule) {
         const touchee = CHAMPS_SUIVIS.some((k) => s[k] !== s.synchro?.[k])
-        if (!touchee && (s.synchro?.finMs ?? 0) >= t) { supprimerSeance.run(s.id); google.delete(s.id); b.supprimes++; return }
+        const passee = (s.synchro?.finMs ?? 0) < t
+        if (!touchee && !passee) { supprimerSeance.run(s.id); google.delete(s.id); b.supprimes++; return false }
+        if (annule && passee && s.statut === 'faite') return true
         if (annule && s.statut !== 'annulee' && (touchee || s.statut === s.synchro?.statut)) {
           const maj = { ...s, statut: 'annulee', synchro: touchee ? s.synchro : { ...s.synchro, statut: 'annulee' } } // touchée : reste « modifiée à la main »
           ecrireSeance.run(s.id, s.clientId, JSON.stringify(maj)); google.set(s.id, maj); b.annules++
@@ -128,8 +133,19 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
         const m = ev.annule ? null : moment(ev)
         if (ev.annule || !m || !estCoaching(ev.titre)) {
           // Annulé, illisible ou plus un « Coaching » (titre changé) : il quitte l'agenda de l'app.
-          if (agenda.has(ev.id)) { supprimerAgenda.run(ev.id); agenda.delete(ev.id) }
-          for (const s of seancesDe(ev.id)) disparition(s, !!ev.annule)
+          const aVerifier = seancesDe(ev.id).filter((s) => disparition(s, !!ev.annule))
+          if (aVerifier.length) {
+            // Annulé dans Google mais séance(s) passée(s) « faite(s) » : la ligne reste (hors agenda du client), signalée
+            // « À attribuer » jusqu'à ce que le coach annule la séance ou la garde (garderFaites). Colonne statut_attribution = « inconnu »
+            // (contrainte du schéma, sans migration) : seule « attribue » est lue côté client ; data.statut = « annule » fait foi.
+            const prec = agenda.get(ev.id) ?? { id: ev.id, titre: aVerifier[0].titre, date: aVerifier[0].date, heure: aVerifier[0].heure }
+            const ids = aVerifier.map((x) => x.clientId)
+            const { aVerifier: _a, candidats: _c, ...reste } = prec
+            const l = { ...reste, statut: 'annule', annule: true, clientId: ids[0], clientIds: ids, clientNom: ids.map((id) => parId.get(id)?.nom).join(', '),
+              ...(prec.annuleVu ? {} : { aVerifier: { statut: 'annule', candidats: [] } }) }
+            if (!prec.annuleVu) b.annulesAVerifier += aVerifier.length
+            if (JSON.stringify(agenda.get(ev.id)) !== JSON.stringify(l)) { ecrireAgenda.run(ev.id, ids[0], 'inconnu', JSON.stringify(l), t); agenda.set(ev.id, l) }
+          } else if (agenda.has(ev.id)) { supprimerAgenda.run(ev.id); agenda.delete(ev.id) }
           continue
         }
         b.evenements++
@@ -242,8 +258,8 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
   function groupesAAttribuer(lignes = lignesAgenda().values()) {
     const groupes = new Map()
     for (const l of lignes) {
-      if ((l.statut === 'attribue' && !l.aVerifier) || !l.titre || !l.date) continue // lignes d'avant la synchro (sans titre ni date) ignorées
-      const cle = cleTitre(l.titre)
+      if ((['attribue', 'annule'].includes(l.statut) && !l.aVerifier) || !l.titre || !l.date) continue // lignes d'avant la synchro (sans titre ni date) ignorées
+      const cle = l.annule ? `annule:${cleTitre(l.titre)}` : cleTitre(l.titre) // « annulé dans Google » : groupe à part
       const g = groupes.get(cle) ?? { cle, titre: l.titre, statut: l.aVerifier?.statut ?? l.statut, nb: 0, premier: l.date, dernier: l.date, candidats: [], actuels: [] }
       g.nb++
       if (l.date < g.premier) g.premier = l.date
@@ -258,7 +274,9 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
   function aAttribuer() {
     const noms = new Map(db.prepare("SELECT id, nom, archive FROM profiles WHERE role = 'client'").all().map((c) => [c.id, c]))
     const nommer = (ids) => ids.filter((id) => noms.has(id)).map((id) => ({ id, nom: noms.get(id).nom, archive: !!noms.get(id).archive }))
-    return groupesAAttribuer().map((g) => ({ ...g, candidats: nommer(g.candidats), actuels: nommer(g.actuels) }))
+    // « Annulé dans Google » : plus affiché dès que le coach a annulé (ou supprimé) la séance, sans attendre la synchro suivante.
+    const faites = new Set(db.prepare("SELECT data FROM seances_coaching WHERE id LIKE 'google:%'").all().map((l) => JSON.parse(l.data)).filter((x) => x.statut === 'faite').map((x) => x.googleId))
+    return groupesAAttribuer([...lignesAgenda().values()].filter((l) => !l.annule || faites.has(l.id))).map((g) => ({ ...g, candidats: nommer(g.candidats), actuels: nommer(g.actuels) }))
   }
 
   /** Le coach attribue un titre à 1 à 6 clients : alias retenu, puis les événements de ce titre sont réappliqués (sans réseau). */
@@ -270,13 +288,27 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
     if (!ids.every((id) => existe.get(id))) throw new ErreurSynchro('client_inconnu', 400)
     const cle = cleTitre(titre)
     db.prepare('INSERT INTO agenda_alias (cle, client_ids, cree_le) VALUES (?, ?, ?) ON CONFLICT(cle) DO UPDATE SET client_ids = excluded.client_ids').run(cle, JSON.stringify(ids), now())
-    const evenements = [...lignesAgenda().values()].filter((l) => cleTitre(l.titre) === cle)
+    const evenements = [...lignesAgenda().values()].filter((l) => !l.annule && cleTitre(l.titre) === cle) // annulés dans Google : pas réappliqués
       .map((l) => ({ id: l.id, titre: l.titre, debut: l.debut, fin: l.fin, journee: l.journee, lieu: l.lieuTexte, maj: l.maj, annule: false }))
     const r = appliquer(evenements)
     // Le bilan affiché (« · 1 titre à attribuer ») suit l'attribution, sans attendre la synchro suivante.
     const { bilan } = dernierBilan()
     if (bilan?.ok) db.prepare('UPDATE agenda_synchro SET bilan = ? WHERE id = 1').run(JSON.stringify({ ...bilan, aAttribuer: r.aAttribuer }))
     return { cle, clientIds: ids, ...r }
+  }
+
+  /** Événements annulés dans Google dont la séance passée est restée « faite » : le coach confirme qu'elles ont eu lieu (plus signalées). */
+  function garderFaites(titre) {
+    if (typeof titre !== 'string' || !titre.trim() || titre.length > 300) throw new ErreurSynchro('invalide', 400)
+    const cle = cleTitre(titre)
+    const maj = db.prepare('UPDATE seances_agenda SET data = ?, maj = ? WHERE id = ?')
+    let gardees = 0
+    for (const l of lignesAgenda().values()) {
+      if (!l.annule || l.annuleVu || cleTitre(l.titre) !== cle) continue
+      const { aVerifier: _a, ...reste } = l
+      maj.run(JSON.stringify({ ...reste, annuleVu: true }), now(), l.id); gardees++
+    }
+    return { gardees }
   }
 
   function dernierBilan() {
@@ -293,5 +325,5 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
     return () => { clearTimeout(premier); clearInterval(minuteur) }
   }
 
-  return { synchroniser, attribuer, aAttribuer, dernierBilan, demarrer, appliquer }
+  return { synchroniser, attribuer, garderFaites, aAttribuer, dernierBilan, demarrer, appliquer }
 }

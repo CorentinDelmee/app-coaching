@@ -180,6 +180,11 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
       if (!backend.agenda?.attribuer) throw new ErreurData('NON_SUPPORTE', 'Attribution disponible seulement avec le serveur')
       return backend.agenda.attribuer(titre, clientIds)
     },
+    /** Événements annulés dans Google dont la séance passée est restée « faite » : le coach confirme qu'elles ont eu lieu. */
+    async garderFaites(titre) {
+      if (!backend.agenda?.garderFaites) throw new ErreurData('NON_SUPPORTE', 'Disponible seulement avec le serveur')
+      return backend.agenda.garderFaites(titre)
+    },
     async synchroniser() {
       const user = await backend.utilisateurCourant()
       if (user?.role !== 'coach') throw new ErreurData('NON_AUTORISE', 'Réservé au coach')

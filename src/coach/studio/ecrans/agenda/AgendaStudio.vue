@@ -61,6 +61,23 @@ async function attribuer(g) {
   }
 }
 
+// Annulé dans Google, séance passée restée « faite » : le coach confirme qu'elle a eu lieu.
+async function garder(g) {
+  enCours.value = g.cle
+  message.value = ''
+  erreur.value = ''
+  try {
+    const r = await data.agenda.garderFaites(g.titre)
+    message.value = `« ${g.titre} » : ${r.gardees || 0} séance(s) gardée(s) comme faite(s).`
+    await rafraichir()
+    await charger()
+  } catch (e) {
+    erreur.value = messageErreur(e)
+  } finally {
+    enCours.value = ''
+  }
+}
+
 async function charger() {
   try {
     agenda.value = await data.agenda.etat()
@@ -139,7 +156,11 @@ onMounted(async () => { await rafraichir(); await charger() })
             <Puce variante="alerte" point>{{ LIB_ALERTE[g.statut] || 'À vérifier' }}</Puce>
             <strong>{{ g.titre }}</strong>
             <span class="st-ag-meta">{{ g.nb }} rendez-vous · {{ periode(g) }}</span>
-            <form class="st-ag-attrib" @submit.prevent="attribuer(g)">
+            <template v-if="g.statut === 'annule'">
+              <p data-testid="annule-google">Événement annulé dans Google : vérifier. {{ g.nb > 1 ? 'Les séances restent' : 'La séance reste' }} « faite » ({{ g.actuels.map((c) => c.nom).join(', ') }}), donc comptée{{ g.nb > 1 ? 's' : '' }} dans « Payé ce mois ». Si elle n'a pas eu lieu, passe-la en « annulée » dans la fiche du client ; sinon, garde-la.</p>
+              <button class="st-btn st-btn--encre" type="button" :disabled="enCours === g.cle" @click="garder(g)">{{ enCours === g.cle ? 'Enregistrement…' : (g.nb > 1 ? 'Garder comme faites' : 'Garder comme faite') }}</button>
+            </template>
+            <form v-else class="st-ag-attrib" @submit.prevent="attribuer(g)">
               <fieldset v-if="options(g).length" class="st-ag-cases">
                 <legend>Pour</legend>
                 <label v-for="c in options(g)" :key="c.id" class="st-ag-case">
@@ -154,8 +175,8 @@ onMounted(async () => { await rafraichir(); await charger() })
               </label>
               <button class="st-btn st-btn--encre" type="submit" :disabled="!choix[g.cle]?.length || enCours === g.cle">{{ enCours === g.cle ? 'Attribution…' : 'Attribuer' }}</button>
             </form>
-            <p v-if="g.actuels?.length" data-testid="attribution-gardee">Gardé pour l'instant : {{ g.actuels.map((c) => c.nom).join(', ') }} ({{ RAISON_GARDEE[g.statut] || 'à vérifier' }}). Rien n'est supprimé : confirme ou corrige.</p>
-            <p>Retenu pour ce titre : les prochains « {{ g.titre }} » iront aux mêmes clients.</p>
+            <p v-if="g.statut !== 'annule' && g.actuels?.length" data-testid="attribution-gardee">Gardé pour l'instant : {{ g.actuels.map((c) => c.nom).join(', ') }} ({{ RAISON_GARDEE[g.statut] || 'à vérifier' }}). Rien n'est supprimé : confirme ou corrige.</p>
+            <p v-if="g.statut !== 'annule'">Retenu pour ce titre : les prochains « {{ g.titre }} » iront aux mêmes clients.</p>
           </li>
         </ul>
         <p v-else class="st-ag-ok"><IconeSt nom="check" />Tous les événements « Coaching » sont attribués.</p>
