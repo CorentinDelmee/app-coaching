@@ -152,6 +152,26 @@ describe('synchroniser', () => {
     expect((await seances())['google:e-fab:fabien']).toBeUndefined()
   })
 
+  it('audit 5 : séance saisie à la main APRÈS la synchro au même créneau : la séance Google non modifiée s\'efface', async () => {
+    await synchro.synchroniser()
+    await store.ecrire('seancesCoaching', { id: 'manuelle', clientId: 'fabien', date: '2026-11-20', heure: '18:20', lieu: 'domicile', statut: 'prevue', tarif: 35 })
+    expect(await synchro.synchroniser()).toMatchObject({ jumelles: 1, crees: 0, supprimes: 0 })
+    let s = await seances()
+    expect(s['google:e-fab:fabien']).toBeUndefined()
+    expect(s.manuelle).toBeDefined()
+    expect(await synchro.synchroniser()).toMatchObject({ jumelles: 1, crees: 0 }) // stable
+    // La séance manuelle est supprimée : la séance Google revient.
+    await store.supprimer('seancesCoaching', 'manuelle')
+    expect(await synchro.synchroniser()).toMatchObject({ crees: 1 })
+    // Séance Google modifiée à la main : gardée même avec une séance manuelle au même créneau.
+    const g = (await seances())['google:e-guil:guillaume']
+    await store.ecrire('seancesCoaching', { ...g, lieu: 'domicile' })
+    await store.ecrire('seancesCoaching', { id: 'manuelle-g', clientId: 'guillaume', date: '2026-11-13', heure: '11:30', lieu: 'salle', statut: 'prevue', tarif: 35 })
+    await synchro.synchroniser()
+    s = await seances()
+    expect(s['google:e-guil:guillaume']).toBeDefined()
+  })
+
   it('503 google_lecture_non_autorisee : erreur claire, rien supprimé, dernière synchro inchangée', async () => {
     await synchro.synchroniser()
     const avant = await seances()

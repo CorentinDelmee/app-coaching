@@ -171,6 +171,12 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
             ecrireSeance.run(id, clientId, JSON.stringify(s)); google.set(id, s); b.crees++; crees.add(clientId)
             continue
           }
+          // Séance saisie à la main APRÈS la synchro au même créneau (±15 min) : la séance Google non modifiée s'efface
+          // à son profit (pas de double comptage, audit 5). Sa marque est levée : si la séance manuelle disparaît, elle revient.
+          if (!modifiee(avant) && jumelle(clientId, m)) {
+            supprimerSeance.run(id); google.delete(id); crees.delete(clientId); b.jumelles++
+            continue
+          }
           const apres = { ...avant, titre: ligne.titre, lieuTexte, partagee: ids.length > 1, synchro }
           for (const k of CHAMPS_SUIVIS) if (avant[k] === avant.synchro?.[k]) apres[k] = cible[k] // champ non modifié à la main : suit Google
           if (JSON.stringify(apres) !== JSON.stringify(avant)) { ecrireSeance.run(id, clientId, JSON.stringify(apres)); google.set(id, apres); b.modifies++ }
