@@ -119,6 +119,20 @@ describe('synchroniser', () => {
     expect(s['google:e-fab:denis']).toMatchObject({ statut: 'prevue' })
   })
 
+  it('audit 2 : client corrigé sur un coaching PASSÉ : la séance « faite » de l\'ancien client part, sauf s\'il a été modifié à la main', async () => {
+    evenements.push(ev('e-p2', 'Coaching Sylvain', '2026-10-06T10:00:00+02:00', '2026-10-06T11:00:00+02:00'))
+    await synchro.synchroniser()
+    const caro = (await seances())['google:e-caro:caroline']
+    await store.ecrire('seancesCoaching', { ...caro, lieu: 'salle' }) // modifiée à la main : gardée
+    evenements = evenements.map((e) => (e.id === 'e-p2' ? { ...e, titre: 'Coaching Denis' } : e.id === 'e-caro' ? { ...e, titre: 'Coaching Cindy' } : e))
+    expect(compte(await synchro.synchroniser())).toEqual({ ...zero, crees: 2, supprimes: 1 })
+    const s = await seances()
+    expect(s['google:e-p2:sylvain']).toBeUndefined()
+    expect(s['google:e-p2:denis']).toMatchObject({ statut: 'faite' })
+    expect(s['google:e-caro:caroline']).toMatchObject({ lieu: 'salle' })
+    expect(compte(await synchro.synchroniser())).toEqual(zero)
+  })
+
   it('séance déjà saisie à la main au même créneau (±15 min) : pas de doublon', async () => {
     await store.ecrire('seancesCoaching', { id: 'manuelle', clientId: 'fabien', date: '2026-11-20', heure: '18:40', lieu: 'domicile', statut: 'prevue', tarif: 35 })
     const b = await synchro.synchroniser()

@@ -106,6 +106,13 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
           ecrireSeance.run(s.id, s.clientId, JSON.stringify(maj)); google.set(s.id, maj); b.annules++
         }
       }
+      /** Le coach a-t-il changé un champ suivi (date, heure, durée, lieu, statut) depuis la dernière synchro ? */
+      const modifiee = (s) => CHAMPS_SUIVIS.some((k) => s[k] !== s.synchro?.[k])
+      /** Client retiré de l'événement (titre ou attribution corrigés) : sa séance part, passée comprise, sauf si le coach l'a modifiée (audit 2). */
+      function retirer(s) {
+        if (modifiee(s)) return
+        supprimerSeance.run(s.id); google.delete(s.id); b.supprimes++
+      }
       const jumelle = (clientId, m) => natives.some((n) => n.clientId === clientId && n.statut !== 'annulee' && n.date === m.date && /^\d{2}:\d{2}$/.test(n.heure ?? '')
         && Math.abs(Number(n.heure.slice(0, 2)) * 60 + Number(n.heure.slice(3)) - (Number(m.heure.slice(0, 2)) * 60 + Number(m.heure.slice(3)))) <= TOLERANCE_MIN)
 
@@ -132,7 +139,7 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
         }
         if (JSON.stringify(agenda.get(ev.id)) !== JSON.stringify(ligne)) { ecrireAgenda.run(ev.id, ids[0] ?? null, att.statut, JSON.stringify(ligne), t); agenda.set(ev.id, ligne) }
         // Séances : une par client attribué ; les clients retirés du titre perdent la leur.
-        for (const s of seancesDe(ev.id)) if (!ids.includes(s.clientId)) disparition(s, false)
+        for (const s of seancesDe(ev.id)) if (!ids.includes(s.clientId)) retirer(s)
         if (ev.journee) { if (ids.length) b.journees++; continue } // journée entière : affichée dans l'Agenda, pas de séance (heure inconnue)
         for (const clientId of ids) {
           const client = parId.get(clientId)
