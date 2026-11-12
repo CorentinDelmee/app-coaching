@@ -83,7 +83,7 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
    */
   function appliquer(evenements, { complet = false, fen = null } = {}) {
     const t = now()
-    const b = { evenements: 0, crees: 0, modifies: 0, supprimes: 0, annules: 0, jumelles: 0, journees: 0 }
+    const b = { evenements: 0, crees: 0, modifies: 0, supprimes: 0, annules: 0, jumelles: 0, journees: 0, effaceesParLeCoach: 0 }
     db.exec('BEGIN IMMEDIATE')
     try {
       const clients = db.prepare("SELECT id, nom, tarif, lieu_defaut FROM profiles WHERE role = 'client'").all()
@@ -146,10 +146,17 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
           ...(att.candidats ? { candidats: att.candidats } : {}),
           ...(aVerifier ? { aVerifier } : {})
         }
-        if (JSON.stringify(agenda.get(ev.id)) !== JSON.stringify(ligne)) { ecrireAgenda.run(ev.id, ids[0] ?? null, att.statut, JSON.stringify(ligne), t); agenda.set(ev.id, ligne) }
-        // Séances : une par client attribué ; les clients retirés du titre perdent la leur.
+        // Clients pour qui la synchro a déjà créé une séance (marque gardée dans la ligne de l'agenda) : si la séance a disparu,
+        // c'est que le coach (ou le MCP) l'a supprimée -> pas recréée tant que l'événement existe (audit 4).
+        const crees = new Set([...(agenda.get(ev.id)?.crees ?? []), ...seancesDe(ev.id).map((s) => s.clientId)])
+        const ecrireLigne = () => {
+          const l = { ...ligne, ...(crees.size ? { crees: [...crees].sort() } : {}) }
+          if (JSON.stringify(agenda.get(ev.id)) !== JSON.stringify(l)) { ecrireAgenda.run(ev.id, ids[0] ?? null, att.statut, JSON.stringify(l), t); agenda.set(ev.id, l) }
+        }
+        // Séances : une par client attribué ; les clients retirés du titre perdent la leur (et leur marque).
         for (const s of seancesDe(ev.id)) if (!ids.includes(s.clientId)) retirer(s)
-        if (ev.journee) { if (ids.length) b.journees++; continue } // journée entière : affichée dans l'Agenda, pas de séance (heure inconnue)
+        for (const c of [...crees]) if (!ids.includes(c)) crees.delete(c)
+        if (ev.journee) { if (ids.length) b.journees++; ecrireLigne(); continue } // journée entière : affichée dans l'Agenda, pas de séance (heure inconnue)
         for (const clientId of ids) {
           const client = parId.get(clientId)
           const id = `google:${ev.id}:${clientId}`
@@ -158,15 +165,17 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
           const synchro = { ...cible, finMs: m.finMs }
           const avant = google.get(id)
           if (!avant) {
+            if (crees.has(clientId)) { b.effaceesParLeCoach++; continue }
             if (jumelle(clientId, m)) { b.jumelles++; continue }
             const s = { id, clientId, ...cible, tarif: client.tarif ?? 0, source: 'google', googleId: ev.id, titre: ligne.titre, lieuTexte, partagee: ids.length > 1, synchro }
-            ecrireSeance.run(id, clientId, JSON.stringify(s)); google.set(id, s); b.crees++
+            ecrireSeance.run(id, clientId, JSON.stringify(s)); google.set(id, s); b.crees++; crees.add(clientId)
             continue
           }
           const apres = { ...avant, titre: ligne.titre, lieuTexte, partagee: ids.length > 1, synchro }
           for (const k of CHAMPS_SUIVIS) if (avant[k] === avant.synchro?.[k]) apres[k] = cible[k] // champ non modifié à la main : suit Google
           if (JSON.stringify(apres) !== JSON.stringify(avant)) { ecrireSeance.run(id, clientId, JSON.stringify(apres)); google.set(id, apres); b.modifies++ }
         }
+        ecrireLigne()
       }
       if (complet && fen) {
         // Disparus de Google (supprimés définitivement ou sortis de la fenêtre) : seulement dans la fenêtre lue.

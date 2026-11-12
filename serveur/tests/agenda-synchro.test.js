@@ -80,6 +80,18 @@ describe('synchroniser', () => {
     expect(compte(await synchro.synchroniser())).toEqual(zero) // et toujours stable
   })
 
+  it('audit 4 : séance Google supprimée par le coach ou le MCP : pas recréée tant que l\'événement existe', async () => {
+    await synchro.synchroniser()
+    await store.supprimer('seancesCoaching', 'google:e-fab:fabien')
+    expect(await synchro.synchroniser()).toMatchObject({ crees: 0, effaceesParLeCoach: 1 })
+    expect((await seances())['google:e-fab:fabien']).toBeUndefined()
+    expect(synchro.attribuer('Coaching Fabien', ['fabien'])).toMatchObject({ crees: 0 }) // même par une attribution
+    expect((await seances())['google:e-fab:fabien']).toBeUndefined()
+    // Événement supprimé puis recréé dans Google (nouvel id) : nouvelle séance.
+    evenements[2] = { ...evenements[2], id: 'e-fab-2' }
+    expect(await synchro.synchroniser()).toMatchObject({ crees: 1 })
+  })
+
   it('heure changée à la main : gardée même si Google change', async () => {
     await synchro.synchroniser()
     const g = (await seances())['google:e-guil:guillaume']

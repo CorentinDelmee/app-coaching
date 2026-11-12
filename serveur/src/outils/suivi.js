@@ -148,7 +148,7 @@ export function outilsSuivi(ctx) {
         return { id: m.id, clientId: m.clientId, date: m.date, heure: m.heure, lieu: m.lieu, statut: m.statut, tarif: m.tarif }
       }, { mutation: true }),
 
-    supprimer_seance_coaching: def('Supprime définitivement une séance de coaching, EN DEUX TEMPS. 1er appel (sans jeton) : renvoie un résumé et un jeton, ne supprime rien. 2e appel avec le jeton : supprime. Ne rappelle avec le jeton qu\'après accord explicite du coach. (Pour garder une trace, préfère modifier_seance_coaching avec statut « annulee ».)',
+    supprimer_seance_coaching: def('Supprime définitivement une séance de coaching, EN DEUX TEMPS. 1er appel (sans jeton) : renvoie un résumé et un jeton, ne supprime rien. 2e appel avec le jeton : supprime. Ne rappelle avec le jeton qu\'après accord explicite du coach. (Pour garder une trace, préfère modifier_seance_coaching avec statut « annulee ».) Séance venue de Google Agenda (id « google:… ») : elle n\'est pas recréée par la synchro tant que l\'événement existe dans l\'agenda ; pour l\'enlever pour de bon, supprime aussi l\'événement dans Google Agenda.',
       z.object({ seanceId: ref('Id de la séance de coaching'), client: ref('Nom, identifiant ou id du client').optional(), jeton }).strict(),
       async ({ seanceId, client, jeton: j }) => {
         const s = await seanceDe(seanceId, client)
