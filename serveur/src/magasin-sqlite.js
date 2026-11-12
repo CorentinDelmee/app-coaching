@@ -9,11 +9,13 @@ import { RACINE_SERVEUR } from './config.js'
 
 // 2 : fiche du profil (JSON réservé au coach : contact, notes, source d'import ; retirée des réponses aux clients, voir app-http.js).
 // 3 : colonne `version` (concurrence optimiste, src/data/versions.js) ; les lignes existantes partent de 1, rien n'est réécrit.
+// 4 : alias de l'agenda Google (titre normalisé -> clients), retenus quand le coach attribue un événement (agenda-synchro.js).
 const TABLES_VERSIONNEES = [...ENTITES_VERSIONNEES].map((e) => ENTITES[e].table)
 const MIGRATIONS = [
   () => readFileSync(join(RACINE_SERVEUR, 'schema.sql'), 'utf8'),
   () => 'ALTER TABLE profiles ADD COLUMN fiche TEXT;',
-  () => TABLES_VERSIONNEES.map((t) => `ALTER TABLE ${t} ADD COLUMN version INTEGER NOT NULL DEFAULT 1;`).join('\n')
+  () => TABLES_VERSIONNEES.map((t) => `ALTER TABLE ${t} ADD COLUMN version INTEGER NOT NULL DEFAULT 1;`).join('\n'),
+  () => 'CREATE TABLE IF NOT EXISTS agenda_alias (cle TEXT PRIMARY KEY, client_ids TEXT NOT NULL, cree_le INTEGER NOT NULL);'
 ]
 export const VERSION_SCHEMA = MIGRATIONS.length
 

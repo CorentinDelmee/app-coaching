@@ -188,3 +188,56 @@ export function seancesPourClient(evenementsEvalues, clientId, tarif, now) {
       source: 'google', titre: e.titre
     }))
 }
+
+// --- Reconnaissance des clients dans un titre (synchro serveur, docs/CONTRAT-AGENDA-GOOGLE.md partie B) ------------
+
+/** Le titre est-il un coaching ? « Coaching … » au début, insensible à la casse et aux accents. */
+export const estCoaching = (titre) => /^coaching(?![a-z0-9])/.test(normaliser(titre))
+
+// Mots du titre après « Coaching » : parenthèses, ponctuation et « & » deviennent des espaces.
+const motsDuTitre = (titre) => normaliser(titre).replace(/^coaching/, '').replace(/[^a-z0-9 ]+/g, ' ').split(' ').filter(Boolean)
+
+/** Clé d'alias d'un titre : « Coaching (Caroline  Mion) » et « coaching caroline mion » donnent la même clé. */
+export const cleTitre = (titre) => ['coaching', ...motsDuTitre(titre)].join(' ')
+
+/**
+ * Reconnaît le ou les clients d'un titre « Coaching … ». Jamais de devinette :
+ * 1. alias retenu par le coach (clé du titre) ;
+ * 2. nom complet (tous les mots du nom présents, ordre indifférent) ;
+ * 3. prénom seul (1er mot du nom) s'il est porté par un seul client, actif ou archivé ;
+ * les autres mots (« domicile », « Ownsport », « et ») sont ignorés. Un prénom porté par 2 clients -> ambigu.
+ * @param {string} titre
+ * @param {{id:string, nom:string}[]} clients TOUS les clients (actifs et archivés)
+ * @param {Record<string,string[]>} alias clé du titre -> ids de clients
+ * @returns {{statut:'attribue', clientIds:string[]} | {statut:'ambigu', candidats:string[]} | {statut:'inconnu'} | {statut:'sans-nom'}}
+ */
+export function reconnaitreClients(titre, clients, alias = {}) {
+  const ids = new Set(clients.map((c) => c.id))
+  const parAlias = (alias[cleTitre(titre)] ?? []).filter((id) => ids.has(id))
+  if (parAlias.length) return { statut: 'attribue', clientIds: parAlias }
+  let reste = motsDuTitre(titre)
+  if (!reste.length) return { statut: 'sans-nom' }
+  const motsDe = (c) => normaliser(c.nom).split(' ').filter(Boolean)
+  const trouves = []
+  // Noms complets, du plus long au plus court (« Christine Didier Martin » avant « Christine Martin »).
+  const complets = clients.filter((c) => motsDe(c).length >= 2 && motsDe(c).every((m) => reste.includes(m)))
+  const parNom = new Map()
+  for (const c of complets) { const k = motsDe(c).sort().join(' '); parNom.set(k, [...(parNom.get(k) ?? []), c]) }
+  for (const [k, liste] of [...parNom].sort((a, b) => b[0].split(' ').length - a[0].split(' ').length)) {
+    const mots = k.split(' ')
+    if (!mots.every((m) => reste.includes(m))) continue // déjà consommés par un nom plus long
+    if (liste.length > 1) return { statut: 'ambigu', candidats: liste.map((c) => c.id) } // homonymes complets
+    trouves.push(liste[0].id)
+    for (const m of mots) reste.splice(reste.indexOf(m), 1)
+  }
+  // Prénoms seuls parmi les mots restants.
+  const candidats = []
+  for (const mot of reste) {
+    const memePrenom = clients.filter((c) => motsDe(c)[0] === mot && !trouves.includes(c.id))
+    if (memePrenom.length === 1) trouves.push(memePrenom[0].id)
+    else if (memePrenom.length > 1) candidats.push(...memePrenom.map((c) => c.id))
+  }
+  if (candidats.length) return { statut: 'ambigu', candidats: [...new Set([...trouves, ...candidats])] }
+  if (trouves.length) return { statut: 'attribue', clientIds: [...new Set(trouves)] }
+  return { statut: 'inconnu' }
+}

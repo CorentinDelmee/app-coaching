@@ -365,7 +365,8 @@ export function creerService({ backend, biblio, config = {}, now = () => Date.no
       const coaching = (await api.seancesCoaching.lister({ clientId: c.id })).filter((s) => s.date >= debut && s.date <= fin && s.statut !== 'annulee')
       return {
         client: c.nom, du: debut, au: fin,
-        coaching: coaching.sort((a, b) => a.date.localeCompare(b.date)).map(({ date, heure, lieu, statut }) => ({ date, heure, lieu, statut })),
+        // Les coachings de Google Agenda sont en base (synchro serveur/src/agenda-synchro.js) : marqués source « google ».
+        coaching: coaching.sort((a, b) => `${a.date}${a.heure}`.localeCompare(`${b.date}${b.heure}`)).map(({ date, heure, lieu, statut, source, duree }) => ({ date, heure, lieu, statut, ...(source === 'google' ? { source, duree } : {}) })),
         seancesProgrammees: programmees.sort((a, b) => a.date.localeCompare(b.date))
       }
     },

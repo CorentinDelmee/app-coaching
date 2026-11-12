@@ -523,7 +523,7 @@ onBeforeUnmount(() => {
               <p class="st-clients-paye">{{ paye.libelle }}</p>
               <ul v-if="seancesTriees.length" class="st-clients-lignes">
                 <li v-for="s in seancesTriees" :key="s.id" :class="`is-${s.statut}`">
-                  <div><b>{{ libelleSeance(s) }}</b><small>{{ s.tarif }} €</small></div>
+                  <div><b>{{ libelleSeance(s) }}</b><small>{{ s.tarif }} €<template v-if="s.source === 'google'"> · Google Agenda</template></small></div>
                   <select :value="s.statut" :aria-label="`Statut du rendez-vous du ${dateFr(s.date)}`" @change="changerStatut(s, $event.target.value)">
                     <option value="prevue">Prévue</option><option value="faite">Faite</option><option value="annulee">Annulée</option>
                   </select>

@@ -12,4 +12,6 @@ if (manquantes.length) {
 const config = lireConfig()
 if (config.cleApi.length < 32) console.warn('Attention : COACH_API_KEY absente ou trop courte : toutes les requêtes protégées seront refusées (401).')
 const app = await assembler(config)
+// Synchro Google Agenda : au démarrage puis toutes les 15 min (AGENDA_SYNCHRO=0 la coupe, ex. en test ou sans API réservation).
+if (app.agendaSynchro && process.env.AGENDA_SYNCHRO !== '0' && config.resaCle) app.agendaSynchro.demarrer()
 creerServeurRest(app).listen(config.port, config.hote, () => console.log(`API sur http://${config.hote}:${config.port} (stockage : ${app.backend.mode}${app.appHttp ? ', API app active' : ''})`))

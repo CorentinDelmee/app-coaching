@@ -34,6 +34,19 @@ export const CONSEIL_ALERTE = {
   ambigu: 'Plusieurs clients correspondent : ajoutez un identifiant court (ex. #md2).',
   'sans-nom': 'Ajoutez le prénom et le nom du client après « Coaching ».'
 }
+/** Bilan d'une synchro serveur en une phrase : « Synchronisé : 12 coachings lus, 3 séances créées, 1 modifiée · 2 titres à attribuer. » */
+export function libelleBilan(b) {
+  if (!b) return ''
+  const s = (n, un, plusieurs) => `${n} ${n > 1 ? plusieurs : un}`
+  const parties = [
+    b.crees && s(b.crees, 'séance créée', 'séances créées'), b.modifies && s(b.modifies, 'modifiée', 'modifiées'),
+    b.supprimes && s(b.supprimes, 'supprimée', 'supprimées'), b.annules && s(b.annules, 'annulée', 'annulées')
+  ].filter(Boolean)
+  const lus = s(b.evenements ?? 0, 'coaching lu', 'coachings lus')
+  const aAttribuer = b.aAttribuer ? ` · ${s(b.aAttribuer, 'titre', 'titres')} à attribuer` : ''
+  return `Synchronisé : ${lus}, ${parties.length ? parties.join(', ') : 'rien de nouveau'}${aAttribuer}.`
+}
+
 export function libelleSynchro(t) {
   if (!t) return 'Jamais synchronisé'
   const d = new Date(t)

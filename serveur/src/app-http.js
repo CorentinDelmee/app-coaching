@@ -10,6 +10,7 @@ import { idYoutube } from '../../src/domain/video.js'
 import { CHAMPS_COACH, NIVEAUX, appliquerPatch, filtrer, indexUsage, nettoyerPut, presenter, schemaCreation, schemaPatch } from './exercices.js'
 import { slug } from './util.js'
 import { versionDe } from '../../src/data/versions.js'
+import { creerSynchroAgenda } from './agenda-synchro.js'
 
 const SESSION_MS = 12 * 3600e3
 // « Rester connecté » (coché par défaut, demande de Corentin du 2026-11-07) : 30 jours, prolongés à chaque usage
@@ -202,7 +203,8 @@ async function lireJson(req) {
  * Crée le gestionnaire des routes /api/app/*. Retourne (req, res) => Promise<boolean> (vrai si la route est traitée).
  * config : { production, sessionSecret, appOrigin, resaUrl, resaCle, fichiersDir, confianceProxy }
  */
-export function creerAppHttp({ db, store, config, journal = null, biblio = null, now = () => Date.now(), fetchFn = (...a) => globalThis.fetch(...a) }) {
+export function creerAppHttp({ db, store, config, journal = null, biblio = null, now = () => Date.now(), fetchFn = (...a) => globalThis.fetch(...a), agendaSynchro = null }) {
+  const synchroAgenda = agendaSynchro ?? creerSynchroAgenda({ db, config, fetchFn, now })
   if (!config.sessionSecret || config.sessionSecret.length < 32) throw new Error('SESSION_SECRET manquant ou trop court (32 caractères minimum)')
   const secure = !!config.production
   const optsCookie = `HttpOnly; SameSite=Strict; Path=/${secure ? '; Secure' : ''}`
@@ -278,11 +280,14 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
   // Les notes du coach (programmes.notes) sont privées : jamais renvoyées à un client.
   // Idem pour la fiche du profil (profils.fiche : contact, notes du coach, source d'import).
   // Idem pour les notes privées d'un exercice.
+  // Séances venues de Google Agenda : titre, id Google et copie de synchro jamais chez le client (le titre peut nommer
+  // un autre client ou porter une note du coach) ; lieu Google seulement si la séance ne concerne que lui (audit agenda 1 et 10).
   const pourLecteur = (entite, o, u) => {
-    const prives = { programmes: ['notes'], profils: ['fiche'], exercices: CHAMPS_COACH }[entite]
+    const prives = { programmes: ['notes'], profils: ['fiche'], exercices: CHAMPS_COACH, seancesCoaching: ['titre', 'googleId', 'synchro', 'partagee'] }[entite]
     if (u.role === 'coach' || !prives || !o) return o
     const reste = { ...o }
     for (const k of prives) delete reste[k]
+    if (entite === 'seancesCoaching' && o.partagee) delete reste.lieuTexte
     return reste
   }
   async function entites(req, res, u, entite, id) {
@@ -581,19 +586,34 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
     throw new Erreur(405, 'methode')
   }
 
-  // ---------- Agenda (lu en base, rempli par la synchro du soir) ----------
-  function agenda(req, res, u, quoi) {
+  // ---------- Agenda Google (rempli par la synchro : serveur/src/agenda-synchro.js, docs/CONTRAT-AGENDA-GOOGLE.md) ----------
+  async function agenda(req, res, u, quoi) {
+    const coach = u.role === 'coach'
     if (req.method === 'GET' && quoi === 'evenements') {
-      const lignes = u.role === 'coach'
-        ? db.prepare('SELECT data FROM seances_agenda').all()
-        : db.prepare('SELECT data FROM seances_agenda WHERE client_id = ?').all(u.profil_id)
-      return envoyer(res, 200, { evenements: lignes.map((l) => JSON.parse(l.data)) })
+      const lignes = db.prepare('SELECT client_id, statut_attribution, data FROM seances_agenda').all()
+      if (coach) return envoyer(res, 200, { evenements: lignes.map((l) => JSON.parse(l.data)) })
+      // Client : seulement les événements où il figure, sans le titre (qui peut nommer un autre client).
+      const siens = lignes.filter((l) => l.statut_attribution === 'attribue').map((l) => ({ client: l.client_id, ...JSON.parse(l.data) }))
+        .filter((e) => (e.clientIds ?? [e.client]).includes(u.profil_id)).map(({ client: _c, ...e }) => e)
+      return envoyer(res, 200, { evenements: siens.map((e) => ({ // liste blanche : ni titre, ni autres clients, ni marques internes ; lieu Google seulement s'il est seul
+        ...Object.fromEntries(['id', 'debut', 'fin', 'journee', 'date', 'heure', 'finHeure', 'debutMs', 'lieu', 'statut'].filter((k) => k in e).map((k) => [k, e[k]])),
+        ...((e.clientIds?.length ?? 1) === 1 && e.lieuTexte ? { lieuTexte: e.lieuTexte } : {}), clientId: u.profil_id
+      })) })
     }
     if (req.method === 'GET' && quoi === 'derniere-synchro') {
-      const d = db.prepare('SELECT derniere_synchro FROM agenda_synchro WHERE id = 1').get()?.derniere_synchro
-      return envoyer(res, 200, { derniereSynchro: d ? new Date(Number(d)).toISOString() : null })
+      const { derniereSynchro, bilan } = synchroAgenda.dernierBilan()
+      return envoyer(res, 200, coach ? { derniereSynchro, bilan } : { derniereSynchro })
     }
-    if (req.method === 'POST' && quoi === 'synchroniser') return envoyer(res, 202, { message: 'La synchronisation se fait chaque soir à 20 h.' })
+    if (!coach) throw new Erreur(403, 'interdit')
+    const traduire = (e) => { if (e?.statut && e?.code) throw new Erreur(e.statut, e.code); throw e }
+    if (req.method === 'POST' && quoi === 'synchroniser') return envoyer(res, 200, { bilan: await synchroAgenda.synchroniser().catch(traduire) })
+    if (req.method === 'GET' && quoi === 'a-attribuer') return envoyer(res, 200, { groupes: synchroAgenda.aAttribuer() })
+    if (req.method === 'POST' && quoi === 'attribuer') {
+      const { titre, clientIds } = await lireJson(req)
+      let bilan
+      try { bilan = synchroAgenda.attribuer(titre, clientIds) } catch (e) { traduire(e) }
+      return envoyer(res, 200, { bilan })
+    }
     throw new Erreur(404, 'route_inconnue')
   }
 
@@ -659,7 +679,7 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
       if (mE) { await entites(req, res, u, decodeURIComponent(mE[1]), mE[2] === undefined ? undefined : decodeURIComponent(mE[2])); return true }
       if (route === '/fichiers') { await fichiers(req, res, u, url); return true }
       const mA = /^\/agenda\/([a-z-]+)$/.exec(route)
-      if (mA) { agenda(req, res, u, mA[1]); return true }
+      if (mA) { await agenda(req, res, u, mA[1]); return true }
       if (route === '/reservations' || route.startsWith('/reservations/')) {
         if (!coach) throw new Erreur(403, 'interdit')
         await relaisResa(req, res, route.slice('/reservations'.length), url)

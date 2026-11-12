@@ -36,6 +36,14 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
     throw erreurHttp(res.status, corpsErreur?.erreur || '', contexte)
   }
 
+  /** Erreurs de la synchro Google en messages lisibles. */
+  function erreurAgenda(e) {
+    if (e?.message === 'google_lecture_non_autorisee') return new ErreurData('GOOGLE_AUTORISATION', 'Autorisation Google à renouveler : l’agenda ne peut plus être lu. Rien n’a été supprimé.')
+    if (e?.message === 'google_indisponible') return new ErreurData('ECHEC', 'Google Agenda ne répond pas. Réessaie dans un instant.')
+    if (e?.message === 'non_configure') return new ErreurData('ECHEC', 'La lecture de Google Agenda n’est pas configurée sur le serveur.')
+    return e
+  }
+
   function erreurHttp(statut, message, contexte) {
     if (statut === 401) {
       profilCache = null
@@ -165,7 +173,10 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
         return (await appel('POST', `/exercices/${enc(id)}/valider-video`)).item
       }
     },
+    // Google Agenda : la synchro est faite par le serveur (serveur/src/agenda-synchro.js), qui écrit les coachings
+    // dans les séances de coaching : l'app n'a plus à fusionner le flux Google (seancesEnBase).
     agenda: {
+      seancesEnBase: true,
       async evenements() {
         const r = await appel('GET', '/agenda/evenements')
         return [...(r?.evenements ?? [])].sort((a, b) => a.debutMs - b.debutMs)
@@ -176,10 +187,23 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
         if (v == null) return null
         return typeof v === 'number' ? v : (Date.parse(v) || null)
       },
-      // 202 : la synchro est immédiate ; on renvoie le message du serveur pour l'afficher.
+      /** { derniereSynchro (ms ou null), bilan (dernier bilan, réussi ou non) } */
+      async synchroEtat() {
+        const r = await appel('GET', '/agenda/derniere-synchro')
+        const v = r?.derniereSynchro
+        return { derniereSynchro: v == null ? null : typeof v === 'number' ? v : (Date.parse(v) || null), bilan: r?.bilan ?? null }
+      },
+      // Synchro immédiate : renvoie le bilan ; 503 « autorisation Google » -> code GOOGLE_AUTORISATION (message dédié à l'écran).
       async synchroniser() {
-        const r = await appel('POST', '/agenda/synchroniser')
-        return { message: r?.message || '' }
+        try {
+          return (await appel('POST', '/agenda/synchroniser'))?.bilan ?? {}
+        } catch (e) { throw erreurAgenda(e) }
+      },
+      async aAttribuer() {
+        return (await appel('GET', '/agenda/a-attribuer'))?.groupes ?? []
+      },
+      async attribuer(titre, clientIds) {
+        return (await appel('POST', '/agenda/attribuer', { corps: { titre, clientIds } }))?.bilan ?? {}
       }
     },
     // Réservations du site vitrine (coach uniquement), relayées par le serveur.
