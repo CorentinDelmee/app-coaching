@@ -218,6 +218,7 @@ describe('attribuer', () => {
     expect(b).toMatchObject({ cle: 'coaching bertrand', clientIds: ['sylvain'], crees: 1 })
     expect((await seances())['google:e-inconnu:sylvain']).toMatchObject({ date: '2026-11-14', statut: 'prevue' })
     expect(synchro.aAttribuer()).toEqual([])
+    expect(synchro.dernierBilan().bilan).toMatchObject({ ok: true, aAttribuer: 0 }) // la ligne « Dernière synchro » suit l'attribution
     expect(compte(await synchro.synchroniser())).toEqual(zero)
   })
   it('refuse un client inconnu, une liste vide ou un titre qui n\'est pas un coaching', () => {

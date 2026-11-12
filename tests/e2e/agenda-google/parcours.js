@@ -35,6 +35,8 @@ async page => {
     await page.locator('.st-ag-msg--ok', { hasText: 'attribué' }).waitFor({ timeout: 8000 })
     ok((await seances('denis')).length === 2, 'attribuer : 2 séances créées pour Denis Leroy (passée + à venir)')
     ok((await seances('denism')).length === 0, 'attribuer : rien pour l\'autre Denis')
+    await page.locator('.st-ag-ok', { hasText: 'Tous les événements' }).waitFor({ timeout: 5000 })
+    ok(!(await page.locator('[data-testid="bilan-synchro"]').textContent()).includes('à attribuer'), 'attribuer : la ligne « Dernière synchro » ne compte plus de titre à attribuer')
   } else ok((await seances('denis')).length === 2, 'déjà attribué au passage précédent : 2 séances pour Denis Leroy')
   await page.locator('.st-ag-ok', { hasText: 'Tous les événements' }).waitFor({ timeout: 5000 })
   ok(true, 'plus rien à attribuer')

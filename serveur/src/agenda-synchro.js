@@ -261,7 +261,11 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
     db.prepare('INSERT INTO agenda_alias (cle, client_ids, cree_le) VALUES (?, ?, ?) ON CONFLICT(cle) DO UPDATE SET client_ids = excluded.client_ids').run(cle, JSON.stringify(ids), now())
     const evenements = [...lignesAgenda().values()].filter((l) => cleTitre(l.titre) === cle)
       .map((l) => ({ id: l.id, titre: l.titre, debut: l.debut, fin: l.fin, journee: l.journee, lieu: l.lieuTexte, maj: l.maj, annule: false }))
-    return { cle, clientIds: ids, ...appliquer(evenements) }
+    const r = appliquer(evenements)
+    // Le bilan affiché (« · 1 titre à attribuer ») suit l'attribution, sans attendre la synchro suivante.
+    const { bilan } = dernierBilan()
+    if (bilan?.ok) db.prepare('UPDATE agenda_synchro SET bilan = ? WHERE id = 1').run(JSON.stringify({ ...bilan, aAttribuer: r.aAttribuer }))
+    return { cle, clientIds: ids, ...r }
   }
 
   function dernierBilan() {
