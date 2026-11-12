@@ -191,7 +191,8 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
       if (complet && fen) {
         // Disparus de Google (supprimés définitivement ou sortis de la fenêtre) : seulement dans la fenêtre lue.
         const dedans = (date) => date >= fen.depuis && date <= fen.jusqua
-        for (const [id, l] of agenda) if (!vus.has(id) && dedans(l.date)) { supprimerAgenda.run(id); agenda.delete(id) }
+        // Vieilles lignes sans date ni titre (d'avant la synchro serveur) : purgées (audit 10).
+        for (const [id, l] of agenda) if (!vus.has(id) && (dedans(l.date) || !l.date || !l.titre)) { supprimerAgenda.run(id); agenda.delete(id) }
         for (const s of [...google.values()]) if (!vus.has(s.googleId) && dedans(s.synchro?.date ?? s.date)) disparition(s, false)
       }
       b.aAttribuer = groupesAAttribuer(agenda.values()).length

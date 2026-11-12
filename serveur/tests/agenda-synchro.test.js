@@ -196,6 +196,13 @@ describe('synchroniser', () => {
     await expect(synchro.synchroniser()).rejects.toMatchObject({ code: 'google_indisponible', statut: 502 })
   })
 
+  it('audit 10 : vieilles lignes d\'agenda sans date ni titre purgées à la synchro', async () => {
+    db.prepare("INSERT INTO seances_agenda (id, client_id, statut_attribution, data) VALUES ('vieille', 'fabien', 'attribue', '{\"id\":\"vieille\"}')").run()
+    await synchro.synchroniser()
+    expect(db.prepare("SELECT 1 FROM seances_agenda WHERE id = 'vieille'").get()).toBeUndefined()
+    expect(db.prepare('SELECT count(*) n FROM seances_agenda').get().n).toBe(5)
+  })
+
   it('jamais deux synchros en même temps : la 2e reçoit le résultat de la 1re', async () => {
     const [a, b] = await Promise.all([synchro.synchroniser(), synchro.synchroniser()])
     expect(a).toBe(b)
