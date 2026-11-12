@@ -8,7 +8,7 @@ Choix de Corentin : (1) réutiliser l'accès Google de l'API réservation (coach
 
 ## A. API réservation (dépôt coaching-domicile, dossier reservation/)
 
-- Scope ajouté : `https://www.googleapis.com/auth/calendar.events.readonly` (en plus des scopes actuels).
+- Scope ajouté : `https://www.googleapis.com/auth/calendar.events.owned.readonly` (agendas possédés seulement ; corrigé après audit).
   Le jeton actuel ne l'a pas : Corentin doit ré-autoriser une fois (procédure écrite dans
   reservation/deploiement/LISEZMOI.md, courte, chemins complets).
 - Nouvelle route admin (même garde `x-resa-admin-key` que les autres routes admin) :
@@ -16,7 +16,7 @@ Choix de Corentin : (1) réutiliser l'accès Google de l'API réservation (coach
 `GET /api/resa/admin/evenements?depuis=<ISO>&jusqua=<ISO>`
 - période ≤ 400 jours, `depuis < jusqua`, sinon 400 `{"erreur":"periode_invalide"}`
 - appelle Calendar v3 `events.list` sur l'agenda principal, `singleEvents=true`, `orderBy=startTime`,
-  `showDeleted=true`, toutes les pages (maxResults 2500), filtre `q` NON utilisé (on filtre côté app).
+  `showDeleted=true`, au plus 20 pages (maxResults 2500, au-delà 502). Ne renvoie QUE les titres commençant par « Coaching » (casse/accents ignorés) + tous les annulés (titre et lieu vidés si non « Coaching »). (minimisation, après audit)
 - 200 :
 ```json
 { "evenements": [
