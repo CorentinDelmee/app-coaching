@@ -280,11 +280,14 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
   // Les notes du coach (programmes.notes) sont privées : jamais renvoyées à un client.
   // Idem pour la fiche du profil (profils.fiche : contact, notes du coach, source d'import).
   // Idem pour les notes privées d'un exercice.
+  // Séances venues de Google Agenda : titre, id Google et copie de synchro jamais chez le client (le titre peut nommer
+  // un autre client ou porter une note du coach) ; lieu Google seulement si la séance ne concerne que lui (audit agenda 1 et 10).
   const pourLecteur = (entite, o, u) => {
-    const prives = { programmes: ['notes'], profils: ['fiche'], exercices: CHAMPS_COACH }[entite]
+    const prives = { programmes: ['notes'], profils: ['fiche'], exercices: CHAMPS_COACH, seancesCoaching: ['titre', 'googleId', 'synchro', 'partagee'] }[entite]
     if (u.role === 'coach' || !prives || !o) return o
     const reste = { ...o }
     for (const k of prives) delete reste[k]
+    if (entite === 'seancesCoaching' && o.partagee) delete reste.lieuTexte
     return reste
   }
   async function entites(req, res, u, entite, id) {

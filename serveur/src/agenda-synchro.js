@@ -143,11 +143,11 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
           const avant = google.get(id)
           if (!avant) {
             if (jumelle(clientId, m)) { b.jumelles++; continue }
-            const s = { id, clientId, ...cible, tarif: client.tarif ?? 0, source: 'google', googleId: ev.id, titre: ligne.titre, lieuTexte, synchro }
+            const s = { id, clientId, ...cible, tarif: client.tarif ?? 0, source: 'google', googleId: ev.id, titre: ligne.titre, lieuTexte, partagee: ids.length > 1, synchro }
             ecrireSeance.run(id, clientId, JSON.stringify(s)); google.set(id, s); b.crees++
             continue
           }
-          const apres = { ...avant, titre: ligne.titre, lieuTexte, synchro }
+          const apres = { ...avant, titre: ligne.titre, lieuTexte, partagee: ids.length > 1, synchro }
           for (const k of CHAMPS_SUIVIS) if (avant[k] === avant.synchro?.[k]) apres[k] = cible[k] // champ non modifié à la main : suit Google
           if (JSON.stringify(apres) !== JSON.stringify(avant)) { ecrireSeance.run(id, clientId, JSON.stringify(apres)); google.set(id, apres); b.modifies++ }
         }
