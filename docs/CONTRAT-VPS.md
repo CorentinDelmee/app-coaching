@@ -87,16 +87,18 @@ Commit en français terminé par `Co-Authored-By: Claude Opus 5.5 <noreply@anthr
 - `GET /api/app/e/:entite` → `{items:[…]}` · `GET /api/app/e/:entite/:id` → `{item}` · `PUT` → `{item}` · `DELETE` → `{ok:true}`.
 - `POST /api/app/comptes` → 201 `{id}` · `POST /api/app/comptes/:identifiant/code` → `{ok:true}` · `POST /api/app/code` → `{ok:true}`.
 - `GET /api/app/agenda/evenements` → `{evenements:[{id, titre, debut, fin, journee, date, heure, finHeure, debutMs, lieu, lieuTexte, statut,
-  clientId?, clientIds?, clientNom?, candidats?}]}` (client : sans `titre`, `clientIds`, `clientNom`, `candidats`) ·
+  clientId?, clientIds?, clientNom?, candidats?}]}` (client : liste blanche id, debut, fin, journee, date, heure, finHeure, debutMs, lieu, statut, clientId ; `lieuTexte` seulement s'il est seul) ·
   `GET /api/app/agenda/derniere-synchro` → `{derniereSynchro: ISO|null, bilan}` (client : sans `bilan`).
 - Coach seulement (sinon 403 `interdit`) :
-  `POST /api/app/agenda/synchroniser` → 200 `{bilan:{ok:true, le, depuis, jusqua, evenements, crees, modifies, supprimes, annules, jumelles, journees, aAttribuer}}` ;
+  `POST /api/app/agenda/synchroniser` → 200 `{bilan:{ok:true, le, depuis, jusqua, evenements, crees, modifies, supprimes, annules, jumelles, journees, effaceesParLeCoach, aAttribuer}}` ;
   erreurs 503 `google_lecture_non_autorisee` (autorisation Google à renouveler, rien supprimé) | 503 `non_configure` | 502 `google_indisponible` | 502 `reservation_indisponible`.
   Une synchro déjà en cours : la requête attend et reçoit le même bilan.
-  `GET /api/app/agenda/a-attribuer` → `{groupes:[{cle, titre, statut:'inconnu'|'ambigu'|'sans-nom', nb, premier, dernier, candidats:[{id, nom, archive}]}]}` ·
+  `GET /api/app/agenda/a-attribuer` → `{groupes:[{cle, titre, statut:'inconnu'|'ambigu'|'sans-nom', nb, premier, dernier, candidats:[{id, nom, archive}], actuels:[{id, nom, archive}]}]}` (actuels : attribution gardée d'un titre déjà attribué devenu ambigu) ·
   `POST /api/app/agenda/attribuer` `{titre, clientIds:[1 à 6 ids]}` → 200 `{bilan:{cle, clientIds, evenements, crees, modifies, supprimes, …}}` ;
   400 `invalide` | 400 `client_inconnu`. L'alias (titre normalisé → clients) est retenu pour les synchros suivantes.
 - Séances créées par la synchro (entité `seancesCoaching`) : id `google:<id événement>:<clientId>`, `source:'google'`, `googleId`, `titre`,
-  `duree` (min), `lieuTexte`, `synchro` (valeurs écrites par la dernière synchro : un champ qui en diffère a été modifié à la main et n'est plus touché).
+  `duree` (min), `lieuTexte`, `partagee`, `synchro` (valeurs écrites par la dernière synchro : un champ qui en diffère a été modifié à la main et n'est plus touché).
+  Jamais renvoyés au client : `titre`, `googleId`, `synchro`, `partagee`, ni `lieuTexte` d'une séance partagée.
+  Séance Google supprimée par le coach ou le MCP : pas recréée tant que l'événement existe (marque `crees` dans la ligne d'agenda).
 - Erreurs : `{erreur: "<code>"}` avec le statut HTTP.
 **Écran Réservations** : lit `synchro_etat` (a_creer → « Ajout à votre agenda en cours », cree → « Dans votre agenda », a_supprimer → « Retrait de l'agenda en cours », supprime → rien).
