@@ -52,6 +52,7 @@ async function attribuer(g) {
     const b = await data.agenda.attribuer(g.titre, choix[g.cle])
     message.value = `« ${g.titre} » attribué : ${b.crees || 0} séance(s) ajoutée(s). Les prochains rendez-vous de ce titre suivront.`
     delete choix[g.cle]
+    await rafraichir() // compteurs du menu (alertes de l'agenda)
     await charger()
   } catch (e) {
     erreur.value = messageErreur(e)
@@ -64,8 +65,9 @@ async function charger() {
   try {
     agenda.value = await data.agenda.etat()
     if (serveur) {
-      groupes.value = await data.agenda.aAttribuer()
-      for (const g of groupes.value) if (!choix[g.cle]) choix[g.cle] = []
+      const liste = await data.agenda.aAttribuer()
+      for (const g of liste) { if (!choix[g.cle]) choix[g.cle] = []; if (!ajout[g.cle]) ajout[g.cle] = '' } // avant l'affichage : « Choisir… » sélectionné
+      groupes.value = liste
     }
     erreur.value = ''
   } catch (e) {

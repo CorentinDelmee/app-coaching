@@ -34,8 +34,9 @@ API réservation ──(OAuth Google, compte du coach)──> Google Agenda (occ
     · `DELETE /api/app/e/:entite/:id`. Codes : 400 invalide, 401, 403, 404.
   - Fichiers : `POST /api/app/fichiers?chemin=…` (corps binaire, ≤ 5 Mo, types image/jpeg|png|webp|pdf),
     `GET /api/app/fichiers?chemin=…` (contrôle d'accès identique à l'entité propriétaire), `DELETE`. Stockage `/var/lib/app-coaching/fichiers/`, chemins normalisés (pas de `..`).
-  - Agenda : `GET /api/app/agenda/evenements`, `GET /api/app/agenda/derniere-synchro` (lus en base) ;
-    `POST /api/app/agenda/synchroniser` → 202 `{"message":"La synchronisation se fait chaque soir à 20 h."}`.
+  - Agenda Google (synchro serveur, docs/CONTRAT-AGENDA-GOOGLE.md partie B) : `GET /api/app/agenda/evenements` (coach : tout ;
+    client : ses événements attribués, sans titre), `GET /api/app/agenda/derniere-synchro` ; coach seulement :
+    `POST /api/app/agenda/synchroniser` (synchrone), `GET /api/app/agenda/a-attribuer`, `POST /api/app/agenda/attribuer`.
   - Réservations (**coach uniquement**, relais vers l'API réservation, aucune donnée gardée ici) :
     `GET /api/app/reservations?statut=a_venir|passees|annulees` · `POST /api/app/reservations/:id/annuler` ·
     `GET /api/app/reservations/blocages` · `POST /api/app/reservations/blocages {debut, fin, motif}` · `DELETE /api/app/reservations/blocages/:id` ·
@@ -85,7 +86,17 @@ Commit en français terminé par `Co-Authored-By: Claude Opus 5.5 <noreply@anthr
 - `GET /api/app/moi`, `POST /api/app/connexion` → `{utilisateur:{id, identifiant, role, profil_id}}`.
 - `GET /api/app/e/:entite` → `{items:[…]}` · `GET /api/app/e/:entite/:id` → `{item}` · `PUT` → `{item}` · `DELETE` → `{ok:true}`.
 - `POST /api/app/comptes` → 201 `{id}` · `POST /api/app/comptes/:identifiant/code` → `{ok:true}` · `POST /api/app/code` → `{ok:true}`.
-- `GET /api/app/agenda/evenements` → `{evenements:[…]}` · `GET /api/app/agenda/derniere-synchro` → `{derniereSynchro: ISO|null}` ·
-  `POST /api/app/agenda/synchroniser` → 202 `{message}`.
+- `GET /api/app/agenda/evenements` → `{evenements:[{id, titre, debut, fin, journee, date, heure, finHeure, debutMs, lieu, lieuTexte, statut,
+  clientId?, clientIds?, clientNom?, candidats?}]}` (client : sans `titre`, `clientIds`, `clientNom`, `candidats`) ·
+  `GET /api/app/agenda/derniere-synchro` → `{derniereSynchro: ISO|null, bilan}` (client : sans `bilan`).
+- Coach seulement (sinon 403 `interdit`) :
+  `POST /api/app/agenda/synchroniser` → 200 `{bilan:{ok:true, le, depuis, jusqua, evenements, crees, modifies, supprimes, annules, jumelles, journees, aAttribuer}}` ;
+  erreurs 503 `google_lecture_non_autorisee` (autorisation Google à renouveler, rien supprimé) | 503 `non_configure` | 502 `google_indisponible` | 502 `reservation_indisponible`.
+  Une synchro déjà en cours : la requête attend et reçoit le même bilan.
+  `GET /api/app/agenda/a-attribuer` → `{groupes:[{cle, titre, statut:'inconnu'|'ambigu'|'sans-nom', nb, premier, dernier, candidats:[{id, nom, archive}]}]}` ·
+  `POST /api/app/agenda/attribuer` `{titre, clientIds:[1 à 6 ids]}` → 200 `{bilan:{cle, clientIds, evenements, crees, modifies, supprimes, …}}` ;
+  400 `invalide` | 400 `client_inconnu`. L'alias (titre normalisé → clients) est retenu pour les synchros suivantes.
+- Séances créées par la synchro (entité `seancesCoaching`) : id `google:<id événement>:<clientId>`, `source:'google'`, `googleId`, `titre`,
+  `duree` (min), `lieuTexte`, `synchro` (valeurs écrites par la dernière synchro : un champ qui en diffère a été modifié à la main et n'est plus touché).
 - Erreurs : `{erreur: "<code>"}` avec le statut HTTP.
 **Écran Réservations** : lit `synchro_etat` (a_creer → « Ajout à votre agenda en cours », cree → « Dans votre agenda », a_supprimer → « Retrait de l'agenda en cours », supprime → rien).

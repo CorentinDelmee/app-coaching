@@ -40,11 +40,19 @@ API REST (HTTP) ────┘        validation = celle de l'app (src/data/com
 | `SESSION_SECRET` | ≥ 32 car. : signature HMAC du cookie de session (12 h). |
 | `APP_ORIGIN` | Origine exacte de l'app (ex. `https://app.domaine.fr`) : exigée en `Origin` sur toute requête non-GET (CSRF). |
 | `FICHIERS_DIR` | Dossier des photos/PDF (`/var/lib/app-coaching/fichiers`). |
-| `RESA_API_URL`, `RESA_ADMIN_KEY` | API réservation (`http://127.0.0.1:5311`) et sa clé admin (≥ 32 car.). |
+| `RESA_API_URL`, `RESA_ADMIN_KEY` | API réservation (`http://127.0.0.1:5311`) et sa clé admin (≥ 32 car.). Servent aussi à la synchro Google Agenda (ci-dessous). |
+| `AGENDA_SYNCHRO` | `0` coupe la synchro Google Agenda automatique (tests, poste local). Absent : active dès que `RESA_ADMIN_KEY` est défini. |
 | `PROXY_KEY` | ≥ 32 car. (hex). Caddy l'envoie en `X-Proxy-Cle` ; seulement alors l'IP réelle = dernière valeur de `X-Forwarded-For` (limites de connexion). Sinon : adresse de connexion. |
 | `NODE_ENV=production` | Refus de démarrer si `DB_FILE`, `FICHIERS_DIR`, `APP_ORIGIN`, `RESA_API_URL`, `COACH_API_KEY`, `SESSION_SECRET`, `RESA_ADMIN_KEY`, `PROXY_KEY` manque. |
 
 Plafonds par client : 5000 lignes, 64 Ko par ligne (coach compris), 200 fichiers et 200 Mo → 413 `quota`. Connexion : seuls les échecs comptent (IP+compte 5, compte 50, IP 30 / 15 min), journalisés avec une empreinte de l'identifiant. Cookie `__Host-sid` en production.
+
+**Synchro Google Agenda** (`src/agenda-synchro.js`, docs/CONTRAT-AGENDA-GOOGLE.md partie B) : lancée par `api.mjs` 5 s après le démarrage puis toutes les 15 min
+(jamais par le serveur MCP), et par le bouton « Synchroniser » de l'écran Agenda. Lit `GET {RESA_API_URL}/api/resa/admin/evenements` du 2026-01-01
+(au plus 400 j en arrière) à aujourd'hui + 90 j, en appels ≤ 400 jours. Chaque « Coaching … » attribué devient une séance de coaching
+(`google:<id>:<client>`, faite si passée) ; les titres non reconnus vont dans « À attribuer » (alias retenus dans la table `agenda_alias`, migration 4).
+Rien de neuf dans `/etc/app-coaching.env` : mêmes `RESA_API_URL` / `RESA_ADMIN_KEY`. Tant que Google n'est pas ré-autorisé (scope `calendar.events.readonly`),
+l'API réservation répond 503 `google_lecture_non_autorisee` : l'écran Agenda affiche « Autorisation Google à renouveler » et rien n'est supprimé.
 
 Premier compte coach : `DB_FILE=… npm run coach:creer <identifiant>` (saisie masquée ; relancer = changer le code et révoquer les sessions).
 | `VITE_API_URL`, `VITE_API_KEY` | Côté app (démo) : adresse du serveur ; clé pour l'écran coach « Vidéos ». |
