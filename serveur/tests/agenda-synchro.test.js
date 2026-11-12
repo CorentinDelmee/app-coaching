@@ -185,6 +185,31 @@ describe('synchroniser', () => {
     expect(s['google:e-guil:guillaume']).toBeDefined()
   })
 
+  it('contre-audit 2 : séance Google effacée au profit d\'une jumelle : pas recréée quand la manuelle est annulée, revient si elle est supprimée', async () => {
+    evenements.push(ev('e-p3', 'Coaching Sylvain', '2026-10-06T10:00:00+02:00', '2026-10-06T11:00:00+02:00')) // passé : « faite »
+    await synchro.synchroniser()
+    const manuelle = { id: 'manuelle', clientId: 'sylvain', date: '2026-10-06', heure: '10:05', lieu: 'domicile', statut: 'faite', tarif: 35 }
+    await store.ecrire('seancesCoaching', manuelle)
+    expect(await synchro.synchroniser()).toMatchObject({ jumelles: 1 })
+    expect((await seances())['google:e-p3:sylvain']).toBeUndefined()
+    // Le coach annule la manuelle (le client n'est pas venu) : la séance Google « faite » ne revient pas.
+    await store.ecrire('seancesCoaching', { ...manuelle, statut: 'annulee' })
+    expect(await synchro.synchroniser()).toMatchObject({ crees: 0, jumelles: 1 })
+    expect(compte(await synchro.synchroniser())).toEqual(zero)
+    expect((await seances())['google:e-p3:sylvain']).toBeUndefined()
+    // Jumelle déjà là AVANT la 1re synchro, puis annulée : même règle.
+    await store.ecrire('seancesCoaching', { id: 'manuelle-f', clientId: 'fabien', date: '2026-11-20', heure: '18:30', lieu: 'domicile', statut: 'prevue', tarif: 35 })
+    await store.supprimer('seancesCoaching', 'google:e-fab:fabien')
+    db.prepare("DELETE FROM seances_agenda WHERE id = 'e-fab'").run() // comme si l'événement était neuf
+    expect(await synchro.synchroniser()).toMatchObject({ crees: 0 })
+    await store.ecrire('seancesCoaching', { id: 'manuelle-f', clientId: 'fabien', date: '2026-11-20', heure: '18:30', lieu: 'domicile', statut: 'annulee', tarif: 35 })
+    expect(await synchro.synchroniser()).toMatchObject({ crees: 0 })
+    // La manuelle est supprimée : la séance Google revient.
+    await store.supprimer('seancesCoaching', 'manuelle')
+    expect(await synchro.synchroniser()).toMatchObject({ crees: 1 })
+    expect((await seances())['google:e-p3:sylvain']).toMatchObject({ statut: 'faite' })
+  })
+
   it('503 google_lecture_non_autorisee : erreur claire, rien supprimé, dernière synchro inchangée', async () => {
     await synchro.synchroniser()
     const avant = await seances()

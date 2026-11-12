@@ -91,7 +91,7 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
       const alias = lireAlias()
       const agenda = lignesAgenda()
       const google = new Map(db.prepare("SELECT id, data FROM seances_coaching WHERE id LIKE 'google:%'").all().map((l) => [l.id, JSON.parse(l.data)]))
-      const natives = db.prepare("SELECT data FROM seances_coaching WHERE id NOT LIKE 'google:%'").all().map((l) => JSON.parse(l.data))
+      const natives = new Map(db.prepare("SELECT id, data FROM seances_coaching WHERE id NOT LIKE 'google:%'").all().map((l) => [l.id, { ...JSON.parse(l.data), id: l.id }]))
       const ecrireSeance = db.prepare('INSERT INTO seances_coaching (id, client_id, data) VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET client_id = excluded.client_id, data = excluded.data')
       const supprimerSeance = db.prepare('DELETE FROM seances_coaching WHERE id = ?')
       const ecrireAgenda = db.prepare('INSERT INTO seances_agenda (id, client_id, statut_attribution, data, maj) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET client_id = excluded.client_id, statut_attribution = excluded.statut_attribution, data = excluded.data, maj = excluded.maj')
@@ -118,7 +118,8 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
         if (modifiee(s)) return
         supprimerSeance.run(s.id); google.delete(s.id); b.supprimes++
       }
-      const jumelle = (clientId, m) => natives.some((n) => n.clientId === clientId && n.statut !== 'annulee' && n.date === m.date && /^\d{2}:\d{2}$/.test(n.heure ?? '')
+      /** Séance saisie à la main (non annulée) pour ce client au même créneau (±15 min) : la première trouvée, sinon undefined. */
+      const jumelle = (clientId, m) => [...natives.values()].find((n) => n.clientId === clientId && n.statut !== 'annulee' && n.date === m.date && /^\d{2}:\d{2}$/.test(n.heure ?? '')
         && Math.abs(Number(n.heure.slice(0, 2)) * 60 + Number(n.heure.slice(3)) - (Number(m.heure.slice(0, 2)) * 60 + Number(m.heure.slice(3)))) <= TOLERANCE_MIN)
 
       const vus = new Set()
@@ -155,13 +156,17 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
         // Clients pour qui la synchro a déjà créé une séance (marque gardée dans la ligne de l'agenda) : si la séance a disparu,
         // c'est que le coach (ou le MCP) l'a supprimée -> pas recréée tant que l'événement existe (audit 4).
         const crees = new Set([...(agenda.get(ev.id)?.crees ?? []), ...seancesDe(ev.id).map((s) => s.clientId)])
+        // Clients dont la séance Google s'est effacée au profit d'une séance manuelle jumelle : client -> id de la manuelle.
+        // Tant que la manuelle existe (même annulée), pas de séance Google ; supprimée, la séance Google revient (contre-audit 2).
+        const jumelles = { ...(agenda.get(ev.id)?.jumelles ?? {}) }
         const ecrireLigne = () => {
-          const l = { ...ligne, ...(crees.size ? { crees: [...crees].sort() } : {}) }
+          const l = { ...ligne, ...(crees.size ? { crees: [...crees].sort() } : {}), ...(Object.keys(jumelles).length ? { jumelles } : {}) }
           if (JSON.stringify(agenda.get(ev.id)) !== JSON.stringify(l)) { ecrireAgenda.run(ev.id, ids[0] ?? null, att.statut, JSON.stringify(l), t); agenda.set(ev.id, l) }
         }
         // Séances : une par client attribué ; les clients retirés du titre perdent la leur (et leur marque).
         for (const s of seancesDe(ev.id)) if (!ids.includes(s.clientId)) retirer(s)
         for (const c of [...crees]) if (!ids.includes(c)) crees.delete(c)
+        for (const c of Object.keys(jumelles)) if (!ids.includes(c) || !natives.has(jumelles[c])) delete jumelles[c]
         if (ev.journee) { if (ids.length) b.journees++; ecrireLigne(); continue } // journée entière : affichée dans l'Agenda, pas de séance (heure inconnue)
         for (const clientId of ids) {
           const client = parId.get(clientId)
@@ -171,16 +176,20 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
           const synchro = { ...cible, finMs: m.finMs }
           const avant = google.get(id)
           if (!avant) {
+            if (jumelles[clientId]) { b.jumelles++; continue }
             if (crees.has(clientId)) { b.effaceesParLeCoach++; continue }
-            if (jumelle(clientId, m)) { b.jumelles++; continue }
+            const n = jumelle(clientId, m)
+            if (n) { jumelles[clientId] = n.id; b.jumelles++; continue }
             const s = { id, clientId, ...cible, tarif: client.tarif ?? 0, source: 'google', googleId: ev.id, titre: ligne.titre, lieuTexte, partagee: ids.length > 1, synchro }
             ecrireSeance.run(id, clientId, JSON.stringify(s)); google.set(id, s); b.crees++; crees.add(clientId)
             continue
           }
           // Séance saisie à la main APRÈS la synchro au même créneau (±15 min) : la séance Google non modifiée s'efface
-          // à son profit (pas de double comptage, audit 5). Sa marque est levée : si la séance manuelle disparaît, elle revient.
-          if (!modifiee(avant) && jumelle(clientId, m)) {
-            supprimerSeance.run(id); google.delete(id); crees.delete(clientId); b.jumelles++
+          // à son profit (pas de double comptage, audit 5). Marque « créée » levée, marque « jumelle » posée : si la séance
+          // manuelle est supprimée, elle revient ; annulée, elle ne revient pas (contre-audit 2).
+          const n = !modifiee(avant) && jumelle(clientId, m)
+          if (n) {
+            supprimerSeance.run(id); google.delete(id); crees.delete(clientId); jumelles[clientId] = n.id; b.jumelles++
             continue
           }
           const apres = { ...avant, titre: ligne.titre, lieuTexte, partagee: ids.length > 1, synchro }
