@@ -98,11 +98,16 @@ export function creerSynchroAgenda({ db, config, fetchFn = (...a) => globalThis.
       const supprimerAgenda = db.prepare('DELETE FROM seances_agenda WHERE id = ?')
       const seancesDe = (evId) => [...google.values()].filter((s) => s.googleId === evId)
 
-      /** Événement annulé ou disparu : séance future supprimée ; passée gardée (marquée annulée si l'événement est annulé). */
+      /**
+       * Événement annulé ou disparu : séance future supprimée ; passée gardée (marquée annulée si l'événement est annulé).
+       * Séance modifiée à la main par le coach (ex. « faite » posé sur un futur) : jamais supprimée sans trace, gardée,
+       * et marquée annulée si l'événement est annulé.
+       */
       function disparition(s, annule) {
-        if ((s.synchro?.finMs ?? 0) >= t) { supprimerSeance.run(s.id); google.delete(s.id); b.supprimes++; return }
-        if (annule && s.statut !== 'annulee' && s.statut === s.synchro?.statut) {
-          const maj = { ...s, statut: 'annulee', synchro: { ...s.synchro, statut: 'annulee' } }
+        const touchee = CHAMPS_SUIVIS.some((k) => s[k] !== s.synchro?.[k])
+        if (!touchee && (s.synchro?.finMs ?? 0) >= t) { supprimerSeance.run(s.id); google.delete(s.id); b.supprimes++; return }
+        if (annule && s.statut !== 'annulee' && (touchee || s.statut === s.synchro?.statut)) {
+          const maj = { ...s, statut: 'annulee', synchro: touchee ? s.synchro : { ...s.synchro, statut: 'annulee' } } // touchée : reste « modifiée à la main »
           ecrireSeance.run(s.id, s.clientId, JSON.stringify(maj)); google.set(s.id, maj); b.annules++
         }
       }

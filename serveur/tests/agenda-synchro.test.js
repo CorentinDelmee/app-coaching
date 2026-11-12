@@ -113,6 +113,19 @@ describe('synchroniser', () => {
     expect(db.prepare("SELECT 1 FROM seances_agenda WHERE id = 'e-guil'").get()).toBeUndefined()
   })
 
+  it('statut changé à la main puis événement annulé ou supprimé : séance gardée (annulée si l\'événement est annulé)', async () => {
+    await synchro.synchroniser()
+    const s0 = await seances()
+    await store.ecrire('seancesCoaching', { ...s0['google:e-fab:fabien'], statut: 'faite' }) // futur marqué « faite » à la main
+    await store.ecrire('seancesCoaching', { ...s0['google:e-guil:guillaume'], heure: '12:00' })
+    evenements = evenements.filter((e) => e.id !== 'e-guil').map((e) => (e.id === 'e-fab' ? { id: 'e-fab', titre: '', debut: '', fin: '', journee: false, lieu: '', annule: true, maj: null } : e))
+    expect(await synchro.synchroniser()).toMatchObject({ supprimes: 0, annules: 1 })
+    const s = await seances()
+    expect(s['google:e-fab:fabien']).toMatchObject({ statut: 'annulee' })
+    expect(s['google:e-guil:guillaume']).toMatchObject({ heure: '12:00', statut: 'prevue' })
+    expect(compte(await synchro.synchroniser())).toEqual(zero)
+  })
+
   it('disparu de Google : future supprimée, passée gardée telle quelle', async () => {
     await synchro.synchroniser()
     evenements = evenements.filter((e) => !['e-fab', 'e-caro'].includes(e.id))
