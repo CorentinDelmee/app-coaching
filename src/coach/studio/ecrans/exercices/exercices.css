@@ -8,7 +8,7 @@
 .st-exo-recherche svg { width: 18px; height: 18px; color: var(--st-doux); flex: none; }
 .st-exo-recherche input { border: 0; border-radius: 8px; background: none; flex: 1; min-width: 0; font-size: 15px; min-height: 44px; }
 .st-exo-recherche kbd { font: 600 12px var(--st-sans); padding: 2px 7px; border-radius: 6px; background: var(--st-surface-2); color: var(--st-doux); }
-.st-exo-select { min-height: 44px; padding: 0 var(--st-e-4); border-radius: 22px; border: 1px solid var(--st-filet-fort); background: var(--st-surface); font-weight: 600; font-size: 13.5px; color: var(--st-texte); max-width: 190px; }
+.st-exo-select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%235C5F66' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right var(--st-e-3) center; background-size: 16px; min-height: 44px; padding: 0 36px 0 var(--st-e-4); border-radius: 22px; border: 1px solid var(--st-filet-fort); background-color: var(--st-surface); font-weight: 600; font-size: 13.5px; color: var(--st-texte); max-width: 190px; }
 .st-exo-bascule { display: flex; gap: 2px; padding: 3px; border-radius: 14px; background: var(--st-surface-2); }
 .st-exo-bascule button { width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 11px; background: none; color: var(--st-doux); transition: background var(--st-d-court), transform var(--st-d-appui); }
 .st-exo-bascule button:active { transform: scale(.94); }

@@ -109,3 +109,9 @@ textarea.st-qs-champ { resize: vertical; line-height: 1.45; }
 
 .st-qs-sortie { display: flex; flex-wrap: wrap; align-items: center; gap: var(--st-e-3); margin: 0 0 16px; padding: var(--st-e-4); border-radius: 18px; background: var(--st-alerte-fond); color: var(--st-alerte); box-shadow: var(--st-ombre-2); animation: st-entree var(--st-d-base) var(--st-sortie); }
 .st-qs-sortie p { flex: 1 1 260px; margin: 0; }
+
+/* v2d : sur téléphone, le champ titre prend toute la largeur (l'indicateur de sauvegarde passe dessous) */
+@media (max-width: 900px) {
+  .st-qs-nomchamp { flex: 1 1 100%; min-width: 0; }
+  .st-qs .st-qs-titre-input { min-width: 0; }
+}
