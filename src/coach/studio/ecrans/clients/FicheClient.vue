@@ -295,14 +295,16 @@ let fermeture = false
 async function fermer() {
   if (fermeture) return
   fermeture = true
-  await sauvegarde.arreter()
+  // La feuille part TOUT DE SUITE (depuis la position du doigt si on l'a glissée) ; la dernière écriture finit pendant
+  // la sortie (avant : la feuille restait figée sous le doigt le temps de l'écriture réseau).
+  const arret = sauvegarde.arreter()
   const id = props.id
   if (mobile.matches && !reduit.matches) {
     glisse.value = false
     decalage.value = 0
     vu.value = false
-    await new Promise((r) => setTimeout(r, ATTENTE_FERMETURE))
-  }
+    await Promise.all([arret, new Promise((r) => setTimeout(r, ATTENTE_FERMETURE))])
+  } else await arret
   demanderFocus(id)
   await router.push('/coach/clients')
   await nextTick()
