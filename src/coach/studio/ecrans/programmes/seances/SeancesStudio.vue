@@ -4,7 +4,7 @@
 // (renommage), archivage (ici avec Annuler), nouvelle séance. En plus : recherche sans accents.
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import data from '../../../../../data/index.js'
+import data, { lectureRapide } from '../../../../../data/index.js'
 import { etat, messageErreur, nomClient, rafraichir, uuid } from '../../../../store.js'
 import { dupliquerWorkout, renommerPourClient, resumeWorkout } from '../../../../logique.js'
 import IconeSt from '../../../IconeSt.vue'
@@ -28,10 +28,14 @@ const erreur = ref('')
 async function charger() {
   erreur.value = ''
   try {
-    await rafraichir()
-    const [w, e] = await Promise.all([data.workouts.lister(), data.exercices.lister()])
-    workouts.value = w
-    exercices.value = e
+    // Lecture rapide : liste et exercices (noms, teintes) en parallèle, cache affiché tout de suite. rafraichir() = clients (noms, filtres).
+    await Promise.all([
+      rafraichir(),
+      lectureRapide('seances:liste', ['workouts', 'exercices'], async () => {
+        const [w, e] = await Promise.all([data.workouts.lister(), data.exercices.lister()])
+        return { w, e }
+      }, ({ w, e }) => { workouts.value = w; exercices.value = e; charge.value = true })
+    ])
   } catch (e) {
     erreur.value = messageErreur(e)
   }
@@ -132,8 +136,9 @@ async function archiver(w) {
     </form>
     <p v-if="erreur" class="st-prog-l-erreur" role="alert">{{ erreur }}</p>
 
-    <ul v-if="affiches.length" class="st-prog-l-grille">
-      <li v-for="(w, i) in affiches" :key="w.id" class="st-prog-l-carte" :style="{ '--i': Math.min(i, 12) }">
+    <ul v-if="!charge" class="st-prog-l-grille st-prog-l-sq" aria-busy="true" aria-label="Chargement des séances"><li v-for="n in 6" :key="n" class="st-prog-l-carte" /></ul>
+    <ul v-else-if="affiches.length" class="st-prog-l-grille">
+      <li v-for="w in affiches" :key="w.id" class="st-prog-l-carte">
         <div class="st-prog-l-bande" aria-hidden="true">
           <i v-for="m in teintesSeance(w, parId)" :key="m" :data-m="m" />
         </div>
@@ -152,7 +157,7 @@ async function archiver(w) {
         </footer>
       </li>
     </ul>
-    <div v-else-if="charge" class="st-prog-l-vide">
+    <div v-else class="st-prog-l-vide">
       <p><b>{{ q || filtre !== 'tous' ? 'Aucune séance ici.' : 'Pas encore de séance.' }}</b></p>
       <p>{{ q || filtre !== 'tous' ? 'Change le filtre ou la recherche.' : 'Crée un premier modèle : tu pourras le dupliquer vers chaque client.' }}</p>
       <RouterLink to="/coach/seances/nouveau" class="st-btn st-btn--jaune"><IconeSt nom="plus" />Nouvelle séance</RouterLink>

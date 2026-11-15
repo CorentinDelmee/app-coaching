@@ -46,7 +46,6 @@
 .st-prog-s-bloc {
   position: relative; background: var(--st-surface); border-radius: var(--st-r-l); box-shadow: var(--st-ombre-1);
   border-left: 5px solid var(--mi, var(--st-filet-fort)); padding: var(--st-e-3) var(--st-e-4) var(--st-e-4);
-  animation: st-prog-monte var(--st-d-base) var(--st-sortie) both; animation-delay: calc(var(--i, 0) * 40ms);
   transition: box-shadow var(--st-d-court), transform var(--st-d-court) var(--st-ressort);
 }
 .st-prog-s-bloc.is-vient { animation: st-pop .38s var(--st-ressort) both; }
@@ -157,10 +156,21 @@
 }
 @media (max-width: 900px) { .st-app:has(.st-prog-s) .st-toast { bottom: calc(156px + env(safe-area-inset-bottom)); } }
 
-.st-prog-s-charge { display: grid; gap: var(--st-e-4); margin-top: var(--st-e-4); }
-.st-prog-s-charge span { height: 120px; border-radius: var(--st-r-l); background: var(--st-surface-2); animation: st-prog-pulse 1.2s ease-in-out infinite alternate; }
-.st-prog-s-charge span:first-child { height: 56px; width: 60%; }
-@keyframes st-prog-pulse { to { opacity: .55; } }
+/* Squelette de l'éditeur : mêmes classes de mise en page que la vraie page (en-tête, colonne bibliothèque, réglages, 3 blocs repliés) → 0 saut à l'arrivée.
+   La barre « + Exercice / Superset / Circuit » n'y est pas : elle est collante en bas (téléphone) ou sous les blocs (ordinateur, hors écran). */
+.st-prog-s-sq { pointer-events: none; }
+.st-prog-s-sq-nom { display: block; height: 63px; margin-left: 0; background: var(--st-surface); border-radius: 14px; width: 70%; animation: st-prog-pulse 1.2s ease-in-out infinite alternate; }
+.st-prog-s-sq-infos, .st-prog-s-sq .st-prog-s-bloc, .st-prog-s-sq-biblio { background: var(--st-surface); animation: st-prog-pulse 1.2s ease-in-out infinite alternate; }
+.st-prog-s-sq-infos { min-height: 136px; }
+.st-prog-s-sq .st-prog-s-bloc { height: 132px; }
+.st-prog-s-sq-biblio { height: 658px; }
+@media (max-width: 900px) {
+  .st-prog-s-sq-nom { height: 44px; }
+  .st-prog-s-sq .st-prog-s-bloc { height: 172px; }
+  .st-prog-s-sq-infos { min-height: 226px; }
+  .st-prog-s-sq-biblio { display: none; }
+}
+@keyframes st-prog-pulse { to { opacity: .6; } }
 .st-prog-s-introuvable h1 { font-family: var(--st-titre); font-weight: 500; letter-spacing: -.03em; margin: 0 0 6px; }
 
 /* ---------- Téléphone : bibliothèque en feuille basse ---------- */
