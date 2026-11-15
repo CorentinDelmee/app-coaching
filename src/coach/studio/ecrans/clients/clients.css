@@ -223,7 +223,7 @@
   .st-clients-voile { display: block; position: fixed; inset: 0; z-index: var(--st-z-voile); background: rgba(35,37,43,.45); opacity: 0; pointer-events: none; transition: opacity var(--st-d-panneau) var(--st-vaul); }
   .st-clients-voile.is-vu { opacity: 1; pointer-events: auto; }
   .st-clients-fiche {
-    position: fixed; z-index: var(--st-z-panneau); left: 0; right: 0; bottom: 0; top: max(10px, env(safe-area-inset-top)); max-height: none;
+    position: fixed; z-index: var(--st-z-panneau); left: 0; right: 0; bottom: 0; top: max(10px, env(safe-area-inset-top)); max-height: none; align-self: stretch; /* align-self: start (ordinateur) borne sinon la feuille fixée à la hauteur de son contenu : plus de défilement */
     border-radius: 26px 26px 0 0; transform: translateY(100%); transition: transform var(--st-d-panneau) var(--st-vaul); padding-bottom: env(safe-area-inset-bottom);
   }
   .st-clients-fiche.is-vu { transform: translateY(0); }
