@@ -1,0 +1,71 @@
+{
+ "note": "Mac très chargé (load 40-70) : fiez-vous aux planches. Retour accueil : fin DOM 1640 ms et écran vide 1,6 s avant ; après : accueil affiché dans la même tâche depuis le cache.",
+ "avant": [
+  {
+   "nom": "client: accueil -> programme",
+   "perdues": 11,
+   "pire": 34,
+   "longues": 0,
+   "sauts": 0,
+   "finDOM": 3363
+  },
+  {
+   "nom": "client: programme -> workout",
+   "perdues": 3,
+   "pire": 51,
+   "longues": 0,
+   "sauts": 0,
+   "finDOM": 628
+  },
+  {
+   "nom": "client: workout -> retour",
+   "perdues": 0,
+   "pire": 18,
+   "longues": 0,
+   "sauts": 0,
+   "finDOM": 1620
+  },
+  {
+   "nom": "client: retour accueil",
+   "perdues": 1,
+   "pire": 22,
+   "longues": 0,
+   "sauts": 0,
+   "finDOM": 1640
+  }
+ ],
+ "apres": [
+  {
+   "nom": "client: accueil -> programme",
+   "perdues": 82,
+   "pire": 940,
+   "longues": 2,
+   "sauts": 0,
+   "finDOM": 4216
+  },
+  {
+   "nom": "client: programme -> workout",
+   "perdues": 5,
+   "pire": 98,
+   "longues": 1,
+   "sauts": 0,
+   "finDOM": 3204
+  },
+  {
+   "nom": "client: workout -> retour",
+   "perdues": 4,
+   "pire": 52,
+   "longues": 1,
+   "sauts": 0,
+   "finDOM": 1167
+  },
+  {
+   "nom": "client: retour accueil",
+   "perdues": 3,
+   "pire": 35,
+   "longues": 1,
+   "sauts": 0,
+   "finDOM": 654
+  }
+ ]
+}
