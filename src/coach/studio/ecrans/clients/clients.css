@@ -23,7 +23,7 @@
 .st-clients .st-clients-champ small { font-weight: 400; color: var(--st-doux); font-size: 12.5px; }
 .st-clients-cases { display: flex; flex-wrap: wrap; gap: 8px 10px; border: 0; padding: 0; margin: 0 0 14px; align-items: center; }
 .st-clients-cases legend { float: left; margin-right: 6px; font-size: 12.5px; font-weight: 600; color: var(--st-doux); }
-.st-clients .st-clients-cases label { display: inline-flex; flex-direction: row; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 22px; background: var(--st-fond); font: 600 13.5px var(--st-sans); color: var(--st-texte); cursor: pointer; }
+.st-clients .st-clients-cases label { display: inline-flex; flex-direction: row; align-items: center; gap: var(--st-e-2); min-height: 44px; padding: 0 var(--st-e-4); border-radius: 22px; background: var(--st-fond); font: 600 13.5px var(--st-sans); color: var(--st-texte); cursor: pointer; }
 .st-clients .st-clients-cases input[type=checkbox] { width: 18px; height: 18px; min-height: 18px; margin: 0; accent-color: var(--st-encre); }
 
 /* Identifiants à transmettre */
@@ -97,9 +97,10 @@
 .st-clients-tete-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .st-clients-fermer { position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,.9); }
 .st-clients-bandeau { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin: 16px 24px 0; padding: 10px 10px 10px 16px; border-radius: var(--st-r-m); background: var(--st-surface-2); font-size: 14px; }
-.st-clients-alertes { list-style: none; margin: 0 0 14px; padding: 6px 6px 6px 14px; border-radius: var(--st-r-m); background: var(--st-alerte-fond); }
+.st-clients-alertes { list-style: none; margin: 0 0 14px; padding: var(--st-e-3) var(--st-e-3) var(--st-e-3) var(--st-e-4); border-radius: var(--st-r-m); background: var(--st-alerte-fond); }
 .st-clients-alertes li { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; min-height: 44px; }
 .st-clients-alertes li > span:not(.st-puce) { flex: 1 1 160px; font-size: 14px; color: var(--st-encre); }
+.st-clients-alertes li .st-btn { margin-left: auto; padding: 0 var(--st-pad-btn-petit); }
 
 .st-clients-onglets { position: relative; display: flex; gap: 2px; padding: 14px 20px 0; border-bottom: 1px solid var(--st-filet); overflow-x: auto; scrollbar-width: none; }
 .st-clients-onglets::-webkit-scrollbar { display: none; }
@@ -120,7 +121,7 @@
 .st-clients-etiquette { display: block; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--st-doux); margin: 0 0 4px; }
 
 .st-clients-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
-.st-clients-kpi { background: var(--st-fond); border-radius: 16px; padding: 12px 14px; min-width: 0; }
+.st-clients-kpi { background: var(--st-fond); border-radius: 16px; padding: var(--st-e-3) var(--st-e-4); min-width: 0; }
 .st-clients-kpi span { display: block; font-size: 12.5px; color: var(--st-doux); }
 .st-clients-kpi b { display: block; font: 500 26px/1.15 var(--st-titre); letter-spacing: -.02em; color: var(--st-encre); }
 .st-clients-kpi b.is-petit { font-size: 18px; line-height: 1.5; }
@@ -236,7 +237,13 @@
   .st-clients .st-clients-tete h2 { font-size: 25px; }
   .st-clients-av.is-grand { --t: 68px; font-size: 22px; }
   .st-clients-tete-actions { width: 100%; }
-  .st-clients-tete-actions .st-btn { flex: 1 1 0; padding: 0 10px; }
+  .st-clients-tete-actions .st-btn { flex: 1 1 auto; padding: 0 var(--st-pad-btn); }
+  .st-clients-kpi small { white-space: normal; }
+  .st-clients .st-clients-cases legend { float: none; width: 100%; margin: 0; }
+  .st-clients .st-clients-cases label { flex: 1 1 auto; justify-content: center; }
+  .st-clients-alertes li { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: var(--st-e-1) var(--st-e-3); align-items: center; padding: var(--st-e-1) 0; }
+  .st-clients-alertes li .st-btn { grid-column: 2; justify-self: start; margin-left: calc(-1 * var(--st-pad-btn-petit)); }
+  .st-clients-contact { padding: 0 var(--st-e-4); }
   .st-clients-fermer { top: 30px; right: 12px; }
   .st-clients-bandeau { margin: 14px 16px 0; }
   .st-clients-onglets { padding: 10px 8px 0; }
