@@ -62,9 +62,9 @@
   .st-app :focus-visible { outline-offset: 2px; }
   .st-tabbar :focus-visible { outline-color: var(--st-jaune); }
 
-  .st-voile-plus { display: block; position: fixed; inset: 0; z-index: var(--st-z-voile); background: rgba(35,37,43,.45); opacity: 0; pointer-events: none; transition: opacity var(--st-d-base) var(--st-vaul); }
-  .st-voile-plus.is-vu { opacity: 1; pointer-events: auto; }
-  .st-feuille-plus { display: flex; flex-direction: column; gap: 2px; position: fixed; z-index: var(--st-z-panneau); left: 0; right: 0; bottom: 0; max-height: 80dvh; overflow-y: auto; overscroll-behavior: contain; padding: 10px 12px calc(16px + env(safe-area-inset-bottom)); border-radius: 26px 26px 0 0; background: var(--st-surface); box-shadow: var(--st-ombre-3); transform: translateY(105%); visibility: hidden; transition: transform var(--st-d-panneau) var(--st-vaul), visibility 0s var(--st-d-panneau); }
+  .st-voile-plus { display: block; position: fixed; inset: 0; z-index: var(--st-z-voile); background: rgba(35,37,43,.45); opacity: 0; pointer-events: none; transition: opacity var(--st-d-feuille-sortie) var(--st-vaul); }
+  .st-voile-plus.is-vu { opacity: 1; pointer-events: auto; transition-duration: var(--st-d-base); }
+  .st-feuille-plus { display: flex; flex-direction: column; gap: 2px; position: fixed; z-index: var(--st-z-panneau); left: 0; right: 0; bottom: 0; max-height: 80dvh; overflow-y: auto; overscroll-behavior: contain; padding: 10px 12px calc(16px + env(safe-area-inset-bottom)); border-radius: 26px 26px 0 0; background: var(--st-surface); box-shadow: var(--st-ombre-3); transform: translateY(105%); visibility: hidden; transition: transform var(--st-d-feuille-sortie) var(--st-vaul), visibility 0s var(--st-d-feuille-sortie); }
   .st-feuille-plus.is-vu { transform: none; visibility: visible; transition: transform var(--st-d-panneau) var(--st-vaul), visibility 0s; }
   .st-feuille-tete { display: flex; align-items: center; justify-content: space-between; padding: 4px 4px 8px 10px; font-family: var(--st-titre); font-size: 22px; font-weight: 500; color: var(--st-encre); }
   .st-feuille-plus a, .st-feuille-sortir { display: flex; align-items: center; gap: 14px; min-height: 52px; padding: 0 12px; border: 0; border-radius: 14px; background: none; color: var(--st-encre); text-decoration: none; font-weight: 600; text-align: left; }

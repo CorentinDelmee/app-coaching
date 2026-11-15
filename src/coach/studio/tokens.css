@@ -35,7 +35,7 @@
   --st-sortie: cubic-bezier(.16, 1, .3, 1);          /* expo-out : entrées, cascade */
   --st-vaul: cubic-bezier(.32, .72, 0, 1);           /* panneau, feuille, élément partagé */
   --st-d-appui: 120ms; --st-d-court: 220ms; --st-d-base: 420ms; --st-d-panneau: 500ms;
-  --st-d-page: 240ms; --st-glisse-page: 20px;          /* entrée de page (aucune sortie) : LISEZMOI « Mouvement » */
+  --st-d-page: 240ms; --st-glisse-page: 20px; --st-d-feuille-sortie: 340ms;          /* entrée de page (aucune sortie) : LISEZMOI « Mouvement » */
   /* Espacements (LISEZMOI.md « Espacements ») : échelle unique de 4 en 4, puis rôles. Ne pas écrire d'autre valeur. */
   --st-e-1: 4px; --st-e-2: 8px; --st-e-3: 12px; --st-e-4: 16px; --st-e-5: 20px; --st-e-6: 24px; --st-e-8: 32px; --st-e-10: 40px;
   --st-gouttiere: clamp(16px, 3vw, 40px);  /* marge latérale de page : 16 px minimum */

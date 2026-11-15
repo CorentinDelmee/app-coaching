@@ -44,11 +44,15 @@ function finGlisse() {
   const vitesse = decalage.value / Math.max(1, performance.now() - t0)
   const fermer = decalage.value > 140 || vitesse > 0.6
   y0 = null; glisse.value = false
-  if (fermer) emit('fermer')
-  decalage.value = 0
+  // Fermeture au doigt : le décalage est GARDÉ (variable --glisse) pour que la sortie parte de la position du doigt
+  // au lieu de revenir en haut puis redescendre (saccade). Sinon la feuille revient en place avec sa transition.
+  // L'élément qui sort n'est plus mis à jour par Vue : on attend que le style « transition: none » du glisser soit retiré
+  // (sinon Vue voit une durée nulle et retire la feuille d'un coup, sans animation de sortie).
+  if (fermer) nextTick(() => emit('fermer'))
+  else decalage.value = 0
 }
-const styleGlisse = computed(() => (glisse.value && decalage.value ? { transform: `translateY(${decalage.value}px)`, transition: 'none' } : null))
-const styleVoile = computed(() => (glisse.value && decalage.value ? { opacity: String(Math.max(0, 1 - decalage.value / 600)) } : null))
+const styleGlisse = computed(() => (decalage.value ? { '--glisse': `${decalage.value}px`, ...(glisse.value ? { transition: 'none' } : {}) } : null))
+const styleVoile = computed(() => (decalage.value ? { '--voile': String(Math.max(0, 1 - decalage.value / 600)), ...(glisse.value ? { transition: 'none' } : {}) } : null))
 
 const FOCUSABLES = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])'
 /** Mode modal : Tab boucle dans le panneau. */
@@ -80,6 +84,7 @@ function surTouche(ev) {
 
 watch(() => props.ouvert, async (o) => {
   if (o) {
+    decalage.value = 0
     focusAvant = document.activeElement
     document.addEventListener('keydown', surTouche)
     if (mobile()) document.documentElement.style.overflow = 'hidden'
@@ -161,16 +166,19 @@ defineExpose({ media: () => elMedia.value, racine: () => racine.value })
 
 @media (max-width: 900px) {
   /* 56 px de voile au-dessus de la feuille : zone « toucher dehors pour fermer » assez grande (≥ 44 px) */
-  .st-panneau { top: max(56px, calc(env(safe-area-inset-top) + 44px)); left: 0; right: 0; bottom: 0; width: auto; border-radius: 26px 26px 0 0; transition: transform var(--st-d-panneau) var(--st-vaul); }
-  .st-pan-enter-active, .st-pan-leave-active { transition: transform var(--st-d-panneau) var(--st-vaul); }
+  .st-panneau { top: max(56px, calc(env(safe-area-inset-top) + 44px)); left: 0; right: 0; bottom: 0; width: auto; border-radius: 26px 26px 0 0; transform: translateY(var(--glisse, 0px)); transition: transform var(--st-d-panneau) var(--st-vaul); }
+  /* sortie plus courte que l'entrée (réponse immédiate au geste de fermeture), même courbe */
+  .st-pan-enter-active { transition: transform var(--st-d-panneau) var(--st-vaul); }
+  .st-pan-leave-active { transition: transform var(--st-d-feuille-sortie) var(--st-vaul); }
   .st-pan-enter-from, .st-pan-leave-to { opacity: 1; transform: translateY(100%); }
   .st-pan-media { touch-action: none; }
   .st-pan-poignee { display: grid; place-items: center; position: absolute; top: 0; left: 0; right: 0; height: 28px; z-index: 4; touch-action: none; cursor: grab; }
   .st-pan-poignee::after { content: ''; width: 44px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.85); box-shadow: 0 0 0 1px rgba(35,37,43,.15); }
   .st-pan-barre { top: 26px; }
   .st-pan-defile { padding: 16px 18px calc(28px + env(safe-area-inset-bottom)); }
-  .st-pan-voile { display: block; position: fixed; inset: 0; z-index: var(--st-z-voile); background: rgba(35,37,43,.45); }
-  .st-voile-enter-active, .st-voile-leave-active { transition: opacity var(--st-d-base) var(--st-vaul); }
+  .st-pan-voile { display: block; position: fixed; inset: 0; z-index: var(--st-z-voile); background: rgba(35,37,43,.45); opacity: var(--voile, 1); }
+  .st-voile-enter-active { transition: opacity var(--st-d-base) var(--st-vaul); }
+  .st-voile-leave-active { transition: opacity var(--st-d-feuille-sortie) var(--st-vaul); }
   .st-voile-enter-from, .st-voile-leave-to { opacity: 0; }
 }
 </style>
