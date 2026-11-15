@@ -75,7 +75,7 @@ const etat = (k, s) => (s.faite ? 'fait' : k === courante.value ? 'courant' : 'a
 /* tout ce qui précède le bouton défile si le Grand affichage ou un petit écran manque de place : le bouton reste en bas */
 .p-corps { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow-y: auto; scrollbar-width: none; overscroll-behavior: contain; }
 .p-corps::-webkit-scrollbar { display: none; }
-.p-ligne { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: var(--cible); flex: none; }
+.p-ligne { display: flex; align-items: center; justify-content: space-between; gap: var(--esp-3); min-height: var(--cible); margin-top: var(--esp-1); flex: none; }
 .p-bloc { font-size: calc(var(--e) * 13px); letter-spacing: .14em; text-transform: uppercase; font-weight: 600; color: var(--accent-lisible); }
 .p-nom { font-family: var(--font-titre); font-weight: 400; font-size: calc(var(--e) * 34px); letter-spacing: -.045em; line-height: 1.04; margin: 4px 0 12px; flex: none; overflow-wrap: anywhere; }
 .p-meta { display: flex; flex-wrap: wrap; gap: 8px; flex: none; }

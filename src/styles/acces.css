@@ -16,7 +16,7 @@
 .bv-points b { color: var(--texte); font-weight: 600; }
 .bv-actions { display: flex; flex-direction: column; gap: 10px; flex: none; }
 .bv-pied { text-align: center; padding-top: 14px; font-size: 14px; flex: none; }
-.bv-pied a { color: var(--texte-doux); padding: 10px; display: inline-block; }
+.bv-pied a { color: var(--texte-doux); padding: 0 var(--esp-3); min-height: var(--cible); display: inline-flex; align-items: center; }
 .etapes { margin: 12px 0 20px; padding-left: 22px; list-style: decimal; display: flex; flex-direction: column; gap: 10px; font-size: 17px; line-height: 1.35; }
 .etapes li { padding-left: 4px; }
 .feuille .etapes b { color: var(--texte); }

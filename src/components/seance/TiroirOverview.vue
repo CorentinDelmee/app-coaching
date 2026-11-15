@@ -83,6 +83,7 @@ function ongletHaut() { setTimeout(() => { t = null }, 0) }
 
 <style scoped>
 .tab-tiroir { position: absolute; z-index: 20; right: 0; top: 52%; width: 26px; height: 92px; border-radius: 14px 0 0 14px; background: var(--surface-2); display: grid; place-items: center; color: var(--texte-doux); touch-action: none; }
+.tab-tiroir::after { content: ''; position: absolute; inset: -8px 0 -8px -22px; } /* zone à toucher 48 px de large */
 .tab-tiroir svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .scrim { position: absolute; inset: 0; z-index: 40; background: var(--scrim); opacity: 0; pointer-events: none; }
 .tiroir { position: absolute; z-index: 41; top: 0; right: 0; bottom: 0; width: 86%; background: var(--surface); border-radius: 30px 0 0 30px; padding: calc(var(--haut) + 4px) 18px var(--bas); display: flex; flex-direction: column; touch-action: pan-y; box-shadow: var(--ombre-tiroir); }
