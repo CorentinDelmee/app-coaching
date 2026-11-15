@@ -1,10 +1,9 @@
 /* Studio — écran Questionnaires. Préfixe st-qs-. S'appuie sur les tokens de studio/tokens.css (.st-app). */
 .st-qs { max-width: 1120px; margin: 0 auto; padding: 4px 0 96px; }
-.st-qs .st-entete { animation: st-entree var(--st-d-base) var(--st-sortie) both; }
 
 /* Liste */
 .st-qs-grille { list-style: none; margin: 0; padding: 4px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-.st-qs-carte { position: relative; display: flex; flex-direction: column; background: var(--st-surface); border-radius: var(--st-r-l); box-shadow: var(--st-ombre-1); overflow: hidden; min-width: 0; transition: transform var(--st-d-court) var(--st-ressort), box-shadow var(--st-d-court); animation: st-cascade var(--st-d-base) var(--st-sortie) both; animation-delay: calc(var(--i, 0) * 40ms); }
+.st-qs-carte { position: relative; display: flex; flex-direction: column; background: var(--st-surface); border-radius: var(--st-r-l); box-shadow: var(--st-ombre-1); overflow: hidden; min-width: 0; transition: transform var(--st-d-court) var(--st-ressort), box-shadow var(--st-d-court); }
 @media (hover: hover) { .st-qs-carte:hover { transform: translateY(-3px); box-shadow: var(--st-ombre-2); } }
 .st-qs-carte:focus-within { box-shadow: var(--st-ombre-2); }
 .st-qs-haut { display: flex; align-items: baseline; gap: 8px; padding: 16px 20px 14px; background: var(--mc); color: var(--mi); }
@@ -19,8 +18,17 @@
 .st-qs-dest { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .st-qs-rep { margin: 0; font-size: 13.5px; color: var(--st-doux); }
 .st-qs-archive { position: relative; z-index: 2; align-self: flex-end; margin: 0 8px 8px; min-height: 44px; font-size: 13.5px; color: var(--st-doux); }
-.st-qs-squelette { height: 200px; background: linear-gradient(100deg, var(--st-surface-2) 30%, #F8F5F0 50%, var(--st-surface-2) 70%) 0 0 / 300% 100%; animation: st-qs-brille 1.4s linear infinite; }
-@keyframes st-qs-brille { to { background-position: -300% 0; } }
+/* Squelettes à la forme réelle (hauteurs mesurées sur le contenu) : le contenu les remplace sans saut ni animation.
+   Pulsation en opacité seule (compositeur). */
+.st-qs-sq { background: var(--st-surface-2); border-radius: var(--st-r-l); box-shadow: none; animation: st-qs-pouls 1.4s ease-in-out infinite; }
+@keyframes st-qs-pouls { 50% { opacity: .55; } }
+.st-qs-sq-filtres { height: 44px; margin: 4px 0 12px; border-radius: 22px; }
+.st-qs-sq-carte { height: 232px; }
+.st-qs-sq-tete { height: 58px; margin: 4px 0 18px; border-radius: var(--st-r-m); }
+.st-qs-sq-regl { height: 109px; margin-bottom: 20px; }
+.st-qs-sq-q { height: 370px; margin-bottom: 14px; }
+@media (max-width: 900px) { .st-qs-sq-tete { height: 107px; } .st-qs-sq-regl { height: 251px; } .st-qs-sq-q { height: 450px; } }
+@media (prefers-reduced-motion: reduce) { .st-qs-sq { animation: none; } }
 
 /* États */
 .st-qs-etat { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 48px 20px; margin-top: 8px; background: var(--st-surface); border-radius: var(--st-r-l); box-shadow: var(--st-ombre-1); color: var(--st-doux); }
@@ -32,7 +40,7 @@
 /* Éditeur */
 .st-qs-retour { display: inline-flex; align-items: center; min-height: 44px; color: var(--st-doux); font-weight: 600; text-decoration: none; }
 .st-qs-retour:hover { color: var(--st-encre); text-decoration: underline; }
-.st-qs-ed-tete { display: flex; align-items: flex-end; gap: var(--st-e-3); flex-wrap: wrap; margin: 4px 0 18px; animation: st-entree var(--st-d-base) var(--st-sortie) both; }
+.st-qs-ed-tete { display: flex; align-items: flex-end; gap: var(--st-e-3); flex-wrap: wrap; margin: 4px 0 18px; }
 .st-qs-nomchamp { flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 4px; }
 .st-qs .st-qs-titre-input { width: 100%; min-height: 56px; border: 0; border-bottom: 2px solid var(--st-filet-fort); background: transparent; border-radius: 0; padding: 0 0 4px; font-family: var(--st-titre); font-weight: 500; font-size: clamp(30px, 4.4vw, 48px); letter-spacing: -.035em; line-height: 1.1; color: var(--st-encre); }
 .st-qs .st-qs-titre-input::placeholder { color: var(--st-doux); opacity: .75; }
@@ -58,7 +66,7 @@ textarea.st-qs-champ { resize: vertical; line-height: 1.45; }
 .st-qs-lab { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 
 .st-qs-questions { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
-.st-qs-q { position: relative; display: flex; flex-direction: column; gap: 14px; padding: 16px 18px 12px 22px; background: var(--st-surface); border-radius: var(--st-r-l); box-shadow: var(--st-ombre-1); min-width: 0; animation: st-cascade var(--st-d-base) var(--st-sortie) both; }
+.st-qs-q { position: relative; display: flex; flex-direction: column; gap: 14px; padding: 16px 18px 12px 22px; background: var(--st-surface); border-radius: var(--st-r-l); box-shadow: var(--st-ombre-1); min-width: 0; }
 .st-qs-q::before { content: ''; position: absolute; left: 0; top: 14px; bottom: 14px; width: 6px; border-radius: 0 6px 6px 0; background: var(--mi, var(--st-doux)); }
 .st-qs-q-tete { display: flex; align-items: center; gap: var(--st-e-2); }
 .st-qs-num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: var(--mc); color: var(--mi); font-family: var(--st-titre); font-weight: 500; font-size: 16px; }

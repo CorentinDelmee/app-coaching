@@ -2,7 +2,7 @@
 // Studio — liste des questionnaires : cartes teintées par fréquence, filtre, archivage avec « Annuler ».
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import data from '../../../../data/index.js'
+import data, { lectureRapide } from '../../../../data/index.js'
 import { nomClient, rafraichir, messageErreur } from '../../../store.js'
 import { toast } from '../../toast.js'
 import Filtres from '../../Filtres.vue'
@@ -17,19 +17,28 @@ const etatChargement = ref('charge') // charge | ok | erreur
 const erreur = ref('')
 const filtre = ref('')
 
+// Lecture rapide : la liste vue récemment s'affiche dans la même image (cache), puis se met à jour sans rien rejouer.
+// Le contenu remplace le squelette sans animation ; un rechargement après archivage ne remet pas le squelette.
+function appliquer({ liste, reps }) {
+  questionnaires.value = liste
+  const n = {}
+  for (const r of reps) n[r.questionnaireId] = (n[r.questionnaireId] || 0) + 1
+  nbReponses.value = n
+}
 async function charger() {
-  etatChargement.value = 'charge'
+  if (etatChargement.value === 'erreur') etatChargement.value = 'charge'
   try {
-    await rafraichir()
-    questionnaires.value = await data.questionnaires.lister()
-    const reps = await data.reponses.lister().catch(() => [])
-    const n = {}
-    for (const r of reps) n[r.questionnaireId] = (n[r.questionnaireId] || 0) + 1
-    nbReponses.value = n
+    // rafraichir() = noms des clients (cache ou lecture en parallèle) ; on attend les deux pour une première image complète.
+    await Promise.all([
+      rafraichir(),
+      lectureRapide('questionnaires:liste', ['questionnaires', 'reponses'], async () => {
+        const [liste, reps] = await Promise.all([data.questionnaires.lister(), data.reponses.lister().catch(() => [])])
+        return { liste, reps }
+      }, (v, { depuisCache }) => { appliquer(v); if (depuisCache) etatChargement.value = 'ok' })
+    ])
     etatChargement.value = 'ok'
   } catch (e) {
-    erreur.value = messageErreur(e)
-    etatChargement.value = 'erreur'
+    if (etatChargement.value !== 'ok') { erreur.value = messageErreur(e); etatChargement.value = 'erreur' } else toast(messageErreur(e))
   }
 }
 onMounted(charger)
@@ -72,8 +81,11 @@ async function restaurer(q) {
       </div>
     </header>
 
-    <div v-if="etatChargement === 'charge'" class="st-qs-grille" aria-busy="true" aria-label="Chargement">
-      <div v-for="n in 3" :key="n" class="st-qs-carte st-qs-squelette" aria-hidden="true" />
+    <div v-if="etatChargement === 'charge'" aria-busy="true" aria-label="Chargement">
+      <div class="st-qs-sq st-qs-sq-filtres" aria-hidden="true" />
+      <div class="st-qs-grille" aria-hidden="true">
+        <div v-for="n in 3" :key="n" class="st-qs-carte st-qs-sq st-qs-sq-carte" />
+      </div>
     </div>
 
     <div v-else-if="etatChargement === 'erreur'" class="st-qs-etat st-qs-etat--erreur" role="alert">
@@ -92,7 +104,7 @@ async function restaurer(q) {
     <template v-else>
       <Filtres v-model="filtre" :options="options" :multiple="false" etiquette="Filtrer par fréquence" />
       <ul v-if="visibles.length" class="st-qs-grille" role="list">
-        <li v-for="(q, i) in visibles" :key="q.id" class="st-qs-carte" :data-m="TEINTE_FREQ[q.frequence]" :style="{ '--i': Math.min(i, 12) }">
+        <li v-for="q in visibles" :key="q.id" class="st-qs-carte" :data-m="TEINTE_FREQ[q.frequence]">
           <div class="st-qs-haut" aria-hidden="true">
             <span class="st-qs-nombre">{{ q.questions.length }}</span>
             <span class="st-qs-unite">question{{ q.questions.length > 1 ? 's' : '' }}</span>

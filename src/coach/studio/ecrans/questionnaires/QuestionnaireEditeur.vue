@@ -3,7 +3,7 @@
 // Création : le questionnaire est créé dès qu'il est complet (nom + au moins une question avec texte), puis modifié.
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink, onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
-import data from '../../../../data/index.js'
+import data, { attente } from '../../../../data/index.js'
 import { FREQUENCES } from '../../../../domain/modele.js'
 import { etat, rafraichir, uuid, messageErreur } from '../../../store.js'
 import { TYPES_QUESTION_LIBELLES, cleDepuisLibelle, copie, deplacer, nouvelleQuestion } from '../../../logique.js'
@@ -69,15 +69,19 @@ async function charger() {
   q.value = undefined
   erreurChargement.value = ''
   try {
-    await rafraichir()
     if (!existe) {
+      await rafraichir()
       q.value = { id: idDoc, clientId: null, nom: '', frequence: 'ponctuel', questions: [] }
     } else {
-      const lu = await data.questionnaires.lire(props.id)
+      // Concurrence optimiste : le questionnaire édité est toujours lu FRAIS (jamais le cache) ; les 3 lectures partent ensemble.
+      const [lu, reps] = await Promise.all([
+        attente(data.questionnaires.lire(props.id)),
+        data.reponses.lister({ questionnaireId: props.id }).catch(() => []),
+        rafraichir() // noms des clients du sélecteur (cache si récent)
+      ])
+      nbReponses.value = reps.length
       q.value = lu ? preparer(lu) : null
       sauve.suivreVersion(lu?.version)
-      const reps = await data.reponses.lister({ questionnaireId: props.id }).catch(() => [])
-      nbReponses.value = reps.length
     }
     await nextTick()
     pret = true
@@ -274,5 +278,13 @@ const apercuCurseur = (qu) => qu.etiquettes || ['', '']
       <RouterLink v-else to="/coach/questionnaires" class="st-btn">Retour à la liste</RouterLink>
     </div>
   </section>
-  <section v-else class="st-qs" aria-busy="true"><div class="st-qs-carte st-qs-squelette" aria-hidden="true" style="height: 160px" /></section>
+  <section v-else class="st-qs st-qs-ed" aria-busy="true" aria-label="Chargement">
+    <RouterLink to="/coach/questionnaires" class="st-qs-retour">← Questionnaires</RouterLink>
+    <div aria-hidden="true">
+      <div class="st-qs-sq st-qs-sq-tete" />
+      <div class="st-qs-sq st-qs-sq-regl" />
+      <div class="st-qs-sq st-qs-sq-q" />
+      <div class="st-qs-sq st-qs-sq-q" />
+    </div>
+  </section>
 </template>
