@@ -6,7 +6,7 @@
 // alertes (marquer vu), liens Nouvelle séance / Nouveau programme / ouvrir le programme.
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import data from '../../../../data/index.js'
+import data, { attente, lectureRapide } from '../../../../data/index.js'
 import { LIEUX, STATUTS_SEANCE } from '../../../../domain/modele.js'
 import { jourLocal, ajouterJours, lundiDe } from '../../../../domain/dates.js'
 import { etatSemaine } from '../../../../domain/programme.js'
@@ -37,7 +37,11 @@ const reduit = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-m
 const racine = ref(null)
 // Feuille plein écran (téléphone) : rendue dans #st-calques du CoachLayout Studio s'il existe.
 const enCalque = ref(mobile.matches && typeof document !== 'undefined' && !!document.getElementById('st-calques'))
-const profil = ref(undefined)
+const profil = ref(undefined) // lecture FRAÎCHE (éditable, avec version) ; jamais rempli depuis le cache
+const donnees = ref(false) // les listes de la fiche sont arrivées (cache ou lecture fraîche) : l'affichage remplace le squelette
+const pret = ref(false) // le profil frais est arrivé : les onglets qui éditent s'activent
+// Bandeau : dès le tap, d'après la liste déjà chargée par la page (affichage seul, jamais édité).
+const affiche = computed(() => profil.value || etat.clients.find((p) => p.id === props.id) || null)
 const d = reactive({ programmes: [], workouts: [], realisations: [], seances: [], mots: [], reponses: [], questionnaires: [], mesures: [], douleurs: [], exercices: [] })
 const aujourdhui = jourLocal(maintenant())
 const erreur = ref('')
@@ -50,15 +54,21 @@ const ONGLETS = [
 const cleOnglet = (q) => (ONGLETS.some(([c]) => c === q) ? q : null)
 const onglet = ref(cleOnglet(route.query.onglet) || 'apercu') // ?onglet=reponses | coaching… : liens depuis Aujourd'hui
 
+const ENTITES_FICHE = ['programmes', 'workouts', 'realisations', 'seancesCoaching', 'motsDuCoach', 'reponses', 'questionnaires', 'mesures', 'douleurs', 'exercices']
 async function charger() {
-  const p = (await data.profils.lire(props.id)) || null
-  if (!p) { profil.value = null; return }
   const f = { clientId: props.id }
-  const [programmes, workouts, realisations, seances, mots, reponses, questionnaires, mesures, douleurs, exercices] = await Promise.all([
-    data.programmes.lister(f), data.workouts.lister(f), data.realisations.lister(f), data.seancesCoaching.lister(f), data.motsDuCoach.lister(f),
-    data.reponses.lister(f), data.questionnaires.lister({}, { archives: true }), data.mesures.lister(f), data.douleurs.lister(f), data.exercices.lister()
+  // Profil frais + listes (cache puis frais) en parallèle : un seul aller-retour d'attente.
+  const [p] = await Promise.all([
+    attente(data.profils.lire(props.id)),
+    lectureRapide(`clients:fiche:${props.id}`, ENTITES_FICHE, async () => {
+      const [programmes, workouts, realisations, seances, mots, reponses, questionnaires, mesures, douleurs, exercices] = await Promise.all([
+        data.programmes.lister(f), data.workouts.lister(f), data.realisations.lister(f), data.seancesCoaching.lister(f), data.motsDuCoach.lister(f),
+        data.reponses.lister(f), data.questionnaires.lister({}, { archives: true }), data.mesures.lister(f), data.douleurs.lister(f), data.exercices.lister()
+      ])
+      return { programmes, workouts, realisations, seances, mots, reponses, questionnaires, mesures, douleurs, exercices }
+    }, (v) => { Object.assign(d, v); donnees.value = true })
   ])
-  Object.assign(d, { programmes, workouts, realisations, seances, mots, reponses, questionnaires, mesures, douleurs, exercices })
+  if (!p) { profil.value = null; return }
   // Réglages remplis à l'ouverture, ou quand le profil a changé ailleurs (Claude, autre appareil) et qu'aucune saisie n'attend.
   // Saisie en attente : on garde la version lue, la sauvegarde signalera le conflit au lieu d'écraser.
   if (profil.value?.id !== p.id || (p.version !== profil.value?.version && !sauvegarde.occupe())) {
@@ -66,12 +76,13 @@ async function charger() {
     sauvegarde.suivreVersion(p.version)
   }
   profil.value = p
+  pret.value = true
 }
 
 const nomWorkout = (id) => d.workouts.find((w) => w.id === id)?.nom || 'Séance'
 const nomExercice = (id) => d.exercices.find((e) => e.id === id)?.nom || '?'
 const alertesClient = computed(() => etat.alertes.filter((a) => a.clientId === props.id))
-const sousTitre = computed(() => profil.value && `${profil.value.identifiant} · ${profil.value.tarif} € la séance · ${profil.value.lieuDefaut === 'domicile' ? 'à domicile' : 'en salle'}`)
+const sousTitre = computed(() => affiche.value && `${affiche.value.identifiant} · ${affiche.value.tarif} € la séance · ${affiche.value.lieuDefaut === 'domicile' ? 'à domicile' : 'en salle'}`)
 
 // --- Aperçu ----------------------------------------------------------------------------------------------
 const evenements = computed(() => {
@@ -249,13 +260,15 @@ async function restaurer(id = props.id, nom = profil.value?.nom) {
 
 // --- Onglets : soulignement glissant + flèches ← → ---------------------------------------------------------
 const barreOnglets = ref(null)
-const souligne = reactive({ x: 0, l: 0 })
+const souligne = reactive({ x: 0, l: 100, pose: false })
+const entree = ref(false) // l'entrée courte ne joue qu'au changement d'onglet (jamais à l'arrivée des données)
 function placerSouligne() {
   const b = barreOnglets.value?.querySelector('[aria-selected="true"]')
-  if (b) Object.assign(souligne, { x: b.offsetLeft, l: b.offsetWidth })
+  if (b) { Object.assign(souligne, { x: b.offsetLeft, l: b.offsetWidth }); if (!souligne.pose) requestAnimationFrame(() => { souligne.pose = true }) }
 }
 watch(() => route.query.onglet, (q) => { if (cleOnglet(q)) choisirOnglet(q) })
 function choisirOnglet(cle, focus = false) {
+  if (cle !== onglet.value) entree.value = true
   onglet.value = cle
   nextTick(() => {
     placerSouligne()
@@ -355,7 +368,8 @@ onMounted(async () => {
   document.addEventListener('keydown', surTouche)
   if (mobile.matches) document.body.style.overflow = 'hidden'
   if (enCalque.value) rendreInerte()
-  await charger()
+  // La feuille s'ouvre au tap avec son squelette ; les lectures arrivent ensuite sans rien déplacer.
+  charger().catch((e) => { toast(messageErreur(e)) })
   await nextTick()
   placerSouligne()
   if (onglet.value !== 'apercu') barreOnglets.value?.querySelector('[aria-selected="true"]')?.scrollIntoView({ inline: 'nearest', block: 'nearest' })
@@ -382,18 +396,18 @@ onBeforeUnmount(() => {
   <article
     ref="racine" class="st-clients st-clients-fiche" :class="{ 'is-vu': vu, 'is-glisse': glisse }" :style="styleFeuille" :data-m="teinte"
     :role="enCalque ? 'dialog' : 'region'" :aria-modal="enCalque ? 'true' : undefined"
-    :aria-labelledby="profil ? 'st-clients-fiche-nom' : undefined" :aria-label="profil ? undefined : 'Fiche client'"
+    :aria-labelledby="affiche ? 'st-clients-fiche-nom' : undefined" :aria-label="affiche ? undefined : 'Fiche client'"
     @pointerdown="debutGlisse" @pointermove="moveGlisse" @pointerup="finGlisse" @pointercancel="finGlisse"
   >
     <div class="st-clients-poignee" aria-hidden="true" />
-    <template v-if="profil">
+    <template v-if="profil !== null">
       <header class="st-clients-tete">
-        <span class="st-clients-av is-grand" aria-hidden="true">{{ initiales(profil.nom) }}</span>
+        <span class="st-clients-av is-grand" aria-hidden="true">{{ affiche ? initiales(affiche.nom) : '' }}</span>
         <div class="st-clients-tete-txt">
-          <h2 id="st-clients-fiche-nom" ref="titre" tabindex="-1" :title="profil.nom">{{ profil.nom }}</h2>
-          <p>{{ sousTitre }}</p>
-          <div v-if="profil.archive || alertesClient.length" class="st-clients-puces">
-            <Puce v-if="profil.archive" variante="neutre">Archivé</Puce>
+          <h2 id="st-clients-fiche-nom" ref="titre" tabindex="-1" :title="affiche?.nom">{{ affiche ? affiche.nom : '\u00a0' }}</h2>
+          <p>{{ sousTitre || '\u00a0' }}</p>
+          <div v-if="affiche?.archive || alertesClient.length" class="st-clients-puces">
+            <Puce v-if="affiche?.archive" variante="neutre">Archivé</Puce>
             <button v-if="alertesClient.length" type="button" class="st-clients-puce-btn" @click="choisirOnglet('apercu')"><Puce variante="alerte" point>{{ alertesClient.length }} alerte{{ alertesClient.length > 1 ? 's' : '' }}</Puce></button>
           </div>
         </div>
@@ -404,7 +418,7 @@ onBeforeUnmount(() => {
         <button type="button" class="st-btn st-btn--rond st-clients-fermer" aria-label="Fermer la fiche (Échap)" @click="fermer"><IconeSt nom="fermer" /></button>
       </header>
 
-      <div v-if="profil.archive" class="st-clients-bandeau" role="status">
+      <div v-if="affiche?.archive" class="st-clients-bandeau" role="status">
         <span>Client archivé : il ne peut plus se connecter ; ses données sont conservées.</span>
         <button type="button" class="st-btn" @click="restaurer()">Restaurer</button>
       </div>
@@ -414,11 +428,10 @@ onBeforeUnmount(() => {
           v-for="[cle, texte] in ONGLETS" :id="`st-clients-o-${cle}`" :key="cle" type="button" role="tab"
           :aria-selected="onglet === cle" :aria-controls="`st-clients-p-${cle}`" :tabindex="onglet === cle ? 0 : -1" @click="choisirOnglet(cle)"
         >{{ texte }}</button>
-        <span class="st-clients-souligne" aria-hidden="true" :style="{ width: `${souligne.l}px`, transform: `translateX(${souligne.x}px)` }" />
+        <span class="st-clients-souligne" aria-hidden="true" :class="{ 'is-pose': souligne.pose }" :style="{ transform: `translateX(${souligne.x}px) scaleX(${souligne.l / 100})` }" />
       </div>
 
-      <Transition name="st-clients-onglet" mode="out-in">
-        <section :id="`st-clients-p-${onglet}`" :key="onglet" class="st-clients-corps" role="tabpanel" :aria-labelledby="`st-clients-o-${onglet}`" tabindex="0">
+      <section :id="`st-clients-p-${onglet}`" :key="onglet" class="st-clients-corps" :class="{ 'is-sq': onglet === 'apercu' && !donnees, 'st-clients-entree': entree }" :aria-busy="!donnees" role="tabpanel" :aria-labelledby="`st-clients-o-${onglet}`" tabindex="0">
           <!-- Aperçu -->
           <template v-if="onglet === 'apercu'">
             <ul v-if="alertesClient.length" class="st-clients-alertes" aria-label="Alertes">
@@ -440,12 +453,17 @@ onBeforeUnmount(() => {
                 <b>{{ d.programmes[0] ? d.programmes[0].nom : 'Aucun programme' }}</b>
                 <small v-if="programmesEtat[0]">{{ programmesEtat[0].s.statut === 'enCours' ? `Semaine ${programmesEtat[0].s.numero} · ${programmesEtat[0].s.libelle} faites` : LIBELLE_SEMAINE[programmesEtat[0].s.statut] }}</small>
               </div>
-              <RouterLink v-if="d.programmes[0]" :to="`/coach/programmes/${d.programmes[0].id}`" class="st-btn">Ouvrir</RouterLink>
+              <span v-if="!donnees" class="st-btn" aria-hidden="true">Ouvrir</span>
+              <RouterLink v-else-if="d.programmes[0]" :to="`/coach/programmes/${d.programmes[0].id}`" class="st-btn">Ouvrir</RouterLink>
               <RouterLink v-else :to="`/coach/programmes/nouveau?client=${id}`" class="st-btn st-btn--jaune">Créer un programme</RouterLink>
             </div>
-            <CourbeSt :donnees="courbePrincipale.donnees" :titre="courbePrincipale.titre" :unite="courbePrincipale.unite" />
+            <CourbeSt v-if="donnees" :donnees="courbePrincipale.donnees" :titre="courbePrincipale.titre" :unite="courbePrincipale.unite" />
+            <div v-else class="st-clients-sq-courbe" />
             <CalendrierSt :evenements="evenements" :aujourdhui="aujourdhui" />
           </template>
+
+          <!-- Squelette : listes pas encore arrivées, ou profil frais pas encore lu pour un onglet qui édite -->
+          <div v-else-if="!donnees || (!pret && ['coaching', 'notes', 'reglages'].includes(onglet))" class="st-clients-sq-lignes" aria-hidden="true"><i /><i /><i /></div>
 
           <!-- Programme : programmes, séances faites, charges -->
           <template v-else-if="onglet === 'programme'">
@@ -597,14 +615,12 @@ onBeforeUnmount(() => {
             </div>
             <button v-else type="button" class="st-btn st-clients-danger" @click="confirmerArchivage = true">Archiver ce client</button>
           </div>
-        </section>
-      </Transition>
+      </section>
     </template>
-    <div v-else-if="profil === null" class="st-clients-corps">
+    <div v-else class="st-clients-corps">
       <p>Client introuvable.</p>
       <button type="button" class="st-btn" @click="fermer">Retour à la liste</button>
     </div>
-    <div v-else class="st-clients-corps st-clients-chargement" aria-busy="true">Chargement…</div>
   </article>
   </Teleport>
 </template>
