@@ -86,8 +86,9 @@ defineExpose({ media: () => elMedia.value })
 .st-carte-media .st-puce { position: absolute; top: 10px; right: 10px; height: 24px; font-size: 11.5px; }
 .st-carte-corps { display: block; padding: var(--st-e-3) var(--st-e-4) var(--st-e-4); }
 .st-carte-nom { font-weight: 650; color: var(--st-encre); font-size: 15px; line-height: 1.25; margin: 0 0 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.st-carte-meta { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--st-doux); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.st-carte-meta .st-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--mi); }
+/* bloc (pas flex) : text-overflow ne s'applique pas au texte d'un conteneur flex ; une méta longue débordait de la carte à 360 px */
+.st-carte-meta { display: block; font-size: 12.5px; color: var(--st-doux); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-carte-meta .st-dot { display: inline-block; vertical-align: middle; margin: -2px 6px 0 0; width: 8px; height: 8px; border-radius: 50%; background: var(--mi); }
 .st-carte-fin { display: flex; gap: 8px; align-items: center; }
 
 /* Ligne compacte (76 px) */
