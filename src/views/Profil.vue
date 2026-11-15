@@ -3,7 +3,7 @@
 import { computed, nextTick, onMounted, ref, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
 import Icone from '../components/Icone.vue'
-import { data } from '../data/index.js'
+import { data, lectureRapide } from '../data/index.js'
 import { patchConsentement } from '../domain/consentement.js'
 import { jourLocal } from '../domain/dates.js'
 import { jourLong } from '../domain/calendrierUi.js'
@@ -28,12 +28,29 @@ const voileAmbiance = ref(null)
 const apercuChrono = ref(null)
 const message = ref('')
 
+// Lecture rapide (affichage seulement) : revisite = page tout de suite depuis le cache, puis lecture fraîche ; sans cache, le chargeur centre
+// couvre l'attente. Les écritures (enregistrerPrefs, retirer) repartent d'une lecture fraîche du profil, jamais de ce cache.
+let signature = ''
+let premier = true
+function appliquerProfil(u) {
+  if (!u) return
+  const sig = JSON.stringify(u)
+  if (sig === signature) return
+  signature = sig
+  user.value = u
+  if (premier) { // les réglages affichés ne sont posés qu'une fois : une lecture fraîche ne défait pas un choix en cours
+    premier = false
+    const p = u.preferences || {}
+    prefs.value = { son: p.son ?? true, vibration: p.vibration ?? true, unite: p.unite || 'kg' } // seulement les trois réglages (le reste, comme le consentement, reste dans le profil)
+  }
+}
+/** Profil relu au serveur (base de toute écriture). */
+const profilFrais = async () => (await data.profils.lire(user.value.id)) ?? user.value
+
 onMounted(async () => {
   installerRessort()
-  user.value = await utilisateurCourant()
+  await lectureRapide('client:profil', ['profils'], () => utilisateurCourant(), appliquerProfil, { attendre: false })
   if (!user.value) return
-  const p = user.value.preferences || {}
-  prefs.value = { son: p.son ?? true, vibration: p.vibration ?? true, unite: p.unite || 'kg' } // seulement les trois réglages (le reste, comme le consentement, reste dans le profil)
   await nextTick()
   ouvrir()
 })
@@ -55,7 +72,8 @@ async function enregistrerPrefs(patch) {
   prefs.value = { ...prefs.value, ...patch }
   let maj
   try {
-    maj = await data.profils.modifier(user.value.id, { preferences: { ...(user.value.preferences || {}), ...prefs.value, ambiance: apparence.ambiance, grand: apparence.grand } })
+    const frais = await profilFrais()
+    maj = await data.profils.modifier(user.value.id, { preferences: { ...(frais.preferences || {}), ...prefs.value, ambiance: apparence.ambiance, grand: apparence.grand } })
   } catch (e) {
     prefs.value = avant
     erreurPrefs.value = e?.code === 'CONFLIT' ? 'Votre profil vient d\'être modifié ailleurs. Réessayez dans un instant.' : 'Impossible d\'enregistrer ce réglage. Réessayez.'
@@ -115,7 +133,7 @@ async function changerCode() {
 
 // --- Consentement ---
 async function retirer() {
-  user.value = await data.profils.modifier(user.value.id, patchConsentement(user.value, false, horloge.now()))
+  user.value = await data.profils.modifier(user.value.id, patchConsentement(await profilFrais(), false, horloge.now()))
   message.value = 'Consentement retiré : vos données de santé ne sont plus utilisées.'
 }
 function donner(e) {

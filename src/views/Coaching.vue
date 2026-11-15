@@ -5,7 +5,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 
 import { gsap } from 'gsap'
 import Icone from '../components/Icone.vue'
 import FeuilleBas from '../components/seance/FeuilleBas.vue'
-import { data } from '../data/index.js'
+import { data, lectureRapide } from '../data/index.js'
 import {
   formaterHeure, messageAnnuler, messageEcrire, messageModifier, moinsDe24h, nbSeancesMois, nbSeancesSemaine, payeCeMois, phraseRang,
   prochaineSeance, rangDansLeMois, libelleSeance
@@ -30,13 +30,31 @@ const seances = shallowRef([])
 const mot = ref('')
 const now = horloge.now()
 
+// Lecture rapide (affichage seulement) : revisite = page tout de suite depuis le cache, puis lecture fraîche ; sans cache, le chargeur
+// centre couvre l'attente. Donnée fraîche identique : rien ne change ; différente après l'ouverture : chiffres mis à jour sans rejouer l'animation.
+let signature = ''
+let ouverte = false
+function appliquer(v) {
+  if (!v.user) return
+  const sig = JSON.stringify(v)
+  if (sig === signature) return
+  signature = sig
+  user.value = v.user
+  seances.value = v.seances
+  mot.value = v.mot
+  if (ouverte) nextTick(poserCompteurs)
+}
+async function lire() {
+  const u = await utilisateurCourant()
+  if (!u) return { user: null }
+  const [s, mots] = await Promise.all([data.seancesCoaching.lister({ clientId: u.id }), data.motsDuCoach.lister({ clientId: u.id })])
+  return { user: u, seances: s, mot: [...mots].sort((a, b) => b.date.localeCompare(a.date))[0]?.texte || '' }
+}
+
 onMounted(async () => {
   try {
-    user.value = await utilisateurCourant()
+    await lectureRapide('client:coaching', ['profils', 'seancesCoaching', 'motsDuCoach'], lire, appliquer, { attendre: false })
     if (!user.value) { erreur.value = 'Connectez-vous pour voir votre coaching.'; return }
-    const [s, mots] = await Promise.all([data.seancesCoaching.lister({ clientId: user.value.id }), data.motsDuCoach.lister({ clientId: user.value.id })])
-    seances.value = s
-    mot.value = [...mots].sort((a, b) => b.date.localeCompare(a.date))[0]?.texte || ''
     charge.value = true
   } catch (e) {
     erreur.value = 'Impossible de charger votre coaching. Réessayez.'
@@ -46,6 +64,7 @@ onMounted(async () => {
   await nextTick()
   const tl = ouvrir()
   compteurs(tl ? 0.35 : 0)
+  ouverte = true
 })
 onBeforeUnmount(() => gsap.killTweensOf('[data-compteur]'))
 
@@ -95,6 +114,14 @@ function compteurs(delai) {
   const total = els('[data-compteur="total"]')
   compter(total, 0, paye.value.total, { duree: 1.5, delay: delai + 0.2, fmt: (v) => formaterNombre(Math.round(v * 100) / 100) })
   if (mouvementReduit()) return
+}
+// Les chiffres sont écrits par compter() (textContent) : si la donnée change après l'ouverture, on pose les valeurs finales sans animation.
+function poserCompteurs() {
+  const poser = (cle, texte) => { const el = document.querySelector(`[data-compteur="${cle}"]`); if (el) el.textContent = texte }
+  if (rang.value) poser('rang', String(rang.value))
+  poser('semaine', String(nbSemaine.value))
+  poser('mois', String(nbMois.value))
+  poser('total', formaterNombre(paye.value.total))
 }
 </script>
 
@@ -154,7 +181,7 @@ function compteurs(delai) {
                 <span>{{ phraseRang(rang) }}</span>
               </div>
               <div class="stat stat-accent">
-                <b class="stat-n"><span data-compteur="total">{{ formaterNombre(paye.total) }}</span>&nbsp;€</b>
+                <b class="stat-n co-cpt"><i aria-hidden="true">{{ formaterNombre(paye.total) }}&nbsp;€</i><span><span data-compteur="total">{{ formaterNombre(paye.total) }}</span>&nbsp;€</span></b>
                 <span>Payé ce mois<template v-if="paye.nb && tarifUnique !== null"> : {{ paye.nb }} × {{ formaterNombre(tarifUnique) }} €</template></span>
               </div>
             </div>
@@ -175,3 +202,10 @@ function compteurs(delai) {
     </template>
   </main>
 </template>
+
+<style scoped>
+/* Montant qui défile : la place finale (avec le retour à la ligne éventuel du « € ») est réservée par un double invisible, la grille ne bouge pas. */
+.co-cpt { display: grid; }
+.co-cpt > * { grid-area: 1 / 1; }
+.co-cpt > i { visibility: hidden; font-style: normal; }
+</style>
