@@ -55,18 +55,33 @@ th.ex { text-align:left; }
 td { padding:1.2mm 1mm; vertical-align:top; border-bottom:1px solid var(--trait); }
 tr.ss td { background:var(--ss); }
 .echauf tr.ss td { background:#EEF3FA; }
-td.ex { width:50%; padding-left:2mm; }
+td.ex { width:53%; padding-left:2mm; }
 .nom { font-weight:700; font-size:9.3pt; }
 .tag { margin-left:1.5mm; font-size:6.3pt; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--doux); border:1px solid var(--trait); border-radius:1mm; padding:0 1mm; vertical-align:1px; background:#fff; }
+.exw { display:flex; gap:2.5mm; align-items:flex-start; }
+.txt { flex:1; min-width:0; }
+.vignette { position:relative; flex:none; display:block; width:14mm; height:14mm; border-radius:1.5mm; overflow:hidden; background:#000; margin-top:.3mm; }
+.vignette img { width:100%; height:100%; object-fit:cover; display:block; }
+.play { position:absolute; left:50%; top:50%; width:6mm; height:6mm; margin:-3mm 0 0 -3mm; border-radius:50%; background:rgba(242,226,122,.95); }
+.play::after { content:''; position:absolute; left:2.3mm; top:1.6mm; border-left:2.1mm solid var(--nuit); border-top:1.4mm solid transparent; border-bottom:1.4mm solid transparent; }
+.lien { white-space:nowrap; font-size:7.2pt; font-weight:600; color:#2A55B8; text-decoration:none; }
+.seul .lettre { margin:0 1.5mm 0 0; }
+td.act { background:#EEF3FA; padding:2mm; }
+.grille-act { display:grid; grid-template-columns:repeat(3, 1fr); gap:2.5mm; }
+.carte-act { display:flex; gap:2mm; align-items:flex-start; }
+.carte-act .vignette { width:13mm; height:13mm; }
+.carte-act .nom { font-size:8.6pt; line-height:1.15; }
+.dose { font-size:8pt; font-weight:600; color:var(--nuit); margin-top:.3mm; }
+.carte-act .consigne { font-size:6.6pt; }
 .consigne { color:var(--doux); font-size:7.2pt; line-height:1.28; margin-top:.4mm; }
 td.num { text-align:center; font-weight:600; font-size:9.2pt; white-space:nowrap; }
 .mono { font-family:'Azeret Mono', monospace; font-size:8pt !important; font-weight:500 !important; }
 .enchaine { color:var(--doux); font-size:11pt; }
 td.duree { font-weight:600; color:var(--nuit); }
 tr.cardio td { background:#EDF3F9; }
-td.charges { width:22%; }
+td.charges { width:20%; }
 .cases { display:flex; gap:1mm; flex-wrap:nowrap; }
-.cases span { width:9mm; height:5.5mm; border:1px solid #B9BDC6; border-radius:1mm; background:#fff; }
+.cases span { width:8.2mm; height:5.5mm; border:1px solid #B9BDC6; border-radius:1mm; background:#fff; }
 .pied { position:absolute; left:12mm; right:12mm; bottom:7mm; display:flex; justify-content:space-between; font-size:7pt; color:var(--doux); border-top:1px solid var(--trait); padding-top:2mm; }
 </style></head><body>
 <section id="p0" class="page couverture">
@@ -110,69 +125,58 @@ td.charges { width:22%; }
     </div>
     <table>
       <thead><tr><th class="ex">Exercice</th><th>Séries</th><th>Reps</th><th>RPE</th><th>Tempo</th><th>Repos</th><th class="charges">Charges (kg)</th></tr></thead>
-      <tbody class="bloc echauf"><tr class="tete"><td colspan="7"><span class="lettre">A</span><span class="type">Activation épaules + gainage · 2 tours sans repos · fait partie de l'échauffement</span></td></tr><tr class="ss ">
-    <td class="ex"><div class="nom">Band External Rotation + Press</div>
-      <div class="consigne">Activation de la coiffe : élastique léger, coude à hauteur d'épaule, tourne l'avant-bras vers le haut puis pousse. Lent, sans douleur.</div></td>
-    <td class="num">2</td><td class="num">12</td><td class="num">—</td>
-         <td class="num mono">2-0-1-1</td><td class="num"><span class="enchaine">↓</span></td>
-         <td class="charges"></td>
-  </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Shoulder Wall Slide</div>
-      <div class="consigne">Dos et avant-bras contre le mur, côtes basses : glisse les bras vers le haut en gardant le contact, omoplates qui descendent et se resserrent.</div></td>
-    <td class="num">2</td><td class="num">10</td><td class="num">—</td>
-         <td class="num mono">2-0-2-1</td><td class="num"><span class="enchaine">↓</span></td>
-         <td class="charges"></td>
-  </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Dead Bug</div>
-      <div class="consigne">Reps par côté. Bas du dos plaqué au sol, expire en tendant bras et jambe opposés. Gainage pour la posture.</div></td>
-    <td class="num">2</td><td class="num">8</td><td class="num">—</td>
-         <td class="num mono">2-1-1-0</td><td class="num"><span class="enchaine">↓</span></td>
-         <td class="charges"></td>
-  </tr></tbody><tbody class="bloc seul"><tr class="">
-    <td class="ex"><div class="nom"><span class="lettre">B</span>Développé couché haltères prise neutre</div>
-      <div class="consigne">Paumes face à face, coudes à 30-45° du buste, omoplates serrées et basses. Descente contrôlée en 3 s jusqu'à l'étirement confortable de l'épaule (pas plus bas), pause 1 s, poussée. Amène et repose les haltères par les cuisses.</div></td>
+      <tbody class="bloc echauf"><tr class="tete"><td colspan="7"><span class="lettre">A</span><span class="type">Activation épaules + gainage · 2 tours sans repos · fait partie de l'échauffement</span></td></tr>
+        <tr><td colspan="7" class="act"><div class="grille-act"><div class="carte-act"><a class="vignette" href="https://www.youtube.com/watch?v=AFmoaWJ-DNQ"><img src="miniatures/AFmoaWJ-DNQ.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Band External Rotation + Press</div>
+        <div class="dose">2 × 12 · <span class="mono">2-0-1-1</span></div>
+        <div class="consigne">Activation de la coiffe : élastique léger, coude à hauteur d'épaule, tourne l'avant-bras vers le haut puis pousse. Lent, sans douleur. <a class="lien" href="https://www.youtube.com/watch?v=AFmoaWJ-DNQ">▶&nbsp;Vidéo</a></div></div></div><div class="carte-act"><a class="vignette" href="https://www.youtube.com/watch?v=83M3p-2iLUU"><img src="miniatures/83M3p-2iLUU.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Shoulder Wall Slide</div>
+        <div class="dose">2 × 10 · <span class="mono">2-0-2-1</span></div>
+        <div class="consigne">Dos et avant-bras contre le mur, côtes basses : glisse les bras vers le haut en gardant le contact, omoplates qui descendent et se resserrent. <a class="lien" href="https://www.youtube.com/watch?v=83M3p-2iLUU">▶&nbsp;Vidéo</a></div></div></div><div class="carte-act"><a class="vignette" href="https://www.youtube.com/watch?v=DqLL45uk2Tk"><img src="miniatures/DqLL45uk2Tk.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Dead Bug</div>
+        <div class="dose">2 × 8 · <span class="mono">2-1-1-0</span></div>
+        <div class="consigne">Reps par côté. Bas du dos plaqué au sol, expire en tendant bras et jambe opposés. Gainage pour la posture. <a class="lien" href="https://www.youtube.com/watch?v=DqLL45uk2Tk">▶&nbsp;Vidéo</a></div></div></div></div></td></tr></tbody><tbody class="bloc seul"><tr class="">
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=ZjsLh8NIORQ"><img src="miniatures/ZjsLh8NIORQ.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">B</span>Développé couché haltères prise neutre</div>
+      <div class="consigne">Paumes face à face, coudes à 30-45° du buste, omoplates serrées et basses. Descente contrôlée en 3 s jusqu'à l'étirement confortable de l'épaule (pas plus bas), pause 1 s, poussée. Amène et repose les haltères par les cuisses. <a class="lien" href="https://www.youtube.com/watch?v=ZjsLh8NIORQ">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">4</td><td class="num">8-10</td><td class="num">7</td>
          <td class="num mono">3-1-1-0</td><td class="num">2 min 30</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc seul"><tr class="">
-    <td class="ex"><div class="nom"><span class="lettre">C</span>Pull Ups (Neutral Grip)</div>
-      <div class="consigne">Prise neutre, départ bras tendus, poitrine vers les poignées, 1 s en haut. Si tu n'arrives plus à faire le bas de la fourchette proprement, finis la série au tirage vertical (Danse&amp;Fitness Lat Pulldown), même nombre de reps. Au-delà du haut de la fourchette au poids du corps : ajoute un lest (ceinture ou haltère entre les pieds).</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=bxovgJoP3GY"><img src="miniatures/bxovgJoP3GY.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">C</span>Pull Ups (Neutral Grip)</div>
+      <div class="consigne">Prise neutre, départ bras tendus, poitrine vers les poignées, 1 s en haut. Si tu n'arrives plus à faire le bas de la fourchette proprement, finis la série au tirage vertical (Danse&amp;Fitness Lat Pulldown), même nombre de reps. Au-delà du haut de la fourchette au poids du corps : ajoute un lest (ceinture ou haltère entre les pieds). <a class="lien" href="https://www.youtube.com/watch?v=bxovgJoP3GY">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">4</td><td class="num">8-10</td><td class="num">7</td>
          <td class="num mono">2-0-1-1</td><td class="num">2 min</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc"><tr class="tete"><td colspan="7"><span class="lettre">D</span><span class="type">Superset · enchaîne les 2 exercices, puis 1 min 30 de repos · 3 tours</span></td></tr><tr class="ss ">
-    <td class="ex"><div class="nom">Landmine Press</div>
-      <div class="consigne">À genoux ou debout, extrémité de la barre tenue à deux mains devant la poitrine, côtes basses : pousse vers l'avant et le haut. Trajectoire en arc, plus douce pour l'épaule qu'un développé vertical. Si les 2 postes sont loin : fais les 2 exercices à la suite, repos 90 s.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=4o8N-u59vCs"><img src="miniatures/4o8N-u59vCs.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Landmine Press</div>
+      <div class="consigne">À genoux ou debout, extrémité de la barre tenue à deux mains devant la poitrine, côtes basses : pousse vers l'avant et le haut. Trajectoire en arc, plus douce pour l'épaule qu'un développé vertical. Si les 2 postes sont loin : fais les 2 exercices à la suite, repos 90 s. <a class="lien" href="https://www.youtube.com/watch?v=4o8N-u59vCs">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">10-12</td><td class="num">7</td>
          <td class="num mono">2-0-1-0</td><td class="num"><span class="enchaine">↓</span></td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr><tr class="ss ">
-    <td class="ex"><div class="nom">DB Seal Row</div>
-      <div class="consigne">Allongé ventre sur banc incliné bas, tire les coudes vers les hanches, 1 s de contraction, sans décoller la poitrine.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=t43SQgXjXyE"><img src="miniatures/t43SQgXjXyE.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">DB Seal Row</div>
+      <div class="consigne">Allongé ventre sur banc incliné bas, tire les coudes vers les hanches, 1 s de contraction, sans décoller la poitrine. <a class="lien" href="https://www.youtube.com/watch?v=t43SQgXjXyE">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">10-12</td><td class="num">7</td>
          <td class="num mono">2-0-1-1</td><td class="num">1 min 30</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc"><tr class="tete"><td colspan="7"><span class="lettre">E</span><span class="type">Triset · enchaîne les 3 exercices, puis 1 min de repos · 3 tours</span></td></tr><tr class="ss ">
-    <td class="ex"><div class="nom">Élévations latérales haltères</div>
-      <div class="consigne">Buste légèrement penché, monte jusqu'à l'horizontale en menant avec les coudes, pas d'élan.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=Fr-T6grtBHw"><img src="miniatures/Fr-T6grtBHw.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Élévations latérales haltères</div>
+      <div class="consigne">Buste légèrement penché, monte jusqu'à l'horizontale en menant avec les coudes, pas d'élan. <a class="lien" href="https://www.youtube.com/watch?v=Fr-T6grtBHw">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">2-0-1-1</td><td class="num"><span class="enchaine">↓</span></td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Inclined Biceps Curl</div>
-      <div class="consigne">Banc à 45-60°, coudes immobiles derrière le buste, supination complète en haut.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=8WJX5B6oR4E"><img src="miniatures/8WJX5B6oR4E.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Inclined Biceps Curl</div>
+      <div class="consigne">Banc à 45-60°, coudes immobiles derrière le buste, supination complète en haut. <a class="lien" href="https://www.youtube.com/watch?v=8WJX5B6oR4E">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">3-0-1-0</td><td class="num"><span class="enchaine">↓</span></td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Hanging Leg Raises</div>
-      <div class="consigne">Enroule le bassin (genoux vers la poitrine), sans balancer. Trop facile : jambes tendues.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=rFE2T5CumXs"><img src="miniatures/rFE2T5CumXs.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Hanging Leg Raises</div>
+      <div class="consigne">Enroule le bassin (genoux vers la poitrine), sans balancer. Trop facile : jambes tendues. <a class="lien" href="https://www.youtube.com/watch?v=rFE2T5CumXs">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">10-15</td><td class="num">7,5</td>
          <td class="num mono">2-0-1-1</td><td class="num">1 min</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc seul"><tr class="cardio">
-    <td class="ex"><div class="nom"><span class="lettre">F</span>Marche inclinée sur tapis</div>
-      <div class="consigne">Cardio 10 min. Marche inclinée : pente 10-12 %, 5-6 km/h, sans se tenir aux barres. Zone 2 : tu peux parler en phrases courtes (≈ 65-75 % FC max).</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=HCjtPQu2MG8"><img src="miniatures/HCjtPQu2MG8.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">F</span>Marche inclinée sur tapis</div>
+      <div class="consigne">Cardio 10 min. Marche inclinée : pente 10-12 %, 5-6 km/h, sans se tenir aux barres. Zone 2 : tu peux parler en phrases courtes (≈ 65-75 % FC max). <a class="lien" href="https://www.youtube.com/watch?v=HCjtPQu2MG8">▶&nbsp;Vidéo</a></div></div></div></td>
     <td colspan="5" class="num duree">10 min · zone 2</td><td class="charges"></td>
   </tr></tbody>
     </table>
@@ -191,44 +195,44 @@ td.charges { width:22%; }
     <table>
       <thead><tr><th class="ex">Exercice</th><th>Séries</th><th>Reps</th><th>RPE</th><th>Tempo</th><th>Repos</th><th class="charges">Charges (kg)</th></tr></thead>
       <tbody class="bloc seul"><tr class="">
-    <td class="ex"><div class="nom"><span class="lettre">A</span>Back squat barre</div>
-      <div class="consigne">Barre haute, gainage avant la descente, descends au moins cuisses parallèles en gardant le dos neutre, pousse le sol. Sécurités du rack réglées juste sous le point bas.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=S9iWwaqbD3Q"><img src="miniatures/S9iWwaqbD3Q.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">A</span>Back squat barre</div>
+      <div class="consigne">Barre haute, gainage avant la descente, descends au moins cuisses parallèles en gardant le dos neutre, pousse le sol. Sécurités du rack réglées juste sous le point bas. <a class="lien" href="https://www.youtube.com/watch?v=S9iWwaqbD3Q">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">4</td><td class="num">8-10</td><td class="num">7</td>
          <td class="num mono">3-0-1-0</td><td class="num">2 min 30</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc seul"><tr class="">
-    <td class="ex"><div class="nom"><span class="lettre">B</span>Inclined Leg Press<span class="tag">machine</span></div>
-      <div class="consigne">Pieds largeur de hanches, milieu du plateau. Descends tant que le bas du dos reste collé au dossier, ne verrouille pas les genoux en haut.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=q4W4_VJbKW0"><img src="miniatures/q4W4_VJbKW0.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">B</span>Inclined Leg Press<span class="tag">machine</span></div>
+      <div class="consigne">Pieds largeur de hanches, milieu du plateau. Descends tant que le bas du dos reste collé au dossier, ne verrouille pas les genoux en haut. <a class="lien" href="https://www.youtube.com/watch?v=q4W4_VJbKW0">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">10-12</td><td class="num">7</td>
          <td class="num mono">3-0-1-0</td><td class="num">2 min</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc seul"><tr class="">
-    <td class="ex"><div class="nom"><span class="lettre">C</span>Squat bulgare haltères</div>
-      <div class="consigne">Reps indiquées par jambe. Pied arrière sur banc, buste légèrement penché, genou avant qui avance au-dessus des orteils. Commence par la jambe la plus faible.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=CfW41dujnDY"><img src="miniatures/CfW41dujnDY.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">C</span>Squat bulgare haltères</div>
+      <div class="consigne">Reps indiquées par jambe. Pied arrière sur banc, buste légèrement penché, genou avant qui avance au-dessus des orteils. Commence par la jambe la plus faible. <a class="lien" href="https://www.youtube.com/watch?v=CfW41dujnDY">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">10-12</td><td class="num">7</td>
          <td class="num mono">2-0-1-0</td><td class="num">1 min 30</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc"><tr class="tete"><td colspan="7"><span class="lettre">D</span><span class="type">Superset · enchaîne les 2 exercices, puis 1 min 15 de repos · 3 tours</span></td></tr><tr class="ss ">
-    <td class="ex"><div class="nom">Leg Extension<span class="tag">machine</span></div>
-      <div class="consigne">Dossier réglé pour que le genou soit aligné avec l'axe de la machine, 1 s contracté en haut.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=iQ92TuvBqRo"><img src="miniatures/iQ92TuvBqRo.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Leg Extension<span class="tag">machine</span></div>
+      <div class="consigne">Dossier réglé pour que le genou soit aligné avec l'axe de la machine, 1 s contracté en haut. <a class="lien" href="https://www.youtube.com/watch?v=iQ92TuvBqRo">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">2-0-1-1</td><td class="num"><span class="enchaine">↓</span></td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Seated Leg Curl<span class="tag">machine</span></div>
-      <div class="consigne">Bassin collé au siège, buste légèrement penché en avant pour étirer les ischios.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=nIj321YZWbo"><img src="miniatures/nIj321YZWbo.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Seated Leg Curl<span class="tag">machine</span></div>
+      <div class="consigne">Bassin collé au siège, buste légèrement penché en avant pour étirer les ischios. <a class="lien" href="https://www.youtube.com/watch?v=nIj321YZWbo">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">2-0-1-1</td><td class="num">1 min 15</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc seul"><tr class="">
-    <td class="ex"><div class="nom"><span class="lettre">E</span>Standing Calf Raises<span class="tag">machine</span></div>
-      <div class="consigne">Pause 2 s étiré en bas, monte le plus haut possible, 1 s en haut. Pas de rebond.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=95itLfMBG40"><img src="miniatures/95itLfMBG40.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">E</span>Standing Calf Raises<span class="tag">machine</span></div>
+      <div class="consigne">Pause 2 s étiré en bas, monte le plus haut possible, 1 s en haut. Pas de rebond. <a class="lien" href="https://www.youtube.com/watch?v=95itLfMBG40">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">2-2-1-1</td><td class="num">45 s</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc seul"><tr class="cardio">
-    <td class="ex"><div class="nom"><span class="lettre">F</span>Marche inclinée sur tapis</div>
-      <div class="consigne">Cardio 10 min. Marche inclinée : pente 10-12 %, 5-6 km/h, sans se tenir aux barres. Zone 2 : tu peux parler en phrases courtes (≈ 65-75 % FC max).</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=HCjtPQu2MG8"><img src="miniatures/HCjtPQu2MG8.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">F</span>Marche inclinée sur tapis</div>
+      <div class="consigne">Cardio 10 min. Marche inclinée : pente 10-12 %, 5-6 km/h, sans se tenir aux barres. Zone 2 : tu peux parler en phrases courtes (≈ 65-75 % FC max). <a class="lien" href="https://www.youtube.com/watch?v=HCjtPQu2MG8">▶&nbsp;Vidéo</a></div></div></div></td>
     <td colspan="5" class="num duree">10 min · zone 2</td><td class="charges"></td>
   </tr></tbody>
     </table>
@@ -246,62 +250,51 @@ td.charges { width:22%; }
     </div>
     <table>
       <thead><tr><th class="ex">Exercice</th><th>Séries</th><th>Reps</th><th>RPE</th><th>Tempo</th><th>Repos</th><th class="charges">Charges (kg)</th></tr></thead>
-      <tbody class="bloc echauf"><tr class="tete"><td colspan="7"><span class="lettre">A</span><span class="type">Activation épaules + gainage · 2 tours sans repos · fait partie de l'échauffement</span></td></tr><tr class="ss ">
-    <td class="ex"><div class="nom">Band External Rotation + Press</div>
-      <div class="consigne">Activation de la coiffe : élastique léger, coude à hauteur d'épaule, tourne l'avant-bras vers le haut puis pousse. Lent, sans douleur.</div></td>
-    <td class="num">2</td><td class="num">12</td><td class="num">—</td>
-         <td class="num mono">2-0-1-1</td><td class="num"><span class="enchaine">↓</span></td>
-         <td class="charges"></td>
-  </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Shoulder Wall Slide</div>
-      <div class="consigne">Dos et avant-bras contre le mur, côtes basses : glisse les bras vers le haut en gardant le contact, omoplates qui descendent et se resserrent.</div></td>
-    <td class="num">2</td><td class="num">10</td><td class="num">—</td>
-         <td class="num mono">2-0-2-1</td><td class="num"><span class="enchaine">↓</span></td>
-         <td class="charges"></td>
-  </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Dead Bug</div>
-      <div class="consigne">Reps par côté. Bas du dos plaqué au sol, expire en tendant bras et jambe opposés. Gainage pour la posture.</div></td>
-    <td class="num">2</td><td class="num">8</td><td class="num">—</td>
-         <td class="num mono">2-1-1-0</td><td class="num"><span class="enchaine">↓</span></td>
-         <td class="charges"></td>
-  </tr></tbody><tbody class="bloc seul"><tr class="">
-    <td class="ex"><div class="nom"><span class="lettre">B</span>Incline Chest Press<span class="tag">machine</span></div>
-      <div class="consigne">Siège réglé pour que les poignées arrivent au haut des pecs, omoplates serrées, ne pas décoller les épaules du dossier. Amplitude contrôlée : les mains ne reculent pas derrière la ligne de la poitrine.</div></td>
+      <tbody class="bloc echauf"><tr class="tete"><td colspan="7"><span class="lettre">A</span><span class="type">Activation épaules + gainage · 2 tours sans repos · fait partie de l'échauffement</span></td></tr>
+        <tr><td colspan="7" class="act"><div class="grille-act"><div class="carte-act"><a class="vignette" href="https://www.youtube.com/watch?v=AFmoaWJ-DNQ"><img src="miniatures/AFmoaWJ-DNQ.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Band External Rotation + Press</div>
+        <div class="dose">2 × 12 · <span class="mono">2-0-1-1</span></div>
+        <div class="consigne">Activation de la coiffe : élastique léger, coude à hauteur d'épaule, tourne l'avant-bras vers le haut puis pousse. Lent, sans douleur. <a class="lien" href="https://www.youtube.com/watch?v=AFmoaWJ-DNQ">▶&nbsp;Vidéo</a></div></div></div><div class="carte-act"><a class="vignette" href="https://www.youtube.com/watch?v=83M3p-2iLUU"><img src="miniatures/83M3p-2iLUU.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Shoulder Wall Slide</div>
+        <div class="dose">2 × 10 · <span class="mono">2-0-2-1</span></div>
+        <div class="consigne">Dos et avant-bras contre le mur, côtes basses : glisse les bras vers le haut en gardant le contact, omoplates qui descendent et se resserrent. <a class="lien" href="https://www.youtube.com/watch?v=83M3p-2iLUU">▶&nbsp;Vidéo</a></div></div></div><div class="carte-act"><a class="vignette" href="https://www.youtube.com/watch?v=DqLL45uk2Tk"><img src="miniatures/DqLL45uk2Tk.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Dead Bug</div>
+        <div class="dose">2 × 8 · <span class="mono">2-1-1-0</span></div>
+        <div class="consigne">Reps par côté. Bas du dos plaqué au sol, expire en tendant bras et jambe opposés. Gainage pour la posture. <a class="lien" href="https://www.youtube.com/watch?v=DqLL45uk2Tk">▶&nbsp;Vidéo</a></div></div></div></div></td></tr></tbody><tbody class="bloc seul"><tr class="">
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=WxrKIPbeQP8"><img src="miniatures/WxrKIPbeQP8.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">B</span>Incline Chest Press<span class="tag">machine</span></div>
+      <div class="consigne">Siège réglé pour que les poignées arrivent au haut des pecs, omoplates serrées, ne pas décoller les épaules du dossier. Amplitude contrôlée : les mains ne reculent pas derrière la ligne de la poitrine. <a class="lien" href="https://www.youtube.com/watch?v=WxrKIPbeQP8">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">4</td><td class="num">8-10</td><td class="num">7</td>
          <td class="num mono">3-0-1-0</td><td class="num">2 min</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc seul"><tr class="">
-    <td class="ex"><div class="nom"><span class="lettre">C</span>Shoulder Press<span class="tag">machine</span></div>
-      <div class="consigne">Épaules fragiles : RPE 8 maximum, jamais moins de 8 reps. Dos collé au dossier, prise neutre si la machine le permet, sans verrouiller les coudes. Monte d'un cran seulement après 2 séances au haut de la fourchette.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=6v4nrRVySj0"><img src="miniatures/6v4nrRVySj0.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">C</span>Shoulder Press<span class="tag">machine</span></div>
+      <div class="consigne">Épaules fragiles : RPE 8 maximum, jamais moins de 8 reps. Dos collé au dossier, prise neutre si la machine le permet, sans verrouiller les coudes. Monte d'un cran seulement après 2 séances au haut de la fourchette. <a class="lien" href="https://www.youtube.com/watch?v=6v4nrRVySj0">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">10-12</td><td class="num">7</td>
          <td class="num mono">2-0-1-0</td><td class="num">2 min</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc"><tr class="tete"><td colspan="7"><span class="lettre">D</span><span class="type">Superset · enchaîne les 2 exercices, puis 1 min de repos · 3 tours</span></td></tr><tr class="ss ">
-    <td class="ex"><div class="nom">Pec-Deck Butterfly<span class="tag">machine</span></div>
-      <div class="consigne">Coudes légèrement fléchis et fixes, poitrine sortie, 1 s de contraction mains jointes. Au retour, les coudes ne passent pas derrière la ligne des épaules.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=fgXSA2-o0NM"><img src="miniatures/fgXSA2-o0NM.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Pec-Deck Butterfly<span class="tag">machine</span></div>
+      <div class="consigne">Coudes légèrement fléchis et fixes, poitrine sortie, 1 s de contraction mains jointes. Au retour, les coudes ne passent pas derrière la ligne des épaules. <a class="lien" href="https://www.youtube.com/watch?v=fgXSA2-o0NM">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">2-0-1-1</td><td class="num"><span class="enchaine">↓</span></td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Élévations latérales à la poulie</div>
-      <div class="consigne">Reps par bras. Poulie basse, câble derrière le corps, monte jusqu'à l'horizontale. Tension continue. Si la poulie est loin du pec-deck : fais les 2 exercices à la suite, repos 60 s.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=UswJtGzERy0"><img src="miniatures/UswJtGzERy0.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Élévations latérales à la poulie</div>
+      <div class="consigne">Reps par bras. Poulie basse, câble derrière le corps, monte jusqu'à l'horizontale. Tension continue. Si la poulie est loin du pec-deck : fais les 2 exercices à la suite, repos 60 s. <a class="lien" href="https://www.youtube.com/watch?v=UswJtGzERy0">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">2-0-1-1</td><td class="num">1 min</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc"><tr class="tete"><td colspan="7"><span class="lettre">E</span><span class="type">Superset · enchaîne les 2 exercices, puis 1 min 15 de repos · 3 tours</span></td></tr><tr class="ss ">
-    <td class="ex"><div class="nom">Dips Machine<span class="tag">machine</span></div>
-      <div class="consigne">Buste droit, coudes serrés, épaules basses. Amplitude contrôlée : arrête la descente coudes à 90°, pas de dips profonds. Extension complète en bas.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=8CvOC9Db3Yw"><img src="miniatures/8CvOC9Db3Yw.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Dips Machine<span class="tag">machine</span></div>
+      <div class="consigne">Buste droit, coudes serrés, épaules basses. Amplitude contrôlée : arrête la descente coudes à 90°, pas de dips profonds. Extension complète en bas. <a class="lien" href="https://www.youtube.com/watch?v=8CvOC9Db3Yw">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">10-12</td><td class="num">7</td>
          <td class="num mono">2-0-1-0</td><td class="num"><span class="enchaine">↓</span></td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Tricep Extension (Rope)</div>
-      <div class="consigne">Coudes collés au corps, écarte la corde en bas, 1 s de contraction.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=gg-31qQfOag"><img src="miniatures/gg-31qQfOag.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Tricep Extension (Rope)</div>
+      <div class="consigne">Coudes collés au corps, écarte la corde en bas, 1 s de contraction. <a class="lien" href="https://www.youtube.com/watch?v=gg-31qQfOag">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">2-0-1-1</td><td class="num">1 min 15</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc"><tr class="tete"><td colspan="7"><span class="lettre">F</span><span class="type">Cardio fractionné rameur</span></td></tr>
-      <tr class="cardio"><td class="ex"><div class="nom">Rameur</div><div class="consigne">2 min facile avant. 6 × (30 s fort à RPE 8-9 / 60 s très facile), 26-30 coups/min. Quadriceps encore très courbaturés d'hier : mêmes tours mais à RPE 7.</div></td>
+      <tr class="cardio"><td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=fP3vXkit0WQ"><img src="miniatures/fP3vXkit0WQ.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Rameur</div><div class="consigne">2 min facile avant. 6 × (30 s fort à RPE 8-9 / 60 s très facile), 26-30 coups/min. Quadriceps encore très courbaturés d'hier : mêmes tours mais à RPE 7. <a class="lien" href="https://www.youtube.com/watch?v=fP3vXkit0WQ">▶&nbsp;Vidéo</a></div></div></div></td>
       <td colspan="5" class="num duree">6 × (30 s fort / 60 s facile)</td><td class="charges"></td></tr></tbody>
     </table>
     <footer class="pied"><span>Ludo · Hypertrophie &amp; sèche · Semaine 1 / 12</span><span>Note tes charges à chaque série · douleur articulaire = on arrête et on prévient Corentin</span></footer>
@@ -318,69 +311,58 @@ td.charges { width:22%; }
     </div>
     <table>
       <thead><tr><th class="ex">Exercice</th><th>Séries</th><th>Reps</th><th>RPE</th><th>Tempo</th><th>Repos</th><th class="charges">Charges (kg)</th></tr></thead>
-      <tbody class="bloc echauf"><tr class="tete"><td colspan="7"><span class="lettre">A</span><span class="type">Activation épaules + gainage · 2 tours sans repos · fait partie de l'échauffement</span></td></tr><tr class="ss ">
-    <td class="ex"><div class="nom">Band External Rotation + Press</div>
-      <div class="consigne">Activation de la coiffe : élastique léger, coude à hauteur d'épaule, tourne l'avant-bras vers le haut puis pousse. Lent, sans douleur.</div></td>
-    <td class="num">2</td><td class="num">12</td><td class="num">—</td>
-         <td class="num mono">2-0-1-1</td><td class="num"><span class="enchaine">↓</span></td>
-         <td class="charges"></td>
-  </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Shoulder Wall Slide</div>
-      <div class="consigne">Dos et avant-bras contre le mur, côtes basses : glisse les bras vers le haut en gardant le contact, omoplates qui descendent et se resserrent.</div></td>
-    <td class="num">2</td><td class="num">10</td><td class="num">—</td>
-         <td class="num mono">2-0-2-1</td><td class="num"><span class="enchaine">↓</span></td>
-         <td class="charges"></td>
-  </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Dead Bug</div>
-      <div class="consigne">Reps par côté. Bas du dos plaqué au sol, expire en tendant bras et jambe opposés. Gainage pour la posture.</div></td>
-    <td class="num">2</td><td class="num">8</td><td class="num">—</td>
-         <td class="num mono">2-1-1-0</td><td class="num"><span class="enchaine">↓</span></td>
-         <td class="charges"></td>
-  </tr></tbody><tbody class="bloc seul"><tr class="">
-    <td class="ex"><div class="nom"><span class="lettre">B</span>Lat Pulldown<span class="tag">machine</span></div>
-      <div class="consigne">Cuisses bloquées, buste légèrement incliné en arrière, barre vers le haut de la poitrine, coudes vers les hanches, 1 s en bas.</div></td>
+      <tbody class="bloc echauf"><tr class="tete"><td colspan="7"><span class="lettre">A</span><span class="type">Activation épaules + gainage · 2 tours sans repos · fait partie de l'échauffement</span></td></tr>
+        <tr><td colspan="7" class="act"><div class="grille-act"><div class="carte-act"><a class="vignette" href="https://www.youtube.com/watch?v=AFmoaWJ-DNQ"><img src="miniatures/AFmoaWJ-DNQ.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Band External Rotation + Press</div>
+        <div class="dose">2 × 12 · <span class="mono">2-0-1-1</span></div>
+        <div class="consigne">Activation de la coiffe : élastique léger, coude à hauteur d'épaule, tourne l'avant-bras vers le haut puis pousse. Lent, sans douleur. <a class="lien" href="https://www.youtube.com/watch?v=AFmoaWJ-DNQ">▶&nbsp;Vidéo</a></div></div></div><div class="carte-act"><a class="vignette" href="https://www.youtube.com/watch?v=83M3p-2iLUU"><img src="miniatures/83M3p-2iLUU.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Shoulder Wall Slide</div>
+        <div class="dose">2 × 10 · <span class="mono">2-0-2-1</span></div>
+        <div class="consigne">Dos et avant-bras contre le mur, côtes basses : glisse les bras vers le haut en gardant le contact, omoplates qui descendent et se resserrent. <a class="lien" href="https://www.youtube.com/watch?v=83M3p-2iLUU">▶&nbsp;Vidéo</a></div></div></div><div class="carte-act"><a class="vignette" href="https://www.youtube.com/watch?v=DqLL45uk2Tk"><img src="miniatures/DqLL45uk2Tk.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Dead Bug</div>
+        <div class="dose">2 × 8 · <span class="mono">2-1-1-0</span></div>
+        <div class="consigne">Reps par côté. Bas du dos plaqué au sol, expire en tendant bras et jambe opposés. Gainage pour la posture. <a class="lien" href="https://www.youtube.com/watch?v=DqLL45uk2Tk">▶&nbsp;Vidéo</a></div></div></div></div></td></tr></tbody><tbody class="bloc seul"><tr class="">
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=nZHhSxwbTtQ"><img src="miniatures/nZHhSxwbTtQ.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">B</span>Lat Pulldown<span class="tag">machine</span></div>
+      <div class="consigne">Cuisses bloquées, buste légèrement incliné en arrière, barre vers le haut de la poitrine, coudes vers les hanches, 1 s en bas. <a class="lien" href="https://www.youtube.com/watch?v=nZHhSxwbTtQ">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">4</td><td class="num">8-10</td><td class="num">7</td>
          <td class="num mono">2-0-1-1</td><td class="num">2 min</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc seul"><tr class="">
-    <td class="ex"><div class="nom"><span class="lettre">C</span>High Row<span class="tag">machine</span></div>
-      <div class="consigne">Poitrine collée au support, tire les coudes vers l'arrière et le bas, serre les omoplates 1 s.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=0QN8jx2nEQc"><img src="miniatures/0QN8jx2nEQc.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">C</span>High Row<span class="tag">machine</span></div>
+      <div class="consigne">Poitrine collée au support, tire les coudes vers l'arrière et le bas, serre les omoplates 1 s. <a class="lien" href="https://www.youtube.com/watch?v=0QN8jx2nEQc">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">10-12</td><td class="num">7</td>
          <td class="num mono">2-0-1-1</td><td class="num">2 min</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc seul"><tr class="">
-    <td class="ex"><div class="nom"><span class="lettre">D</span>Seated Cable Row<span class="tag">machine</span></div>
-      <div class="consigne">Dos neutre, sans balancer le buste, poignée vers le nombril, étire bien les dorsaux au retour.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=BXMjaxXRUuE"><img src="miniatures/BXMjaxXRUuE.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">D</span>Seated Cable Row<span class="tag">machine</span></div>
+      <div class="consigne">Dos neutre, sans balancer le buste, poignée vers le nombril, étire bien les dorsaux au retour. <a class="lien" href="https://www.youtube.com/watch?v=BXMjaxXRUuE">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">10-12</td><td class="num">7</td>
          <td class="num mono">2-0-1-1</td><td class="num">1 min 30</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc"><tr class="tete"><td colspan="7"><span class="lettre">E</span><span class="type">Superset · enchaîne les 2 exercices, puis 1 min de repos · 3 tours</span></td></tr><tr class="ss ">
-    <td class="ex"><div class="nom">Reverse Butterfly<span class="tag">machine</span></div>
-      <div class="consigne">Bras presque tendus, ouvre vers l'arrière en pensant « écarter », pas « serrer les omoplates ».</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=vJYkqD7a0gM"><img src="miniatures/vJYkqD7a0gM.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Reverse Butterfly<span class="tag">machine</span></div>
+      <div class="consigne">Bras presque tendus, ouvre vers l'arrière en pensant « écarter », pas « serrer les omoplates ». <a class="lien" href="https://www.youtube.com/watch?v=vJYkqD7a0gM">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">2-0-1-1</td><td class="num"><span class="enchaine">↓</span></td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Face pull à la poulie</div>
-      <div class="consigne">Posture : poulie à hauteur du front, corde vers le visage, coudes hauts, finis en rotation externe (mains près des oreilles), 1 s omoplates serrées. Charge légère, la qualité prime.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=Q_bf9TtWxTU"><img src="miniatures/Q_bf9TtWxTU.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Face pull à la poulie</div>
+      <div class="consigne">Posture : poulie à hauteur du front, corde vers le visage, coudes hauts, finis en rotation externe (mains près des oreilles), 1 s omoplates serrées. Charge légère, la qualité prime. <a class="lien" href="https://www.youtube.com/watch?v=Q_bf9TtWxTU">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">2-0-1-1</td><td class="num">1 min</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc"><tr class="tete"><td colspan="7"><span class="lettre">F</span><span class="type">Superset · enchaîne les 2 exercices, puis 1 min de repos · 3 tours</span></td></tr><tr class="ss ">
-    <td class="ex"><div class="nom">Preacher Curl Machine<span class="tag">machine</span></div>
-      <div class="consigne">Aisselles calées sur le pupitre, extension presque complète en bas sans relâcher.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=S4dDLfp3e8w"><img src="miniatures/S4dDLfp3e8w.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Preacher Curl Machine<span class="tag">machine</span></div>
+      <div class="consigne">Aisselles calées sur le pupitre, extension presque complète en bas sans relâcher. <a class="lien" href="https://www.youtube.com/watch?v=S4dDLfp3e8w">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">3-0-1-0</td><td class="num"><span class="enchaine">↓</span></td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Standing Hammer Curls</div>
-      <div class="consigne">Prise marteau, coudes fixes le long du corps, sans élan.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=_qAeN7MlScc"><img src="miniatures/_qAeN7MlScc.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Standing Hammer Curls</div>
+      <div class="consigne">Prise marteau, coudes fixes le long du corps, sans élan. <a class="lien" href="https://www.youtube.com/watch?v=_qAeN7MlScc">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">2-0-1-0</td><td class="num">1 min</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc seul"><tr class="cardio">
-    <td class="ex"><div class="nom"><span class="lettre">G</span>Stairmaster</div>
-      <div class="consigne">Cardio 10 min. Allure régulière, zone 2 (tu peux parler en phrases courtes), sans brûlure dans les fessiers : demain, c'est la séance ischios-fessiers. Ne pas s'appuyer sur les rampes.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=p6GTBhjQjeM"><img src="miniatures/p6GTBhjQjeM.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">G</span>Stairmaster</div>
+      <div class="consigne">Cardio 10 min. Allure régulière, zone 2 (tu peux parler en phrases courtes), sans brûlure dans les fessiers : demain, c'est la séance ischios-fessiers. Ne pas s'appuyer sur les rampes. <a class="lien" href="https://www.youtube.com/watch?v=p6GTBhjQjeM">▶&nbsp;Vidéo</a></div></div></div></td>
     <td colspan="5" class="num duree">10 min · zone 2</td><td class="charges"></td>
   </tr></tbody>
     </table>
@@ -399,50 +381,50 @@ td.charges { width:22%; }
     <table>
       <thead><tr><th class="ex">Exercice</th><th>Séries</th><th>Reps</th><th>RPE</th><th>Tempo</th><th>Repos</th><th class="charges">Charges (kg)</th></tr></thead>
       <tbody class="bloc seul"><tr class="">
-    <td class="ex"><div class="nom"><span class="lettre">A</span>Soulevé de terre roumain barre</div>
-      <div class="consigne">Genoux légèrement fléchis, barre qui glisse le long des cuisses, fesses vers l'arrière jusqu'à l'étirement des ischios (mi-tibia environ), dos neutre. Sangles autorisées.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=QqO4NrDV-cs"><img src="miniatures/QqO4NrDV-cs.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">A</span>Soulevé de terre roumain barre</div>
+      <div class="consigne">Genoux légèrement fléchis, barre qui glisse le long des cuisses, fesses vers l'arrière jusqu'à l'étirement des ischios (mi-tibia environ), dos neutre. Sangles autorisées. <a class="lien" href="https://www.youtube.com/watch?v=QqO4NrDV-cs">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">4</td><td class="num">8-10</td><td class="num">7</td>
          <td class="num mono">3-0-1-0</td><td class="num">2 min 15</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc seul"><tr class="">
-    <td class="ex"><div class="nom"><span class="lettre">B</span>Hip Thrust<span class="tag">machine</span></div>
-      <div class="consigne">Menton rentré, bassin en rétroversion en haut, pause 2 s fessiers serrés.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=m8g9VogoxMo"><img src="miniatures/m8g9VogoxMo.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">B</span>Hip Thrust<span class="tag">machine</span></div>
+      <div class="consigne">Menton rentré, bassin en rétroversion en haut, pause 2 s fessiers serrés. <a class="lien" href="https://www.youtube.com/watch?v=m8g9VogoxMo">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">10-12</td><td class="num">7</td>
          <td class="num mono">2-0-1-2</td><td class="num">2 min</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc seul"><tr class="">
-    <td class="ex"><div class="nom"><span class="lettre">C</span>Lying Leg Curl<span class="tag">machine</span></div>
-      <div class="consigne">Bassin plaqué sur le banc, descente lente en 3 s.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=I3MdbhUBZ1Q"><img src="miniatures/I3MdbhUBZ1Q.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">C</span>Lying Leg Curl<span class="tag">machine</span></div>
+      <div class="consigne">Bassin plaqué sur le banc, descente lente en 3 s. <a class="lien" href="https://www.youtube.com/watch?v=I3MdbhUBZ1Q">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">10-12</td><td class="num">7</td>
          <td class="num mono">3-0-1-0</td><td class="num">1 min 15</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc"><tr class="tete"><td colspan="7"><span class="lettre">D</span><span class="type">Superset · enchaîne les 2 exercices, puis 1 min de repos · 3 tours</span></td></tr><tr class="ss ">
-    <td class="ex"><div class="nom">Leg Extension<span class="tag">machine</span></div>
-      <div class="consigne">Même réglage que mardi.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=iQ92TuvBqRo"><img src="miniatures/iQ92TuvBqRo.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Leg Extension<span class="tag">machine</span></div>
+      <div class="consigne">Même réglage que mardi. <a class="lien" href="https://www.youtube.com/watch?v=iQ92TuvBqRo">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">2-0-1-1</td><td class="num"><span class="enchaine">↓</span></td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Adductors / Abductors Machine Seating<span class="tag">machine</span></div>
-      <div class="consigne">Réglage adducteurs (serrer les jambes), grande amplitude contrôlée.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=BmMmt-c9aNM"><img src="miniatures/BmMmt-c9aNM.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Adductors / Abductors Machine Seating<span class="tag">machine</span></div>
+      <div class="consigne">Réglage adducteurs (serrer les jambes), grande amplitude contrôlée. <a class="lien" href="https://www.youtube.com/watch?v=BmMmt-c9aNM">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">2-0-1-1</td><td class="num">1 min</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc"><tr class="tete"><td colspan="7"><span class="lettre">E</span><span class="type">Superset · enchaîne les 2 exercices, puis 1 min de repos · 3 tours</span></td></tr><tr class="ss ">
-    <td class="ex"><div class="nom">Seated Calf Raises</div>
-      <div class="consigne">Pause 2 s étiré en bas, pas de rebond.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=EVF_inqTYTk"><img src="miniatures/EVF_inqTYTk.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Seated Calf Raises</div>
+      <div class="consigne">Pause 2 s étiré en bas, pas de rebond. <a class="lien" href="https://www.youtube.com/watch?v=EVF_inqTYTk">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">12-15</td><td class="num">7,5</td>
          <td class="num mono">2-2-1-1</td><td class="num"><span class="enchaine">↓</span></td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr><tr class="ss ">
-    <td class="ex"><div class="nom">Roue abdominale (Abs Wheel)</div>
-      <div class="consigne">À genoux, bassin en rétroversion, ne pas creuser le bas du dos. Va seulement aussi loin que tu restes gainé.</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=DA2QGI0NPWU"><img src="miniatures/DA2QGI0NPWU.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom">Roue abdominale (Abs Wheel)</div>
+      <div class="consigne">À genoux, bassin en rétroversion, ne pas creuser le bas du dos. Va seulement aussi loin que tu restes gainé. <a class="lien" href="https://www.youtube.com/watch?v=DA2QGI0NPWU">▶&nbsp;Vidéo</a></div></div></div></td>
     <td class="num">3</td><td class="num">8-12</td><td class="num">7,5</td>
          <td class="num mono">3-0-1-0</td><td class="num">1 min</td>
          <td class="charges"><div class="cases"><span></span><span></span><span></span></div></td>
   </tr></tbody><tbody class="bloc seul"><tr class="cardio">
-    <td class="ex"><div class="nom"><span class="lettre">F</span>Marche inclinée sur tapis</div>
-      <div class="consigne">Cardio 10 min. Marche inclinée : pente 10-12 %, 5-6 km/h, sans se tenir aux barres. Zone 2 : tu peux parler en phrases courtes (≈ 65-75 % FC max).</div></td>
+    <td class="ex"><div class="exw"><a class="vignette" href="https://www.youtube.com/watch?v=HCjtPQu2MG8"><img src="miniatures/HCjtPQu2MG8.jpg" alt=""><span class="play"></span></a><div class="txt"><div class="nom"><span class="lettre">F</span>Marche inclinée sur tapis</div>
+      <div class="consigne">Cardio 10 min. Marche inclinée : pente 10-12 %, 5-6 km/h, sans se tenir aux barres. Zone 2 : tu peux parler en phrases courtes (≈ 65-75 % FC max). <a class="lien" href="https://www.youtube.com/watch?v=HCjtPQu2MG8">▶&nbsp;Vidéo</a></div></div></div></td>
     <td colspan="5" class="num duree">10 min · zone 2</td><td class="charges"></td>
   </tr></tbody>
     </table>

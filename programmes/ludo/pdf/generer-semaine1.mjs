@@ -8,6 +8,16 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const ici = dirname(fileURLToPath(import.meta.url));
 const prog = JSON.parse(readFileSync(join(ici, '..', 'programme.json'), 'utf8'));
 const semaine = prog.semaines[0];
+const VIDEOS = JSON.parse(readFileSync(join(ici, 'videos.json'), 'utf8'));
+function media(nomBrut) {
+  const v = VIDEOS[nomBrut];
+  if (!v) return '';
+  return `<a class="vignette" href="${esc(v.url)}"><img src="miniatures/${v.id}.jpg" alt=""><span class="play"></span></a>`;
+}
+function lien(nomBrut) {
+  const v = VIDEOS[nomBrut];
+  return v ? `<a class="lien" href="${esc(v.url)}">▶&nbsp;Vidéo</a>` : '';
+}
 const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -43,8 +53,8 @@ function ligne(e, { dansSuperset = false, repos } = {}) {
   const { nom, machine } = nomAffiche(e.nom);
   const cardio = e.tempsTravail && !e.reps;
   return `<tr class="${cardio ? 'cardio' : ''}">
-    <td class="ex"><div class="nom">${esc(nom)}${machine ? '<span class="tag">machine</span>' : ''}</div>
-      ${e.consignes ? `<div class="consigne">${esc(e.consignes)}</div>` : ''}</td>
+    <td class="ex"><div class="exw">${media(e.nom)}<div class="txt"><div class="nom">${esc(nom)}${machine ? '<span class="tag">machine</span>' : ''}</div>
+      <div class="consigne">${esc(e.consignes || '')} ${lien(e.nom)}</div></div></div></td>
     ${cardio
       ? `<td colspan="5" class="num duree">${Math.round(e.tempsTravail / 60)} min · zone 2</td><td class="charges"></td>`
       : `<td class="num">${e.series}</td><td class="num">${esc(e.reps)}</td><td class="num">${fmtRpe(e.rpe)}</td>
@@ -63,6 +73,13 @@ function bloc(b, lettre) {
     const titre = echauf
       ? `Activation épaules + gainage · ${exercices[0].series} tours sans repos · fait partie de l'échauffement`
       : `${exercices.length === 2 ? 'Superset' : 'Triset'} · enchaîne les ${exercices.length} exercices, puis ${fmtRepos(repos)} de repos · ${exercices[0].series} tours`;
+    if (echauf) {
+      const cartes = exercices.map((e) => `<div class="carte-act">${media(e.nom)}<div class="txt"><div class="nom">${esc(nomAffiche(e.nom).nom)}</div>
+        <div class="dose">${e.series} × ${esc(e.reps)} · <span class="mono">${esc(e.tempo)}</span></div>
+        <div class="consigne">${esc(e.consignes)} ${lien(e.nom)}</div></div></div>`).join('');
+      return `<tbody class="bloc echauf"><tr class="tete"><td colspan="7"><span class="lettre">${lettre}</span><span class="type">${titre}</span></td></tr>
+        <tr><td colspan="7" class="act"><div class="grille-act">${cartes}</div></td></tr></tbody>`;
+    }
     const lignes = exercices
       .map((e, i) => ligne(e, { dansSuperset: i < exercices.length - 1 || echauf, repos }).replace('<tr class="', `<tr class="ss `))
       .join('');
@@ -72,7 +89,7 @@ function bloc(b, lettre) {
     const c = b.circuit;
     const e = c.exercices[0];
     return `<tbody class="bloc"><tr class="tete"><td colspan="7"><span class="lettre">${lettre}</span><span class="type">${esc(c.nom)}</span></td></tr>
-      <tr class="cardio"><td class="ex"><div class="nom">${esc(nomAffiche(e.nom).nom)}</div><div class="consigne">${esc(e.consignes)}</div></td>
+      <tr class="cardio"><td class="ex"><div class="exw">${media(e.nom)}<div class="txt"><div class="nom">${esc(nomAffiche(e.nom).nom)}</div><div class="consigne">${esc(e.consignes)} ${lien(e.nom)}</div></div></div></td>
       <td colspan="5" class="num duree">${c.tours} × (${c.travail} s fort / ${c.repos} s facile)</td><td class="charges"></td></tr></tbody>`;
   }
   return '';
@@ -190,18 +207,33 @@ th.ex { text-align:left; }
 td { padding:1.2mm 1mm; vertical-align:top; border-bottom:1px solid var(--trait); }
 tr.ss td { background:var(--ss); }
 .echauf tr.ss td { background:#EEF3FA; }
-td.ex { width:50%; padding-left:2mm; }
+td.ex { width:53%; padding-left:2mm; }
 .nom { font-weight:700; font-size:9.3pt; }
 .tag { margin-left:1.5mm; font-size:6.3pt; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--doux); border:1px solid var(--trait); border-radius:1mm; padding:0 1mm; vertical-align:1px; background:#fff; }
+.exw { display:flex; gap:2.5mm; align-items:flex-start; }
+.txt { flex:1; min-width:0; }
+.vignette { position:relative; flex:none; display:block; width:14mm; height:14mm; border-radius:1.5mm; overflow:hidden; background:#000; margin-top:.3mm; }
+.vignette img { width:100%; height:100%; object-fit:cover; display:block; }
+.play { position:absolute; left:50%; top:50%; width:6mm; height:6mm; margin:-3mm 0 0 -3mm; border-radius:50%; background:rgba(242,226,122,.95); }
+.play::after { content:''; position:absolute; left:2.3mm; top:1.6mm; border-left:2.1mm solid var(--nuit); border-top:1.4mm solid transparent; border-bottom:1.4mm solid transparent; }
+.lien { white-space:nowrap; font-size:7.2pt; font-weight:600; color:#2A55B8; text-decoration:none; }
+.seul .lettre { margin:0 1.5mm 0 0; }
+td.act { background:#EEF3FA; padding:2mm; }
+.grille-act { display:grid; grid-template-columns:repeat(3, 1fr); gap:2.5mm; }
+.carte-act { display:flex; gap:2mm; align-items:flex-start; }
+.carte-act .vignette { width:13mm; height:13mm; }
+.carte-act .nom { font-size:8.6pt; line-height:1.15; }
+.dose { font-size:8pt; font-weight:600; color:var(--nuit); margin-top:.3mm; }
+.carte-act .consigne { font-size:6.6pt; }
 .consigne { color:var(--doux); font-size:7.2pt; line-height:1.28; margin-top:.4mm; }
 td.num { text-align:center; font-weight:600; font-size:9.2pt; white-space:nowrap; }
 .mono { font-family:'Azeret Mono', monospace; font-size:8pt !important; font-weight:500 !important; }
 .enchaine { color:var(--doux); font-size:11pt; }
 td.duree { font-weight:600; color:var(--nuit); }
 tr.cardio td { background:#EDF3F9; }
-td.charges { width:22%; }
+td.charges { width:20%; }
 .cases { display:flex; gap:1mm; flex-wrap:nowrap; }
-.cases span { width:9mm; height:5.5mm; border:1px solid #B9BDC6; border-radius:1mm; background:#fff; }
+.cases span { width:8.2mm; height:5.5mm; border:1px solid #B9BDC6; border-radius:1mm; background:#fff; }
 .pied { position:absolute; left:12mm; right:12mm; bottom:7mm; display:flex; justify-content:space-between; font-size:7pt; color:var(--doux); border-top:1px solid var(--trait); padding-top:2mm; }
 </style></head><body>
 ${couverture}
