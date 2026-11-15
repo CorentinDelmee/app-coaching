@@ -68,8 +68,10 @@ async function dupliquer() {
   if (enCours.value) return
   erreur.value = ''
   enCours.value = true
-  const { workout, cible } = duplication.value
+  const { cible } = duplication.value
   try {
+    // La carte peut venir du cache d'affichage (src/data/cache.js) : la copie part de la séance relue fraîche.
+    const workout = (await data.workouts.lire(duplication.value.workout.id)) || duplication.value.workout
     // Vers un client : le nom de l'ancien client est remplacé ; vers un modèle : on marque « (copie) ».
     const nom = cible ? renommerPourClient(workout.nom, workout.clientId ? nomClient(workout.clientId) : '', nomClient(cible)) : `${workout.nom} (copie)`
     const copie = dupliquerWorkout(workout, cible || null, uuid, nom)

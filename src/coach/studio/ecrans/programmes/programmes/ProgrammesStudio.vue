@@ -74,7 +74,9 @@ async function dupliquer(p) {
   if (!d.debut || jourSemaine(d.debut) !== 0) { d.erreur = 'Le début doit être un lundi.'; return }
   d.enCours = true
   try {
-    const workouts = await data.workouts.lister()
+    // La carte peut venir du cache d'affichage (src/data/cache.js) : la copie part du programme relu frais.
+    const [frais, workouts] = await Promise.all([data.programmes.lire(p.id), data.workouts.lister()])
+    p = frais || p
     const copie = dupliquerProgramme(p, workouts, d.cible, uuid, d.debut, { ancien: nomDe(p.clientId), nouveau: nomDe(d.cible) })
     for (const w of copie.workouts) await data.workouts.creer(w)
     await data.programmes.creer(copie.programme)
