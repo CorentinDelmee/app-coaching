@@ -20,7 +20,7 @@ describe('réglages d\'apparence du client', () => {
     })
   })
   it('choix ouverts retenus en provisoire', () => {
-    expect(CHOIX).toEqual({ policeChrono: 'barlow', accueil: 'pret', texteAplat: 'fonce', adresse: 'vous' })
+    expect(CHOIX).toEqual({ policeChrono: 'barlow', accueil: 'pret', texteAplat: 'fonce', adresse: 'vous', chargeur: 'pastille' })
     expect(AMBIANCES.map((a) => a.id)).toEqual(['clair', 'sombre', 'bleu'])
   })
 })

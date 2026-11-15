@@ -4,10 +4,14 @@ import { routeCoach } from '../coach/routes.js'
 import { data } from '../data/index.js'
 import { redirection } from './garde.js'
 import { appliquerDepuisProfil } from '../lib/apparence.js'
+import { debuter } from '../lib/chargement.js'
+import { positionDefilement } from './defilement.js'
 
 // Les routes de l'app sont ajoutées lot par lot (voir PLAN.md).
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  // Coach : haut de page à chaque nouvelle page, position retrouvée au retour (voir defilement.js). Client : inchangé.
+  scrollBehavior: (to, from, saved) => positionDefilement(to, from, saved),
   routes: [
     { path: '/', name: 'accueil', component: Accueil },
     // Pages publiques (lot 9) : présentation / installation, connexion, confidentialité. `sansMenu` : pas de bouton menu.
@@ -38,6 +42,12 @@ const router = createRouter({
     { path: '/:pathMatch(.*)*', name: 'introuvable', component: () => import('../views/NonTrouvee.vue') }
   ]
 })
+
+// Chargeur : une navigation (code de la page à télécharger, session à vérifier) compte comme une attente.
+let finNavigation = null
+router.beforeEach(() => { finNavigation?.(); finNavigation = debuter() })
+router.afterEach(() => { finNavigation?.(); finNavigation = null })
+router.onError(() => { finNavigation?.(); finNavigation = null })
 
 // Garde : non connecté -> accueil public ; client hors /coach ; coach -> /coach ; consentement au premier lancement.
 router.beforeEach(async (to) => {

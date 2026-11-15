@@ -12,6 +12,8 @@ import { etat, rafraichir } from './store.js'
 import { NAV_PRINCIPALE, NAV_SECONDAIRE, estActif, compte } from './studio/navigation.js'
 import IconeSt from './studio/IconeSt.vue'
 import ToastSt from './studio/ToastSt.vue'
+import Chargeur from '../components/Chargeur.vue'
+import { sensNavigation } from './studio/mouvement.js'
 import './coach.css'
 import './studio/tokens.css'
 import './studio/layout.css'
@@ -19,6 +21,12 @@ import './studio/layout.css'
 const route = useRoute()
 const router = useRouter()
 onMounted(rafraichir)
+
+// Sens de l'entrée de page : onglet (même profondeur) | avance (plus profond : liste -> éditeur) | recule (retour).
+// Posé dans afterEach (même tâche que le changement de route) : la page qui part ne voit jamais le nouveau sens.
+const sens = ref('onglet')
+const retirerApres = router.afterEach((to, from, echec) => { if (!echec) sens.value = sensNavigation(from.path, to.path) })
+onBeforeUnmount(retirerApres)
 
 const BAS = NAV_PRINCIPALE.filter((e) => e.bas)
 const DANS_PLUS = [...NAV_PRINCIPALE.filter((e) => !e.bas), ...NAV_SECONDAIRE]
@@ -93,11 +101,10 @@ async function deconnecter() {
     </nav>
 
     <main id="st-contenu" class="st-main" tabindex="-1" :inert="plusOuvert || undefined">
+      <!-- Pas de <Transition> : l'ancienne page est remplacée dans la même image, la nouvelle joue son entrée CSS (layout.css). -->
       <RouterView v-slot="{ Component, route: r }">
-        <Transition name="st-page" mode="out-in">
-          <div v-if="r.meta.studio" :key="r.meta.cle || r.path" class="st-page"><component :is="Component" /></div>
-          <div v-else :key="r.meta.cle || r.path" class="coach c-pont"><div class="c-main"><component :is="Component" /></div></div>
-        </Transition>
+        <div v-if="r.meta.studio" :key="r.meta.cle || r.path" class="st-page" :data-sens="sens"><component :is="Component" /></div>
+        <div v-else :key="r.meta.cle || r.path" class="coach c-pont" :data-sens="sens"><div class="c-main"><component :is="Component" /></div></div>
       </RouterView>
     </main>
 
@@ -129,5 +136,6 @@ async function deconnecter() {
     <!-- Calques (panneau, fiche, volant) : <Teleport defer to="#st-calques"> depuis les écrans, pour rester sous .st-app (tokens). -->
     <div id="st-calques" />
     <ToastSt />
+    <Chargeur position="haut" />
   </div>
 </template>

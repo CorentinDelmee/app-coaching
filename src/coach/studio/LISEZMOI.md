@@ -31,6 +31,55 @@ Pièges déjà rencontrés :
 Contrôle : captures 390 / 360 / 1366 et mesures (planche `docs/captures-espacements/index.html`) ; le banc `tests/e2e/studio/banc.mjs` vérifie les cibles 44 px.
 
 
+## Mouvement et chargement (règles communes, 2026-11-15) — à lire avant toute animation ou tout chargement
+
+**Principe** : le doigt est servi tout de suite (≤ 100 ms), la page arrive en une fois à sa forme finale, rien ne saute après.
+Mesures, causes et avant / après : `docs/captures-mouvement/index.html`. Brief des correctifs : `docs/BRIEF-MOUVEMENT.md`.
+
+| Quoi | Durée | Courbe (token) | Règle |
+|---|---|---|---|
+| Appui (bouton, carte, onglet) | 80–120 ms | ease-out, scale .96–.97 | `--st-d-appui` ; jamais de transition de couleur sur un onglet |
+| **Page qui sort** | **0 ms** | — | aucune sortie : l'ancienne page est remplacée dans la même image (`CoachLayout`, pas de `<Transition mode="out-in">`) |
+| Page qui entre : onglet (même niveau) | 240 ms | `--st-sortie` | `translateY(6px)` + opacité depuis .9 (`--st-d-page`) |
+| Page qui entre : plus profond (liste → éditeur) / retour | 240 ms | `--st-sortie` | `translateX(±20px)` (`--st-glisse-page`), sens posé par `mouvement.js` (`sensNavigation`) |
+| Panneau (ordinateur) | 420 ms entrée, 120 ms sortie | `--st-sortie` / ease-in | `PanneauLateral` |
+| Feuille basse (téléphone) | 500 ms | `--st-vaul` (ressort doux, interruptible) | suit le doigt ; voile en opacité seule |
+| Élément partagé (vignette → panneau) | 500 ms | `--st-vaul` | le moment fort ; une seule fois par ouverture |
+| Contenu qui remplace un squelette | 0 ms | — | **aucun fondu, aucune cascade rejouée** : le squelette a déjà la forme du contenu |
+| Chargeur | après 250 ms d'attente, ≥ 400 ms visible | CSS seul (compositeur) | `src/components/Chargeur.vue`, variante `CHOIX.chargeur` (`src/config/apparence.js`) |
+
+Règles :
+- **Uniquement `transform` et `opacity`** (+ `stroke-dashoffset` d'un tracé). Jamais `height`, `width`, `top/left`, `margin`, `box-shadow`, `filter`,
+  `clip-path` dans une animation d'interface (un `box-shadow` au survol souris est toléré).
+- **Pas de fondu d'opacité sous .9 sur un texte** qu'on lit (entrées : `.9 → 1`). Pas de cascade sur un contenu qui arrive après un chargement.
+- **Interruptible** : une transition CSS (pas une animation à durée fixe) pour tout ce qui s'ouvre / se ferme ; un nouveau tap annule l'ancien mouvement.
+- **Jamais rejouer un tap** dans la page d'arrivée d'une transition (pas de `click()` différé, pas de focus qui déclenche une action).
+- **Pas de remplissage persistant** (`animation-fill-mode: forwards/both`) d'une transformation sur un conteneur qui contient du `position: fixed` ou `sticky`.
+- **Une seule source de mouvement par élément** : jamais une `<Transition>` Vue et un tween GSAP sur le même élément ; GSAP : `gsap.context()` + `ctx.revert()` au démontage.
+- `prefers-reduced-motion` : tokens.css ramène tout à 1 ms sous `.st-app` ; un tween GSAP / rAF doit tester `mouvementReduit()` lui-même.
+- Pendant une **série** de la séance client : aucune animation lourde, aucun chargeur (la séance n'utilise pas `lectureRapide`).
+
+**Chargement (src/data)** — une page ne « attend » plus la base :
+1. **Afficher tout de suite** : le cadre (en-tête, filtres, boutons) est rendu au montage ; la zone de données montre un **squelette à la forme du
+   contenu** (même nombre de lignes probables, mêmes hauteurs : `min-height` des cartes réelles) → aucun saut à l'arrivée (mesure : `layout-shift` = 0).
+2. **Lecture rapide** (`lectureRapide` de `src/data/index.js`, voir `src/data/cache.js`) pour les **listes et tableaux de bord** :
+   ```js
+   import { lectureRapide } from '../../../../data/index.js'
+   await lectureRapide('clients:liste', ['profils', 'realisations', 'programmes'], async () => {
+     const [profils, realisations] = await Promise.all([data.profils.lister({}, { archives: true }), data.realisations.lister()])
+     return { profils, realisations }               // valeur brute, sérialisable
+   }, (v, { depuisCache }) => { appliquer(v) })      // appelé 1 fois depuis le cache (tout de suite) puis 1 fois frais
+   ```
+   Si l'écran a été vu récemment et qu'aucune écriture n'est passée depuis, `appliquer` reçoit le cache **dans la même tâche** (pas d'image vide),
+   puis la lecture fraîche. Toute écriture passée par `data` invalide les entités touchées ; connexion / déconnexion vident tout.
+   Rien en cache → la lecture compte comme une attente → le chargeur peut s'afficher.
+3. **Éditeurs (concurrence optimiste)** : l'objet modifié avec `{ version }` est **toujours lu frais** (`data.<entite>.lire(id)`, jamais par le cache),
+   enveloppé dans `attente(...)` pour le chargeur ; `s.suivreVersion(...)` seulement avec la lecture fraîche. Les listes annexes de l'éditeur
+   (bibliothèque d'exercices, noms des clients) peuvent passer par `lectureRapide`. Un écran qui affiche le cache **n'active pas ses champs
+   d'édition** avant la lecture fraîche.
+4. **Lectures en parallèle** : `Promise.all`, jamais une suite d'`await` indépendants (chaque `await` = un aller-retour au VPS).
+5. `rafraichir()` (store) rend la main tout de suite si l'état a été lu récemment (puis se met à jour) ; après une écriture, il attend la lecture fraîche.
+
 > **État au 2026-11-06 ~12 h 50 : lot 0 terminé** (branche `studio-l0`, poussée). Tout est utilisable par les lots d'écrans.
 > **Correctifs L0 (banc, 06/11 après-midi)** : `.st-btn--danger` = **contour** (texte alerte sur surface) et nouveau `.st-btn--danger-plein` (blanc sur alerte) ;
 > `st-entree` / `st-cascade` partent d'une opacité .9 (plus de texte en fondu illisible) ; entrée de page 220 ms ; liens secondaires de la barre latérale à 44 px ;
