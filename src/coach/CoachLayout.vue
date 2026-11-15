@@ -35,7 +35,10 @@ onMounted(() => {
 // Sens de l'entrée de page : onglet (même profondeur) | avance (plus profond : liste -> éditeur) | recule (retour).
 // Posé dans afterEach (même tâche que le changement de route) : la page qui part ne voit jamais le nouveau sens.
 const sens = ref('onglet')
-const retirerApres = router.afterEach((to, from, echec) => { if (!echec) sens.value = sensNavigation(from.path, to.path) })
+// Même page gardée (même meta.cle, ex. fiche client ouverte sur la liste, ou seule la requête change) : le sens ne bouge pas,
+// sinon le changement d'animation-name rejoue l'entrée sur la page en place (la liste glisse sous la fiche qui monte).
+const clePage = (r) => r.meta?.cle || r.path
+const retirerApres = router.afterEach((to, from, echec) => { if (!echec && clePage(to) !== clePage(from)) sens.value = sensNavigation(from.path, to.path) })
 onBeforeUnmount(retirerApres)
 
 const BAS = NAV_PRINCIPALE.filter((e) => e.bas)
