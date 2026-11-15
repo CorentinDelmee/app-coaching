@@ -48,7 +48,8 @@ function finGlisse() {
   // au lieu de revenir en haut puis redescendre (saccade). Sinon la feuille revient en place avec sa transition.
   // L'élément qui sort n'est plus mis à jour par Vue : on attend que le style « transition: none » du glisser soit retiré
   // (sinon Vue voit une durée nulle et retire la feuille d'un coup, sans animation de sortie).
-  if (fermer) nextTick(() => emit('fermer'))
+  // Fermeture refusée par l'hôte (champ invalide : « Corriger / Fermer quand même ») : la feuille revient en place.
+  if (fermer) nextTick(() => { emit('fermer'); nextTick(() => { if (props.ouvert) decalage.value = 0 }) })
   else decalage.value = 0
 }
 const styleGlisse = computed(() => (decalage.value ? { '--glisse': `${decalage.value}px`, ...(glisse.value ? { transition: 'none' } : {}) } : null))
