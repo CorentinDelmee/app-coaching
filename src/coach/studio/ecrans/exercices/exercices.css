@@ -27,8 +27,24 @@
 .st-reserve-panneau .st-exo-grille { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
 .st-exo-grille.is-liste { grid-template-columns: 1fr; gap: var(--st-e-2); }
 .st-exo-grille.is-liste > li { contain-intrinsic-size: auto 64px; }
-.st-exo-fantome { aspect-ratio: 4 / 4.2; border-radius: var(--st-r-l); background: var(--st-surface-2); animation: st-exo-pulse 1.4s ease-in-out infinite alternate; }
+/* Squelette de la grille : mêmes dimensions qu'une vignette (média 4:3 + corps de 64 px, 69 px sur ordinateur) : aucun saut à l'arrivée */
+.st-exo-fantome { display: block; overflow: hidden; border-radius: var(--st-r-l); background: var(--st-surface); box-shadow: var(--st-ombre-1); animation: st-exo-pulse 1.4s ease-in-out infinite alternate; }
+.st-exo-fantome i { display: block; }
+.st-exo-fn-media { aspect-ratio: 4 / 3; background: var(--st-surface-2); }
+.st-exo-fn-corps { height: 64px; }
+@media (min-width: 901px) { .st-exo-fn-corps { height: 69px; } }
+.st-exo-grille.is-liste .st-exo-fantome { height: 64px; }
+.st-exo-grille.is-liste .st-exo-fn-media, .st-exo-grille.is-liste .st-exo-fn-corps { display: none; }
 @keyframes st-exo-pulse { to { opacity: .55; } }
+/* Sous-titre : même hauteur avant et après la lecture (2 lignes sur téléphone) */
+@media (max-width: 600px) { .st-exo-sous { min-height: 2lh; } }
+
+/* Squelette de la fiche (pendant la lecture fraîche de l'exercice) : champs inactifs */
+.st-exo-fiche-fantome { display: grid; gap: 14px; animation: st-exo-pulse 1.4s ease-in-out infinite alternate; }
+.st-exo-fiche-fantome i { display: block; border-radius: 12px; background: var(--st-surface-2); }
+.st-exo-fn-titre { height: 44px; width: 70%; } .st-exo-fn-puces { height: 28px; width: 55%; }
+.st-exo-fn-trois { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; } .st-exo-fn-trois i { height: 62px; border-radius: 14px; }
+.st-exo-fn-champ { height: 44px; } .st-exo-fn-grand { height: 84px; }
 
 .st-exo-vide { display: grid; justify-items: center; gap: 12px; padding: 48px 16px; text-align: center; color: var(--st-doux); border: 1.5px dashed var(--st-filet-fort); border-radius: var(--st-r-l); margin-top: 8px; }
 .st-exo-vide p { margin: 0; }
@@ -126,7 +142,7 @@
 }
 @media (max-width: 420px) { .st-exo-deux { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) {
-  .st-exo-fantome { animation: none; }
+  .st-exo-fantome, .st-exo-fiche-fantome { animation: none; }
   .st-exo-jeton, .st-exo-depot, .st-exo-bascule button { transition: none; }
 }
 /* Conflit : reste visible pendant la saisie d'un champ plus bas dans la fiche */

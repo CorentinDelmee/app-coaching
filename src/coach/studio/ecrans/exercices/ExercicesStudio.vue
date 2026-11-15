@@ -17,7 +17,8 @@ import { NOMS_MUSCLES, TEINTES_STUDIO, NIVEAUX, muscleDe, mediaDe, mouvementDe, 
 import { uuid } from '../../../store.js'
 import { filtrer, compteParTeinte, materielsDe, categoriesDe, compteVideo, voisin, messageErreurExo, LIBELLES } from './logique.js'
 import * as D from './donnees.js'
-import FicheExercice from './FicheExercice.vue'
+import FicheFraiche from './FicheFraiche.vue'
+import { lectureRapide } from '../../../../data/index.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -38,6 +39,7 @@ const affichage = ref(lirePref())
 watch(affichage, (a) => { try { localStorage.setItem(CLE_AFFICHAGE, a) } catch { /* navigation privée : on ne mémorise pas */ } })
 
 const liste = computed(() => filtrer(items.value, { q: q.value, muscles: muscles.value, materiel: materiel.value, categorie: categorie.value, niveau: niveau.value, video: video.value }))
+const visibles = computed(() => (limite.value === Infinity ? liste.value : liste.value.slice(0, limite.value)))
 const comptes = computed(() => compteParTeinte(items.value))
 const optionsMuscles = computed(() => TEINTES_STUDIO.map((t) => ({ valeur: t, texte: NOMS_MUSCLES[t], muscle: t, n: comptes.value[t] })))
 const optionsVideo = computed(() => [
@@ -50,9 +52,32 @@ const categories = computed(() => categoriesDe(items.value))
 const filtresActifs = computed(() => !!(q.value || muscles.value.length || materiel.value || categorie.value || niveau.value || video.value))
 function toutEffacer() { q.value = ''; muscles.value = []; materiel.value = ''; categorie.value = ''; niveau.value = ''; video.value = '' }
 
+// Lecture rapide : la bibliothèque déjà vue s'affiche dans la même tâche (aucune grille vide), puis la lecture fraîche la remplace.
+// Les cartes inchangées gardent leur objet (v-memo : rien n'est re-rendu, aucune cascade). La fiche, elle, relit son exercice (FicheFraiche).
+// Rendu par tranches : l'arrivée (cache) ne monte que les 16 premières vignettes (une seule tâche de ~150 ms sur un téléphone lent
+// sinon) ; le reste suit par paquets de 16 après l'entrée de page, sous l'écran (aucun saut : on ajoute à la fin).
+const limite = ref(16)
+let finTranche = null
+function planifierSuite() {
+  if (limite.value === Infinity || finTranche) return
+  const suite = () => {
+    finTranche = null
+    if (limite.value === Infinity) return
+    limite.value += 16
+    if (limite.value >= items.value.length) limite.value = Infinity
+    else { finTranche = setTimeout(suite, 50) }
+  }
+  finTranche = setTimeout(suite, mouvementReduit() ? 0 : 400)
+}
+function appliquerListe(v) {
+  const avant = new Map(items.value.map((e) => [e.id, e]))
+  items.value = v.map((e) => { const o = avant.get(e.id); return o && JSON.stringify(o) === JSON.stringify(e) ? o : e })
+  charge.value = true
+  planifierSuite()
+}
 async function charger() {
   erreur.value = ''
-  try { items.value = await D.chargerTous() } catch (e) { erreur.value = messageErreurExo(e) } finally { charge.value = true }
+  try { await lectureRapide('exercices:liste', ['exercices'], D.chargerTous, (v) => appliquerListe(v)) } catch (e) { if (!charge.value) erreur.value = messageErreurExo(e); else toast(messageErreurExo(e)) } finally { charge.value = true }
 }
 
 // ---------- Panneau ----------
@@ -135,6 +160,7 @@ function aller(d, force = false) {
   const n = courant.value && voisin(liste.value, courant.value.id, d)
   if (!n) return
   if (!force && retenir({ action: 'aller', d })) return
+  limite.value = Infinity
   ouvrir(n, null)
   nextTick(() => document.querySelector(`.st-exo-grille .st-carte[data-id="${CSS.escape(n.id)}"]`)?.scrollIntoView({ block: 'nearest', behavior: mouvementReduit() ? 'auto' : 'smooth' }))
 }
@@ -149,6 +175,12 @@ function surArchive(id) {
   fermer({ force: true })
   items.value = items.value.filter((e) => e.id !== id)
   if (n) nextTick(() => document.querySelector(`.st-exo-grille .st-carte[data-id="${CSS.escape(n.id)}"]`)?.focus({ preventScroll: true }))
+}
+
+function surIntrouvable(id) { // archivé ailleurs depuis l'affichage de la liste
+  toast('Cet exercice n\'existe plus.')
+  items.value = items.value.filter((e) => e.id !== id)
+  fermer({ force: true })
 }
 
 // ---------- Nouvel exercice : créé seulement quand un nom est saisi ----------
@@ -169,6 +201,7 @@ async function creer() {
   try {
     const cree = await D.creer({ id: uuid(), nom, categories: [] })
     const item = (await D.detail(cree.id)) || cree
+    limite.value = Infinity
     items.value = [...items.value, item]
     toutEffacer()
     annulerCreation()
@@ -224,7 +257,7 @@ onMounted(async () => {
   const id = route.query.ex
   if (id && items.value.some((e) => e.id === id)) ouvrir(items.value.find((e) => e.id === id), null)
 })
-onBeforeUnmount(() => { document.removeEventListener('keydown', surTouche); animFiltre.forEach((a) => a.cancel()) })
+onBeforeUnmount(() => { clearTimeout(finTranche); document.removeEventListener('keydown', surTouche); animFiltre.forEach((a) => a.cancel()) })
 </script>
 
 <template>
@@ -232,7 +265,7 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', surTouche); anim
     <header class="st-entete">
       <div>
         <h1 id="st-exo-titre">Exercices</h1>
-        <p>{{ charge ? `${items.length} mouvements dans ta bibliothèque, prêts à glisser dans une séance.` : 'Chargement de ta bibliothèque…' }}</p>
+        <p class="st-exo-sous">{{ charge ? `${items.length} mouvements dans ta bibliothèque, prêts à glisser dans une séance.` : 'Tes mouvements, prêts à glisser dans une séance.' }}</p>
       </div>
       <div class="st-actions">
         <button class="st-btn st-btn--jaune" type="button" :aria-expanded="creation" aria-controls="st-exo-creation" @click="commencerCreation"><IconeSt nom="plus" /><span>Nouvel exercice</span></button>
@@ -269,14 +302,16 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', surTouche); anim
     <p class="st-sr" role="status" aria-live="polite">{{ charge ? `${liste.length} exercice${liste.length > 1 ? 's' : ''}` : '' }}</p>
 
     <ul v-if="liste.length" ref="grille" class="st-exo-grille" data-test="biblio" :class="{ 'is-liste': affichage === 'liste' }">
-      <li v-for="e in liste" :key="e.id" v-memo="[e, courantId === e.id, affichage]"><VignetteExercice data-test="exercice" :exercice="e" :actif="courantId === e.id" :affichage="affichage" @ouvrir="ouvrir" /></li>
+      <li v-for="e in visibles" :key="e.id" v-memo="[e, courantId === e.id, affichage]"><VignetteExercice data-test="exercice" :exercice="e" :actif="courantId === e.id" :affichage="affichage" @ouvrir="ouvrir" /></li>
     </ul>
     <div v-else-if="charge && !erreur" class="st-exo-vide">
       <p v-if="!items.length"><b>Ta bibliothèque est vide.</b><br>Crée ton premier exercice ou demande à Claude d'en ajouter.</p>
       <p v-else><b>Aucun exercice ne correspond.</b><br>Essaie un autre mot ou retire un filtre.</p>
       <button v-if="filtresActifs" type="button" class="st-btn" @click="toutEffacer">Effacer les filtres</button>
     </div>
-    <ul v-else-if="!charge" class="st-exo-grille" aria-hidden="true"><li v-for="n in 8" :key="n" class="st-exo-fantome" /></ul>
+    <ul v-else-if="!charge" class="st-exo-grille" :class="{ 'is-liste': affichage === 'liste' }" aria-hidden="true">
+      <li v-for="n in (affichage === 'liste' ? 10 : 12)" :key="n" class="st-exo-fantome"><i class="st-exo-fn-media" /><i class="st-exo-fn-corps" /></li>
+    </ul>
 
     <PanneauLateral
       ref="panneau" :ouvert="!!courant" :etiquette="courant?.nom || 'Exercice'" :muscle="courant ? muscleDe(courant) : null"
@@ -306,9 +341,9 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', surTouche); anim
           <button type="button" class="st-btn" @click="quandMeme">{{ avertir.action === 'aller' ? 'Continuer quand même' : 'Fermer quand même' }}</button>
         </div>
       </div>
-      <FicheExercice
-        v-if="courant" :key="courant.id" ref="fiche" :exercice="courant" :materiels="materiels" :categories="categories"
-        @etat="etatSauve = $event" @invalides="invalides = $event" @maj="surMaj" @archive="surArchive"
+      <FicheFraiche
+        v-if="courant" :key="courant.id" ref="fiche" :id="courant.id" :materiels="materiels" :categories="categories"
+        @etat="etatSauve = $event" @invalides="invalides = $event" @maj="surMaj" @archive="surArchive" @introuvable="surIntrouvable"
       />
     </PanneauLateral>
   </section>
