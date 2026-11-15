@@ -22,6 +22,16 @@ const route = useRoute()
 const router = useRouter()
 onMounted(rafraichir)
 
+// Préchargement : une fois l'écran affiché et le téléphone au repos, le code des autres écrans coach est téléchargé
+// (sinon le 1er tap sur un onglet attend le téléchargement de sa page avant de changer d'écran).
+onMounted(() => {
+  const precharger = () => router.getRoutes().forEach((r) => {
+    const c = r.components?.default
+    if (r.path.startsWith('/coach/') && typeof c === 'function' && !c.prototype) c().catch(() => {})
+  })
+  if (typeof requestIdleCallback === 'function') requestIdleCallback(precharger, { timeout: 3000 }); else setTimeout(precharger, 1500)
+})
+
 // Sens de l'entrée de page : onglet (même profondeur) | avance (plus profond : liste -> éditeur) | recule (retour).
 // Posé dans afterEach (même tâche que le changement de route) : la page qui part ne voit jamais le nouveau sens.
 const sens = ref('onglet')
