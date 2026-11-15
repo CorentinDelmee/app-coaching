@@ -60,6 +60,10 @@
   --pad: 16px;                        /* marge latérale des pages de l'app (V2) */
   --pad-dash: 20px;                   /* marge latérale du tableau de bord (M5) */
   --gap: 12px;
+  /* Échelle d'espacement (mêmes règles que le Studio, src/coach/studio/LISEZMOI.md « Espacements ») :
+     texte ≥ 16 px du bord d'un bouton (≥ 12 px petit bouton/puce cliquable), ≥ 12 px du bord d'une carte ou d'un champ,
+     8 px minimum entre deux boutons, cibles ≥ var(--cible), gouttière = var(--pad). */
+  --esp-1: 4px; --esp-2: 8px; --esp-3: 12px; --esp-4: 16px; --esp-5: 20px; --esp-6: 24px; --esp-8: 32px; --esp-10: 40px;
   --haut-safe: max(env(safe-area-inset-top), 16px);   /* M5 */
   --bas-safe: max(env(safe-area-inset-bottom), 20px); /* M5 */
   --haut: calc(env(safe-area-inset-top, 0px) + 24px);

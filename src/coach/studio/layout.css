@@ -20,7 +20,7 @@
 .st-moi b { display: block; color: var(--st-encre); font-size: 14px; }
 .st-av { flex: none; width: var(--t, 36px); height: var(--t, 36px); border-radius: 50%; display: grid; place-items: center; background: var(--mc); color: var(--mi); font-weight: 700; font-size: 13px; }
 
-.st-main { min-width: 0; padding: 28px clamp(16px, 3vw, 40px) 60px; outline: none; }
+.st-main { min-width: 0; padding: 28px var(--st-gouttiere) 60px; outline: none; }
 .st-page { min-width: 0; }
 /* Changement de page : la page qui sort disparaît en 100 ms ; celle qui entre glisse de 8 px avec une opacité qui part de .9
    (jamais de texte en fondu illisible : DECISIONS.md, règle de contraste en temps réel). */
@@ -38,7 +38,7 @@
 @media (max-width: 900px) {
   .st-cadre { grid-template-columns: minmax(0, 1fr); }
   .st-nav { display: none; }
-  .st-main { padding: 14px 16px calc(96px + env(safe-area-inset-bottom)); }
+  .st-main { padding: var(--st-e-4) var(--st-gouttiere) calc(96px + env(safe-area-inset-bottom)); }
   .st-app .coach.c-pont { border-radius: var(--st-r-l); margin: 0 -6px; }
   .st-app .coach.c-pont > .c-main { padding: 18px 14px 28px; }
 

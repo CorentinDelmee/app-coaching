@@ -84,7 +84,7 @@ defineExpose({ media: () => elMedia.value })
 @media (hover: hover) { .st-carte:hover .st-lecture { transform: scale(1.12); } }
 .st-carte-media .st-duree { position: absolute; right: 10px; bottom: 10px; padding: 2px 7px; border-radius: 7px; background: rgba(35,37,43,.78); color: #fff; font-size: 11.5px; font-weight: 600; }
 .st-carte-media .st-puce { position: absolute; top: 10px; right: 10px; height: 24px; font-size: 11.5px; }
-.st-carte-corps { display: block; padding: 11px 13px 13px; }
+.st-carte-corps { display: block; padding: var(--st-e-3) var(--st-e-4) var(--st-e-4); }
 .st-carte-nom { font-weight: 650; color: var(--st-encre); font-size: 15px; line-height: 1.25; margin: 0 0 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .st-carte-meta { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--st-doux); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .st-carte-meta .st-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--mi); }
@@ -98,7 +98,7 @@ defineExpose({ media: () => elMedia.value })
 .st-carte.is-liste .st-carte-corps { padding: 0; min-width: 0; }
 .st-carte.is-liste .st-carte-nom { margin: 0; -webkit-line-clamp: 1; }
 @media (max-width: 900px) {
-  .st-carte-corps { padding: 9px 10px 11px; }
+  .st-carte-corps { padding: var(--st-e-3); }
   .st-carte-nom { font-size: 14px; }
   .st-carte.is-liste .st-carte-meta { display: none; }
 }

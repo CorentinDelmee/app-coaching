@@ -1,5 +1,36 @@
 # Studio (refonte coach d3) — fondations LOT 0
 
+## Espacements (règles communes, 2026-11-15) — à lire avant toute retouche d'écran
+
+Échelle unique (`tokens.css`) : `--st-e-1` 4 · `--st-e-2` 8 · `--st-e-3` 12 · `--st-e-4` 16 · `--st-e-5` 20 · `--st-e-6` 24 · `--st-e-8` 32 · `--st-e-10` 40 px.
+Pas d'autre valeur d'espacement (padding, margin, gap) dans un nouveau CSS (pas de 9, 10, 11, 13 px…) ; seules exceptions : `--st-pad-btn` 18 et `--st-pad-champ` 14,
+qui tiennent compte de la bordure 1 px. Les valeurs hors échelle restantes sont remplacées au fil des retouches. Rôles :
+
+| Règle | Valeur | Variable |
+|---|---|---|
+| Gouttière de page (marge latérale) | ≥ 16 px téléphone, 16–40 px ordinateur | `--st-gouttiere` (posée sur `.st-main`) |
+| Bouton : texte ↔ bord gauche/droit | ≥ 16 px (padding 18 px + bordure) | `--st-pad-btn` |
+| Petit bouton, puce cliquable, lien encadré, onglet | ≥ 12 px | `--st-pad-btn-petit` |
+| Puce / pastille non cliquable (≤ 28 px de haut) | ≥ 8 px | — (`.st-puce` : 10 px) |
+| Carte, bloc, bandeau, alerte : texte ↔ bord | ≥ 12 px (padding 16 px téléphone, 20 px ordinateur) | `--st-pad-carte` |
+| Champ (input, select, textarea) : texte ↔ bord | ≥ 12 px (padding 14 px) | `--st-pad-champ` |
+| Écart entre deux boutons voisins | ≥ 8 px (sauf groupe segmenté `role=tablist/radiogroup`) | `--st-ecart` |
+| Cible tactile | ≥ 44 × 44 px (y compris icônes seules) | `--st-cible` |
+| Zone sûre | barre du bas, feuilles et panneaux ajoutent `env(safe-area-inset-*)` ; rien de cliquable dessous | — |
+
+App client (`src/styles/tokens.css`) : même échelle en `--esp-1` … `--esp-10`, gouttière `--pad` (16 px), cible `--cible` (48 px, suit le Grand affichage).
+
+Pièges déjà rencontrés :
+- **Règle d'ordinateur qui casse le téléphone** : une feuille fixée (`position: fixed` + `top`/`bottom`) avec `align-self: start` hérité
+  de l'ordinateur ne défile plus. Toute règle de mise en page ordinateur posée hors `@media (min-width: 901px)` doit être relue à 390 px.
+- **Bouton qui rétrécit** : sur téléphone, deux boutons `flex: 1` côte à côte avec `padding: 0 10px` collent le texte au bord ;
+  passer à la ligne (`flex-wrap`) plutôt que réduire le padding sous 12 px.
+- **Texte dans un bouton fantôme aligné sur une étiquette** : un bouton sans fond garde son padding ; c'est le conteneur qui aligne.
+- Rangée qui défile horizontalement (filtres, onglets) : premier élément aligné sur la gouttière, la rangée peut déborder jusqu'au bord.
+
+Contrôle : captures 390 / 360 / 1366 et mesures (planche `docs/captures-espacements/index.html`) ; le banc `tests/e2e/studio/banc.mjs` vérifie les cibles 44 px.
+
+
 > **État au 2026-11-06 ~12 h 50 : lot 0 terminé** (branche `studio-l0`, poussée). Tout est utilisable par les lots d'écrans.
 > **Correctifs L0 (banc, 06/11 après-midi)** : `.st-btn--danger` = **contour** (texte alerte sur surface) et nouveau `.st-btn--danger-plein` (blanc sur alerte) ;
 > `st-entree` / `st-cascade` partent d'une opacité .9 (plus de texte en fondu illisible) ; entrée de page 220 ms ; liens secondaires de la barre latérale à 44 px ;
