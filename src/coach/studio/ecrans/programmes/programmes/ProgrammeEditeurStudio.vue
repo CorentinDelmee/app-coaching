@@ -3,7 +3,7 @@
 // semaines S1…Sn (mode « par semaine ») ou « Chaque semaine » (mode répété), sauvegarde automatique.
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink, onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
-import data from '../../../../../data/index.js'
+import data, { attente, lectureRapide } from '../../../../../data/index.js'
 import { jourLocal, lundiDe, jourSemaine } from '../../../../../domain/dates.js'
 import { etat, maintenant, nomClient, rafraichir, uuid, messageErreur } from '../../../../store.js'
 import { copie, resumeWorkout, retirerWorkoutDuProgramme } from '../../../../logique.js'
@@ -79,17 +79,22 @@ const raison = computed(() => (programme.value ? raisonInvalide(programme.value)
 const messageErreurSauve = computed(() => (s.etat.value === 'erreur' ? messageErreur(s.erreur.value) : ''))
 
 onMounted(async () => {
-  await rafraichir()
-  const [w, ex] = await Promise.all([data.workouts.lister(), data.exercices.lister().catch(() => [])])
-  tous.value = w
-  exercices.value = ex
+  // Tout part en parallèle. Le PROGRAMME édité est lu frais (jamais depuis le cache : concurrence optimiste) ;
+  // les séances et exercices (affichage seulement) passent par la lecture rapide.
+  const [, , p] = await Promise.all([
+    rafraichir(),
+    lectureRapide('programmes:editeur:annexes', ['workouts', 'exercices'], async () => {
+      const [w, ex] = await Promise.all([data.workouts.lister(), data.exercices.lister().catch(() => [])])
+      return { w, ex }
+    }, ({ w, ex }) => { tous.value = w; exercices.value = ex }),
+    estNouveau ? null : attente(data.programmes.lire(props.id))
+  ])
   if (estNouveau) {
     const c = etat.clients.find((x) => x.id === route.query.client)
     programme.value = { id: uuid(), clientId: c?.id || '', nom: c ? `Programme ${c.nom}` : '', mode: 'repete', debut: lundiDe(jourLocal(maintenant())), workouts: [], joursFixes: {} }
   } else {
-    const p = await data.programmes.lire(props.id)
     programme.value = p ? { joursFixes: {}, ...copie(p) } : null
-    s.suivreVersion(p?.version)
+    s.suivreVersion(p?.version) // lecture fraîche : seule source de la version
   }
   if (!programme.value) return
   const r = reprise.get(props.id)
@@ -412,6 +417,17 @@ onBeforeUnmount(() => {
     <p class="st-sr" aria-live="assertive">{{ g.annonce.value }}</p>
     <p id="st-gl-aide" class="st-sr">{{ AIDE_GLISSER }}</p>
   </div>
+  <!-- Squelette à la forme de l'éditeur (réglages, bibliothèque, semaines, jours) : le cadre est là dès le tap -->
+  <div v-else-if="programme === undefined" class="st-prog-p-ed">
+    <p class="st-sr" role="status">Chargement du programme…</p>
+    <RouterLink to="/coach/programmes" class="st-prog-p-retour">← Programmes</RouterLink>
+    <header class="st-entete"><div><p>&nbsp;</p><h1 class="st-prog-p-sqe-titre"><i class="st-prog-p-sqe" /></h1></div></header>
+    <section class="st-bloc st-prog-p-reglages st-prog-p-sqe-reglages"><i class="st-prog-p-sqe" /></section>
+    <div class="st-prog-p-grille">
+      <aside class="st-prog-p-biblio st-prog-p-sqe-biblio"><i class="st-prog-p-sqe" /><i class="st-prog-p-sqe" /><i class="st-prog-p-sqe" /></aside>
+      <div class="st-prog-p-plan"><i class="st-prog-p-sqe st-prog-p-sqe-sem" /><i class="st-prog-p-sqe st-prog-p-sqe-jours" /></div>
+    </div>
+  </div>
   <div v-else-if="programme === null" class="st-prog-p-vide">
     <h2>Programme introuvable</h2>
     <p>Il a peut-être été archivé.</p>
@@ -420,7 +436,22 @@ onBeforeUnmount(() => {
 </template>
 
 <style>
-.st-prog-p-ed { animation: st-prog-monte var(--st-d-base) var(--st-sortie); }
+/* Squelette de l'éditeur : hauteurs mesurées sur le vrai éditeur (téléphone / ordinateur) */
+.st-prog-p-sqe { display: block; background: var(--st-surface-2); border-radius: 12px; animation: st-prog-p-pouls-e 1.3s ease-in-out infinite alternate; }
+.st-prog-p-sqe-titre { height: clamp(34px, 5vw, 56px); }
+.st-prog-p-sqe-titre .st-prog-p-sqe { height: 70%; width: min(320px, 70%); }
+.st-prog-p-sqe-reglages { height: 361px; padding: var(--st-e-4); }
+.st-prog-p-sqe-reglages .st-prog-p-sqe { height: 100%; }
+.st-prog-p-sqe-biblio { position: static; height: 156px; display: grid; align-content: start; gap: var(--st-e-3); }
+.st-prog-p-sqe-biblio .st-prog-p-sqe { height: 44px; }
+.st-prog-p-sqe-sem { height: 32px; width: 60%; margin-bottom: var(--st-e-4); }
+.st-prog-p-sqe-jours { height: 528px; }
+@media (min-width: 901px) {
+  .st-prog-p-sqe-reglages { height: 200px; }
+  .st-prog-p-sqe-biblio { height: 556px; }
+}
+@keyframes st-prog-monte { from { transform: translateY(14px); } } /* bandeau « non enregistré » (sans fondu : texte lisible) */
+@keyframes st-prog-p-pouls-e { from { opacity: .55; } to { opacity: 1; } }
 .st-prog-p-retour { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: 4px; color: var(--st-doux); font-weight: 600; text-decoration: none; }
 .st-prog-p-retour:hover { color: var(--st-encre); }
 .st-prog-p-ed .st-entete h1 { overflow-wrap: anywhere; }
@@ -562,6 +593,5 @@ onBeforeUnmount(() => {
   .st-prog-p-posee > small { padding-left: 40px; padding-right: 92px; } /* aligné sur le titre (poignée 44 - 8 + gap 4) ; hors des icônes */
   .st-prog-p-posee-actions { position: absolute; top: var(--st-e-1); right: var(--st-e-1); margin: 0; }
 }
-/* Entrées sans fondu d'opacité : texte lisible pendant tout le mouvement (contraste mesuré en temps réel) */
-@keyframes st-prog-monte { from { transform: translateY(14px); } }
+
 </style>
