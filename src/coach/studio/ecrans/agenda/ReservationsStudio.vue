@@ -2,7 +2,7 @@
 // Réservations (Studio) : onglets À venir / Passées / Annulées, blocages, règles de prise de rendez-vous.
 // Reliées à Google Agenda côté serveur : l'annulation prévient le client tout de suite (confirmation en deux temps, dans la page).
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
-import data from '../../../../data/index.js'
+import data, { attente, lectureRapide } from '../../../../data/index.js'
 import {
   LIB_SYNCHRO, JOURS_SEMAINE, formulaireRegles, grouperParJour, libelleBlocage, libelleHeure, lienCarte, lienTel, validerBlocage, validerRegles
 } from '../../../../domain/reservations.js'
@@ -29,21 +29,25 @@ const boutons = ref([])
 
 const msgErreur = (e) => (e?.status === 502 || /502|indisponible/.test(String(e?.message || '')) ? 'Le service de réservation ne répond pas.' : 'Impossible de joindre le service de réservation. Réessayez dans un instant.')
 
+// Listes et blocages : affichage depuis le cache s'il est récent, puis lecture fraîche (une écriture sur « reservations » invalide le cache).
+// Règles : formulaire modifié puis enregistré avec sa base -> toujours lu frais, jamais depuis le cache (squelette en attendant).
+// `discret` : relecture après une action (annuler, bloquer…) ; la liste reste affichée, sans squelette.
 let jeton = 0
-async function charger() {
+async function charger({ discret = false } = {}) {
   const mien = ++jeton
-  chargement.value = true; erreur.value = ''; aConfirmer.value = null
+  const o = onglet.value
+  if (!discret) chargement.value = true
+  erreur.value = ''; aConfirmer.value = null
+  const pret = (fn) => (v) => { if (mien === jeton) { fn(v); chargement.value = false } }
   try {
     if (!data.reservations) throw new Error('indisponible')
-    if (LISTES.includes(onglet.value)) {
-      const g = grouperParJour(await data.reservations.liste(onglet.value), onglet.value === 'a_venir' ? 'asc' : 'desc')
-      if (mien === jeton) groupes.value = g
-    } else if (onglet.value === 'blocages') {
-      const b = await data.reservations.blocages()
-      if (mien === jeton) blocages.value = b
+    if (LISTES.includes(o)) {
+      await lectureRapide(`agenda:resas:${o}`, ['reservations'], async () => grouperParJour(await data.reservations.liste(o), o === 'a_venir' ? 'asc' : 'desc'), pret((g) => { groupes.value = g }))
+    } else if (o === 'blocages') {
+      await lectureRapide('agenda:blocages', ['reservations'], () => data.reservations.blocages(), pret((b) => { blocages.value = b }))
     } else {
-      const r = await data.reservations.regles()
-      if (mien === jeton) { reglesBase.value = r; regles.value = formulaireRegles(r) }
+      const r = await attente(data.reservations.regles())
+      pret((x) => { reglesBase.value = x; regles.value = formulaireRegles(x) })(r)
     }
   } catch (e) {
     if (mien === jeton) erreur.value = msgErreur(e)
@@ -51,8 +55,8 @@ async function charger() {
     if (mien === jeton) chargement.value = false
   }
 }
-onMounted(charger)
-watch(onglet, charger)
+onMounted(() => charger())
+watch(onglet, () => charger())
 
 function toucheOnglet(ev, i) {
   const pas = ev.key === 'ArrowRight' ? 1 : ev.key === 'ArrowLeft' ? -1 : 0
@@ -84,7 +88,7 @@ async function annuler(id) {
   try {
     await data.reservations.annuler(id)
     toast('Réservation annulée. Le client reçoit l’annulation Google tout de suite.')
-    await charger()
+    await charger({ discret: true })
   } catch (e) { erreur.value = msgErreur(e) }
 }
 async function bloquer() {
@@ -95,7 +99,7 @@ async function bloquer() {
     await data.reservations.bloquer(v.debut, v.fin, bloc.value.motif.trim())
     toast('Créneau bloqué.')
     bloc.value.motif = ''
-    await charger()
+    await charger({ discret: true })
   } catch (e) { erreur.value = msgErreur(e) }
 }
 async function debloquer(id) {
@@ -105,10 +109,10 @@ async function debloquer(id) {
     toast('Blocage retiré.', {
       action: 'Annuler',
       surAction: async () => {
-        try { await data.reservations.bloquer(b.debut, b.fin, b.motif || ''); if (onglet.value === 'blocages') await charger() } catch (e) { erreur.value = msgErreur(e) }
+        try { await data.reservations.bloquer(b.debut, b.fin, b.motif || ''); if (onglet.value === 'blocages') await charger({ discret: true }) } catch (e) { erreur.value = msgErreur(e) }
       }
     })
-    await charger()
+    await charger({ discret: true })
   } catch (e) { erreur.value = msgErreur(e) }
 }
 const MOIS_LONGS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
@@ -148,10 +152,14 @@ async function enregistrer() {
       >{{ l }}</button>
     </div>
 
-    <p v-if="erreur" class="st-ag-msg st-ag-msg--err" role="alert">{{ erreur }}<button class="st-btn" type="button" @click="charger">Réessayer</button></p>
+    <p v-if="erreur" class="st-ag-msg st-ag-msg--err" role="alert">{{ erreur }}<button class="st-btn" type="button" @click="charger()">Réessayer</button></p>
 
     <div id="rs-panneau" role="tabpanel" :aria-labelledby="`rs-onglet-${onglet}`">
-      <div v-if="chargement" aria-hidden="true"><div class="st-ag-squelette" /><div class="st-ag-squelette" /></div>
+      <div v-if="chargement" aria-hidden="true">
+        <template v-if="LISTES.includes(onglet)"><div class="st-ag-sq st-ag-sq--carte" style="margin-bottom: 10px" /><div class="st-ag-sq st-ag-sq--carte" /></template>
+        <div v-else-if="onglet === 'blocages'" class="st-ag-sq st-ag-sq--form" />
+        <div v-else class="st-ag-sq st-ag-sq--regles" />
+      </div>
       <p v-else-if="vide" class="st-ag-vide"><strong>{{ VIDES[onglet][0] }}</strong>{{ VIDES[onglet][1] }}</p>
 
       <div v-if="!chargement && !erreur && LISTES.includes(onglet)" class="st-ag-resas">
@@ -159,7 +167,7 @@ async function enregistrer() {
         <section v-for="g in groupes" :key="g.date" class="st-ag-groupe" :aria-label="g.libelle">
           <h3>{{ g.libelle }}</h3>
           <ul class="st-ag-liste">
-            <li v-for="(r, i) in g.items" :key="r.id" class="st-ag-carte" :style="{ '--i': Math.min(i, 8) }">
+            <li v-for="r in g.items" :key="r.id" class="st-ag-carte">
               <div class="st-ag-carte-tete">
                 <span class="st-ag-heure">{{ libelleHeure(r.heure) }}</span>
                 <div>

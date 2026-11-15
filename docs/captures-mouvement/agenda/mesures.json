@@ -1,0 +1,150 @@
+{
+ "conditions": "390x844 tactile, CPU x4, latence démo 500 ms, démo locale (faux agenda), même minute",
+ "ecran": "agenda",
+ "scenarios": {
+  "agenda: Aujourd’hui -> Agenda": {
+   "avant": {
+    "perdues": 9,
+    "pire": 116,
+    "longues": 1,
+    "longuesMs": 107,
+    "sauts": 0.282,
+    "derniereMutation": 2186
+   },
+   "apres": {
+    "perdues": 5,
+    "pire": 52,
+    "longues": 1,
+    "longuesMs": 67,
+    "sauts": 0.003,
+    "derniereMutation": 906
+   }
+  },
+  "agenda: Agenda -> Aujourd’hui": {
+   "avant": {
+    "perdues": 7,
+    "pire": 122,
+    "longues": 1,
+    "longuesMs": 128,
+    "sauts": 0,
+    "derniereMutation": 803
+   },
+   "apres": {
+    "perdues": 5,
+    "pire": 87,
+    "longues": 1,
+    "longuesMs": 86,
+    "sauts": 0,
+    "derniereMutation": 670
+   }
+  },
+  "agenda: 2e arrivée sur Agenda (cache)": {
+   "avant": {
+    "perdues": 5,
+    "pire": 70,
+    "longues": 1,
+    "longuesMs": 73,
+    "sauts": 0.282,
+    "derniereMutation": 1021
+   },
+   "apres": {
+    "perdues": 4,
+    "pire": 69,
+    "longues": 1,
+    "longuesMs": 77,
+    "sauts": 0,
+    "derniereMutation": 311
+   }
+  },
+  "agenda: Agenda -> Réservations": {
+   "avant": {
+    "perdues": 5,
+    "pire": 97,
+    "longues": 1,
+    "longuesMs": 93,
+    "sauts": 0,
+    "derniereMutation": 1633
+   },
+   "apres": {
+    "perdues": 4,
+    "pire": 70,
+    "longues": 1,
+    "longuesMs": 54,
+    "sauts": 0,
+    "derniereMutation": 170
+   }
+  },
+  "agenda: onglet Passées": {
+   "avant": {
+    "perdues": 2,
+    "pire": 35,
+    "longues": 0,
+    "longuesMs": 0,
+    "sauts": 0,
+    "derniereMutation": 155
+   },
+   "apres": {
+    "perdues": 2,
+    "pire": 35,
+    "longues": 0,
+    "longuesMs": 0,
+    "sauts": 0,
+    "derniereMutation": 178
+   }
+  },
+  "agenda: onglet Blocages": {
+   "avant": {
+    "perdues": 7,
+    "pire": 122,
+    "longues": 1,
+    "longuesMs": 122,
+    "sauts": 0,
+    "derniereMutation": 199
+   },
+   "apres": {
+    "perdues": 6,
+    "pire": 104,
+    "longues": 1,
+    "longuesMs": 112,
+    "sauts": 0,
+    "derniereMutation": 164
+   }
+  },
+  "agenda: onglet Règles": {
+   "avant": {
+    "perdues": 8,
+    "pire": 102,
+    "longues": 1,
+    "longuesMs": 117,
+    "sauts": 0,
+    "derniereMutation": 563
+   },
+   "apres": {
+    "perdues": 4,
+    "pire": 68,
+    "longues": 1,
+    "longuesMs": 85,
+    "sauts": 0,
+    "derniereMutation": 517
+   }
+  },
+  "agenda: onglet À venir": {
+   "avant": {
+    "perdues": 7,
+    "pire": 105,
+    "longues": 1,
+    "longuesMs": 103,
+    "sauts": 0,
+    "derniereMutation": 376
+   },
+   "apres": {
+    "perdues": 3,
+    "pire": 52,
+    "longues": 0,
+    "longuesMs": 0,
+    "sauts": 0,
+    "derniereMutation": 180
+   }
+  }
+ }
+}

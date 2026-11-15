@@ -7,6 +7,12 @@
 .st-ag-btn-sync:disabled { opacity: .7; cursor: progress; }
 .st-ag-sync { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .st-ag-meta { color: var(--st-doux); font-size: 13.5px; }
+/* Dernière synchro : hauteur fixe dès le premier rendu (le texte arrive après la lecture sans rien déplacer). Sur téléphone, le texte
+   a toujours sa propre ligne au-dessus du bouton, que la mention soit « Jamais synchronisé » ou une date. */
+.st-ag-sync { min-height: 44px; }
+.st-ag-meta-synchro { display: block; min-height: 20px; line-height: 20px; }
+.st-ag-meta-synchro.is-sq { width: 150px; border-radius: 6px; background: var(--st-surface-2); animation: st-ag-pouls 1.4s ease-in-out infinite; }
+@media (max-width: 600px) { .st-ag-sync { flex-direction: column; align-items: flex-start; gap: 8px; min-height: 72px; } .st-ag-meta-synchro { width: 100%; } .st-ag-meta-synchro.is-sq { width: 150px; } }
 
 /* Messages */
 .st-ag-msg { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 16px; border-radius: var(--st-r-m); margin: 0 0 16px; font-weight: 500; animation: st-entree var(--st-d-court) var(--st-sortie) both; }
@@ -20,8 +26,16 @@
 /* Vide / chargement */
 .st-ag-vide { text-align: center; padding: 36px 20px; border: 1.5px dashed var(--st-filet-fort); border-radius: var(--st-r-l); color: var(--st-doux); }
 .st-ag-vide strong { display: block; font-family: var(--st-titre); font-weight: 500; font-size: 20px; letter-spacing: -.02em; color: var(--st-encre); margin-bottom: 4px; }
-.st-ag-squelette { height: 84px; border-radius: var(--st-r-l); background: linear-gradient(90deg, var(--st-surface-2), #F7F4EF, var(--st-surface-2)); background-size: 200% 100%; animation: st-ag-lueur 1.4s ease-in-out infinite; margin-bottom: 10px; }
-@keyframes st-ag-lueur { to { background-position: -200% 0; } }
+.st-ag-squelette { height: 84px; border-radius: var(--st-r-l); background: var(--st-surface-2); animation: st-ag-pouls 1.4s ease-in-out infinite; margin-bottom: 10px; }
+/* Pulsation en opacité seule (compositeur) ; les squelettes ont la forme et la hauteur du contenu réel. */
+@keyframes st-ag-pouls { 50% { opacity: .55; } }
+.st-ag-sq { background: var(--st-surface-2); border-radius: var(--st-r-l); animation: st-ag-pouls 1.4s ease-in-out infinite; }
+.st-ag-sq--alerte { height: 150px; }
+.st-ag-sq--seance { height: 74px; }
+.st-ag-jour--sq .st-ag-date b { visibility: hidden; }
+.st-ag-sq--carte { height: 168px; }
+.st-ag-sq--form { height: 300px; }
+.st-ag-sq--regles { height: 520px; }
 
 /* Agenda : deux colonnes */
 .st-ag-cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; align-items: start; }
@@ -50,7 +64,7 @@
 .st-ag-attrib .st-btn { align-self: flex-start; min-height: 44px; }
 
 .st-ag-jours { display: flex; flex-direction: column; gap: 14px; margin: 0; padding: 0; list-style: none; }
-.st-ag-jour { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; animation: st-cascade var(--st-d-base) var(--st-sortie) both; animation-delay: calc(var(--i, 0) * 40ms); }
+.st-ag-jour { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; }
 .st-ag-date { text-align: center; padding-top: 6px; }
 .st-ag-date b { display: block; font-family: var(--st-titre); font-weight: 500; font-size: 38px; line-height: 1; letter-spacing: -.04em; color: var(--st-encre); font-variant-numeric: tabular-nums; }
 .st-ag-date span { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--st-doux); margin-top: 4px; }
@@ -77,7 +91,7 @@
 .st-ag-resas { display: flex; flex-direction: column; gap: var(--st-e-6); padding-bottom: var(--st-e-10); }
 .st-ag-groupe h3 { font-family: var(--st-titre); font-weight: 500; font-size: 20px; letter-spacing: -.02em; margin: 0 0 10px; color: var(--st-encre); }
 .st-ag-liste { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); margin: 0; padding: 0; list-style: none; }
-.st-ag-carte { background: var(--st-surface); border-radius: var(--st-r-l); box-shadow: var(--st-ombre-1); padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; animation: st-cascade var(--st-d-base) var(--st-sortie) both; animation-delay: calc(var(--i, 0) * 40ms); }
+.st-ag-carte { background: var(--st-surface); border-radius: var(--st-r-l); box-shadow: var(--st-ombre-1); padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .st-ag-carte-tete { display: flex; align-items: flex-start; gap: 8px 12px; flex-wrap: wrap; }
 .st-ag-carte-tete .st-ag-heure { font-size: 26px; line-height: 1.1; color: var(--st-encre); }
 .st-ag-carte-tete > div { flex: 1 1 130px; min-width: 0; }
