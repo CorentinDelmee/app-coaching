@@ -5,7 +5,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 
 import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import Icone from '../components/Icone.vue'
-import { data } from '../data/index.js'
+import { data, lectureRapide } from '../data/index.js'
 import { apercuWorkout, etatBouton, templatePourJour } from '../domain/workoutUi.js'
 import { jourLocal } from '../domain/dates.js'
 import { jourLong } from '../domain/calendrierUi.js'
@@ -39,41 +39,59 @@ const consigne = computed(() => apercu.value?.consigne || null)
 // Séance déjà faite un autre jour : on montre ce qui a été réalisé, sans bouton pour la relancer (comme la maquette V2)
 const sansDemarrer = computed(() => faitCeJour.value && jourAffiche !== aujourdhui)
 
+// Lecture brute (cache de lectureRapide, une entrée par workout) : en parallèle, valeur sérialisable.
 async function charger() {
-  try {
-    const user = await utilisateurCourant()
-    if (!user) { erreur.value = 'Connectez-vous pour voir ce workout.'; return }
-    const id = route.params.workoutId
-    const [workout, exercices, template, realisations] = await Promise.all([
-      data.workouts.lire(id), data.exercices.lister(), data.templates.lire(user.id), data.realisations.lister({ clientId: user.id })
-    ])
-    if (!workout) { erreur.value = 'Ce workout est introuvable.'; return }
-    apercu.value = apercuWorkout({
-      workout, exercices, template: templatePourJour({ template, realisations, workoutId: id, jour: route.query.jour || null }), unite: user.preferences?.unite || 'kg',
-      realisations: realisations.filter((r) => r.date < jourAffiche) // « Dernière fois » = avant le jour affiché
-    })
-    faitCeJour.value = realisations.some((r) => r.workoutId === id && r.date === jourAffiche)
-    if (route.query.jour && faitCeJour.value && jourAffiche !== aujourdhui) bandeau.value = { type: 'fait', texte: `Séance faite ${jourLong(jourAffiche)}. Voici ce que vous avez réalisé.` }
-    else if (route.query.jour && jourAffiche > aujourdhui) bandeau.value = { type: 'avenir', texte: 'Séance à venir : voici ce que Corentin a prévu.' }
-    const s = lireSeanceEnCours()
-    bouton.value = etatBouton({
-      workoutId: id, aujourdhui, realisations,
-      enCours: s && s.clientId === user.id ? s : null
-    })
-  } catch (e) {
-    erreur.value = 'Impossible de charger ce workout. Réessayez.'
-    console.error(e)
-  }
+  const user = await utilisateurCourant()
+  if (!user) return { user: null }
+  const id = route.params.workoutId
+  const [workout, exercices, template, realisations] = await Promise.all([
+    data.workouts.lire(id), data.exercices.lister(), data.templates.lire(user.id), data.realisations.lister({ clientId: user.id })
+  ])
+  return { user, workout, exercices, template, realisations }
+}
+let signature = ''
+let lance = false
+// 1re application (cache ou lecture fraîche) : la page s'ouvre ; la suivante ne remplace rien si le résultat est identique.
+function appliquer(brut) {
+  if (!brut.user) { erreur.value = 'Connectez-vous pour voir ce workout.'; return }
+  const { user, workout, exercices, template, realisations } = brut
+  const id = route.params.workoutId
+  if (!workout) { erreur.value = 'Ce workout est introuvable.'; if (!lance) lance = true; return }
+  const ap = apercuWorkout({
+    workout, exercices, template: templatePourJour({ template, realisations, workoutId: id, jour: route.query.jour || null }), unite: user.preferences?.unite || 'kg',
+    realisations: realisations.filter((r) => r.date < jourAffiche) // « Dernière fois » = avant le jour affiché
+  })
+  const fait = realisations.some((r) => r.workoutId === id && r.date === jourAffiche)
+  const s = lireSeanceEnCours()
+  const b = etatBouton({ workoutId: id, aujourdhui, realisations, enCours: s && s.clientId === user.id ? s : null })
+  let band = null
+  if (route.query.jour && fait && jourAffiche !== aujourdhui) band = { type: 'fait', texte: `Séance faite ${jourLong(jourAffiche)}. Voici ce que vous avez réalisé.` }
+  else if (route.query.jour && jourAffiche > aujourdhui) band = { type: 'avenir', texte: 'Séance à venir : voici ce que Corentin a prévu.' }
+  const sig = JSON.stringify([ap, fait, b, band])
+  if (lance && sig === signature) return
+  signature = sig
+  erreur.value = ''
+  apercu.value = ap
+  faitCeJour.value = fait
+  bandeau.value = band
+  bouton.value = b
+  if (!lance) { lance = true; nextTick().then(ouvrirApercu) }
 }
 
-onMounted(async () => {
-  await charger()
-  await nextTick()
+function ouvrirApercu() {
   const tl = ouvrir()
   // les encarts d'exercice arrivent un à un, les pastilles de lettre rebondissent (maquette V2)
   if (tl && !mouvementReduit() && couche.value) {
     gsap.fromTo(couche.value.querySelectorAll('.ex, .ci-liste li'), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, stagger: 0.05, ease: 'expo.out', delay: 0.3, clearProps: 'transform,opacity' })
     gsap.fromTo(couche.value.querySelectorAll('.bloc-l'), { scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, stagger: 0.08, ease: 'back.out(1.7)', delay: 0.25, clearProps: 'transform,opacity' })
+  }
+}
+onMounted(async () => {
+  try {
+    await lectureRapide('client:workout:' + route.params.workoutId + ':' + (route.query.jour || ''), ['workouts', 'exercices', 'templates', 'realisations'], charger, appliquer)
+  } catch (e) {
+    erreur.value = 'Impossible de charger ce workout. Réessayez.'
+    console.error(e)
   }
 })
 onBeforeUnmount(() => {
