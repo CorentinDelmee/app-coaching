@@ -179,6 +179,10 @@
   .st-prog-s-fermer { display: inline-flex; }
   .st-prog-s-voile { display: block; position: fixed; inset: 0; z-index: var(--st-z-voile); background: rgba(35, 37, 43, .32); animation: st-entree var(--st-d-court) ease-out; }
   .st-prog-s-bloc { padding: var(--st-e-2) var(--st-e-3) var(--st-e-4); }
+  /* En-tête de bloc : l'étiquette de type garde sa place, les actions passent à la ligne si besoin */
+  .st-prog-s-bloc-tete { flex-wrap: wrap; row-gap: 0; }
+  .st-prog-s-bloc-tete h3 { flex: 0 0 auto; overflow: visible; }
+  .st-prog-s-bloc-tete .st-prog-s-espace { flex: 1 1 0; min-width: 0; }
   /* titre + indicateur d'enregistrement sur une ligne : sans cela l'indicateur passe seul à la ligne et ouvre un grand vide sous le titre */
   .st-prog-s-entete { flex-wrap: nowrap; }
   .st-prog-s-titre { flex: 1 1 0; }
@@ -186,5 +190,5 @@
   .st-prog-s-ajouts { flex-wrap: nowrap; }
   .st-prog-s-ajouts .st-btn { flex: 1; min-width: 0; padding-inline: var(--st-e-4); }
 }
-/* Écran étroit : sans le « + », le texte garde ses 16 px de marge dans chaque bouton (3 boutons sur une ligne) */
-@media (max-width: 400px) { .st-prog-s-ajouts .st-btn svg { display: none; } }
+/* Écran étroit : « + » rétabli avec le padding des petits boutons (12 px) et un gap de 4 px ; 3 boutons sur une ligne */
+@media (max-width: 400px) { .st-prog-s-ajouts .st-btn { padding-inline: var(--st-pad-btn-petit); gap: var(--st-e-1); } }

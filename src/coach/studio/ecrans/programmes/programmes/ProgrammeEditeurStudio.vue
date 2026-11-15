@@ -558,7 +558,8 @@ onBeforeUnmount(() => {
   .st-prog-p-vide-jour { min-height: 52px; }
   .st-prog-p-sem-actions { margin-left: 0; }
   /* Carte posée : icônes en haut à droite (plus de rangée presque vide en bas) */
-  .st-prog-p-posee-tete { padding-right: 92px; min-height: 40px; }
+  .st-prog-p-posee-tete { padding-right: 92px; min-height: 28px; }
+  .st-prog-p-posee > small { padding-left: 40px; padding-right: 92px; } /* aligné sur le titre (poignée 44 - 8 + gap 4) ; hors des icônes */
   .st-prog-p-posee-actions { position: absolute; top: var(--st-e-1); right: var(--st-e-1); margin: 0; }
 }
 /* Entrées sans fondu d'opacité : texte lisible pendant tout le mouvement (contraste mesuré en temps réel) */
