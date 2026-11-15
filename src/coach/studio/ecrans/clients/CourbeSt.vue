@@ -33,8 +33,8 @@ const jour = (d) => `${d.slice(8, 10)}/${d.slice(5, 7)}`
       <path v-if="aire" class="aire" :d="aire" />
       <path class="ligne" :d="c.chemin" pathLength="1" />
       <circle v-for="p in c.points" :key="p.date" :cx="p.x" :cy="p.y" r="3.5"><title>{{ jour(p.date) }} : {{ arrondi(p.valeur) }} {{ unite }}</title></circle>
-      <text x="2" :y="M + 4">{{ arrondi(c.max) }}</text>
-      <text x="2" :y="H - M + 4">{{ arrondi(c.min) }}</text>
+      <text :x="M - 4" :y="M + 4" text-anchor="end">{{ arrondi(c.max) }}</text>
+      <text :x="M - 4" :y="H - M + 4" text-anchor="end">{{ arrondi(c.min) }}</text>
       <text :x="premier.x" :y="H - 6" text-anchor="start">{{ jour(premier.date) }}</text>
       <text v-if="c.points.length > 1" :x="dernier.x" :y="H - 6" text-anchor="end">{{ jour(dernier.date) }}</text>
     </svg>

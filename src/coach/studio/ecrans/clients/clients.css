@@ -42,8 +42,8 @@
 .st-clients .st-clients-recherche input:focus-visible { box-shadow: 0 0 0 2.5px var(--st-encre), var(--st-ombre-1); }
 .st-clients-recherche kbd { position: absolute; right: 14px; top: 13px; pointer-events: none; font: 600 12px var(--st-sans); color: var(--st-doux); border: 1px solid var(--st-filet-fort); border-radius: 6px; padding: 1px 7px; }
 @media (hover: none), (pointer: coarse), (max-width: 900px) { .st-clients-recherche kbd { display: none; } .st-clients .st-clients-recherche input { padding-right: 16px; } }
-/* Filtres : sur plusieurs lignes plutôt que coupés (3 filtres seulement). */
-.st-clients .st-clients-outils .st-filtres { flex-wrap: wrap; overflow: visible; -webkit-mask-image: none; mask-image: none; padding-right: 2px; }
+/* Filtres : sur plusieurs lignes à l'ordinateur ; sur téléphone ils défilent comme .st-filtres. */
+@media (min-width: 901px) { .st-clients .st-clients-outils .st-filtres { flex-wrap: wrap; overflow: visible; -webkit-mask-image: none; mask-image: none; padding-right: 2px; } }
 
 /* Zone : liste seule, ou liste + fiche à côté */
 .st-clients-zone { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: start; }
@@ -175,6 +175,8 @@
 .st-clients-lignes small { display: block; color: var(--st-doux); font-size: 13px; }
 .st-clients-lignes li.is-annulee b { text-decoration: line-through; color: var(--st-doux); }
 .st-clients-lignes select { width: auto; min-width: 128px; }
+@media (max-width: 900px) { .st-clients-lignes li { padding-right: var(--st-e-4); } }
+.st-clients .st-clients-form > h2 { margin-bottom: var(--st-e-4); }
 .st-clients-citation { margin: 0; font-size: 14px; color: var(--st-texte); font-style: italic; }
 .st-clients-paye { font-weight: 600; color: var(--st-encre); background: var(--st-ok-fond); border-radius: var(--st-r-m); padding: 10px 14px; margin: 14px 0 12px; }
 .st-clients-charges { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
@@ -233,7 +235,8 @@
   .st-clients-poignee::after { content: ''; width: 44px; height: 5px; border-radius: 3px; background: rgba(35,37,43,.3); }
   .st-clients-tete { padding: 34px 16px 0; touch-action: pan-x; }
   .st-clients-tete { background: linear-gradient(180deg, var(--mc) 0, var(--mc) 62px, transparent 62px); }
-  .st-clients-tete-txt { flex: 1 1 0; padding-right: 52px; }
+  .st-clients-tete { align-items: flex-start; }
+  .st-clients-tete-txt { flex: 1 1 0; padding-right: 52px; padding-top: calc(var(--st-e-8) + var(--st-e-1)); }
   .st-clients .st-clients-tete h2 { font-size: 25px; }
   .st-clients-av.is-grand { --t: 68px; font-size: 22px; }
   .st-clients-tete-actions { width: 100%; }
