@@ -138,7 +138,11 @@ async function principal() {
   const chromium = pw.chromium || pw.default?.chromium
   const navigateur = await chromium.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true })
   const mesures = []
-  const parcours = PARCOURS.filter((p) => !FILTRE || FILTRE.split(',').some((f) => p.nom.includes(f)))
+  // --fichier=<module.mjs> : parcours supplémentaires (export PARCOURS, même forme que parcours.mjs), ajoutés à la liste
+  const FICHIER = arg('fichier', '')
+  const tous = FICHIER ? [...PARCOURS, ...(await import(pathToFileURL(resolve(FICHIER)).href)).PARCOURS] : PARCOURS
+  const parcours = tous.filter((p) => !FILTRE || FILTRE.split(',').some((f) => p.nom.includes(f)))
+  if (!parcours.length) throw new Error('aucun parcours ne correspond à --parcours=' + FILTRE)
   try {
     for (const variante of VARIANTES) {
       const [vitesse, cache] = variante.split('-')
