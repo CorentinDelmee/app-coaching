@@ -78,8 +78,14 @@ export const PARCOURS = [
   { nom: 'client-accueil-questionnaires', role: 'client', depart: '/', etapes: [
     { nom: 'Questionnaires → liste', tap: '.c-quest' },
     { nom: 'liste → questionnaire', tap: (page) => page.locator('main button.cliquable, main .q-ligne, main li button').filter({ visible: true }).first() },
-    { nom: 'questionnaire → retour liste', tap: RETOUR },
+    { nom: 'questionnaire → retour liste', tap: 'button[aria-label^="Quitter"], button[aria-label="Fermer"]' },
     { nom: 'liste → retour accueil', tap: RETOUR }
+  ] },
+  { nom: 'client-programme-vues', role: 'client', depart: '/programme', etapes: [
+    { nom: 'vue Mois', tap: (page) => page.locator('button[aria-pressed]').filter({ hasText: 'Mois' }).first() },
+    { nom: 'vue Semaine', tap: (page) => page.locator('button[aria-pressed]').filter({ hasText: 'Semaine' }).first() },
+    { nom: 'semaine précédente', tap: 'button[aria-label="Semaine précédente"]' },
+    { nom: 'revenir à cette semaine', tap: 'button.retour-auj' }
   ] },
   { nom: 'client-menu-suivi', role: 'client', depart: '/', etapes: [...menu('Suivi'), { nom: 'suivi → retour', tap: RETOUR }] },
   { nom: 'client-menu-profil', role: 'client', depart: '/', etapes: [...menu('Profil'), { nom: 'profil → retour', tap: RETOUR }] },
@@ -93,31 +99,41 @@ export const PARCOURS = [
     { nom: 'Programmes → Aujourd\'hui', tap: onglet('Aujourd') }
   ] },
   { nom: 'coach-client-fiche', role: 'coach', depart: '/coach/clients', etapes: [
-    { nom: 'liste → fiche client', tap: (page) => page.locator('.st-page [data-client], .st-page .cl-ligne, .st-page li button, .st-page button.cl-carte').filter({ visible: true }).first() },
-    { nom: 'fiche : onglet 2', tap: (page) => page.locator('[role=tab]').filter({ visible: true }).nth(1) },
-    { nom: 'fiche : onglet 3', tap: (page) => page.locator('[role=tab]').filter({ visible: true }).nth(2) },
-    { nom: 'fiche : onglet 1', tap: (page) => page.locator('[role=tab]').filter({ visible: true }).nth(0) },
-    { nom: 'fiche → retour liste', tap: (page) => page.locator('button[aria-label^="Retour"], button[aria-label="Fermer"], button[aria-label^="Fermer"]').filter({ visible: true }).first() }
+    { nom: 'liste → fiche client', tap: 'a.st-clients-carte' },
+    ...['Programme', 'Suivi', 'Réponses', 'Rendez-vous', 'Notes privées', 'Réglages', 'Aperçu'].map((o) => ({ nom: `fiche : onglet ${o}`, tap: (page) => page.locator('[role=tab]').filter({ hasText: o }).first() })),
+    { nom: 'fiche → retour liste', tap: 'button[aria-label^="Fermer la fiche"]' }
   ] },
   { nom: 'coach-exercice-fiche', role: 'coach', depart: '/coach/exercices', etapes: [
-    { nom: 'liste → fiche exercice', tap: (page) => page.locator('.st-page .st-vignette, .st-page [data-exercice], .st-page article button').filter({ visible: true }).first() },
-    { nom: 'fiche → fermer', tap: (page) => page.locator('button[aria-label^="Fermer"], button[aria-label^="Retour"]').filter({ visible: true }).first() }
+    { nom: 'liste → fiche exercice', tap: '.st-page button.st-carte' },
+    { nom: 'fiche → fermer', tap: '#st-calques button[aria-label^="Fermer"]' }
   ] },
   { nom: 'coach-programme-editeur', role: 'coach', depart: '/coach/programmes', etapes: [
-    { nom: 'liste → programme', tap: (page) => page.locator('.st-page a[href^="/coach/programmes/"], .st-page [data-programme]').filter({ visible: true }).first() },
-    { nom: 'programme → retour', tap: (page) => page.locator('a[href="/coach/programmes"], button[aria-label^="Retour"]').filter({ visible: true }).first() }
+    { nom: 'liste → programme', tap: 'a.st-prog-p-lien' },
+    { nom: 'programme → retour', tap: 'a.st-prog-p-retour' }
   ] },
   { nom: 'coach-seance-editeur', role: 'coach', depart: '/coach/seances', etapes: [
-    { nom: 'liste → séance', tap: (page) => page.locator('.st-page a[href^="/coach/seances/"], .st-page [data-seance]').filter({ visible: true }).first() },
-    { nom: 'séance → retour', tap: (page) => page.locator('a[href="/coach/seances"], button[aria-label^="Retour"]').filter({ visible: true }).first() }
+    { nom: 'liste → séance', tap: 'a.st-prog-l-lien' },
+    { nom: 'séance → retour', tap: 'a.st-prog-retour' }
   ] },
   { nom: 'coach-plus-agenda', role: 'coach', depart: '/coach/aujourdhui', etapes: [...plus('Agenda'), { nom: 'Agenda → Aujourd\'hui', tap: onglet('Aujourd') }] },
   { nom: 'coach-plus-questionnaires', role: 'coach', depart: '/coach/aujourdhui', etapes: [
     ...plus('Questionnaires'),
-    { nom: 'liste → questionnaire', tap: (page) => page.locator('.st-page a[href^="/coach/questionnaires/"], .st-page [data-questionnaire]').filter({ visible: true }).first() },
-    { nom: 'questionnaire → retour', tap: (page) => page.locator('a[href="/coach/questionnaires"], button[aria-label^="Retour"]').filter({ visible: true }).first() },
+    { nom: 'liste → questionnaire', tap: 'a.st-qs-lien' },
+    { nom: 'questionnaire → retour', tap: 'a.st-qs-retour' },
     { nom: 'Questionnaires → Aujourd\'hui', tap: onglet('Aujourd') }
   ] },
-  { nom: 'coach-plus-reservations', role: 'coach', depart: '/coach/aujourdhui', etapes: [...plus('Réservations'), { nom: 'Réservations → Aujourd\'hui', tap: onglet('Aujourd') }] },
+  { nom: 'coach-plus-reservations', role: 'coach', depart: '/coach/aujourdhui', etapes: [...plus('Réservations'),
+    { nom: 'onglet Passées', tap: (page) => page.locator('button.st-ag-onglet').filter({ hasText: 'Passées' }).first() },
+    { nom: 'onglet Règles', tap: (page) => page.locator('button.st-ag-onglet').filter({ hasText: 'Règles' }).first() },
+    { nom: 'onglet À venir', tap: (page) => page.locator('button.st-ag-onglet').filter({ hasText: 'À venir' }).first() },
+    { nom: 'Réservations → Aujourd\'hui', tap: onglet('Aujourd') }] },
+  { nom: 'coach-exercices-filtre', role: 'coach', depart: '/coach/exercices', etapes: [
+    { nom: 'filtre Jambes', tap: (page) => page.locator('.st-page button.st-filtre').filter({ hasText: 'Jambes' }).first() },
+    { nom: 'filtre Jambes retiré', tap: (page) => page.locator('.st-page button.st-filtre').filter({ hasText: 'Jambes' }).first() }
+  ] },
+  { nom: 'coach-client-filtre', role: 'coach', depart: '/coach/clients', etapes: [
+    { nom: 'filtre À surveiller', tap: (page) => page.locator('.st-page button.st-filtre').filter({ hasText: 'surveiller' }).first() },
+    { nom: 'filtre Actifs', tap: (page) => page.locator('.st-page button.st-filtre').filter({ hasText: 'Actifs' }).first() }
+  ] },
   { nom: 'coach-plus-seances', role: 'coach', depart: '/coach/aujourdhui', etapes: [...plus('Séances'), { nom: 'Séances → Aujourd\'hui', tap: onglet('Aujourd') }] }
 ]

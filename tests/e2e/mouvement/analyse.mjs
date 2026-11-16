@@ -183,12 +183,22 @@ export function analyser(rec, { tTap = 0 } = {}) {
       }
       // glisse dans l'écran, ou fondu qui monte : voulu
       const suiv = l.slice(1, 4)
-      const glisse = suiv.some((s, i) => hyp(s.rx - (i ? suiv[i - 1] : p).rx, s.ry - (i ? suiv[i - 1] : p).ry) > 0.5)
+      const glisse = suiv.some((s, i) => { const a = i ? suiv[i - 1] : p; return hyp(s.rx - a.rx, s.ry - a.ry) > 0.5 || hyp(s.x - a.x, s.y - a.y) > 0.5 })
       const monte = suiv.length && suiv.at(-1).op > p.op + 0.05
       if (glisse || monte || p.op < 0.6) continue
       add('apparition', p, { id, op: p.op })
     }
   }
+  // remplacement de contenu d'un bloc (changement d'onglet…) : au moins 4 éléments partent et 3 arrivent dans la même page
+  const swaps = new Set()
+  for (const [k, ids] of parDebut) {
+    const parRacine = (l) => l.reduce((m, id) => { const r = els.get(id)[0].rid; m.set(r, (m.get(r) || 0) + 1); return m }, new Map())
+    const arr = parRacine(ids)
+    const dep = parRacine((parFin.get(k - 1) || []).map((id) => ({ id, p: els.get(id).at(-1) })).filter((x) => x.p.vis && x.p.op >= VISIBLE).map((x) => x.id))
+    for (const [r, nA] of arr) if (nA >= 3 && (dep.get(r) || 0) >= 4) swaps.add(`${r}|${k}`)
+  }
+  for (const s of swaps) { const [r, k] = s.split('|').map(Number); ev.forEach((e) => { if (e.type === 'position' && e.k === k && e.d > 150 && els.get(e.id)?.find((x) => x.k === k)?.rid === r) e.annule = true }) }
+
   // disparitions
   for (const [k, ids] of parFin) {
     for (const id of ids) {
@@ -198,7 +208,8 @@ export function analyser(rec, { tTap = 0 } = {}) {
       if (p.op < 0.6 || !p.vis) continue
       if (rFin.get(p.rid) === k) continue // la page entière part (sortie 0 ms : voulu)
       const prec = l.at(-2)
-      if (prec && prec.k === k - 1 && (hyp(p.rx - prec.rx, p.ry - prec.ry) > 0.5 || prec.op > p.op + 0.05)) continue // sortait en glissant / fondu
+      if (prec && prec.k === k - 1 && (hyp(p.rx - prec.rx, p.ry - prec.ry) > 0.5 || hyp(p.x - prec.x, p.y - prec.y) > 0.5 || prec.op > p.op + 0.05)) continue // sortait en glissant / fondu
+      if (swaps.has(`${p.rid}|${k + 1}`)) continue // contenu remplacé d'un bloc (onglet) : l'ancien part dans la même image, voulu
       const nouveaux = parDebut.get(k + 1) || []
       if (nouveaux.some((j) => { const dj = descs[j] || {}, dd = descs[id] || {}; return dj.el === dd.el && els.get(j)[0].txt === p.txt })) continue
       add('disparition', p, { id })
@@ -214,11 +225,16 @@ export function analyser(rec, { tTap = 0 } = {}) {
     const encore = new Set(maintenant.map((e) => e[0]))
     const partis = visibles(images[k - 1]).filter((e) => !encore.has(e[0]))
     const pris = new Set()
+    const paires = []
     for (const a of partis) {
       const da = descs[a[0]] || {}
       const b = maintenant.find((e) => nouvelles.has(e[6]) && !pris.has(e[0]) && e[7] === a[7] && (descs[e[0]] || {}).el === da.el)
       if (!b) continue
       pris.add(b[0])
+      paires.push([a, b])
+    }
+    if (paires.length < 3) continue
+    for (const [a, b] of paires) {
       const dx = b[1] - a[1], dy = b[2] - a[2], dw = b[3] - a[3], dh = b[4] - a[4]
       if (Math.abs(dx) > SEUIL || Math.abs(dy) > SEUIL || Math.abs(dw) > SEUIL || Math.abs(dh) > SEUIL) {
         ev.push({ type: 'echange', k, t: images[k].t, id: b[0], d: +hyp(dx, dy).toFixed(1), dx: +dx.toFixed(1), dy: +dy.toFixed(1), dw: +dw.toFixed(1), dh: +dh.toFixed(1) })
@@ -227,7 +243,7 @@ export function analyser(rec, { tTap = 0 } = {}) {
   }
 
   // garder ce qui suit le toucher
-  const apres = ev.filter((e) => e.t >= tTap - 20)
+  const apres = ev.filter((e) => e.t >= tTap - 20 && !e.annule)
   const grouper = (liste) => {
     const g = new Map()
     for (const e of liste) {

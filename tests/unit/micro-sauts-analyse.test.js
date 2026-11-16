@@ -45,10 +45,14 @@ describe('micro-sauts : analyse', () => {
   })
   it("échange de page : la copie (nouvelle racine) met le même élément ailleurs : signalé", () => {
     const R2 = [2, 0, 0, 390, 844, 1]
-    const images = [im(0, [[10, 20, 400, 80, 30, 1, 1, '≈ 25 min', 1]]), im(16, [[10, 20, 400, 80, 30, 1, 1, '≈ 25 min', 1]]),
-      im(32, [[20, 20, 447, 80, 30, 1, 2, '≈ 25 min', 1]], [R2]), im(48, [[20, 20, 447, 80, 30, 1, 2, '≈ 25 min', 1]], [R2])]
-    expect(types({ images })).toEqual(['echange'])
-    const memePlace = images.map((x, k) => (k < 2 ? x : im(x.t, [[20, 20, 400, 80, 30, 1, 2, '≈ 25 min', 1]], [R2])))
-    expect(types({ images: memePlace })).toEqual([])
+    const d = { ...descs, 21: { el: 'span.c-titre' }, 22: { el: 'span.c-sous' }, 31: { el: 'span.c-titre' }, 32: { el: 'span.c-sous' } }
+    const carte = (dy, base, r) => [[base, 20, 400 + dy, 80, 30, 1, r, '≈ 25 min', 1], [base + 11, 20, 200, 200, 40, 1, r, 'Lundi', 1], [base + 12, 20, 250, 200, 20, 1, r, 'Haut du corps', 1]]
+    const images = [im(0, carte(0, 10, 1)), im(16, carte(0, 10, 1)), im(32, carte(47, 20, 2), [R2]), im(48, carte(47, 20, 2), [R2])]
+    expect(analyser({ descs: d, images }).sauts.map((s) => s.type)).toEqual(['echange'])
+    const memePlace = [im(0, carte(0, 10, 1)), im(16, carte(0, 10, 1)), im(32, carte(0, 20, 2), [R2]), im(48, carte(0, 20, 2), [R2])]
+    expect(analyser({ descs: d, images: memePlace }).sauts).toEqual([])
+    // une seule paire (autre page qui réutilise le même composant) : pas une copie, rien
+    const seul = [im(0, [carte(0, 10, 1)[0]]), im(16, [carte(0, 10, 1)[0]]), im(32, [carte(47, 20, 2)[0]], [R2]), im(48, [carte(47, 20, 2)[0]], [R2])]
+    expect(analyser({ descs: d, images: seul }).sauts).toEqual([])
   })
 })

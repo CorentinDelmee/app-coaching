@@ -49,7 +49,12 @@ async function mesurerEtape(page, cdp, etape, { duree, captures }) {
   }
   await page.evaluate((o) => window.__ms.lancer(o), duree)
   const tTapEpoque = Date.now()
-  await cible.tap({ timeout: 3000 }).catch(() => cible.click({ timeout: 3000 }))
+  const touche = await cible.tap({ timeout: 3000 }).then(() => true, () => cible.click({ timeout: 3000 }).then(() => true, () => false))
+  if (!touche) {
+    await page.waitForFunction(() => window.__ms && window.__ms.resultat, null, { timeout: 30000, polling: 100 }).catch(() => {})
+    if (captures) { await cdp.send('Page.stopScreencast').catch(() => {}); cdp.off('Page.screencastFrame', surImage) }
+    return { erreur: 'toucher refusé (élément couvert)' }
+  }
   await page.waitForFunction(() => window.__ms && window.__ms.resultat, null, { timeout: 30000, polling: 100 })
   const rec = await page.evaluate(() => window.__ms.resultat)
   if (captures) { await cdp.send('Page.stopScreencast').catch(() => {}); cdp.off('Page.screencastFrame', surImage) }

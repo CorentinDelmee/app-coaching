@@ -15,6 +15,7 @@
   }
   const CLASSES = /(^|[\s_-])(chip|puce|pastille|badge|vignette|squelette|skel|st-sq|ico|icone|avatar|st-av|anneau)/i
   const TAGS = new Set(['IMG', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'VIDEO', 'CANVAS', 'svg'])
+  const MEDIAS = new Set(['IMG', 'svg', 'CANVAS', 'VIDEO', 'INPUT', 'SELECT', 'TEXTAREA'])
   const RACINES = '.st-page, .c-pont, .st-feuille-plus, #st-calques > *'
   const texteDe = (el) => {
     let t = ''
@@ -111,6 +112,12 @@
       if (!retenu(el)) continue
       const r = el.getBoundingClientRect()
       if (r.width < 1 || r.height < 1 || r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) continue
+      // élément sans texte ni média (bouton, puce vide…) : seulement s'il se voit (fond, bordure, ombre)
+      if (!texteDe(el) && !MEDIAS.has(el.tagName)) {
+        const s = st(el)
+        const fond = !/rgba\([^)]*,\s*0\)|transparent/.test(s.backgroundColor) || s.backgroundImage !== 'none'
+        if (!fond && !(parseFloat(s.borderTopWidth) > 0 && !/rgba\([^)]*,\s*0\)|transparent/.test(s.borderTopColor)) && s.boxShadow === 'none') continue
+      }
       bruts.push([el, r, infoRacine(racineDe(el))])
     }
     const liste = [...racines.values()]
