@@ -20,7 +20,7 @@
 .st-moi b { display: block; color: var(--st-encre); font-size: 14px; }
 .st-av { flex: none; width: var(--t, 36px); height: var(--t, 36px); border-radius: 50%; display: grid; place-items: center; background: var(--mc); color: var(--mi); font-weight: 700; font-size: 13px; }
 
-.st-main { min-width: 0; padding: 28px var(--st-gouttiere) 60px; outline: none; }
+.st-main { min-width: 0; padding: 28px var(--st-gouttiere) 60px; outline: none; overflow-x: clip; } /* l’entrée de page en translateX ne déborde jamais (sur téléphone, un débordement élargit la page et décale la barre du bas) */
 .st-page { min-width: 0; }
 /* Changement de page (LISEZMOI « Mouvement ») : pas de sortie (l'ancienne page est remplacée dans la même image : jamais
    d'écran vide ni de durée doublée), la nouvelle entre selon le sens : onglet = monte de 6 px ; plus profond (liste -> éditeur)
