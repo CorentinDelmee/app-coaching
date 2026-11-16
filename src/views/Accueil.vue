@@ -8,7 +8,7 @@ import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { SplitText } from 'gsap/SplitText'
 import Icone from '../components/Icone.vue'
-import { data, mode } from '../data/index.js'
+import { data, lectureRapide, mode } from '../data/index.js'
 import { syntheseAccueil } from '../domain/accueil.js'
 import { messageEcrire } from '../domain/coaching.js'
 import { messageAccueil } from '../domain/messageAccueil.js'
@@ -36,22 +36,18 @@ const celebration = ref(null)
 let decoupe = null // SplitText du message d'accueil (à défaire avant de changer le texte)
 let entrees = null // données de la synthèse (pour recalculer la semaine « avant » la séance qui vient d'être validée)
 
+// Lecture brute (mise en cache par lectureRapide) : tout en parallèle, valeur sérialisable.
 async function charger() {
-  try {
-    user.value = await utilisateurCourant()
-    if (!user.value) { erreur.value = 'Connectez-vous pour voir votre tableau de bord.'; return }
-    const id = user.value.id
-    const [programmes, workouts, exercices, template, realisations, seancesCoaching, questionnaires, reponses] = await Promise.all([
-      data.programmes.lister({ clientId: id }), data.workouts.lister({ clientId: id }), data.exercices.lister(), data.templates.lire(id),
-      data.realisations.lister({ clientId: id }), data.seancesCoaching.lister({ clientId: id }), data.questionnaires.lister(), data.reponses.lister({ clientId: id })
-    ])
-    entrees = { user: user.value, programme: programmes[0] || null, workouts, exercices, template, realisations, seancesCoaching, questionnaires, reponses, now: horloge.now() }
-    s.value = syntheseAccueil(entrees)
-  } catch (e) {
-    erreur.value = 'Impossible de charger votre tableau de bord. Réessayez.'
-    console.error(e)
-  }
+  const u = await utilisateurCourant()
+  if (!u) return { user: null }
+  const id = u.id
+  const [programmes, workouts, exercices, template, realisations, seancesCoaching, questionnaires, reponses] = await Promise.all([
+    data.programmes.lister({ clientId: id }), data.workouts.lister({ clientId: id }), data.exercices.lister(), data.templates.lire(id),
+    data.realisations.lister({ clientId: id }), data.seancesCoaching.lister({ clientId: id }), data.questionnaires.lister(), data.reponses.lister({ clientId: id })
+  ])
+  return { user: u, programme: programmes[0] || null, workouts, exercices, template, realisations, seancesCoaching, questionnaires, reponses }
 }
+const ENTITES = ['programmes', 'workouts', 'exercices', 'templates', 'realisations', 'seancesCoaching', 'questionnaires', 'reponses']
 
 const fraction = computed(() => (s.value && s.value.semaine.total ? s.value.semaine.faits / s.value.semaine.total : 0))
 const bouclee = computed(() => s.value?.hero.etat === 'bouclee')
@@ -72,6 +68,7 @@ const courante = computed(() => (s.value?.programme ? s.value.programme.segments
 // au-dessus (M5 : « Bonjour »), la suite en grand (M5 : « Fabien. »). Une phrase longue (variante « semaine ») reste seule en grand.
 // Le titre est posé à la main (SplitText découpe ses lettres) : d'où cette fonction, qui défait la découpe précédente.
 function poserMessage(msg) {
+  msgPose = JSON.stringify(msg)
   if (decoupe) { decoupe.revert(); decoupe = null }
   const h = salutEl.value
   const deux = msg.lignes.length > 1
@@ -97,6 +94,7 @@ function animerMessage(delai = 0) {
 // --- Entrée (M5, PAGES['e-dash'].entrer) : décor depuis la profondeur, en-tête, message lettre à lettre en 3D, cartes sur 3 couches
 // (data-couche : 1 = loin, 3 = près : distances et durées différentes), anneau + compteur, pastille. transform / opacity seulement. ---
 let pret = false // la parallaxe attend la fin de l'entrée (M5 : dash.pret)
+let tlEntree = null
 function entree() {
   const r = racine.value
   const cartes = Array.from(r.querySelectorAll('.grille .carte'))
@@ -110,7 +108,7 @@ function entree() {
     pret = true
     return
   }
-  const tl = gsap.timeline({ onComplete: () => { pret = true } })
+  const tl = tlEntree = gsap.timeline({ onComplete: () => { pret = true } })
   tl.fromTo(q('.deco-n'), { opacity: 0, y: 90, z: -400 }, { opacity: 1, y: 0, z: 0, duration: 1.8, ease: M5.E.sortie }, 0)
     .fromTo(q('.deco-o1, .deco-o2'), { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 2, ease: M5.E.sortie }, 0)
     .fromTo(q('.haut'), { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.8, ease: M5.E.sortie, clearProps: 'transform,opacity' }, 0.05)
@@ -127,6 +125,13 @@ function entree() {
   const pastille = r.querySelector('.pastille')
   if (pastille) tl.fromTo(pastille, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: M5.E.ressort, clearProps: 'transform,opacity' }, 1.1)
   if (bouclee.value) setTimeout(feter, 1100)
+}
+// Premier toucher pendant l'entrée : les cartes se posent tout de suite (sinon elles bougent sous le doigt et le tap est perdu),
+// puis le tap s'exécute normalement. Le message lettre à lettre est terminé aussi ; l'anneau et le compteur continuent.
+function poserEntree() {
+  if (!tlEntree || !tlEntree.isActive()) return
+  tlEntree.progress(1, false)
+  if (decoupe) gsap.getTweensOf(decoupe.chars).forEach((t) => t.progress(1))
 }
 
 // --- Parallaxe douce à la souris (M5) : les cartes s'inclinent selon leur couche, le décor glisse en sens inverse. Jamais au toucher. ---
@@ -207,19 +212,56 @@ function gagnerSeance(avant) {
   if (bouclee.value) setTimeout(feter, 700)
 }
 
-onMounted(async () => {
-  const fin = consommerFinSeance()
-  const couverture = fin ? poserCouverture(fin) : null
-  await charger()
-  await nextTick()
+// Affichage immédiat : depuis le cache dès le montage (retour instantané), sinon dès la première lecture (chargeur centré après 250 ms).
+// L'entrée (M5) part à la PREMIÈRE application ; la 2e (lecture fraîche) met à jour sans rien rejouer (voir majFraiche).
+let fin = null // séance qui vient d'être validée (copie de l'écran de fin) : posée avant tout chargement
+let couverture = null
+let lance = false // l'entrée a démarré
+let signature = ''
+const appliquer = (brut) => {
+  if (!brut.user) { erreur.value = 'Connectez-vous pour voir votre tableau de bord.'; return }
+  user.value = brut.user
+  entrees = { ...brut, now: horloge.now() }
+  const synthese = syntheseAccueil(entrees)
+  const sig = JSON.stringify(synthese)
+  if (lance && sig === signature) return // rien n'a changé : aucun rendu, aucune animation
+  signature = sig
+  s.value = synthese
+  if (!lance) { lance = true; nextTick().then(demarrer) } else majFraiche()
+}
+function demarrer() {
   retirerDessous() // copie du tableau de bord laissée derrière une page refermée : le vrai est prêt
   if (!s.value) { couverture?.remove(); return }
   anneau(anneauEl.value, fraction.value)
   if (couverture) { consommerRetour(); pret = true; retourDeSeance(couverture, fin); return }
   if (consommerRetour()) { poserMessage(messageActuel()); pret = true; return } // retour d'une page refermée dans sa carte : montré tel quel
   entree()
+}
+// Lecture fraîche différente de ce qui est affiché : mise à jour directe (pas de rejeu), compteur et anneau sans re-animation.
+async function majFraiche() {
+  await nextTick()
+  if (!salutEl.value || couverture?.isConnected) return
+  const msg = messageActuel()
+  const cle = JSON.stringify(msg)
+  if (cle !== msgPose) poserMessage(msg)
+  gsap.killTweensOf(anneauEl.value)
+  anneau(anneauEl.value, fraction.value)
+  if (compteurSemaine.value) compteurSemaine.value.textContent = s.value.semaine.faits
+}
+let msgPose = ''
+
+onMounted(async () => {
+  fin = consommerFinSeance()
+  couverture = fin ? poserCouverture(fin) : null
+  try {
+    await lectureRapide('client:accueil', ENTITES, charger, appliquer)
+  } catch (e) {
+    erreur.value = 'Impossible de charger votre tableau de bord. Réessayez.'
+    console.error(e)
+    couverture?.remove()
+  }
 })
-onBeforeUnmount(() => { if (decoupe) decoupe.revert() })
+onBeforeUnmount(() => { tlEntree?.kill(); if (decoupe) decoupe.revert() })
 
 // --- Ouvrir une page (M5 ouvrirCarte) : la carte se soulève (z 70, scale 1.04, ombre --lev) pendant 0,2 s, puis la page naît
 // d'elle ; une copie du tableau de bord reste derrière et recule (scale .92), puis se rapproche au retour. ---
@@ -251,7 +293,7 @@ const versHero = (e) => {
 </script>
 
 <template>
-  <main ref="racine" class="ecran" data-racine @pointermove="survol" @pointerleave="sortieSurvol">
+  <main ref="racine" class="ecran" data-racine @pointerdown.capture="poserEntree" @pointermove="survol" @pointerleave="sortieSurvol">
     <div v-if="erreur" class="ecran-vide">
       <p>{{ erreur }}</p>
     </div>

@@ -11,7 +11,7 @@ import FigureMouvement from '../../FigureMouvement.vue'
 import IconeSt from '../../IconeSt.vue'
 import { muscleDe, mediaDe, mouvementDe, idVideoDe, statutVideo, dureeCourte } from '../../medias.js'
 import { materielsDe, categoriesDe, LIBELLES } from './logique.js'
-import FicheExercice from './FicheExercice.vue'
+import FicheFraiche from './FicheFraiche.vue'
 
 const props = defineProps({
   exercice: { type: Object, default: null },
@@ -78,9 +78,10 @@ defineExpose({ media: () => panneau.value?.media?.() })
         <button type="button" class="st-btn" @click="fermer({ force: true })">Fermer quand même</button>
       </div>
     </div>
-    <FicheExercice
-      v-if="exercice" :key="exercice.id" ref="fiche" :exercice="exercice" :materiels="materiels" :categories="categories"
-      @etat="etatSauve = $event" @invalides="invalides = $event" @maj="emit('maj', $event)" @archive="emit('archive', $event)"
+    <!-- L'exercice édité est relu frais (version à jour), jamais pris dans la liste de l'hôte (qui peut venir du cache). -->
+    <FicheFraiche
+      v-if="exercice" :key="exercice.id" ref="fiche" :id="exercice.id" :materiels="materiels" :categories="categories"
+      @etat="etatSauve = $event" @invalides="invalides = $event" @maj="emit('maj', $event)" @archive="emit('archive', $event)" @introuvable="emit('fermer')"
     />
   </PanneauLateral>
 </template>

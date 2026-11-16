@@ -2,7 +2,7 @@
 // Bibliothèque d'exercices de l'éditeur de séance : recherche sans accents + filtres de muscles + vignettes.
 // Ordinateur : colonne collante, on glisse une vignette dans la séance (ou on clique : ajout à la cible affichée).
 // Téléphone : feuille basse ouverte par les boutons « + Exercice » ; toucher une vignette l'ajoute puis ferme la feuille.
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import Filtres from '../../../Filtres.vue'
 import IconeSt from '../../../IconeSt.vue'
 import { TEINTES_STUDIO } from '../../../medias.js'
@@ -25,6 +25,25 @@ const options = computed(() => TEINTES_STUDIO
   .filter((o) => o.n))
 const affiches = computed(() => filtrerExercices(props.exercices, { q: q.value, muscles: muscles.value }))
 const champ = ref(null)
+
+// Rendu progressif : 500 vignettes d'un coup = longue tâche à l'arrivée sur l'éditeur. On rend d'abord la première tranche,
+// puis la suite par paquets quand le navigateur est libre. Sur téléphone la bibliothèque est une feuille fermée : la suite
+// attend l'ouverture. Le compte, la recherche et les filtres portent toujours sur toute la liste.
+const PREMIERE = 24
+const PAQUET = 40
+const rendus = ref(PREMIERE)
+const visibles = computed(() => (rendus.value >= affiches.value.length ? affiches.value : affiches.value.slice(0, rendus.value)))
+let minuterie = 0
+const inactif = (f) => (window.requestIdleCallback ? (minuterie = window.requestIdleCallback(f, { timeout: 400 })) : (minuterie = setTimeout(f, 60)))
+const annuler = () => { if (window.cancelIdleCallback) window.cancelIdleCallback(minuterie); else clearTimeout(minuterie) }
+function suite() {
+  if (rendus.value >= affiches.value.length) return
+  if (!props.ouverte && window.matchMedia('(max-width: 900px)').matches) return
+  inactif(() => { rendus.value += PAQUET; suite() })
+}
+watch([() => affiches.value.length, () => props.ouverte], () => { annuler(); suite() }, { immediate: true })
+watch([q, muscles], () => { rendus.value = PREMIERE })
+onBeforeUnmount(annuler)
 
 watch(() => props.ouverte, async (o) => { if (o) { await nextTick(); champ.value?.focus({ preventScroll: true }) } })
 defineExpose({ focaliser: () => champ.value?.focus() })
@@ -52,7 +71,7 @@ defineExpose({ focaliser: () => champ.value?.focus() })
     <Filtres v-model="muscles" :options="options" etiquette="Filtrer par muscle" />
     <p class="st-prog-s-compte" aria-live="polite">{{ affiches.length }} exercice{{ affiches.length > 1 ? 's' : '' }}</p>
     <ul class="st-prog-s-biblio-liste">
-      <li v-for="e in affiches" :key="e.id">
+      <li v-for="e in visibles" :key="e.id">
         <VignetteMini data-test="exercice" :exercice="e" v-bind="glisser.source({ donnee: e, type: 'source-exo' })" :aria-label="`${e.nom} : ${titre.toLowerCase()}`" />
       </li>
     </ul>

@@ -53,8 +53,11 @@ const pour = (item, index) => {
 </template>
 
 <style>
-.st-gl-liste { position: relative; display: flex; flex-direction: column; gap: var(--st-gl-ecart, 10px); border-radius: 18px; transition: background var(--st-d-court), box-shadow var(--st-d-court); }
-.st-gl-liste.is-cible { background: color-mix(in srgb, var(--st-ok-fond) 70%, transparent); box-shadow: 0 0 0 2px var(--st-ok); }
+/* Liste cible teintée : même rendu qu'avant (fond + anneau), mais porté par un calque qui ne change que d'opacité
+   (plus de repaint de la colonne à chaque changement de cible pendant le glisser) ; isolation = le calque reste sous le contenu. */
+.st-gl-liste { position: relative; isolation: isolate; display: flex; flex-direction: column; gap: var(--st-gl-ecart, 10px); border-radius: 18px; }
+.st-gl-liste::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: 0; background: color-mix(in srgb, var(--st-ok-fond) 70%, transparent); box-shadow: 0 0 0 2px var(--st-ok); transition: opacity var(--st-d-court); }
+.st-gl-liste.is-cible::before { opacity: 1; }
 .st-gl-item { position: relative; transition: opacity var(--st-d-court); }
 .st-gl-item.is-tire { opacity: .35; }
 .st-gl-item.is-saisi > * { box-shadow: 0 0 0 2.5px var(--st-encre), var(--st-ombre-2); transform: scale(1.01); }

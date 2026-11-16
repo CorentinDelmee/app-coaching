@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 import FeuilleBas from './components/seance/FeuilleBas.vue'
 import MenuApp from './components/MenuApp.vue'
 import HorsConnexion from './components/HorsConnexion.vue'
+import Chargeur from './components/Chargeur.vue'
 import { data } from './data/index.js'
 import { effacerSeanceEnCours, lireSeanceEnCours } from './lib/seanceEnCours.js'
 
@@ -37,6 +38,8 @@ function abandonner() {
   <MenuApp />
   <RouterView />
   <HorsConnexion />
+  <!-- Chargeur de l'app client (attente de la base > 250 ms) ; l'espace coach a le sien dans CoachLayout. -->
+  <Chargeur v-if="!route.path.startsWith('/coach')" position="centre" />
   <div v-if="reprise" class="reprise">
     <FeuilleBas :ouverte="ouverte" titre="Reprendre votre séance en cours ?" @fermer="() => {}">
       <p>{{ reprise.etat.workoutNom }} — dernière action à {{ quand(reprise) }}. Vos séries déjà faites sont conservées.</p>
@@ -46,6 +49,10 @@ function abandonner() {
   </div>
 </template>
 
+<style>
+/* Chargeur aux couleurs du client (l'espace coach les redéfinit sous .st-app) */
+.chg { --chg-accent: var(--accent, #F2E27A); }
+</style>
 <style scoped>
 .reprise { position: fixed; inset: 0; z-index: 200; pointer-events: none; overflow: hidden; max-width: 520px; margin: 0 auto; }
 .reprise :deep(.feuille), .reprise :deep(.scrim) { pointer-events: auto; }

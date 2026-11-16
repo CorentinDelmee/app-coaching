@@ -1,0 +1,137 @@
+{
+ "conditions": "390x844 tactile, CPU x4, latence 500 ms",
+ "delaiTapFeuille": {
+  "avant": "rien avant ~1100 ms (lectures), feuille visible ~1,2 s",
+  "apres": "feuille montée 90 ms, glisse 177 ms (cache : 112 ms), contenu réel 643 ms (cache : 59 ms)"
+ },
+ "scenarios": {
+  "clients: Aujourd’hui -> Clients (liste)": {
+   "avant": {
+    "perdues": 18,
+    "pireImageMs": 178,
+    "longuesTaches": 3,
+    "sauts": 0.12,
+    "finDomMs": 1644
+   },
+   "apres": {
+    "perdues": 3,
+    "pireImageMs": 48,
+    "longuesTaches": 1,
+    "sauts": 0,
+    "finDomMs": 1338
+   }
+  },
+  "clients: ouvrir une fiche (tap)": {
+   "avant": {
+    "perdues": 53,
+    "pireImageMs": 687,
+    "longuesTaches": 2,
+    "sauts": 0.006,
+    "finDomMs": 2481
+   },
+   "apres": {
+    "perdues": 8,
+    "pireImageMs": 96,
+    "longuesTaches": 1,
+    "sauts": 0.007,
+    "finDomMs": 959
+   }
+  },
+  "clients: onglet Suivi": {
+   "avant": {
+    "perdues": 2,
+    "pireImageMs": 27,
+    "longuesTaches": 0,
+    "sauts": 0,
+    "finDomMs": 404
+   },
+   "apres": {
+    "perdues": 2,
+    "pireImageMs": 35,
+    "longuesTaches": 0,
+    "sauts": 0,
+    "finDomMs": 147
+   }
+  },
+  "clients: onglet Réglages": {
+   "avant": {
+    "perdues": 3,
+    "pireImageMs": 66,
+    "longuesTaches": 0,
+    "sauts": 0,
+    "finDomMs": 305
+   },
+   "apres": {
+    "perdues": 0,
+    "pireImageMs": 18,
+    "longuesTaches": 0,
+    "sauts": 0,
+    "finDomMs": 86
+   }
+  },
+  "clients: onglet Aperçu": {
+   "avant": {
+    "perdues": 2,
+    "pireImageMs": 34,
+    "longuesTaches": 0,
+    "sauts": 0,
+    "finDomMs": 268
+   },
+   "apres": {
+    "perdues": 2,
+    "pireImageMs": 35,
+    "longuesTaches": 0,
+    "sauts": 0,
+    "finDomMs": 122
+   }
+  },
+  "clients: fermer la fiche (retour)": {
+   "avant": {
+    "perdues": 4,
+    "pireImageMs": 70,
+    "longuesTaches": 1,
+    "sauts": 0,
+    "finDomMs": 91
+   },
+   "apres": {
+    "perdues": 0,
+    "pireImageMs": 18,
+    "longuesTaches": 0,
+    "sauts": 0,
+    "finDomMs": 42
+   }
+  },
+  "clients: rouvrir la même fiche (cache)": {
+   "avant": {
+    "perdues": 5,
+    "pireImageMs": 40,
+    "longuesTaches": 2,
+    "sauts": 0.005,
+    "finDomMs": 1177
+   },
+   "apres": {
+    "perdues": 8,
+    "pireImageMs": 88,
+    "longuesTaches": 1,
+    "sauts": 0.006,
+    "finDomMs": 877
+   }
+  },
+  "clients: fermer (bouton)": {
+   "avant": {
+    "perdues": 2,
+    "pireImageMs": 18,
+    "longuesTaches": 0,
+    "sauts": 0,
+    "finDomMs": 601
+   },
+   "apres": {
+    "perdues": 0,
+    "pireImageMs": 18,
+    "longuesTaches": 0,
+    "sauts": 0,
+    "finDomMs": 626
+   }
+  }
+ }
+}

@@ -803,7 +803,7 @@ defineExpose({ envoyer })
 .se-barre { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: calc(var(--e) * 52px); }
 .se-titre { font-size: calc(var(--e) * 13px); letter-spacing: .12em; text-transform: uppercase; font-weight: 600; color: var(--texte-doux); text-align: center; line-height: 1.3; min-width: 0; transition: opacity .2s var(--ease); }
 /* temps total de séance (M4) : pastille blanche qui ouvre aussi l'aperçu */
-.pastille-total { min-width: calc(var(--e) * 76px); min-height: var(--cible); padding: 6px 12px; border-radius: 18px; background: var(--surface); color: var(--texte); display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.pastille-total { min-width: calc(var(--e) * 76px); min-height: var(--cible); padding: var(--esp-2) var(--esp-4); border-radius: 18px; background: var(--surface); color: var(--texte); display: inline-flex; align-items: center; justify-content: center; flex: none; }
 /* repos réduit : la pastille prend la place du titre (au centre de la barre), le titre s'efface dessous */
 .se-titre.cache { opacity: 0; }
 .se-titre span { display: inline-block; max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }

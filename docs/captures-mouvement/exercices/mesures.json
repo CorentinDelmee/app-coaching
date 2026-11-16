@@ -1,0 +1,122 @@
+{
+ "exo: Aujourd’hui -> Exercices": {
+  "avant": {
+   "perdues": 15,
+   "pire": 147,
+   "longues": 3,
+   "longuesMs": 243,
+   "pireLongue": 122,
+   "sauts": 0.098,
+   "derniereMutation": 3626
+  },
+  "apres": {
+   "perdues": 12,
+   "pire": 117,
+   "longues": 2,
+   "longuesMs": 181,
+   "pireLongue": 114,
+   "sauts": 0.001,
+   "derniereMutation": 4803
+  }
+ },
+ "exo: ouvrir un exercice (vol + panneau)": {
+  "avant": {
+   "perdues": 10,
+   "pire": 154,
+   "longues": 1,
+   "longuesMs": 152,
+   "pireLongue": 152,
+   "sauts": 0,
+   "derniereMutation": 980
+  },
+  "apres": {
+   "perdues": 16,
+   "pire": 194,
+   "longues": 2,
+   "longuesMs": 283,
+   "pireLongue": 197,
+   "sauts": 0,
+   "derniereMutation": 2198
+  }
+ },
+ "exo: fermer le panneau": {
+  "avant": {
+   "perdues": 3,
+   "pire": 34,
+   "longues": 0,
+   "longuesMs": 0,
+   "pireLongue": 0,
+   "sauts": 0,
+   "derniereMutation": 574
+  },
+  "apres": {
+   "perdues": 6,
+   "pire": 53,
+   "longues": 1,
+   "longuesMs": 54,
+   "pireLongue": 54,
+   "sauts": 0,
+   "derniereMutation": 474
+  }
+ },
+ "exo: filtre muscle": {
+  "avant": {
+   "perdues": 5,
+   "pire": 52,
+   "longues": 1,
+   "longuesMs": 53,
+   "pireLongue": 53,
+   "sauts": 0.082,
+   "derniereMutation": 440
+  },
+  "apres": {
+   "perdues": 6,
+   "pire": 70,
+   "longues": 1,
+   "longuesMs": 68,
+   "pireLongue": 68,
+   "sauts": 0.082,
+   "derniereMutation": 222
+  }
+ },
+ "exo: Exercices -> Clients": {
+  "avant": {
+   "perdues": 0,
+   "pire": 18,
+   "longues": 0,
+   "longuesMs": 0,
+   "pireLongue": 0,
+   "sauts": 0,
+   "derniereMutation": 578
+  },
+  "apres": {
+   "perdues": 6,
+   "pire": 85,
+   "longues": 1,
+   "longuesMs": 86,
+   "pireLongue": 86,
+   "sauts": 0,
+   "derniereMutation": 1011
+  }
+ },
+ "exo: Clients -> Exercices (retour, cache)": {
+  "avant": {
+   "perdues": 16,
+   "pire": 130,
+   "longues": 2,
+   "longuesMs": 205,
+   "pireLongue": 115,
+   "sauts": 0.026,
+   "derniereMutation": 7135
+  },
+  "apres": {
+   "perdues": 12,
+   "pire": 118,
+   "longues": 1,
+   "longuesMs": 111,
+   "pireLongue": 111,
+   "sauts": 0,
+   "derniereMutation": 890
+  }
+ }
+}

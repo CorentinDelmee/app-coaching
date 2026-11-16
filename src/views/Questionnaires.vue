@@ -4,7 +4,7 @@
 import { computed, nextTick, onMounted, ref, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Icone from '../components/Icone.vue'
-import { data } from '../data/index.js'
+import { data, lectureRapide } from '../data/index.js'
 import { jourLocal } from '../domain/dates.js'
 import { listeQuestionnaires } from '../domain/questionnaireUi.js'
 import { brouillonsDuJour } from '../lib/brouillonQuestionnaire.js'
@@ -25,17 +25,34 @@ const groupes = shallowRef([])
 
 const nbAFaire = computed(() => groupes.value.reduce((n, g) => n + g.lignes.filter((l) => !l.fait).length, 0))
 
+// Lecture rapide (affichage seulement) : revisite = liste tout de suite depuis le cache, puis lecture fraîche ; sans cache, le chargeur
+// centre couvre l'attente. Donnée fraîche identique : on ne touche à rien (pas de réaffichage).
+let signature = ''
+function appliquer(v) {
+  if (!v.user) return
+  const sig = JSON.stringify(v)
+  if (sig === signature) return
+  signature = sig
+  const aujourdhui = jourLocal(horloge.now())
+  groupes.value = listeQuestionnaires({
+    questionnaires: v.questionnaires, reponses: v.reponses, clientId: v.user.id, aujourdhui,
+    brouillons: brouillonsDuJour(v.user.id, v.questionnaires.map((q) => q.id), aujourdhui)
+  })
+  connecte = true
+}
+let connecte = false
+async function lire() {
+  const user = await utilisateurCourant()
+  if (!user) return { user: null }
+  const [questionnaires, reponses] = await Promise.all([data.questionnaires.lister(), data.reponses.lister({ clientId: user.id })])
+  return { user, questionnaires, reponses }
+}
+
 onMounted(async () => {
   installerRessort()
   try {
-    const user = await utilisateurCourant()
-    if (!user) { erreur.value = 'Connectez-vous pour voir vos questionnaires.'; return }
-    const [questionnaires, reponses] = await Promise.all([data.questionnaires.lister(), data.reponses.lister({ clientId: user.id })])
-    const aujourdhui = jourLocal(horloge.now())
-    groupes.value = listeQuestionnaires({
-      questionnaires, reponses, clientId: user.id, aujourdhui,
-      brouillons: brouillonsDuJour(user.id, questionnaires.map((q) => q.id), aujourdhui)
-    })
+    await lectureRapide('client:questionnaires', ['profils', 'questionnaires', 'reponses'], lire, appliquer, { attendre: false })
+    if (!connecte) { erreur.value = 'Connectez-vous pour voir vos questionnaires.'; return }
     charge.value = true
   } catch (e) {
     erreur.value = 'Impossible de charger vos questionnaires. Réessayez.'

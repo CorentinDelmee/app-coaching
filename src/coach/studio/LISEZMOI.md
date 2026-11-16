@@ -1,5 +1,85 @@
 # Studio (refonte coach d3) — fondations LOT 0
 
+## Espacements (règles communes, 2026-11-15) — à lire avant toute retouche d'écran
+
+Échelle unique (`tokens.css`) : `--st-e-1` 4 · `--st-e-2` 8 · `--st-e-3` 12 · `--st-e-4` 16 · `--st-e-5` 20 · `--st-e-6` 24 · `--st-e-8` 32 · `--st-e-10` 40 px.
+Pas d'autre valeur d'espacement (padding, margin, gap) dans un nouveau CSS (pas de 9, 10, 11, 13 px…) ; seules exceptions : `--st-pad-btn` 18 et `--st-pad-champ` 14,
+qui tiennent compte de la bordure 1 px. Les valeurs hors échelle restantes sont remplacées au fil des retouches. Rôles :
+
+| Règle | Valeur | Variable |
+|---|---|---|
+| Gouttière de page (marge latérale) | ≥ 16 px téléphone, 16–40 px ordinateur | `--st-gouttiere` (posée sur `.st-main`) |
+| Bouton : texte ↔ bord gauche/droit | ≥ 16 px (padding 18 px + bordure) | `--st-pad-btn` |
+| Petit bouton, puce cliquable, lien encadré, onglet | ≥ 12 px | `--st-pad-btn-petit` |
+| Puce / pastille non cliquable (≤ 28 px de haut) | ≥ 8 px | — (`.st-puce` : 10 px) |
+| Carte, bloc, bandeau, alerte : texte ↔ bord | ≥ 12 px (padding 16 px téléphone, 20 px ordinateur) | `--st-pad-carte` |
+| Champ (input, select, textarea) : texte ↔ bord | ≥ 12 px (padding 14 px) | `--st-pad-champ` |
+| Écart entre deux boutons voisins | ≥ 8 px (sauf groupe segmenté `role=tablist/radiogroup`) | `--st-ecart` |
+| Cible tactile | ≥ 44 × 44 px (y compris icônes seules) | `--st-cible` |
+| Zone sûre | barre du bas, feuilles et panneaux ajoutent `env(safe-area-inset-*)` ; rien de cliquable dessous | — |
+
+App client (`src/styles/tokens.css`) : même échelle en `--esp-1` … `--esp-10`, gouttière `--pad` (16 px), cible `--cible` (48 px, suit le Grand affichage).
+
+Pièges déjà rencontrés :
+- **Règle d'ordinateur qui casse le téléphone** : une feuille fixée (`position: fixed` + `top`/`bottom`) avec `align-self: start` hérité
+  de l'ordinateur ne défile plus. Toute règle de mise en page ordinateur posée hors `@media (min-width: 901px)` doit être relue à 390 px.
+- **Bouton qui rétrécit** : sur téléphone, deux boutons `flex: 1` côte à côte avec `padding: 0 10px` collent le texte au bord ;
+  passer à la ligne (`flex-wrap`) plutôt que réduire le padding sous 12 px.
+- **Texte dans un bouton fantôme aligné sur une étiquette** : un bouton sans fond garde son padding ; c'est le conteneur qui aligne.
+- Rangée qui défile horizontalement (filtres, onglets) : premier élément aligné sur la gouttière, la rangée peut déborder jusqu'au bord.
+
+Contrôle : captures 390 / 360 / 1366 et mesures (planche `docs/captures-espacements/index.html`) ; le banc `tests/e2e/studio/banc.mjs` vérifie les cibles 44 px.
+
+
+## Mouvement et chargement (règles communes, 2026-11-15) — à lire avant toute animation ou tout chargement
+
+**Principe** : le doigt est servi tout de suite (≤ 100 ms), la page arrive en une fois à sa forme finale, rien ne saute après.
+Mesures, causes et avant / après : `docs/captures-mouvement/index.html`. Brief des correctifs : `docs/BRIEF-MOUVEMENT.md`.
+
+| Quoi | Durée | Courbe (token) | Règle |
+|---|---|---|---|
+| Appui (bouton, carte, onglet) | 80–120 ms | ease-out, scale .96–.97 | `--st-d-appui` ; jamais de transition de couleur sur un onglet |
+| **Page qui sort** | **0 ms** | — | aucune sortie : l'ancienne page est remplacée dans la même image (`CoachLayout`, pas de `<Transition mode="out-in">`) |
+| Page qui entre : onglet (même niveau) | 240 ms | `--st-sortie` | `translateY(6px)` + opacité depuis .9 (`--st-d-page`) |
+| Page qui entre : plus profond (liste → éditeur) / retour | 240 ms | `--st-sortie` | `translateX(±20px)` (`--st-glisse-page`), sens posé par `mouvement.js` (`sensNavigation`) |
+| Panneau (ordinateur) | 420 ms entrée, 120 ms sortie | `--st-sortie` / ease-in | `PanneauLateral` |
+| Feuille basse (téléphone) | 500 ms | `--st-vaul` (ressort doux, interruptible) | suit le doigt ; voile en opacité seule |
+| Élément partagé (vignette → panneau) | 500 ms | `--st-vaul` | le moment fort ; une seule fois par ouverture |
+| Contenu qui remplace un squelette | 0 ms | — | **aucun fondu, aucune cascade rejouée** : le squelette a déjà la forme du contenu |
+| Chargeur | après 250 ms d'attente, ≥ 400 ms visible | CSS seul (compositeur) | `src/components/Chargeur.vue`, variante `CHOIX.chargeur` (`src/config/apparence.js`) |
+
+Règles :
+- **Uniquement `transform` et `opacity`** (+ `stroke-dashoffset` d'un tracé). Jamais `height`, `width`, `top/left`, `margin`, `box-shadow`, `filter`,
+  `clip-path` dans une animation d'interface (un `box-shadow` au survol souris est toléré).
+- **Pas de fondu d'opacité sous .9 sur un texte** qu'on lit (entrées : `.9 → 1`). Pas de cascade sur un contenu qui arrive après un chargement.
+- **Interruptible** : une transition CSS (pas une animation à durée fixe) pour tout ce qui s'ouvre / se ferme ; un nouveau tap annule l'ancien mouvement.
+- **Jamais rejouer un tap** dans la page d'arrivée d'une transition (pas de `click()` différé, pas de focus qui déclenche une action).
+- **Pas de remplissage persistant** (`animation-fill-mode: forwards/both`) d'une transformation sur un conteneur qui contient du `position: fixed` ou `sticky`.
+- **Une seule source de mouvement par élément** : jamais une `<Transition>` Vue et un tween GSAP sur le même élément ; GSAP : `gsap.context()` + `ctx.revert()` au démontage.
+- `prefers-reduced-motion` : tokens.css ramène tout à 1 ms sous `.st-app` ; un tween GSAP / rAF doit tester `mouvementReduit()` lui-même.
+- Pendant une **série** de la séance client : aucune animation lourde, aucun chargeur (la séance n'utilise pas `lectureRapide`).
+
+**Chargement (src/data)** — une page ne « attend » plus la base :
+1. **Afficher tout de suite** : le cadre (en-tête, filtres, boutons) est rendu au montage ; la zone de données montre un **squelette à la forme du
+   contenu** (même nombre de lignes probables, mêmes hauteurs : `min-height` des cartes réelles) → aucun saut à l'arrivée (mesure : `layout-shift` = 0).
+2. **Lecture rapide** (`lectureRapide` de `src/data/index.js`, voir `src/data/cache.js`) pour les **listes et tableaux de bord** :
+   ```js
+   import { lectureRapide } from '../../../../data/index.js'
+   await lectureRapide('clients:liste', ['profils', 'realisations', 'programmes'], async () => {
+     const [profils, realisations] = await Promise.all([data.profils.lister({}, { archives: true }), data.realisations.lister()])
+     return { profils, realisations }               // valeur brute, sérialisable
+   }, (v, { depuisCache }) => { appliquer(v) })      // appelé 1 fois depuis le cache (tout de suite) puis 1 fois frais
+   ```
+   Si l'écran a été vu récemment et qu'aucune écriture n'est passée depuis, `appliquer` reçoit le cache **dans la même tâche** (pas d'image vide),
+   puis la lecture fraîche. Toute écriture passée par `data` invalide les entités touchées ; connexion / déconnexion vident tout.
+   Rien en cache → la lecture compte comme une attente → le chargeur peut s'afficher.
+3. **Éditeurs (concurrence optimiste)** : l'objet modifié avec `{ version }` est **toujours lu frais** (`data.<entite>.lire(id)`, jamais par le cache),
+   enveloppé dans `attente(...)` pour le chargeur ; `s.suivreVersion(...)` seulement avec la lecture fraîche. Les listes annexes de l'éditeur
+   (bibliothèque d'exercices, noms des clients) peuvent passer par `lectureRapide`. Un écran qui affiche le cache **n'active pas ses champs
+   d'édition** avant la lecture fraîche.
+4. **Lectures en parallèle** : `Promise.all`, jamais une suite d'`await` indépendants (chaque `await` = un aller-retour au VPS).
+5. `rafraichir()` (store) rend la main tout de suite si l'état a été lu récemment (puis se met à jour) ; après une écriture, il attend la lecture fraîche.
+
 > **État au 2026-11-06 ~12 h 50 : lot 0 terminé** (branche `studio-l0`, poussée). Tout est utilisable par les lots d'écrans.
 > **Correctifs L0 (banc, 06/11 après-midi)** : `.st-btn--danger` = **contour** (texte alerte sur surface) et nouveau `.st-btn--danger-plein` (blanc sur alerte) ;
 > `st-entree` / `st-cascade` partent d'une opacité .9 (plus de texte en fondu illisible) ; entrée de page 220 ms ; liens secondaires de la barre latérale à 44 px ;

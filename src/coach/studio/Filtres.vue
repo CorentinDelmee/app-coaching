@@ -32,7 +32,7 @@ function basculer(v) {
 <style>
 .st-filtres { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 4px 40px 12px 2px; margin: 0 -2px; -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent); mask-image: linear-gradient(90deg, #000 92%, transparent); }
 .st-filtres::-webkit-scrollbar { display: none; }
-.st-filtre { flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 22px; border: 1px solid var(--st-filet-fort); background: var(--st-surface); font-weight: 600; font-size: 13.5px; color: var(--st-texte); transition: background var(--st-d-court), transform var(--st-d-appui); position: relative; }
+.st-filtre { flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: var(--st-cible); padding: 0 var(--st-e-4); border-radius: 22px; border: 1px solid var(--st-filet-fort); background: var(--st-surface); font-weight: 600; font-size: 13.5px; color: var(--st-texte); transition: background var(--st-d-court), transform var(--st-d-appui); position: relative; }
 .st-filtre:active { transform: scale(.95); }
 .st-filtre .st-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--mc, var(--st-doux)); box-shadow: inset 0 0 0 1.5px var(--mi, transparent); }
 .st-filtre[aria-pressed="true"] { background: var(--st-encre); color: #fff; border-color: var(--st-encre); }

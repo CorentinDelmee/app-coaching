@@ -4,17 +4,16 @@
 
 /* En-tête */
 .st-auj-entete { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 22px; }
-.st-auj-entete > div { min-width: 0; flex: 1; }
+.st-auj-entete > div:first-child { min-width: 0; flex: 1; }
 .st-auj .st-auj-date { margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--st-doux); }
 .st-auj .st-auj-titre { font-family: var(--st-titre); font-weight: 500; font-size: clamp(34px, 5vw, 56px); line-height: 1; letter-spacing: -.035em; margin: 0; color: var(--st-encre); }
 .st-auj .st-auj-resume { margin: 10px 0 0; color: var(--st-doux); }
 .st-auj-ctas { display: flex; align-items: center; gap: 10px; flex: none; }
 .st-auj-cta { flex: none; }
 
-/* Grille de blocs : 12 colonnes, entrée en cascade (transform + opacity) */
+/* Grille de blocs : 12 colonnes. Aucune cascade : le contenu remplace le squelette (même forme) sans animation. */
 .st-auj-dash { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
 .st-auj-dash > * { min-width: 0; }
-.st-auj-dash.is-charge > [style*="--i"] { animation: st-auj-monte var(--st-d-base) var(--st-sortie) both; animation-delay: calc(var(--i) * 40ms); }
 .st-auj-b--jour { grid-column: span 7; }
 .st-auj-b--alertes { grid-column: span 5; }
 .st-auj-b--tiers { grid-column: span 4; }
@@ -45,7 +44,6 @@
 /* Liste des rendez-vous */
 .st-auj-timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .st-auj-seance { position: relative; display: grid; grid-template-columns: 64px 4px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px 10px 0; border-radius: var(--st-r-m); transition: background var(--st-d-court); }
-.st-auj-dash.is-charge .st-auj-seance { animation: st-auj-monte var(--st-d-base) var(--st-sortie) both; animation-delay: calc(120ms + var(--n) * 40ms); }
 .st-auj-seance:hover { background: var(--st-fond); }
 .st-auj-seance.is-en-cours, .st-auj-seance.is-prochain { background: var(--st-fond); }
 .st-auj-seance.is-passe .st-auj-nom, .st-auj-seance.is-passe time { color: var(--st-doux); }
@@ -64,7 +62,7 @@ a.st-auj-nom:hover { text-decoration: underline; text-underline-offset: 3px; }
 .st-auj-vide p { margin: 0; color: var(--st-doux); }
 .st-auj .st-auj-vide-t { font-family: var(--st-titre); font-weight: 500; font-size: 22px; letter-spacing: -.02em; color: var(--st-encre); margin-bottom: 4px; }
 
-.st-auj-ensuite { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--st-filet); }
+.st-auj-ensuite { margin-top: var(--st-e-4); padding-top: var(--st-e-3); border-top: 1px solid var(--st-filet); }
 .st-auj-jour + .st-auj-jour { margin-top: 8px; }
 .st-auj .st-auj-jour-t { margin: 0 0 2px; font-weight: 700; color: var(--st-encre); font-size: 13.5px; }
 .st-auj-proche { display: grid; grid-template-columns: 64px minmax(0, auto) 1fr; gap: 4px 12px; align-items: baseline; min-height: 44px; padding: 8px 8px 8px 0; border-radius: 12px; text-decoration: none; }
@@ -80,7 +78,7 @@ a.st-auj-nom:hover { text-decoration: underline; text-underline-offset: 3px; }
 .st-auj-mini small { display: block; color: var(--st-doux); font-size: 13px; overflow-wrap: anywhere; }
 .st-auj-av { width: 38px; height: 38px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--mc); color: var(--mi); font: 600 13px var(--st-sans); letter-spacing: .02em; }
 .st-auj-av--site { background: var(--st-propose-fond); color: var(--st-propose); }
-.st-auj-vu, .st-auj-relance { min-height: 44px; padding: 0 14px; flex: none; }
+.st-auj-vu, .st-auj-relance { min-height: 44px; padding: 0 var(--st-pad-btn); flex: none; }
 .st-auj-vu:disabled { opacity: .5; }
 .st-auj-humeur { font-size: 22px; }
 .st-auj-liste-leave-active { transition: opacity 220ms ease, transform 220ms ease; }
@@ -106,7 +104,12 @@ a.st-auj-nom:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 /* Chargement : barres calmes (opacité seule) */
 .st-auj-squelette { height: 52px; border-radius: var(--st-r-m); background: var(--st-surface-2); margin-bottom: 8px; animation: st-auj-pulse 1.2s ease-in-out infinite alternate; }
-.st-auj-squelette--frise { height: 14px; margin: 14px 0 26px; }
+/* Une ligne de rendez-vous : même hauteur que .st-auj-seance (--seance, mesurée au navigateur) */
+.st-auj-sq-liste { display: grid; gap: 4px; }
+.st-auj-sq-liste > .st-auj-squelette { margin: 0; }
+.st-auj-squelette--seance { height: 61px; }
+.st-auj-resume--sq { width: 62%; max-width: 360px; border-radius: 6px; background: var(--st-surface-2); }
+.st-auj .st-auj-h2--lien { min-height: 44px; }
 @keyframes st-auj-pulse { from { opacity: .55; } to { opacity: 1; } }
 
 .st-auj-erreur { max-width: 560px; }
@@ -147,8 +150,6 @@ a.st-auj-nom:hover { text-decoration: underline; text-underline-offset: 3px; }
 .st-auj-mini li:has(a.st-auj-nom):hover { background: var(--st-fond); }
 .st-auj-mini a.st-auj-nom::after { content: ''; position: absolute; inset: 0; border-radius: var(--st-r-m); }
 .st-auj-mini .st-btn, .st-auj-mini .st-puce { position: relative; z-index: 1; }
-/* Entrée : déplacement seul, jamais de fondu d'opacité sur du texte (contraste mesuré en temps réel par le banc) */
-@keyframes st-auj-monte { from { transform: translateY(14px); } }
 /* Cible des noms cliquables portée à 44 px sans changer la mise en page */
 .st-auj a.st-auj-nom { padding: 12px 0; margin: -12px 0; }
 .st-auj .st-auj-date a { display: inline-flex; align-items: center; min-height: 44px; margin: -14px 0; }

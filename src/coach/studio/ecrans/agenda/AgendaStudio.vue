@@ -3,7 +3,7 @@
 // prénom partagé, sans nom) avec choix du ou des clients. Avec le serveur, chaque « Coaching <client> » devient une séance
 // de coaching en base (fiche client, appli du client) ; en démo, les alertes du faux agenda restent affichées.
 import { computed, onMounted, reactive, ref } from 'vue'
-import data from '../../../../data/index.js'
+import data, { lectureRapide } from '../../../../data/index.js'
 import { etat as etatCoach, maintenant, messageErreur, nomClient, rafraichir } from '../../../store.js'
 import IconeSt from '../../IconeSt.vue'
 import Puce from '../../Puce.vue'
@@ -52,8 +52,7 @@ async function attribuer(g) {
     const b = await data.agenda.attribuer(g.titre, choix[g.cle])
     message.value = `« ${g.titre} » attribué : ${b.crees || 0} séance(s) ajoutée(s). Les prochains rendez-vous de ce titre suivront.`
     delete choix[g.cle]
-    await rafraichir() // compteurs du menu (alertes de l'agenda)
-    await charger()
+    await charger() // relit aussi les compteurs du menu (alertes de l'agenda), en parallèle
   } catch (e) {
     erreur.value = messageErreur(e)
   } finally {
@@ -69,7 +68,6 @@ async function garder(g) {
   try {
     const r = await data.agenda.garderFaites(g.titre)
     message.value = `« ${g.titre} » : ${r.gardees || 0} séance(s) gardée(s) comme faite(s).`
-    await rafraichir()
     await charger()
   } catch (e) {
     erreur.value = messageErreur(e)
@@ -78,14 +76,23 @@ async function garder(g) {
   }
 }
 
+// Lectures en parallèle ; l'écran se remplit tout de suite depuis le cache s'il est récent (affichage seulement : rien n'est édité
+// ici avec une version), puis la lecture fraîche fait foi. Une écriture (synchroniser, attribuer, garder) invalide « agenda » :
+// la lecture suivante est alors fraîche.
+const ENTITES = ['agenda', 'seancesCoaching']
+async function lire() {
+  const [etat, liste] = await Promise.all([data.agenda.etat(), serveur ? data.agenda.aAttribuer() : Promise.resolve([])])
+  return { etat, liste }
+}
+function appliquer({ etat, liste }, { depuisCache }) {
+  for (const g of liste) { if (!choix[g.cle]) choix[g.cle] = []; if (!ajout[g.cle]) ajout[g.cle] = '' } // avant l'affichage : « Choisir… » sélectionné
+  agenda.value = etat
+  if (serveur) groupes.value = liste
+  if (depuisCache) chargement.value = false
+}
 async function charger() {
   try {
-    agenda.value = await data.agenda.etat()
-    if (serveur) {
-      const liste = await data.agenda.aAttribuer()
-      for (const g of liste) { if (!choix[g.cle]) choix[g.cle] = []; if (!ajout[g.cle]) ajout[g.cle] = '' } // avant l'affichage : « Choisir… » sélectionné
-      groupes.value = liste
-    }
+    await Promise.all([rafraichir(), lectureRapide('agenda:ecran', ENTITES, lire, appliquer)])
     erreur.value = ''
   } catch (e) {
     erreur.value = messageErreur(e)
@@ -108,7 +115,6 @@ async function synchroniser() {
     const b = await data.agenda.synchroniser()
     message.value = serveur ? libelleBilan(b) : libelleDemo(b)
     await charger()
-    await rafraichir()
   } catch (e) {
     if (e?.code === 'GOOGLE_AUTORISATION') await charger() // le bandeau « Autorisation Google à renouveler » suffit
     else erreur.value = messageErreur(e)
@@ -117,7 +123,7 @@ async function synchroniser() {
   }
 }
 
-onMounted(async () => { await rafraichir(); await charger() })
+onMounted(charger)
 </script>
 
 <template>
@@ -131,7 +137,7 @@ onMounted(async () => { await rafraichir(); await charger() })
         </p>
       </div>
       <div class="st-actions st-ag-sync">
-        <span class="st-ag-meta" data-testid="derniere-synchro">{{ libelleSynchro(agenda.derniereSynchro) }}</span>
+        <span class="st-ag-meta st-ag-meta-synchro" :class="{ 'is-sq': chargement }" data-testid="derniere-synchro">{{ chargement ? '' : libelleSynchro(agenda.derniereSynchro) }}</span>
         <button class="st-btn st-btn--jaune st-ag-btn-sync" type="button" :disabled="synchro" :aria-busy="synchro" @click="synchroniser">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
           {{ synchro ? 'Synchronisation…' : 'Synchroniser' }}
@@ -145,7 +151,18 @@ onMounted(async () => { await rafraichir(); await charger() })
     <p v-if="message" class="st-ag-msg st-ag-msg--ok" role="status">{{ message }}</p>
     <p v-if="erreur" class="st-ag-msg st-ag-msg--err" role="alert">{{ erreur }}<button class="st-btn" type="button" @click="charger">Réessayer</button></p>
 
-    <div v-if="chargement" aria-hidden="true"><div class="st-ag-squelette" /><div class="st-ag-squelette" /></div>
+    <div v-if="chargement" class="st-ag-cols" aria-hidden="true">
+      <section>
+        <h2 class="st-ag-titre">{{ serveur ? 'À attribuer' : 'À corriger' }} <span class="st-ag-n">&nbsp;</span></h2>
+        <div class="st-ag-alertes"><div class="st-ag-sq st-ag-sq--alerte" /><div class="st-ag-sq st-ag-sq--alerte" /></div>
+      </section>
+      <section>
+        <h2 class="st-ag-titre">Rendez-vous à venir <span class="st-ag-n">&nbsp;</span></h2>
+        <div class="st-ag-jours">
+          <div v-for="n in 4" :key="n" class="st-ag-jour st-ag-jour--sq"><div class="st-ag-date"><b>&nbsp;</b></div><div class="st-ag-sq st-ag-sq--seance" /></div>
+        </div>
+      </section>
+    </div>
 
     <div v-else class="st-ag-cols">
       <section v-if="serveur" aria-labelledby="ag-attribuer">
@@ -216,7 +233,7 @@ onMounted(async () => { await rafraichir(); await charger() })
       </section>
     </div>
 
-    <p class="st-ag-aide">
+    <p v-if="!chargement" class="st-ag-aide">
       <b>Reconnaissance :</b> nom complet, ou prénom seul s'il n'est porté que par un client. Un prénom partagé n'est jamais deviné : il passe « à attribuer ».
       Un événement modifié ou supprimé dans Google Agenda est mis à jour à la prochaine synchro (toutes les 15 min, depuis le 1er janvier 2026).
       Une séance que tu modifies à la main (statut, heure, lieu) garde ta modification.

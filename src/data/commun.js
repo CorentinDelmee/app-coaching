@@ -81,7 +81,7 @@ export function creerApi(backend, { now = () => Date.now(), uuid = uuidParDefaut
   const lienVideoLocal = (e) => (e.lienVideo ? { url: e.lienVideo, titre: null, chaine: null, duree: null, statut: e.videoValidee ? 'valide' : 'propose' } : null)
   async function presenterLocal(liste) {
     const coach = (await backend.utilisateurCourant())?.role === 'coach'
-    const usage = coach ? indexUsage(await backend.tout('workouts'), await backend.tout('programmes')) : null
+    const usage = coach ? indexUsage(...(await Promise.all([backend.tout('workouts'), backend.tout('programmes')]))) : null // en parallèle
     return liste.map((e) => presenterExercice(e, { coach, usage, video: lienVideoLocal(e) }))
   }
   function verifierPatchExercice(patch) {

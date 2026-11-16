@@ -1,0 +1,208 @@
+{
+ "conditions": "390x844 tactile, CPU x4, latence 500 ms, session démo coach ; machine chargée (images perdues peu fiables)",
+ "scenarios": {
+  "Aujourd’hui -> Clients": {
+   "avant": {
+    "perdues": 2,
+    "pireImageMs": 50,
+    "longuesTaches": 0,
+    "longuesMs": 0,
+    "sauts": 0.021,
+    "finDomMs": 733,
+    "sources": "st-clients-zone|st-clients-li|st-clients-li|st-clients-li|st-actions"
+   },
+   "apres": {
+    "perdues": 5,
+    "pireImageMs": 97,
+    "longuesTaches": 1,
+    "longuesMs": 81,
+    "sauts": 0,
+    "finDomMs": 2810,
+    "sources": ""
+   },
+   "apres1366": {
+    "perdues": 6,
+    "pireImageMs": 87,
+    "longuesTaches": 1,
+    "longuesMs": 56,
+    "sauts": 0,
+    "finDomMs": 1434,
+    "sources": ""
+   }
+  },
+  "Clients -> Aujourd’hui (retour 1)": {
+   "avant": {
+    "perdues": 1,
+    "pireImageMs": 33,
+    "longuesTaches": 0,
+    "longuesMs": 0,
+    "sauts": 0.098,
+    "finDomMs": 1606,
+    "sources": "st-auj-dash is-charge|st-auj-ctas"
+   },
+   "apres": {
+    "perdues": 4,
+    "pireImageMs": 52,
+    "longuesTaches": 1,
+    "longuesMs": 68,
+    "sauts": 0,
+    "finDomMs": 658,
+    "sources": ""
+   },
+   "apres1366": {
+    "perdues": 8,
+    "pireImageMs": 86,
+    "longuesTaches": 1,
+    "longuesMs": 92,
+    "sauts": 0,
+    "finDomMs": 692,
+    "sources": ""
+   }
+  },
+  "Aujourd’hui -> Exercices": {
+   "avant": {
+    "perdues": 0,
+    "pireImageMs": 18,
+    "longuesTaches": 0,
+    "longuesMs": 0,
+    "sauts": 0,
+    "finDomMs": 339,
+    "sources": ""
+   },
+   "apres": {
+    "perdues": 5,
+    "pireImageMs": 98,
+    "longuesTaches": 1,
+    "longuesMs": 87,
+    "sauts": 0,
+    "finDomMs": 999,
+    "sources": ""
+   },
+   "apres1366": {
+    "perdues": 6,
+    "pireImageMs": 115,
+    "longuesTaches": 1,
+    "longuesMs": 108,
+    "sauts": 0,
+    "finDomMs": 1400,
+    "sources": ""
+   }
+  },
+  "Exercices -> Aujourd’hui (retour 2)": {
+   "avant": {
+    "perdues": 2,
+    "pireImageMs": 18,
+    "longuesTaches": 0,
+    "longuesMs": 0,
+    "sauts": 0,
+    "finDomMs": 246,
+    "sources": ""
+   },
+   "apres": {
+    "perdues": 8,
+    "pireImageMs": 138,
+    "longuesTaches": 1,
+    "longuesMs": 154,
+    "sauts": 0,
+    "finDomMs": 1171,
+    "sources": ""
+   },
+   "apres1366": {
+    "perdues": 9,
+    "pireImageMs": 123,
+    "longuesTaches": 1,
+    "longuesMs": 131,
+    "sauts": 0,
+    "finDomMs": 1194,
+    "sources": ""
+   }
+  },
+  "marquer une alerte vue": {
+   "avant": {
+    "perdues": 2,
+    "pireImageMs": 49,
+    "longuesTaches": 1,
+    "longuesMs": 51,
+    "sauts": 0.042,
+    "finDomMs": 1472,
+    "sources": "st-bloc st-auj-b st-auj-b--tiers|LI|LI|st-auj-agenda"
+   },
+   "apres": {
+    "perdues": 24,
+    "pireImageMs": 310,
+    "longuesTaches": 0,
+    "longuesMs": 0,
+    "sauts": 0.042,
+    "finDomMs": 2136,
+    "sources": "st-bloc st-auj-b st-auj-b--tiers|LI|LI|st-auj-agenda|LI"
+   },
+   "apres1366": {
+    "perdues": 3,
+    "pireImageMs": 50,
+    "longuesTaches": 0,
+    "longuesMs": 0,
+    "sauts": 0.006,
+    "finDomMs": 1391,
+    "sources": "LI|LI|st-auj-agenda"
+   }
+  },
+  "Aujourd’hui -> Alertes (tout voir)": {
+   "avant": {
+    "perdues": 0,
+    "pireImageMs": 0,
+    "longuesTaches": 0,
+    "longuesMs": 0,
+    "sauts": 0,
+    "finDomMs": 0,
+    "sources": ""
+   },
+   "apres": {
+    "perdues": 0,
+    "pireImageMs": 0,
+    "longuesTaches": 0,
+    "longuesMs": 0,
+    "sauts": 0,
+    "finDomMs": 0,
+    "sources": ""
+   },
+   "apres1366": {
+    "perdues": 0,
+    "pireImageMs": 0,
+    "longuesTaches": 0,
+    "longuesMs": 0,
+    "sauts": 0,
+    "finDomMs": 0,
+    "sources": ""
+   }
+  },
+  "Alertes -> Aujourd’hui": {
+   "avant": {
+    "perdues": 7,
+    "pireImageMs": 66,
+    "longuesTaches": 1,
+    "longuesMs": 63,
+    "sauts": 0.098,
+    "finDomMs": 1909,
+    "sources": "st-auj-dash is-charge|st-auj-ctas"
+   },
+   "apres": {
+    "perdues": 10,
+    "pireImageMs": 97,
+    "longuesTaches": 2,
+    "longuesMs": 141,
+    "sauts": 0,
+    "finDomMs": 2544,
+    "sources": ""
+   },
+   "apres1366": {
+    "perdues": 9,
+    "pireImageMs": 66,
+    "longuesTaches": 2,
+    "longuesMs": 110,
+    "sauts": 0,
+    "finDomMs": 2793,
+    "sources": ""
+   }
+  }
+ }
+}

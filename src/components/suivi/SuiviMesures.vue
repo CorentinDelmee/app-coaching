@@ -87,7 +87,7 @@ function ajouter(e) { emit('ajouter', { serie: serieId.value, src: e.currentTarg
 .sm-chips button:active, .sm-periodes button:active { transform: scale(.95); }
 .sm-chips button[aria-pressed="true"] { background: var(--accent); color: var(--accent-texte); }
 .sm-periodes { margin-bottom: 14px; }
-.sm-periodes button { flex: 1; padding: 0 6px; min-height: 40px; font-size: 14px; background: transparent; color: var(--texte-doux); box-shadow: inset 0 0 0 2px var(--filet); }
+.sm-periodes button { flex: 1; padding: 0 var(--esp-2); min-height: 44px; font-size: 14px; background: transparent; color: var(--texte-doux); box-shadow: inset 0 0 0 2px var(--filet); }
 .sm-periodes button[aria-pressed="true"] { color: var(--texte); box-shadow: inset 0 0 0 2px var(--accent-lisible); }
 .sm-valeur { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
 .sm-nombre { font-family: var(--font-chiffres); font-size: 52px; letter-spacing: -.06em; line-height: 1.1; font-variant-numeric: tabular-nums; }

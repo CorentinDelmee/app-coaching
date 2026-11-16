@@ -11,7 +11,7 @@ import SuiviMesures from '../components/suivi/SuiviMesures.vue'
 import CarteCorps from '../components/suivi/CarteCorps.vue'
 import FeuilleZone from '../components/suivi/FeuilleZone.vue'
 import SuiviNutrition from '../components/suivi/SuiviNutrition.vue'
-import { data } from '../data/index.js'
+import { data, lectureRapide } from '../data/index.js'
 import { jourLocal } from '../domain/dates.js'
 import { configNombre } from '../domain/questionnaireUi.js'
 import { idDouleur } from '../domain/corps.js'
@@ -48,12 +48,35 @@ const carte = ref(null)
 const toastEl = ref(null)
 let minuteurToast = 0
 
+// Lecture rapide (affichage seulement) : revisite = page tout de suite depuis le cache, puis lecture fraîche ; sans cache, le chargeur
+// centre couvre l'attente. Les écritures (enregistrer, enregistrerMesure) relisent toujours la ligne au serveur, jamais ce cache.
+let signature = ''
+function appliquer(v) {
+  const sig = JSON.stringify(v)
+  if (sig === signature) return // donnée fraîche identique : rien ne change, rien ne se redessine
+  signature = sig
+  user.value = v.user
+  mesures.value = v.mesures
+  douleurs.value = v.douleurs
+  nutrition.value = v.nutrition
+  urlsPhotos.value = v.urlsPhotos
+}
+async function lire() {
+  const u = await utilisateurCourant()
+  if (!u) return { user: null }
+  const filtre = { clientId: u.id }
+  const [m, d, n] = await Promise.all([data.mesures.lister(filtre), data.douleurs.lister(filtre), data.nutrition.lister(filtre)])
+  // photos de repas : en mode api, adresses protégées par la session (jamais d'URL publique)
+  const refs = [...new Set(n.map((e) => e.valeur?.photo).filter(Boolean))]
+  const urls = Object.fromEntries(await Promise.all(refs.map(async (r) => [r, await data.photos.url(r).catch(() => '')])))
+  return { user: u, mesures: m, douleurs: d, nutrition: n, urlsPhotos: urls }
+}
+
 onMounted(async () => {
   installerRessort()
   try {
-    user.value = await utilisateurCourant()
+    await lectureRapide('client:suivi', ['profils', 'mesures', 'douleurs', 'nutrition', 'photos'], lire, (v) => { if (v.user) appliquer(v) }, { attendre: false })
     if (!user.value) { erreur.value = 'Connectez-vous pour voir votre suivi.'; return }
-    await recharger()
     charge.value = true
   } catch (e) {
     erreur.value = 'Impossible de charger votre suivi. Réessayez.'
@@ -65,15 +88,9 @@ onMounted(async () => {
 })
 onBeforeUnmount(() => { clearTimeout(minuteurToast); gsap.killTweensOf(toastEl.value) })
 
+/** Après une écriture : relecture fraîche (le cache est déjà invalidé par data). */
 async function recharger() {
-  const filtre = { clientId: user.value.id }
-  const [m, d, n] = await Promise.all([data.mesures.lister(filtre), data.douleurs.lister(filtre), data.nutrition.lister(filtre)])
-  mesures.value = m
-  douleurs.value = d
-  nutrition.value = n
-  // photos de repas : en mode api, adresses protégées par la session (jamais d'URL publique)
-  const refs = [...new Set(n.map((e) => e.valeur?.photo).filter(Boolean))]
-  urlsPhotos.value = Object.fromEntries(await Promise.all(refs.map(async (r) => [r, await data.photos.url(r).catch(() => '')])))
+  appliquer(await lire())
 }
 
 /** Message bref en bas de l'écran (erreur d'écriture : rien n'est perdu en silence). */

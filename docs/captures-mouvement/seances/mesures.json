@@ -1,0 +1,148 @@
+{
+ "cadre": "390x844 tactile, CPU x4, latence 500 ms, dev Vite, Mac charge (bruit)",
+ "avant": [
+  {
+   "nom": "froid: Plus -> Séances (liste)",
+   "perdues": 13,
+   "pire": 81,
+   "longues": 1,
+   "longuesMs": 80,
+   "sauts": 0,
+   "sautsTard": 0,
+   "finDOM": 4210
+  },
+  {
+   "nom": "froid: liste -> éditeur (cache liste)",
+   "perdues": 11,
+   "pire": 161,
+   "longues": 3,
+   "longuesMs": 225,
+   "sauts": 0.007,
+   "sautsTard": 0.004,
+   "finDOM": 2041
+  },
+  {
+   "nom": "froid: retour liste",
+   "perdues": 11,
+   "pire": 156,
+   "longues": 1,
+   "longuesMs": 159,
+   "sauts": 0,
+   "sautsTard": 0,
+   "finDOM": 807
+  },
+  {
+   "nom": "froid: ouvrir une séance (éditeur, rien en cache)",
+   "perdues": 10,
+   "pire": 114,
+   "longues": 2,
+   "longuesMs": 128,
+   "sauts": 0.007,
+   "sautsTard": 0.007,
+   "finDOM": 2213
+  },
+  {
+   "nom": "chaud: retour + 2e ouverture",
+   "perdues": 12,
+   "pire": 79,
+   "longues": 2,
+   "longuesMs": 114,
+   "sauts": 0.007,
+   "sautsTard": 0.007,
+   "finDOM": 1808
+  },
+  {
+   "nom": "froid: nouvelle séance",
+   "perdues": 13,
+   "pire": 163,
+   "longues": 3,
+   "longuesMs": 222,
+   "sauts": 0.007,
+   "sautsTard": 0.007,
+   "finDOM": 3063
+  },
+  {
+   "nom": "froid: ouvrir la bibliothèque",
+   "perdues": 2,
+   "pire": 33,
+   "longues": 0,
+   "longuesMs": 0,
+   "sauts": 0,
+   "sautsTard": 0,
+   "finDOM": 571
+  }
+ ],
+ "apres": [
+  {
+   "nom": "froid: Plus -> Séances (liste)",
+   "perdues": 11,
+   "pire": 86,
+   "longues": 1,
+   "longuesMs": 90,
+   "sauts": 0,
+   "sautsTard": 0,
+   "finDOM": 2161
+  },
+  {
+   "nom": "froid: liste -> éditeur (cache liste)",
+   "perdues": 13,
+   "pire": 145,
+   "longues": 3,
+   "longuesMs": 215,
+   "sauts": 0.007,
+   "sautsTard": 0.004,
+   "finDOM": 2002
+  },
+  {
+   "nom": "froid: retour liste",
+   "perdues": 11,
+   "pire": 103,
+   "longues": 1,
+   "longuesMs": 108,
+   "sauts": 0,
+   "sautsTard": 0,
+   "finDOM": 152
+  },
+  {
+   "nom": "froid: ouvrir une séance (éditeur, rien en cache)",
+   "perdues": 10,
+   "pire": 145,
+   "longues": 2,
+   "longuesMs": 151,
+   "sauts": 0.007,
+   "sautsTard": 0.004,
+   "finDOM": 1963
+  },
+  {
+   "nom": "chaud: retour + 2e ouverture",
+   "perdues": 6,
+   "pire": 66,
+   "longues": 0,
+   "longuesMs": 0,
+   "sauts": 0.007,
+   "sautsTard": 0.007,
+   "finDOM": 1769
+  },
+  {
+   "nom": "froid: nouvelle séance",
+   "perdues": 7,
+   "pire": 82,
+   "longues": 1,
+   "longuesMs": 56,
+   "sauts": 0.007,
+   "sautsTard": 0.004,
+   "finDOM": 1930
+  },
+  {
+   "nom": "froid: ouvrir la bibliothèque",
+   "perdues": 3,
+   "pire": 35,
+   "longues": 1,
+   "longuesMs": 50,
+   "sauts": 0,
+   "sautsTard": 0,
+   "finDOM": 442
+  }
+ ],
+ "note": "sauts restants = barre d onglets / chargeur (socle), aucun de la page Seances"
+}

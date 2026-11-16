@@ -13,6 +13,8 @@ export const CLE_STOCKAGE = 'cdc-coaching/1'
 const CLE_SESSION = `${CLE_STOCKAGE}:session`
 const CLE_FILE = `${CLE_STOCKAGE}:file`
 const CLE_AGENDA = `${CLE_STOCKAGE}:agenda`
+// Démo seulement : latence simulée (ms) pour reproduire une base lente (tests de chargement, docs/loader). Absente = aucune attente.
+const CLE_LATENCE = `${CLE_STOCKAGE}:latence`
 
 /** Stockage en mémoire (tests, ou navigateur sans localStorage). */
 export function stockageMemoire() {
@@ -64,13 +66,20 @@ export function creerAdapterLocal({ storage = globalThis.localStorage || stockag
     return id ? charger().profils.find((p) => p.id === id && !p.archive) || null : null
   }
 
+  const latence = () => {
+    const ms = Number(storage.getItem(CLE_LATENCE)) || 0
+    return ms > 0 ? new Promise((r) => setTimeout(r, Math.min(ms, 5000))) : null
+  }
+
   const backend = {
     mode: 'local',
     async tout(entite) {
+      await latence()
       const user = profilCourant()
       return charger()[entite].filter((o) => visiblePar(entite, o, user)).map((o) => avecVersion(entite, structuredClone(o)))
     },
     async un(entite, id) {
+      await latence()
       const o = charger()[entite].find((x) => x.id === id)
       return o && visiblePar(entite, o, profilCourant()) ? avecVersion(entite, structuredClone(o)) : null
     },
@@ -128,6 +137,7 @@ export function creerAdapterLocal({ storage = globalThis.localStorage || stockag
     // Google Agenda en démo : faux flux d'événements (src/data/demo/agendaGoogle.js), état gardé à part dans localStorage.
     agenda: {
       async evenements() {
+        await latence()
         const user = profilCourant()
         // Démo : la 1re lecture déclenche la 1re synchro (comme si la planification avait déjà tourné) ;
         // « Synchroniser maintenant » amène ensuite les modifications / suppressions du faux agenda.

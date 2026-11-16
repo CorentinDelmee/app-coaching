@@ -5,7 +5,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 
 import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import Icone from '../components/Icone.vue'
-import { data } from '../data/index.js'
+import { data, lectureRapide } from '../data/index.js'
 import { ajouterJours, estJour, jourLocal, lundiDe } from '../domain/dates.js'
 import { etatSemaine, historiqueSemaines } from '../domain/programme.js'
 import { ajouterMois, colonnesSemaine, grilleMois, JOURS_COURTS, jourLong, libelleMois, libelleSemaine, lignesSemaine, messageSemaine, moisDeSemaine } from '../domain/calendrierUi.js'
@@ -38,23 +38,31 @@ const lundi = ref(lundiInitial)
 const vue = ref(route.query.vue === 'mois' ? 'mois' : 'semaine')
 const mois = ref(moisDeSemaine(lundiInitial))
 
+// Lecture brute (cache de lectureRapide) : en parallèle, valeur sérialisable.
 async function charger() {
-  try {
-    user.value = await utilisateurCourant()
-    if (!user.value) { erreur.value = 'Connectez-vous pour voir votre programme.'; return }
-    const [programmes, w, r, sc] = await Promise.all([
-      data.programmes.lister({ clientId: user.value.id }), data.workouts.lister({ clientId: user.value.id }),
-      data.realisations.lister({ clientId: user.value.id }), data.seancesCoaching.lister({ clientId: user.value.id })
-    ])
-    programme.value = programmes[0] || null
-    workouts.value = w
-    realisations.value = r
-    seancesCoaching.value = sc
-    charge.value = true
-  } catch (e) {
-    erreur.value = 'Impossible de charger votre programme. Réessayez.'
-    console.error(e)
-  }
+  const u = await utilisateurCourant()
+  if (!u) return { user: null }
+  const [programmes, w, r, sc] = await Promise.all([
+    data.programmes.lister({ clientId: u.id }), data.workouts.lister({ clientId: u.id }),
+    data.realisations.lister({ clientId: u.id }), data.seancesCoaching.lister({ clientId: u.id })
+  ])
+  return { user: u, programme: programmes[0] || null, workouts: w, realisations: r, seancesCoaching: sc }
+}
+let signature = ''
+let lance = false
+// 1re application (cache ou lecture fraîche) : la page s'ouvre ; la suivante ne remplace les données que si elles ont changé.
+function appliquer(brut) {
+  if (!brut.user) { erreur.value = 'Connectez-vous pour voir votre programme.'; return }
+  const sig = JSON.stringify(brut)
+  if (lance && sig === signature) return
+  signature = sig
+  user.value = brut.user
+  programme.value = brut.programme
+  workouts.value = brut.workouts
+  realisations.value = brut.realisations
+  seancesCoaching.value = brut.seancesCoaching
+  charge.value = true
+  if (!lance) { lance = true; nextTick().then(demarrer) }
 }
 
 // --- Dérivés -------------------------------------------------------------------------------------------
@@ -106,9 +114,7 @@ const banniereEl = ref(null)
 const coupeEl = ref(null)
 const $$ = (sel, el) => Array.from((el || document).querySelectorAll(sel))
 
-onMounted(async () => {
-  await charger()
-  await nextTick()
+function demarrer() {
   if (!charge.value) return
   // le calendrier mensuel est rendu mais caché : si la page s'ouvre déjà en mois, on le montre sans animation
   if (vue.value === 'mois') afficherMoisDirect()
@@ -119,6 +125,14 @@ onMounted(async () => {
     if (chip.length) gsap.fromTo(chip, { scale: 0.8 }, { scale: 1, duration: 0.8, delay: 0.9, ease: 'back.out(1.7)', clearProps: 'transform' })
   }
   if (bouclee.value && vue.value === 'semaine') setTimeout(celebrer, 900)
+}
+onMounted(async () => {
+  try {
+    await lectureRapide('client:programme', ['programmes', 'workouts', 'realisations', 'seancesCoaching'], charger, appliquer)
+  } catch (e) {
+    erreur.value = 'Impossible de charger votre programme. Réessayez.'
+    console.error(e)
+  }
 })
 onBeforeUnmount(() => gsap.killTweensOf([semaineEl.value, moisEl.value, curseurEl.value, banniereEl.value, coupeEl.value]))
 

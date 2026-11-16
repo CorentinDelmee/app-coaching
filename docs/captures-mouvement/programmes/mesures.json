@@ -1,0 +1,161 @@
+{
+ "note": "CPU x4, latence 500 ms, Mac charge : comparer surtout sauts et fin DOM",
+ "scenarios": {
+  "prog: Aujourd’hui -> Programmes (1er)": {
+   "avant390": {
+    "perdues": 55,
+    "pireImageMs": 199,
+    "longuesTaches": 4,
+    "longuesMs": 432,
+    "sauts": 0.098,
+    "finDomMs": 9279
+   },
+   "apres390": {
+    "perdues": 3,
+    "pireImageMs": 50,
+    "longuesTaches": 0,
+    "longuesMs": 0,
+    "sauts": 0,
+    "finDomMs": 1314
+   },
+   "apres1366": {
+    "perdues": 4,
+    "pireImageMs": 48,
+    "longuesTaches": 1,
+    "longuesMs": 62,
+    "sauts": 0,
+    "finDomMs": 1067
+   }
+  },
+  "prog: ouvrir un programme": {
+   "avant390": {
+    "perdues": 2,
+    "pireImageMs": 49,
+    "longuesTaches": 1,
+    "longuesMs": 50,
+    "sauts": 0,
+    "finDomMs": 3329
+   },
+   "apres390": {
+    "perdues": 11,
+    "pireImageMs": 164,
+    "longuesTaches": 2,
+    "longuesMs": 164,
+    "sauts": 0.004,
+    "finDomMs": 1766
+   },
+   "apres1366": {
+    "perdues": 18,
+    "pireImageMs": 180,
+    "longuesTaches": 3,
+    "longuesMs": 244,
+    "sauts": 0,
+    "finDomMs": 3190
+   }
+  },
+  "prog: retour aux programmes": {
+   "avant390": {
+    "perdues": 0,
+    "pireImageMs": 18,
+    "longuesTaches": 0,
+    "longuesMs": 0,
+    "sauts": 0,
+    "finDomMs": 571
+   },
+   "apres390": {
+    "perdues": 1,
+    "pireImageMs": 19,
+    "longuesTaches": 0,
+    "longuesMs": 0,
+    "sauts": 0,
+    "finDomMs": 43
+   },
+   "apres1366": {
+    "perdues": 4,
+    "pireImageMs": 52,
+    "longuesTaches": 1,
+    "longuesMs": 54,
+    "sauts": 0,
+    "finDomMs": 75
+   }
+  },
+  "prog: Programmes -> Clients": {
+   "avant390": {
+    "perdues": 5,
+    "pireImageMs": 81,
+    "longuesTaches": 1,
+    "longuesMs": 86,
+    "sauts": 0.021,
+    "finDomMs": 1595
+   },
+   "apres390": {
+    "perdues": 4,
+    "pireImageMs": 63,
+    "longuesTaches": 1,
+    "longuesMs": 57,
+    "sauts": 0,
+    "finDomMs": 2290
+   },
+   "apres1366": {
+    "perdues": 3,
+    "pireImageMs": 48,
+    "longuesTaches": 1,
+    "longuesMs": 53,
+    "sauts": 0,
+    "finDomMs": 872
+   }
+  },
+  "prog: Clients -> Programmes (2e)": {
+   "avant390": {
+    "perdues": 0,
+    "pireImageMs": 18,
+    "longuesTaches": 0,
+    "longuesMs": 0,
+    "sauts": 0,
+    "finDomMs": 596
+   },
+   "apres390": {
+    "perdues": 2,
+    "pireImageMs": 34,
+    "longuesTaches": 1,
+    "longuesMs": 52,
+    "sauts": 0,
+    "finDomMs": 651
+   },
+   "apres1366": {
+    "perdues": 3,
+    "pireImageMs": 53,
+    "longuesTaches": 1,
+    "longuesMs": 59,
+    "sauts": 0,
+    "finDomMs": 142
+   }
+  },
+  "prog: ouvrir (2e) un programme": {
+   "avant390": {
+    "perdues": 9,
+    "pireImageMs": 155,
+    "longuesTaches": 2,
+    "longuesMs": 179,
+    "sauts": 0,
+    "finDomMs": 1185
+   },
+   "apres390": {
+    "perdues": 4,
+    "pireImageMs": 80,
+    "longuesTaches": 1,
+    "longuesMs": 50,
+    "sauts": 0.004,
+    "finDomMs": 883
+   },
+   "apres1366": {
+    "perdues": 12,
+    "pireImageMs": 132,
+    "longuesTaches": 3,
+    "longuesMs": 193,
+    "sauts": 0,
+    "finDomMs": 1006
+   }
+  }
+ }
+}

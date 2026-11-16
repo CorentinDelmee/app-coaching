@@ -1,0 +1,124 @@
+{
+ "qs: Aujourd hui -> Plus -> Questionnaires": {
+  "avant": {
+   "perdues": 62,
+   "pireImageMs": 984,
+   "longuesTaches": 1,
+   "sauts": 0,
+   "finDomMs": 2045
+  },
+  "apres": {
+   "perdues": 8,
+   "pireImageMs": 35,
+   "longuesTaches": 1,
+   "sauts": 0,
+   "finDomMs": 2453
+  }
+ },
+ "qs: ouvrir un questionnaire (editeur)": {
+  "avant": {
+   "perdues": 10,
+   "pireImageMs": 140,
+   "longuesTaches": 1,
+   "sauts": 0.094,
+   "finDomMs": 1546
+  },
+  "apres": {
+   "perdues": 7,
+   "pireImageMs": 98,
+   "longuesTaches": 1,
+   "sauts": 0.004,
+   "finDomMs": 934
+  }
+ },
+ "qs: retour a la liste": {
+  "avant": {
+   "perdues": 7,
+   "pireImageMs": 87,
+   "longuesTaches": 1,
+   "sauts": 0,
+   "finDomMs": 1263
+  },
+  "apres": {
+   "perdues": 1,
+   "pireImageMs": 23,
+   "longuesTaches": 0,
+   "sauts": 0,
+   "finDomMs": 38
+  }
+ },
+ "qs: 2e ouverture (cache)": {
+  "avant": {
+   "perdues": 0,
+   "pireImageMs": 18,
+   "longuesTaches": 0,
+   "sauts": 0.094,
+   "finDomMs": 1270
+  },
+  "apres": {
+   "perdues": 3,
+   "pireImageMs": 36,
+   "longuesTaches": 0,
+   "sauts": 0.004,
+   "finDomMs": 868
+  }
+ },
+ "qs: retour (cache)": {
+  "avant": {
+   "perdues": 1,
+   "pireImageMs": 20,
+   "longuesTaches": 0,
+   "sauts": 0,
+   "finDomMs": 1100
+  },
+  "apres": {
+   "perdues": 0,
+   "pireImageMs": 18,
+   "longuesTaches": 0,
+   "sauts": 0,
+   "finDomMs": 61
+  }
+ },
+ "ordinateur 1366x690 (apres)": [
+  {
+   "nom": "qs: Aujourd hui -> Plus -> Questionnaires",
+   "perdues": 2,
+   "pireImageMs": 49,
+   "longuesTaches": 0,
+   "sauts": 0,
+   "finDomMs": 1166
+  },
+  {
+   "nom": "qs: ouvrir un questionnaire (editeur)",
+   "perdues": 8,
+   "pireImageMs": 98,
+   "longuesTaches": 1,
+   "sauts": 0,
+   "finDomMs": 922
+  },
+  {
+   "nom": "qs: retour a la liste",
+   "perdues": 2,
+   "pireImageMs": 35,
+   "longuesTaches": 0,
+   "sauts": 0,
+   "finDomMs": 122
+  },
+  {
+   "nom": "qs: 2e ouverture (cache)",
+   "perdues": 3,
+   "pireImageMs": 32,
+   "longuesTaches": 0,
+   "sauts": 0,
+   "finDomMs": 1108
+  },
+  {
+   "nom": "qs: retour (cache)",
+   "perdues": 2,
+   "pireImageMs": 35,
+   "longuesTaches": 0,
+   "sauts": 0,
+   "finDomMs": 51
+  }
+ ]
+}

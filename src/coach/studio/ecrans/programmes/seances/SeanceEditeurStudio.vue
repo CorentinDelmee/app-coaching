@@ -5,7 +5,7 @@
 // circuits (nom, format, paramètres, facultatif, exercices + reps), supersets (A/B).
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink, onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
-import data from '../../../../../data/index.js'
+import data, { attente, lectureRapide } from '../../../../../data/index.js'
 import { FORMATS_CIRCUIT } from '../../../../../domain/modele.js'
 import { etat, messageErreur, nomClient, rafraichir, uuid } from '../../../../store.js'
 import { LIBELLES_FORMAT, PARAMS_FORMAT, copie, nouveauBloc, paramsAffiches } from '../../../../logique.js'
@@ -43,9 +43,13 @@ let pret = false
 const parId = (id) => exercices.value.find((e) => e.id === id) || null
 const nomExo = (id) => parId(id)?.nom || 'exercice'
 
+// Bibliothèque (affichage, noms) : lecture rapide, jamais utilisée pour écrire. Cache affiché tout de suite, puis lecture fraîche.
+// `attendre: false` : rend la main dès que le cache est appliqué ; sans cache, attend la lecture (le chargeur peut s'afficher).
 async function chargerExercices() {
-  const r = data.exercices.recherche ? (await data.exercices.recherche({ limite: 500 })).items : await data.exercices.lister()
-  exercices.value = [...r].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
+  await lectureRapide('seances:biblio', ['exercices'], async () => {
+    const r = data.exercices.recherche ? (await data.exercices.recherche({ limite: 500 })).items : await data.exercices.lister()
+    return [...r].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
+  }, (liste) => { exercices.value = liste }, { attendre: false })
 }
 
 async function charger(id) {
@@ -53,13 +57,16 @@ async function charger(id) {
   workout.value = undefined
   erreurChargement.value = ''
   try {
-    await Promise.all([rafraichir(), chargerExercices()])
+    // Tout en parallèle (un aller-retour, pas trois). Le workout édité est TOUJOURS lu frais (version pour les conflits).
+    const lecture = id === 'nouveau' ? null : attente(data.workouts.lire(id))
+    lecture?.catch(() => {}) // l'erreur est traitée plus bas (pas de rejet non géré si une autre lecture échoue d'abord)
+    await Promise.all([rafraichir(), chargerExercices(), lecture])
     if (id === 'nouveau') {
       workout.value = { id: uuid(), nom: NOM_DEFAUT, clientId: clientDeLien(route.query.client, etat.clients), consignes: '', blocs: [] }
       cree = false
       dernierEcrit = ''
     } else {
-      const w = await data.workouts.lire(id)
+      const w = await lecture
       workout.value = w ? { consignes: '', ...copie(w) } : null
       cree = !!w
       dernierEcrit = w ? JSON.stringify(nettoyerSeance(workout.value)) : ''
@@ -308,7 +315,18 @@ const nbExos = computed(() => nbExercices(workout.value))
 
     <RouterLink to="/coach/seances" class="st-prog-retour"><span aria-hidden="true">←</span> Séances</RouterLink>
 
-    <div v-if="workout === undefined" class="st-prog-s-charge" aria-busy="true"><span /><span /><span /></div>
+    <div v-if="workout === undefined" class="st-prog-s-sq" aria-busy="true" aria-label="Chargement de la séance">
+      <header class="st-entete st-prog-s-entete">
+        <div class="st-prog-s-titre"><p>&nbsp;</p><span class="st-prog-s-nom st-prog-s-sq-nom" /></div>
+      </header>
+      <div class="st-prog-s-grille">
+        <aside class="st-prog-s-biblio st-prog-s-sq-biblio" />
+        <div class="st-prog-s-contenu">
+          <section class="st-bloc st-prog-s-infos st-prog-s-sq-infos" />
+          <div class="st-prog-s-blocs st-gl-liste"><div class="st-prog-s-bloc" /><div class="st-prog-s-bloc" /><div class="st-prog-s-bloc" /></div>
+        </div>
+      </div>
+    </div>
     <div v-else-if="workout === null" class="st-bloc st-prog-s-introuvable">
       <h1>Séance introuvable</h1>
       <p>{{ erreurChargement || 'Elle a peut-être été archivée.' }}</p>

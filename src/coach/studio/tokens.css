@@ -35,6 +35,16 @@
   --st-sortie: cubic-bezier(.16, 1, .3, 1);          /* expo-out : entrées, cascade */
   --st-vaul: cubic-bezier(.32, .72, 0, 1);           /* panneau, feuille, élément partagé */
   --st-d-appui: 120ms; --st-d-court: 220ms; --st-d-base: 420ms; --st-d-panneau: 500ms;
+  --st-d-page: 240ms; --st-glisse-page: 20px; --st-d-feuille-sortie: 340ms;          /* entrée de page (aucune sortie) : LISEZMOI « Mouvement » */
+  /* Espacements (LISEZMOI.md « Espacements ») : échelle unique de 4 en 4, puis rôles. Ne pas écrire d'autre valeur. */
+  --st-e-1: 4px; --st-e-2: 8px; --st-e-3: 12px; --st-e-4: 16px; --st-e-5: 20px; --st-e-6: 24px; --st-e-8: 32px; --st-e-10: 40px;
+  --st-gouttiere: clamp(16px, 3vw, 40px);  /* marge latérale de page : 16 px minimum */
+  --st-pad-btn: 18px;                      /* bouton : padding horizontal (texte ≥ 16 px du bord) */
+  --st-pad-btn-petit: 12px;                /* petit bouton / puce cliquable / lien encadré */
+  --st-pad-carte: 20px;                    /* carte, bloc : padding horizontal (16 px sur téléphone) */
+  --st-pad-champ: 14px;                    /* champ : padding horizontal (texte ≥ 12 px du bord) */
+  --st-ecart: 8px;                         /* écart minimal entre deux boutons */
+  --st-cible: 44px;                        /* hauteur minimale de toute cible tactile */
   --st-nav: 248px;
   /* empilement : barres sticky des vues < 10 ; barre du bas 40 ; voile 49 ; panneau 50 ; volant 60 ; toast 80 */
   --st-z-barre: 40; --st-z-voile: 49; --st-z-panneau: 50; --st-z-volant: 60; --st-z-toast: 80;
@@ -42,7 +52,7 @@
   background: var(--st-fond); color: var(--st-texte); font: 15px/1.45 var(--st-sans);
   -webkit-font-smoothing: antialiased;
 }
-@media (max-width: 900px) { .st-app { --st-nav: 0px; } }
+@media (max-width: 900px) { .st-app { --st-nav: 0px; --st-gouttiere: 16px; --st-pad-carte: 16px; } }
 
 :where(.st-app) *, :where(.st-app) *::before, :where(.st-app) *::after { box-sizing: border-box; }
 /* :where() = spécificité nulle : ces remises à zéro ne doivent jamais battre une classe de composant (.st-btn--encre, etc.). */
@@ -65,11 +75,12 @@
 .st-entete { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
 .st-entete h1 { font-family: var(--st-titre); font-weight: 500; font-size: clamp(34px, 5vw, 56px); line-height: 1; letter-spacing: -.035em; margin: 0; color: var(--st-encre); }
 .st-entete p { margin: 6px 0 0; color: var(--st-doux); }
-.st-entete .st-actions { margin-left: auto; display: flex; gap: 8px; }
+.st-entete > :first-child { flex: 1 1 240px; min-width: 0; } /* le titre et son sous-titre prennent la place libre (sinon le sous-titre s'écrase à côté du bouton) */
+.st-entete .st-actions { margin-left: auto; display: flex; flex-wrap: wrap; gap: var(--st-ecart); }
 @media (max-width: 900px) { .st-entete h1 { font-size: 40px; } }
 
 /* Boutons */
-.st-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: var(--st-r-m); border: 1px solid var(--st-filet-fort); background: var(--st-surface); color: var(--st-encre); font-weight: 600; text-decoration: none; transition: transform var(--st-d-appui) ease-out, box-shadow var(--st-d-court), background var(--st-d-court); }
+.st-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: var(--st-cible); padding: 0 var(--st-pad-btn); border-radius: var(--st-r-m); border: 1px solid var(--st-filet-fort); background: var(--st-surface); color: var(--st-encre); font-weight: 600; text-decoration: none; transition: transform var(--st-d-appui) ease-out, box-shadow var(--st-d-court), background var(--st-d-court); }
 .st-btn svg { width: 18px; height: 18px; }
 .st-btn:active { transform: scale(.96); transition-duration: 80ms; }
 .st-btn--jaune { background: var(--st-jaune); color: var(--st-jaune-texte); border-color: transparent; }
@@ -81,7 +92,7 @@
 .st-btn--fantome:hover { background: var(--st-surface-2); }
 
 /* Blocs (cartes utilitaires) */
-.st-bloc { background: var(--st-surface); border-radius: var(--st-r-l); box-shadow: var(--st-ombre-1); padding: 18px 20px; min-width: 0; }
+.st-bloc { background: var(--st-surface); border-radius: var(--st-r-l); box-shadow: var(--st-ombre-1); padding: var(--st-e-5) var(--st-e-5); min-width: 0; }
 .st-bloc h2 { font-family: var(--st-titre); font-weight: 500; font-size: 20px; letter-spacing: -.02em; margin: 0 0 12px; color: var(--st-encre); }
 
 /* Entrée de vue */

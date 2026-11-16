@@ -10,7 +10,10 @@ export const CHOIX = {
   /** Texte posé sur l'aplat jaune : 'fonce' (12,1 : 1) | 'blanc' (1,4 : 1, illisible : seulement pour comparer). */
   texteAplat: 'fonce',
   /** Adresse des petites phrases du chrono : 'vous' (« Respirez. ») | 'tu' (« Respire. »). L'app entière vouvoie : défaut 'vous'. */
-  adresse: 'vous'
+  adresse: 'vous',
+  /** Chargeur affiché quand une page attend la base (> 250 ms) : 'pastille' (logo qui « fait une répétition ») | 'tempo'
+   *  (trois points 2-2-2) | 'anneau' (anneau d'assiduité qui tourne). Démo : docs/loader/index.html. */
+  chargeur: 'pastille'
 }
 
 /** Petites phrases posées au-dessus des chiffres des chronos (design-v2/assets/config.js). */

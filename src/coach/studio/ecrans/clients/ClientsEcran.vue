@@ -4,7 +4,7 @@
 // (ordinateur) ou en feuille plein écran (téléphone) : route enfant /coach/clients/:id.
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
-import data from '../../../../data/index.js'
+import data, { lectureRapide } from '../../../../data/index.js'
 import { jourLocal } from '../../../../domain/dates.js'
 import { LIEUX } from '../../../../domain/modele.js'
 import { etat, maintenant, messageErreur, rafraichir } from '../../../store.js'
@@ -33,18 +33,28 @@ const reduit = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-
 
 const ouvert = computed(() => route.params.id || null)
 
+// Lecture rapide : la liste vue récemment s'affiche dans la même image (cache), puis se met à jour sans bouger ;
+// sinon la zone montre un squelette à la forme des cartes jusqu'à l'arrivée des données.
+const appliquer = (v) => { archives.value = v.archives; realisations.value = v.realisations; programmes.value = v.programmes }
 async function charger() {
-  const [tous, reals, progs] = await Promise.all([
-    data.profils.lister({}, { archives: true }), data.realisations.lister(), data.programmes.lister(), rafraichir()
+  await Promise.all([
+    lectureRapide('clients:liste', ['profils', 'realisations', 'programmes'], async () => {
+      const [tous, reals, progs] = await Promise.all([data.profils.lister({}, { archives: true }), data.realisations.lister(), data.programmes.lister()])
+      return { archives: tous.filter((p) => p.role === 'client' && p.archive), realisations: reals, programmes: progs }
+    }, (v, { depuisCache }) => { appliquer(v); if (depuisCache) charge.value = true }),
+    rafraichir()
   ])
-  archives.value = tous.filter((p) => p.role === 'client' && p.archive)
-  realisations.value = reals
-  programmes.value = progs
   charge.value = true
   await nextTick()
   rendreFocus()
 }
-onMounted(charger)
+onMounted(() => {
+  charger()
+  // La fiche (chargée à la demande) est préparée en tâche de fond : le tap sur un client ouvre la feuille tout de suite.
+  const preparer = () => import('./FicheClient.vue')
+  if (typeof requestIdleCallback === 'function') requestIdleCallback(preparer, { timeout: 1500 })
+  else setTimeout(preparer, 300)
+})
 
 const alertesParClient = computed(() => {
   const m = {}
@@ -57,6 +67,7 @@ const tous = computed(() => [...new Map([...archives.value, ...etat.clients].map
   teinte: teinteClient(profil.id),
   resume: resumeClient({ profil, realisations: realisations.value, programmes: programmes.value, nbAlertes: alertesParClient.value[profil.id] || 0, aujourdhui })
 })))
+const nbSquelettes = computed(() => Math.min(8, Math.max(3, etat.clients.length || 3)))
 const compteurs = computed(() => compterFiltres(tous.value))
 const affiches = computed(() => filtrerClients(tous.value, { filtre: filtre.value, recherche: recherche.value }))
 const optionsFiltre = computed(() => [
@@ -149,6 +160,7 @@ async function restaurer(p) {
       <div>
         <h1 id="st-clients-titre">Clients</h1>
         <p v-if="charge">{{ compteurs.actifs }} client{{ compteurs.actifs > 1 ? 's' : '' }} suivi{{ compteurs.actifs > 1 ? 's' : '' }}<template v-if="compteurs.attention"> · {{ compteurs.attention }} demande{{ compteurs.attention > 1 ? 'nt' : '' }} ton attention</template></p>
+        <p v-else aria-hidden="true">&nbsp;</p>
       </div>
       <div class="st-actions">
         <button type="button" class="st-btn st-btn--jaune" :aria-expanded="formulaire.ouvert" aria-controls="st-clients-invit" @click="basculerFormulaire">
@@ -193,7 +205,7 @@ async function restaurer(p) {
           <Filtres v-model="filtreModele" :options="optionsFiltre" :multiple="false" etiquette="Filtrer les clients" />
         </div>
 
-        <ul v-if="affiches.length" ref="liste" class="st-clients-liste" aria-label="Clients">
+        <ul v-if="charge && affiches.length" ref="liste" class="st-clients-liste" aria-label="Clients">
           <li v-for="c in affiches" :key="c.profil.id" class="st-clients-li">
             <RouterLink
               :to="versClient(c.profil.id)" class="st-clients-carte" :data-m="c.teinte" :data-client="c.profil.id"
@@ -212,6 +224,9 @@ async function restaurer(p) {
             </RouterLink>
             <button v-if="c.profil.archive" type="button" class="st-btn st-clients-restaurer" :aria-label="`Restaurer ${c.profil.nom}`" @click="restaurer(c.profil)">Restaurer</button>
           </li>
+        </ul>
+        <ul v-else-if="!charge" class="st-clients-liste" aria-hidden="true">
+          <li v-for="n in nbSquelettes" :key="n" class="st-clients-li"><div class="st-clients-carte st-clients-sq"><span class="st-clients-av" /><span class="st-clients-txt"><b>&nbsp;</b><small>&nbsp;</small><small>&nbsp;</small><span class="st-clients-sq-puce" /></span></div></li>
         </ul>
         <div v-else-if="charge" class="st-clients-vide">
           <template v-if="recherche">

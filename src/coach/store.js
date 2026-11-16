@@ -1,6 +1,6 @@
 // État partagé du tableau de bord coach : session, alertes, helpers. Toutes les données passent par src/data.
 import { reactive } from 'vue'
-import data from '../data/index.js'
+import data, { lectureRapide } from '../data/index.js'
 import { toutesLesAlertes } from '../domain/alertes.js'
 
 export const COMPTE_COACH_LOCAL = { identifiant: 'corentin', code: 'COACH2026' }
@@ -27,15 +27,26 @@ export async function ouvrirSessionCoach() {
   }
 }
 
-/** Recharge la liste des clients (actifs) et les alertes de tous. */
+/**
+ * Recharge la liste des clients (actifs) et les alertes de tous.
+ * Lecture rapide (src/data/cache.js) : si l'état a été lu récemment et qu'aucune écriture n'est passée depuis, il est appliqué
+ * tout de suite et la promesse se résout sans attendre le réseau (le rafraîchissement continue et met `etat` à jour).
+ * Après une écriture (cache invalidé), elle attend la lecture fraîche. Les 6 lectures partent en parallèle.
+ */
 export async function rafraichir() {
-  const [profils, reponses, douleurs, realisations, alertesVues] = await Promise.all([
-    data.profils.lister(), data.reponses.lister(), data.douleurs.lister(), data.realisations.lister(), data.alertesVues.lister()
-  ])
+  await lectureRapide('coach:etat', ['profils', 'reponses', 'douleurs', 'realisations', 'alertesVues', 'agenda'], async () => {
+    const [profils, reponses, douleurs, realisations, alertesVues, alertesAgenda] = await Promise.all([
+      data.profils.lister(), data.reponses.lister(), data.douleurs.lister(), data.realisations.lister(), data.alertesVues.lister(),
+      data.agenda.etat().then((a) => a.alertes.length, () => 0)
+    ])
+    return { profils, reponses, douleurs, realisations, alertesVues, alertesAgenda }
+  }, appliquerEtat, { attendre: false })
+}
+function appliquerEtat({ profils, reponses, douleurs, realisations, alertesVues, alertesAgenda }) {
   const clients = profils.filter((p) => p.role === 'client').sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
   const de = (liste, id) => liste.filter((x) => x.clientId === id)
   etat.clients = clients
-  etat.alertesAgenda = await data.agenda.etat().then((a) => a.alertes.length, () => 0)
+  etat.alertesAgenda = alertesAgenda
   etat.alertes = toutesLesAlertes(
     clients.map((profil) => ({ profil, reponses: de(reponses, profil.id), douleurs: de(douleurs, profil.id), realisations: de(realisations, profil.id) })),
     alertesVues, maintenant()

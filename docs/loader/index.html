@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chargeur — 3 variantes (Studio coach)</title>
+<link rel="stylesheet" href="../../src/components/chargeur.css">
+<style>
+  :root { --fond: #F4F1EC; --encre: #23252B; --doux: #5C5F66; --jaune: #F2E27A; --surface: #fff; --s2: #EDE8E0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fond); color: var(--encre); font: 15px/1.45 'Albert Sans', system-ui, -apple-system, sans-serif; }
+  main { max-width: 1240px; margin: 0 auto; padding: 32px 20px 64px; }
+  h1 { font: 500 34px/1.1 Syne, system-ui, sans-serif; letter-spacing: -.035em; margin: 0 0 8px; }
+  h2 { font: 500 22px/1.2 Syne, system-ui, sans-serif; letter-spacing: -.02em; margin: 0 0 4px; }
+  p { margin: 0 0 12px; color: var(--doux); max-width: 70ch; }
+  .reco { display: inline-block; margin-left: 8px; padding: 2px 10px; border-radius: 10px; background: var(--jaune); color: #26230A; font-size: 12px; font-weight: 700; vertical-align: middle; }
+  .grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-top: 24px; }
+  .carte { background: var(--surface); border-radius: 22px; padding: 20px; box-shadow: 0 1px 2px rgba(35,37,43,.06), 0 2px 8px rgba(35,37,43,.05); }
+  .carte code { font-size: 13px; background: var(--s2); padding: 1px 6px; border-radius: 6px; }
+  /* téléphone simulé */
+  .tel { position: relative; height: 520px; margin: 16px auto 12px; width: 260px; border-radius: 34px; background: var(--fond); border: 8px solid var(--encre); overflow: hidden; }
+  .tel .chg--haut, .tel .chg--centre { position: absolute; }
+  .tel .chg--haut { top: 14px; }
+  .ecr { padding: 54px 14px 0; }
+  .ecr b { display: block; font: 500 24px/1 Syne, system-ui, sans-serif; letter-spacing: -.035em; margin-bottom: 6px; }
+  .ecr small { display: block; color: var(--doux); font-size: 11px; margin-bottom: 12px; }
+  .sq { height: 64px; border-radius: 16px; background: var(--s2); margin-bottom: 10px; }
+  .sq.petit { height: 28px; width: 60%; border-radius: 10px; }
+  .barre { position: absolute; left: 8px; right: 8px; bottom: 8px; height: 46px; border-radius: 18px; background: rgba(35,37,43,.94); }
+  .barre i { position: absolute; left: 6px; top: 6px; width: 46px; height: 34px; border-radius: 12px; background: var(--jaune); }
+  .boutons { display: flex; flex-wrap: wrap; gap: 8px; }
+  button { min-height: 44px; padding: 0 18px; border-radius: 14px; border: 1px solid rgba(35,37,43,.18); background: var(--surface); color: var(--encre); font: 600 14px/1 inherit; cursor: pointer; }
+  button:active { transform: scale(.96); }
+  .essai { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+  .essai output { font-variant-numeric: tabular-nums; color: var(--doux); font-size: 13px; }
+  video, img { max-width: 100%; border-radius: 16px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Chargeur : 3 variantes</h1>
+  <p>Il n'apparaît que si une page attend la base plus de <b>250 ms</b> (une lecture rapide ne montre rien) et reste au moins <b>400 ms</b>
+    (pas de clignotement). Pendant ce temps, la page montre déjà sa forme (squelettes). Tout est en CSS (<code>transform</code> / <code>opacity</code>) :
+    il reste fluide même quand le téléphone est occupé à construire la page qui arrive. Mouvement réduit : le logo reste immobile.</p>
+  <p>Pour changer : <code>src/config/apparence.js</code> → <code>CHOIX.chargeur = 'pastille' | 'tempo' | 'anneau'</code> (une seule ligne).
+    Variante appliquée en provisoire : <b>pastille</b>.</p>
+  <p>Aperçu animé des trois (si la page est ouverte sans les feuilles de style) : <a href="variantes.webp">variantes.webp</a> · capture fixe : <a href="variantes.jpg">variantes.jpg</a>.</p>
+
+  <div class="grille">
+    <section class="carte">
+      <h2>A · Pastille <span class="reco">recommandée</span></h2>
+      <p>Le logo du Studio (carré anthracite, point jaune) « fait une répétition » : le point descend en s'écrasant, remonte, le carré pivote
+        d'un quart de tour. Reconnaissable, propre à la marque, discret.</p>
+      <div class="tel"><div class="ecr"><b>Clients</b><small>3 clients suivis</small><div class="sq petit"></div><div class="sq"></div><div class="sq"></div><div class="sq"></div></div>
+        <div class="chg chg--haut" role="status"><div class="chg-corps chg-pastille"><i></i></div></div><div class="barre"><i></i></div></div>
+    </section>
+    <section class="carte">
+      <h2>B · Tempo</h2>
+      <p>Trois points jaunes qui montent l'un après l'autre dans une gélule anthracite, comme un tempo 2-2-2. Le plus « classique », très lisible.</p>
+      <div class="tel"><div class="ecr"><b>Clients</b><small>3 clients suivis</small><div class="sq petit"></div><div class="sq"></div><div class="sq"></div><div class="sq"></div></div>
+        <div class="chg chg--haut" role="status"><div class="chg-corps chg-tempo"><i></i><i></i><i></i></div></div><div class="barre"><i></i></div></div>
+    </section>
+    <section class="carte">
+      <h2>C · Anneau</h2>
+      <p>L'anneau d'assiduité de l'app (fiches clients, accueil) qui tourne : arc jaune sur piste claire, dans un rond anthracite.</p>
+      <div class="tel"><div class="ecr"><b>Clients</b><small>3 clients suivis</small><div class="sq petit"></div><div class="sq"></div><div class="sq"></div><div class="sq"></div></div>
+        <div class="chg chg--haut" role="status"><div class="chg-corps chg-anneau"><svg viewBox="0 0 26 26"><circle class="piste" cx="13" cy="13" r="10"/><circle class="arc" cx="13" cy="13" r="10" pathLength="100"/></svg></div></div><div class="barre"><i></i></div></div>
+    </section>
+  </div>
+
+  <div class="grille">
+    <section class="carte">
+      <h2>Essai : la règle 250 / 400 ms</h2>
+      <p>Simule une attente de la base : en dessous de 250 ms rien ne s'affiche ; au-dessus, le chargeur apparaît et reste au moins 400 ms.</p>
+      <div class="boutons">
+        <button type="button" data-ms="150">Attente 150 ms</button>
+        <button type="button" data-ms="400">Attente 400 ms</button>
+        <button type="button" data-ms="1500">Attente 1,5 s</button>
+      </div>
+      <div class="boutons" style="margin-top:8px">
+        <button type="button" data-v="pastille">Pastille</button><button type="button" data-v="tempo">Tempo</button><button type="button" data-v="anneau">Anneau</button>
+      </div>
+      <div class="essai"><output id="journal">Choisis une attente.</output></div>
+      <div class="tel" id="tel-essai" style="height:300px"><div class="ecr"><b>Programmes</b><small>Squelettes pendant l'attente</small><div class="sq"></div><div class="sq"></div></div><div class="barre"><i></i></div></div>
+    </section>
+    <section class="carte">
+      <h2>App client : page entière en attente</h2>
+      <p>Côté client, une page qui s'ouvre depuis une carte attend ses données avant sa révélation : le chargeur se pose au centre.</p>
+      <div class="tel" style="height:300px; background:#E3E5E8"><div class="chg chg--centre" role="status"><div class="chg-corps chg-pastille"><i></i></div></div></div>
+    </section>
+    <section class="carte">
+      <h2>Vidéo (téléphone, CPU ×4, base à 900 ms)</h2>
+      <p>Capture réelle de l'app : Plus → Séances (1re visite, base à 900 ms) : squelettes tout de suite, chargeur après 250 ms, liste qui remplace les squelettes sans saut. <a href="chargeur-app-planche.jpg">Planche image par image</a>.</p>
+      <img src="chargeur-app.webp" alt="Animation : la page Programmes s'ouvre, le chargeur Pastille apparaît en haut puis la liste remplace les squelettes" loading="lazy">
+    </section>
+  </div>
+</main>
+<script>
+  // Même logique que src/lib/chargement.js (creerAffichageDiffere), recopiée pour que la page s'ouvre sans serveur.
+  const tel = document.getElementById('tel-essai'), journal = document.getElementById('journal')
+  let variante = 'pastille', el = null, visibleDepuis = 0, tAttente = null, tCacher = null
+  const corps = { pastille: '<div class="chg-corps chg-pastille"><i></i></div>', tempo: '<div class="chg-corps chg-tempo"><i></i><i></i><i></i></div>',
+    anneau: '<div class="chg-corps chg-anneau"><svg viewBox="0 0 26 26"><circle class="piste" cx="13" cy="13" r="10"/><circle class="arc" cx="13" cy="13" r="10" pathLength="100"/></svg></div>' }
+  function montrer() { tAttente = null; el = document.createElement('div'); el.className = 'chg chg--haut chg-entree-enter-from chg-entree-enter-active'; el.innerHTML = corps[variante]; tel.appendChild(el); requestAnimationFrame(() => requestAnimationFrame(() => el.classList.remove('chg-entree-enter-from'))); visibleDepuis = performance.now(); journal.textContent += ' · visible' }
+  function cacher() { const e = el; el = null; e.classList.add('chg-entree-leave-active', 'chg-entree-leave-to'); setTimeout(() => e.remove(), 130); journal.textContent += ` · caché après ${Math.round(performance.now() - visibleDepuis)} ms visible` }
+  document.querySelectorAll('[data-ms]').forEach((b) => b.addEventListener('click', () => {
+    const ms = +b.dataset.ms; journal.textContent = `Attente ${ms} ms`
+    clearTimeout(tCacher); if (!el && !tAttente) tAttente = setTimeout(montrer, 250)
+    setTimeout(() => { if (tAttente) { clearTimeout(tAttente); tAttente = null; journal.textContent += ' · rien affiché' } else if (el) tCacher = setTimeout(cacher, Math.max(0, 400 - (performance.now() - visibleDepuis))) }, ms)
+  }))
+  document.querySelectorAll('[data-v]').forEach((b) => b.addEventListener('click', () => { variante = b.dataset.v; journal.textContent = `Variante : ${variante}` }))
+</script>
+</body>
+</html>

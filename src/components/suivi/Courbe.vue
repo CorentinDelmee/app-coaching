@@ -133,7 +133,7 @@ onBeforeUnmount(() => { io?.disconnect(); tl?.kill() })
 .crb-pt { fill: var(--fond); stroke: var(--accent-lisible); stroke-width: 3; transform-box: fill-box; transform-origin: center; transition: r .18s var(--ease); }
 .crb-pt.choisi { fill: var(--accent-lisible); }
 .crb-valeurs { margin-top: 6px; font-size: 14px; }
-.crb-valeurs summary { min-height: 40px; display: flex; align-items: center; color: var(--accent-lisible); font-weight: 600; cursor: pointer; }
+.crb-valeurs summary { min-height: 44px; display: flex; align-items: center; color: var(--accent-lisible); font-weight: 600; cursor: pointer; }
 .crb-valeurs table { width: 100%; border-collapse: collapse; margin-bottom: 4px; }
 .crb-valeurs th, .crb-valeurs td { text-align: left; padding: 8px 0; border-top: 1px solid var(--filet); font-weight: 400; }
 .crb-valeurs th { color: var(--texte-doux); font-size: 13px; }
