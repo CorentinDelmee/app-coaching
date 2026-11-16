@@ -42,7 +42,11 @@ function remplirVoile(couche, src, racine, rayonDefaut, opacite) {
   v.style.background = col && col !== 'rgba(0, 0, 0, 0)' && col !== 'transparent' ? col : 'var(--surface)'
   const c = src.cloneNode(true)
   c.removeAttribute('id'); $$('[id]', c).forEach((n) => n.removeAttribute('id'))
-  c.style.cssText = `position:absolute;margin:0;transition:none;transform:none;opacity:1;left:${q.l}px;top:${q.t}px;width:${q.w}px;height:${q.h}px;border-radius:${cs.borderRadius || rayonDefaut + 'px'}`
+  // mise en page à la taille d'origine de la source (offsetWidth/Height), puis mise à l'échelle jusqu'à son rectangle à l'écran :
+  // une carte soulevée (agrandie) garde ses retours à la ligne, rien ne se remet en forme dans la copie
+  const lw = src.offsetWidth || q.w, lh = src.offsetHeight || q.h
+  const ech = Math.abs(q.w / lw - 1) > 0.002 || Math.abs(q.h / lh - 1) > 0.002 ? `transform-origin:0 0;transform:scale(${q.w / lw},${q.h / lh})` : 'transform:none'
+  c.style.cssText = `position:absolute;margin:0;transition:none;${ech};opacity:1;left:${q.l}px;top:${q.t}px;width:${lw}px;height:${lh}px;border-radius:${cs.borderRadius || rayonDefaut + 'px'}`
   $$('[data-c]', c).forEach((n) => { n.style.opacity = 1; n.style.transform = 'none' })
   v.appendChild(c)
   return v

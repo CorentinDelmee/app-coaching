@@ -270,8 +270,9 @@ function ouvrir(chemin, e) {
   const carte = e.currentTarget
   if (occupe || !carte) return
   occupe = true
+  const repos = carte.getBoundingClientRect() // avant le soulèvement : la page s'y refermera au retour
   const partir = () => {
-    memoriserSource(carte)
+    memoriserSource(carte, repos)
     poserDessous(racine.value)
     router.push(chemin).then((echec) => {
       if (!echec) return // navigation refusée (garde) : la carte se repose, le tableau de bord reste utilisable
@@ -370,7 +371,7 @@ const versHero = (e) => {
         <!-- Questionnaires : pastille seulement s'il y en a à remplir -->
         <button class="carte quest c-quest" data-teinte="surface" data-couche="1" type="button" @click="ouvrir('/questionnaires', $event)">
           <span class="c-lab">Questionnaires</span>
-          <span class="c-prog-t">{{ !s.sante ? 'Données de santé désactivées' : s.questionnaires ? 'À remplir · 2 min' : 'Tout est à jour' }}</span>
+          <span class="c-prog-t">{{ !s.sante ? 'Données de santé désactivées' : s.questionnaires ? 'À remplir · 2\u00a0min' : 'Tout est à jour' }}</span>
           <span v-if="s.questionnaires" class="pastille" :aria-label="`${s.questionnaires} à remplir`">{{ s.questionnaires }}</span>
         </button>
       </div>

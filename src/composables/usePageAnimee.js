@@ -3,8 +3,8 @@
 import { onBeforeUnmount, ref } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { fermerPage, nettoyer, ouvrirPage } from '../anim/transitions.js'
-import { cacherDessous, consommerRetour, consommerSaut, marquerRetour, poserFantome, prendreSource, rapprocherDessous, reculerDessous, retirerDessous } from '../anim/passage.js'
-import { M5 } from '../anim/constantes.js'
+import { cacherDessous, consommerRetour, consommerSaut, marquerRetour, poserFantome, prendreSource, rapprocherDessous, reculerDessous, reposerFantome, retirerDessous } from '../anim/passage.js'
+import { M5, T } from '../anim/constantes.js'
 
 export function usePageAnimee(retourDefaut) {
   const route = useRoute()
@@ -28,7 +28,10 @@ export function usePageAnimee(retourDefaut) {
     return ouvrirPage(couche.value, fantome, { ...opts, onFini: () => { cacherDessous(); if (racine.value) racine.value.style.background = ''; opts.onFini?.() } })
   }
   const fermer = () => new Promise((fin) => {
-    if (rapprocherDessous(M5.T.retour, M5.E.page) && racine.value) racine.value.style.background = 'transparent'
+    // la page se referme dans la carte AU REPOS, et la copie du tableau de bord revient en même temps que la fermeture
+    // (0,06 + T.ferme) : quand le vrai tableau de bord la remplace, tout est déjà à sa place
+    if (fantome && racine.value) reposerFantome(racine.value, fantome)
+    if (rapprocherDessous(Math.min(M5.T.retour, 0.06 + T.ferme), M5.E.page) && racine.value) racine.value.style.background = 'transparent'
     fermerPage(couche.value, fantome, { onFini: fin })
   })
 

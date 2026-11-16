@@ -7,8 +7,11 @@ import { mouvementReduit } from './transitions.js'
 let memo = null
 let lancement = false
 
-export function memoriserSource(el) {
-  memo = el ? { clone: el.cloneNode(true), rect: el.getBoundingClientRect(), t: Date.now() } : null
+// `repos` : rectangle de l'élément AVANT qu'il ne se soulève (carte du tableau de bord) ; la page s'y refermera au retour.
+// La taille de mise en page (offsetWidth/Height) est gardée : la copie est mise en page à cette taille puis mise à l'échelle,
+// sinon son texte se remet en forme dans un rectangle agrandi (puces qui changent de ligne = micro-saut).
+export function memoriserSource(el, repos) {
+  memo = el ? { clone: el.cloneNode(true), rect: el.getBoundingClientRect(), repos: repos || null, lw: el.offsetWidth, lh: el.offsetHeight, t: Date.now() } : null
 }
 export function prendreSource() {
   const m = memo
@@ -18,12 +21,24 @@ export function prendreSource() {
 
 /** Pose le fantôme dans la racine de l'écran d'arrivée (invisible, sans interaction) et le renvoie. */
 export function poserFantome(racine, m) {
-  const r = racine.getBoundingClientRect()
   const g = m.clone
   g.removeAttribute('id')
-  g.style.cssText = `position:absolute;margin:0;pointer-events:none;visibility:hidden;left:${m.rect.left - r.left}px;top:${m.rect.top - r.top}px;width:${m.rect.width}px;height:${m.rect.height}px`
+  g._repos = m.repos
+  placerFantome(racine, g, m.rect, m.lw, m.lh)
   racine.appendChild(g)
   return g
+}
+// Le fantôme occupe le rectangle `rect` (vu à l'écran) ; mis en page à sa taille d'origine (lw × lh) puis mis à l'échelle.
+function placerFantome(racine, g, rect, lw, lh) {
+  const r = racine.getBoundingClientRect()
+  const w = lw || rect.width, h = lh || rect.height
+  const sx = rect.width / w, sy = rect.height / h
+  const ech = Math.abs(sx - 1) > 0.002 || Math.abs(sy - 1) > 0.002 ? `;transform-origin:0 0;transform:scale(${sx},${sy})` : ''
+  g.style.cssText = `position:absolute;margin:0;transition:none;pointer-events:none;visibility:hidden;left:${rect.left - r.left}px;top:${rect.top - r.top}px;width:${w}px;height:${h}px${ech}`
+}
+/** Retour : le fantôme reprend la place de la carte au repos (celle de la copie du tableau de bord quand la page s'y referme). */
+export function reposerFantome(racine, g) {
+  if (g && g._repos) placerFantome(racine, g, g._repos, g._repos.width, g._repos.height)
 }
 
 /* Retour animé : quand une page vient de se refermer dans sa carte (fermerPage), la page d'arrivée s'affiche telle quelle
@@ -88,8 +103,10 @@ export function rapprocherDessous(duree, ease) {
   dessous.style.visibility = ''
   if (mouvementReduit()) { gsap.set(dessous, { scale: 1 }); return true }
   gsap.to(dessous, { scale: 1, duration: duree, ease })
+  // la carte soulevée se repose PENDANT que la page se referme dans son rectangle de repos : tout est en place quand le vrai
+  // tableau de bord remplace la copie (sinon la carte, encore soulevée, sautait à sa place)
   const carte = dessous.querySelector('.carte[style*="scale"]')
-  if (carte) gsap.to(carte, { '--lev': 0, z: 0, scale: 1, duration: 0.5, delay: 0.3, ease: 'expo.out' })
+  if (carte) gsap.to(carte, { '--lev': 0, z: 0, scale: 1, duration: duree, ease })
   clearTimeout(minuterie)
   minuterie = setTimeout(retirerDessous, 3000) // filet : si le tableau de bord n'arrive pas, la copie ne reste pas
   return true
