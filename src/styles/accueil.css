@@ -41,9 +41,8 @@ html:not([data-ambiance]) .m-item.on .n, html[data-ambiance="clair"] .m-item.on 
 .mot > span { display: inline-block; will-change: transform; }
 
 /* ---------- Tableau de bord : maquette M5 « Profondeur » (design/m5/assets/style.css, section dashboard) ---------- */
-.accueil { position: absolute; inset: 0; display: flex; flex-direction: column; overflow: hidden; background: var(--fond); color: var(--texte); perspective: 1000px;
+.accueil { position: absolute; inset: 0; display: flex; flex-direction: column; overflow: hidden auto; overscroll-behavior: contain; scrollbar-width: none; background: var(--fond); color: var(--texte); perspective: 1000px;
   padding: var(--haut-safe) var(--pad-dash) calc(var(--bas-safe) - 4px); }
-html[data-grand="oui"] .accueil { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
 .accueil::-webkit-scrollbar { display: none; }
 .deco { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
 .deco-n { position: absolute; right: -26px; top: 70px; font: 500 360px/1 var(--font-titre); letter-spacing: -.06em; color: transparent; -webkit-text-stroke: 1.5px var(--filet); }
@@ -64,10 +63,12 @@ html[data-grand="oui"] .accueil { overflow-y: auto; overscroll-behavior: contain
 .salut-h.moyen { font-size: calc(var(--e) * clamp(40px, 12vw, 50px)); }
 .salut-h.etroit + .salut-date { grid-column: 1 / -1; padding: 4px 0 0; }
 .salut-date { font: 500 calc(var(--e) * 14px) var(--font-texte); color: var(--texte-doux); padding-bottom: 10px; text-align: right; }
-.grille { position: relative; z-index: 2; flex: 1; min-height: 0; display: grid; gap: var(--gap); perspective: 1100px;
+/* Tout tient sans défiler quand l'écran est assez haut ; sinon chaque rangée garde au moins la hauteur de son contenu (cartes jamais
+   rognées) et l'accueil défile un peu (écran bas, barres du navigateur visibles). */
+.grille { position: relative; z-index: 2; flex: 1 0 auto; display: grid; gap: var(--gap); perspective: 1100px;
   grid-template-columns: 1fr 1fr; grid-template-rows: 1.4fr 1.15fr .72fr; }
 html[data-grand="oui"] .grille { flex: none; grid-template-columns: 1fr; grid-template-rows: none; grid-auto-rows: minmax(calc(var(--e) * 150px), auto); }
-.carte { position: relative; display: flex; flex-direction: column; min-height: 0; text-align: left; border-radius: var(--rayon); padding: 18px 18px 16px; overflow: visible;
+.carte { position: relative; display: flex; flex-direction: column; text-align: left; border-radius: var(--rayon); padding: 18px 18px 16px; overflow: visible;
   background: var(--tb); color: var(--tf); cursor: pointer; text-decoration: none; transform-style: flat; --lev: 0; }
 /* ombre de carte soulevée (M5) : son opacité suit --lev (0 -> 1 quand la carte se lève avant d'ouvrir sa page) */
 .carte::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: var(--ombre-carte); opacity: var(--lev); pointer-events: none; z-index: -1; }
@@ -99,7 +100,7 @@ html[data-grand="oui"] .anneau-s { margin: 12px 0; }
 .c-date b { font-weight: 500; font-size: calc(var(--e) * 64px); line-height: .9; letter-spacing: -.05em; }
 .c-date i { font-style: normal; font-size: calc(var(--e) * 18px); font-weight: 500; }
 .c-prog-t { margin-top: 10px; font: 500 calc(var(--e) * var(--t-carte-petit))/1.08 var(--font-titre); letter-spacing: -.02em;
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; padding-bottom: .06em; } /* nom long : 2 lignes max (rangée basse) */
+  padding-bottom: .06em; overflow-wrap: break-word; } /* nom long : passe à la ligne, jamais rogné (la rangée grandit) */
 .c-programme, .c-quest { justify-content: flex-start; }
 .c-programme .c-mini { margin-top: auto; }
 .barres { display: flex; gap: 3px; margin-top: auto; }
@@ -109,7 +110,6 @@ html[data-grand="oui"] .anneau-s { margin: 12px 0; }
 .pastille { position: absolute; right: 14px; bottom: 14px; min-width: 36px; height: 36px; border-radius: 18px; padding: 0 10px; background: var(--accent); color: var(--accent-texte); font: 700 calc(var(--e) * 17px)/36px var(--font-texte); text-align: center; }
 [data-teinte="accent"] .pastille { background: var(--tf); color: var(--tb); }
 .carte.coaching.vide { box-shadow: inset 0 0 0 2px var(--filet); background: transparent; color: var(--texte); }
-.carte.coaching.vide .c-prog-t { -webkit-line-clamp: 3; line-clamp: 3; }
 .carte.coaching.vide .c-mini { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; opacity: 1; margin-top: auto; }
 .carte.coaching.vide .c-mini svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
 /* liens de démonstration (mode local) : hors maquette, superposés au bas de l'écran sans prendre de place */
