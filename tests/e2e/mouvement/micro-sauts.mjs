@@ -55,7 +55,12 @@ async function mesurerEtape(page, cdp, etape, { duree, captures }) {
     if (captures) { await cdp.send('Page.stopScreencast').catch(() => {}); cdp.off('Page.screencastFrame', surImage) }
     return { erreur: 'toucher refusé (élément couvert)' }
   }
-  await page.waitForFunction(() => window.__ms && window.__ms.resultat, null, { timeout: 30000, polling: 100 })
+  // page rechargée (navigation complète) ou enregistrement perdu : l'étape est notée en erreur, la mesure continue
+  const fini = await page.waitForFunction(() => window.__ms && window.__ms.resultat, null, { timeout: 30000, polling: 100 }).then(() => true, () => false)
+  if (!fini) {
+    if (captures) { await cdp.send('Page.stopScreencast').catch(() => {}); cdp.off('Page.screencastFrame', surImage) }
+    return { erreur: 'enregistrement perdu (page rechargée ?)' }
+  }
   const rec = await page.evaluate(() => window.__ms.resultat)
   if (captures) { await cdp.send('Page.stopScreencast').catch(() => {}); cdp.off('Page.screencastFrame', surImage) }
   const tTap = tTapEpoque - rec.t0Epoque

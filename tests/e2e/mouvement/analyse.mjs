@@ -94,6 +94,13 @@ export function analyser(rec, { tTap = 0 } = {}) {
     }
   }
 
+  // la racine bouge entre les images k-1 et k (feuille qui glisse : ses éléments entrent / sortent de l'écran en glissant)
+  const rParK = new Map()
+  for (const [rid, l] of racines) rParK.set(rid, new Map(l.map((r) => [r.k, r])))
+  const vw = rec.vw || 390, vh = rec.vh || 844
+  const auBord = (p) => p.y < 2 || p.x < 2 || p.y + p.h > vh - 2 || p.x + p.w > vw - 2 // touche (ou dépasse) un bord de l'écran
+  const racineBougeA = (rid, k) => { const m = rParK.get(rid); const a = m?.get(k - 1), b = m?.get(k); return !!(a && b && (hyp(b.x - a.x, b.y - a.y) > 0.5 || Math.abs(b.h - a.h) > 0.5)) }
+
   // index des pistes par image de début / fin (appariement apparition <-> disparition)
   const parDebut = new Map(), parFin = new Map()
   for (const [id, l] of els) {
@@ -185,7 +192,7 @@ export function analyser(rec, { tTap = 0 } = {}) {
       const suiv = l.slice(1, 4)
       const glisse = suiv.some((s, i) => { const a = i ? suiv[i - 1] : p; return hyp(s.rx - a.rx, s.ry - a.ry) > 0.5 || hyp(s.x - a.x, s.y - a.y) > 0.5 })
       const monte = suiv.length && suiv.at(-1).op > p.op + 0.05
-      if (glisse || monte || p.op < 0.6) continue
+      if (glisse || monte || p.op < 0.6 || (auBord(p) && racineBougeA(p.rid, k))) continue
       add('apparition', p, { id, op: p.op })
     }
   }
@@ -209,7 +216,7 @@ export function analyser(rec, { tTap = 0 } = {}) {
       if (rFin.get(p.rid) === k) continue // la page entière part (sortie 0 ms : voulu)
       const prec = l.at(-2)
       if (prec && prec.k === k - 1 && (hyp(p.rx - prec.rx, p.ry - prec.ry) > 0.5 || hyp(p.x - prec.x, p.y - prec.y) > 0.5 || prec.op > p.op + 0.05)) continue // sortait en glissant / fondu
-      if (swaps.has(`${p.rid}|${k + 1}`)) continue // contenu remplacé d'un bloc (onglet) : l'ancien part dans la même image, voulu
+      if (swaps.has(`${p.rid}|${k + 1}`) || (auBord(p) && racineBougeA(p.rid, k + 1))) continue // contenu remplacé d'un bloc (onglet) : l'ancien part dans la même image, voulu
       const nouveaux = parDebut.get(k + 1) || []
       if (nouveaux.some((j) => { const dj = descs[j] || {}, dd = descs[id] || {}; return dj.el === dd.el && els.get(j)[0].txt === p.txt })) continue
       add('disparition', p, { id })
