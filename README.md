@@ -12,8 +12,9 @@ Comptes de démo : client `fabien.vincent` / `DEMO2024` ; coach `corentin` / `CO
 Pour revoir le consentement ou repartir de zéro : vider les données du site dans le navigateur.
 Back-end : sur le VPS, voir `docs/contrats/CONTRAT-VPS.md` (`VITE_BACKEND=api` dans `.env`).
 
-## Maquettes
-`design/index.html` (5 maquettes, M1 « Atelier » retenue en provisoire), vidéo du parcours final : `design/app-finale/`.
+## Apparence et dossiers
+- Apparence : `DA/README.md` + `DA/tokens.json` (direction artistique de référence) ; maquettes historiques dans `archives/maquettes/`.
+- `docs/` rangé par thème (`contrats/`, `audits/`, `rgpd/`, `briefs/`, `captures/`) ; `archives/` = historique (Supabase, livraison du 26/10, anciennes maquettes).
 
 ## Tester
 - `npx vitest run` : tests de la logique métier.
