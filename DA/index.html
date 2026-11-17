@@ -1,0 +1,327 @@
+<!doctype html>
+<!-- Planche de la direction artistique (ouvrable en double-clic). Valeurs lues en direct dans tokens.css (généré depuis tokens.json). -->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction artistique — Corentin Delmée Coaching</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--fond); color: var(--texte); font-family: var(--font-texte); font-size: 16px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body { max-width: 1240px; margin: 0 auto; padding: 0 var(--pad) 80px; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .da-barre { position: sticky; top: 0; z-index: 10; display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 12px 0; background: color-mix(in srgb, var(--fond) 92%, transparent); backdrop-filter: blur(8px); }
+  .da-marque { display: flex; align-items: center; gap: 10px; font-family: var(--font-titre); font-weight: 500; font-size: 17px; letter-spacing: -.02em; }
+  .da-marque i { width: 34px; height: 34px; border-radius: 11px; background: var(--encre); display: grid; place-items: center; }
+  .da-marque i::after { content: ''; width: 14px; height: 14px; border-radius: 50%; background: var(--jaune); }
+  [data-ambiance="sombre"] .da-marque i, [data-ambiance="bleu"] .da-marque i { background: var(--surface-2); }
+  .da-seg { display: flex; background: var(--surface); border-radius: 999px; padding: 4px; gap: 2px; }
+  .da-seg button { min-height: 40px; padding: 0 14px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--texte-doux); }
+  .da-seg button[aria-pressed="true"] { background: var(--jaune); color: var(--jaune-texte); }
+  section { margin-top: 56px; }
+  .da-etiq { font-size: 12px; font-weight: 500; letter-spacing: var(--ls-etiq); text-transform: uppercase; color: var(--texte-doux); }
+  h1 { font-family: var(--font-titre); font-weight: 400; font-size: var(--t-display); line-height: .98; letter-spacing: var(--ls-display); margin-top: 24px; }
+  h2 { font-family: var(--font-titre); font-weight: 500; font-size: clamp(30px, 6vw, 42px); line-height: 1.02; letter-spacing: -.03em; margin: 6px 0 20px; }
+  h3 { font-family: var(--font-titre); font-weight: 500; font-size: 21px; letter-spacing: -.02em; margin-bottom: 10px; }
+  .da-doux { color: var(--texte-doux); }
+  .da-intro { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; margin-top: 16px; align-items: end; }
+  .da-phrases { display: grid; gap: 10px; counter-reset: p; }
+  .da-phrases li { list-style: none; display: grid; grid-template-columns: 32px 1fr; gap: 8px; font-size: 17px; }
+  .da-phrases li::before { counter-increment: p; content: counter(p); font-family: var(--font-chiffres); font-size: 22px; line-height: 1; color: var(--texte-doux); }
+  .da-grille { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+  .da-carte { background: var(--surface); border-radius: var(--r-carte); padding: 20px; }
+  /* nuancier */
+  .da-nuance { border-radius: 22px; overflow: hidden; background: var(--surface); }
+  .da-nuance > div { height: 92px; display: flex; align-items: flex-end; justify-content: space-between; padding: 10px 12px; font-weight: 600; font-size: 14px; }
+  .da-nuance p { padding: 10px 12px 12px; font-size: 13px; line-height: 1.35; }
+  .da-nuance code { font-size: 12px; color: var(--texte-doux); }
+  .da-ratio { font-family: var(--font-chiffres); font-size: 13px; }
+  /* typo */
+  .da-typo { display: grid; gap: 4px; }
+  .da-typo > div { display: grid; grid-template-columns: 150px 1fr; gap: 16px; align-items: baseline; padding: 14px 0; border-top: 1px solid var(--filet); }
+  .da-typo small { font-size: 12px; color: var(--texte-doux); }
+  /* composants client (reconstruits avec les vrais tokens) */
+  .c-jour { position: relative; overflow: hidden; background: var(--jaune); color: var(--jaune-texte); border-radius: var(--r-carte); padding: 18px; min-height: 250px; display: flex; flex-direction: column; }
+  .c-jour .da-etiq { color: var(--jaune-texte); opacity: .75; }
+  .c-jour b { font-family: var(--font-titre); font-weight: 400; font-size: 40px; letter-spacing: -.035em; line-height: 1; margin-top: 10px; display: block; position: relative; }
+  .c-jour .deco { position: absolute; right: -10px; top: 0; font-family: var(--font-titre); font-size: 170px; line-height: 1; color: transparent; -webkit-text-stroke: 1.5px rgba(38, 35, 10, .3); }
+  .c-jour .bas { margin-top: auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; position: relative; }
+  .c-puces { display: flex; gap: 6px; flex-wrap: wrap; }
+  .c-puces span { background: rgba(38, 35, 10, .12); border-radius: var(--r-chip); padding: 6px 12px; font-size: var(--t-chip); font-weight: 600; }
+  .c-go { width: 56px; height: 56px; border-radius: 50%; background: var(--jaune-texte); color: var(--jaune); display: grid; place-items: center; flex: none; }
+  .c-tuile { border-radius: var(--r-carte); padding: 18px; min-height: 180px; display: flex; flex-direction: column; justify-content: space-between; background: var(--surface); }
+  .c-tuile.encre { background: var(--encre); color: var(--creme); }
+  .c-tuile.encre .da-etiq { color: var(--encre-doux); }
+  .c-date { font-family: var(--font-chiffres); font-size: 54px; line-height: 1; letter-spacing: -.04em; }
+  .c-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 68px; border-radius: var(--r-btn); background: var(--jaune); color: var(--jaune-texte); font-weight: 600; font-size: 18px; transition: transform .32s var(--ressort); }
+  .c-btn:active { transform: scale(.97); transition-duration: var(--d-appui); }
+  .c-btn.doux { background: var(--surface-2); color: var(--texte); }
+  .c-btn.contour { background: transparent; color: var(--texte); box-shadow: inset 0 0 0 2px var(--filet); }
+  .c-rond { width: 52px; height: 52px; border-radius: 50%; background: var(--surface); display: inline-grid; place-items: center; transition: transform .32s var(--ressort); }
+  .c-rond:active { transform: scale(.94); transition-duration: .1s; }
+  svg.i { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .c-serie { display: flex; align-items: center; gap: 16px; background: var(--surface); border-radius: var(--r-btn); padding: 14px 16px; min-height: 84px; }
+  .c-serie.en-cours { box-shadow: inset 0 0 0 2.5px var(--texte); }
+  .c-serie .n { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; background: var(--surface-2); }
+  .c-serie.en-cours .n { background: var(--jaune); color: var(--jaune-texte); }
+  .c-serie .v { font-family: var(--font-chiffres); font-size: 30px; letter-spacing: -.03em; flex: 1; }
+  .c-serie .v small { font-size: 15px; }
+  .c-serie .o { width: 32px; height: 32px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--filet); }
+  .c-repos { background: var(--repos-bg); color: var(--repos-fg); border-radius: var(--r-carte); padding: 20px; display: grid; place-items: center; gap: 8px; min-height: 300px; text-align: center; }
+  .c-repos .phr { font-family: var(--font-titre); font-size: 30px; letter-spacing: -.03em; }
+  .c-repos .ch { font-family: var(--font-chrono); font-weight: var(--graisse-chrono, 600); font-size: 76px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .c-phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+  .c-phases div { border-radius: 16px; padding: 12px; font-weight: 600; font-size: 14px; min-height: 64px; display: flex; align-items: flex-end; }
+  .da-comp { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
+  @media (max-width: 1000px) { .da-comp { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { .da-comp { grid-template-columns: 1fr; } }
+  /* Studio (lin, toujours clair) */
+  .st { background: var(--st-fond); color: var(--st-texte); border-radius: var(--st-r-xl); padding: 24px; font-size: 15px; line-height: 1.45; }
+  .st h3 { color: var(--st-encre); }
+  .st .da-etiq { color: var(--st-doux); letter-spacing: .1em; font-weight: 700; }
+  .st-ligne { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+  .st-b { display: inline-flex; align-items: center; gap: 8px; min-height: var(--st-cible); padding: 0 var(--st-pad-btn); border-radius: var(--st-r-m); border: 1px solid var(--st-filet-fort); background: var(--st-surface); color: var(--st-encre); font-weight: 600; transition: transform var(--st-d-appui) ease-out; }
+  .st-b:active { transform: scale(.96); }
+  .st-b.j { background: var(--st-jaune); color: var(--st-jaune-texte); border-color: transparent; }
+  .st-b.e { background: var(--st-encre); color: #fff; border-color: transparent; }
+  .st-b.d { color: var(--st-alerte); border-color: rgba(162, 59, 42, .35); }
+  .st-p { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+  .st-p::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .st-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .st-ex { background: var(--st-surface); border-radius: var(--st-r-l); overflow: hidden; box-shadow: var(--st-ombre-1); transition: transform var(--st-d-court) var(--st-ressort), box-shadow var(--st-d-court); }
+  .st-ex:hover { transform: translateY(-3px); box-shadow: var(--st-ombre-2); }
+  .st-ex .m { aspect-ratio: 4 / 3; background: var(--mc); display: grid; place-items: center; color: var(--mi); }
+  .st-ex .t { padding: 10px 14px 14px; }
+  .st-ex b { color: var(--st-encre); display: block; }
+  .st-ex small { color: var(--mi); font-size: 12.5px; font-weight: 600; }
+  .st-bloc { background: var(--st-surface); border-radius: var(--st-r-l); box-shadow: var(--st-ombre-1); padding: 20px; }
+  /* captures */
+  .da-caps { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+  .da-caps.large { grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); }
+  .da-caps figure { background: var(--surface); border-radius: 20px; padding: 8px; }
+  .da-caps img { width: 100%; border-radius: 14px; display: block; }
+  .da-caps figcaption { font-size: 13px; color: var(--texte-doux); padding: 8px 4px 2px; }
+  /* faire / ne pas faire */
+  .da-regles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .da-regles ul { list-style: none; display: grid; gap: 8px; }
+  .da-regles li { padding-left: 26px; position: relative; font-size: 15px; }
+  .da-regles li::before { position: absolute; left: 0; top: 0; font-weight: 700; }
+  .da-oui li::before { content: '✓'; color: var(--bien); }
+  .da-non li::before { content: '✕'; color: var(--texte-doux); }
+  /* mouvement */
+  .da-mvt { display: grid; gap: 10px; }
+  .da-piste { display: block; width: 100%; text-align: left; position: relative; height: 52px; background: var(--surface); border-radius: 16px; overflow: hidden; }
+  .da-piste span { position: absolute; left: 6px; top: 6px; width: 40px; height: 40px; border-radius: 12px; background: var(--jaune); }
+  .da-piste.go span { transform: translateX(calc(100cqw - 52px)); }
+  .da-piste { container-type: inline-size; }
+  .da-piste em { position: absolute; left: 58px; top: 50%; translate: 0 -50%; font-style: normal; font-size: 13px; color: var(--texte-doux); }
+  @media (prefers-reduced-motion: reduce) { .da-piste span, .c-btn, .c-rond, .st-b, .st-ex { transition: none !important; } }
+  /* gabarits */
+  .da-gab { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .da-gab a { display: block; background: var(--surface); border-radius: 20px; padding: 10px; color: inherit; text-decoration: none; }
+  .da-gab img { width: 100%; display: block; border-radius: 14px; }
+  .da-gab p { padding: 8px 4px 2px; font-size: 14px; }
+  @media (max-width: 760px) {
+    .da-intro, .da-regles { grid-template-columns: 1fr; }
+    .da-typo > div { grid-template-columns: 1fr; gap: 4px; }
+    .da-caps { grid-template-columns: repeat(2, 1fr); }
+    .da-caps.large { grid-template-columns: 1fr; }
+    .st { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="da-barre">
+  <div class="da-marque"><i></i>Direction artistique</div>
+  <div class="da-seg" role="group" aria-label="Ambiance de l'espace client">
+    <button type="button" data-amb="clair" aria-pressed="true">Clair</button>
+    <button type="button" data-amb="sombre" aria-pressed="false">Sombre</button>
+    <button type="button" data-amb="bleu" aria-pressed="false">Bleu</button>
+  </div>
+</div>
+
+<header>
+  <div class="da-etiq" style="margin-top:24px">Corentin Delmée Coaching · relevé de l'app le 17 novembre 2026</div>
+  <h1>Jaune en aplat,<br>titres légers.</h1>
+  <div class="da-intro">
+    <ol class="da-phrases">
+      <li>Un jaune pâle posé en aplat, jamais en texte : il désigne la chose à faire maintenant.</li>
+      <li>De grands titres légers en Syne, un texte calme en Albert Sans.</li>
+      <li>Des cartes douces (rayons 20-28) sur un fond neutre : perle côté client, lin côté coach.</li>
+      <li>Anthracite, jamais noir pur ; un seul accent ; des pastels seulement pour classer.</li>
+      <li>Le mouvement emmène quelque part ; le doigt est servi en 100 ms.</li>
+    </ol>
+    <p class="da-doux" style="font-size:15px">Source unique : <b>tokens.json</b> → <b>tokens.css</b>. Règles complètes : <b>README.md</b>. Écarts relevés dans l'app : <b>ECARTS.md</b>.
+      Les boutons en haut changent l'ambiance de toute la planche (sauf le Studio, toujours sur lin).</p>
+  </div>
+</header>
+
+<section>
+  <div class="da-etiq">01 · Couleurs</div>
+  <h2>Un accent, des neutres, des états.</h2>
+  <div class="da-grille" id="nuancier"></div>
+  <h3 style="margin-top:28px">Studio (coach) et groupes musculaires</h3>
+  <div class="da-grille" id="nuancier-studio"></div>
+</section>
+
+<section>
+  <div class="da-etiq">02 · Typographie</div>
+  <h2>Syne pour la voix, Albert Sans pour lire.</h2>
+  <div class="da-typo">
+    <div><small>Display · Syne 400<br>54-68 px, −.045 em</small><span style="font-family:var(--font-titre);font-size:var(--t-display);letter-spacing:var(--ls-display);line-height:.98">Prêt, Fabien ?</span></div>
+    <div><small>Titre de page · Syne 400-500<br>36-42 px, −.03 em</small><span style="font-family:var(--font-titre);font-size:var(--t-page);letter-spacing:var(--ls-titre);line-height:1.02">Développé couché</span></div>
+    <div><small>Titre de carte · Syne 500<br>21 px</small><span style="font-family:var(--font-titre);font-weight:500;font-size:21px;letter-spacing:-.02em">Mon programme</span></div>
+    <div><small>Chrono · Barlow S. C. 600<br>jusqu'à 124 px (provisoire)</small><span style="font-family:var(--font-chrono);font-weight:600;font-size:96px;line-height:1;font-variant-numeric:tabular-nums">1:59</span></div>
+    <div><small>Texte · Albert Sans 400<br>16 px / 1.4</small><span>Allongé sur le banc, descendre la barre à la poitrine puis pousser.</span></div>
+    <div><small>Bouton · Albert Sans 600<br>18 px</small><span style="font-weight:600;font-size:18px">Valider la série 1</span></div>
+    <div><small>Étiquette · 12 px<br>capitales +.14 em</small><span class="da-etiq">Aujourd'hui · semaine 4</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="da-etiq">03 · Composants client</div>
+  <h2>Reconstruits avec les vrais tokens.</h2>
+  <div class="da-grille da-comp">
+    <div class="c-jour"><span class="deco" aria-hidden="true">W2</span><span class="da-etiq" style="position:relative">Aujourd'hui</span><b>Workout 2</b><span style="position:relative">Haut du corps</span>
+      <div class="bas"><div class="c-puces"><span>≈ 40 min</span><span>6 exercices</span></div><span class="c-go"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="c-tuile"><span class="da-etiq">Cette semaine</span>
+        <svg viewBox="0 0 100 100" width="96" height="96" aria-hidden="true"><circle cx="50" cy="50" r="40" fill="none" stroke="var(--surface-2)" stroke-width="9"/><circle cx="50" cy="50" r="40" fill="none" stroke="var(--jaune)" stroke-width="9" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="167" transform="rotate(-90 50 50)"/><text x="50" y="58" text-anchor="middle" font-family="Syne" font-size="26" fill="currentColor">1/3</text></svg>
+        <span class="da-doux" style="font-size:14px">2 séances à faire</span></div>
+      <div class="c-tuile encre"><span class="da-etiq">Coaching</span><div><div class="c-date">19 <small style="font-size:20px">nov.</small></div><span style="font-size:14px;color:var(--encre-doux)">jeudi · 18 h 30</span></div></div>
+    </div>
+    <div style="display:grid;gap:10px;align-content:start">
+      <button class="c-btn" type="button">Valider la série 1</button>
+      <button class="c-btn doux" type="button">+15 s</button>
+      <button class="c-btn contour" type="button">Installer l'application</button>
+      <div style="display:flex;gap:10px;align-items:center"><span class="c-rond"><svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></span><span class="c-rond"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>
+        <div class="c-puces"><span style="background:var(--surface);">4 × 8 reps</span><span style="background:var(--surface)">55 kg</span></div></div>
+    </div>
+    <div style="display:grid;gap:8px;align-content:start">
+      <div class="c-serie en-cours"><span class="n">1</span><span class="v">8<small> × </small>55<small>kg</small></span><span class="o"></span></div>
+      <div class="c-serie" style="color:color-mix(in srgb, var(--texte) 55%, transparent)"><span class="n">2</span><span class="v">8<small> × </small>55<small>kg</small></span><span class="o"></span></div>
+      <p class="da-doux" style="font-size:13px">Série « à venir » : texte à 55 % — 3,7 : 1 en clair, voir ECARTS n° 2.</p>
+    </div>
+    <div><div class="c-repos"><span class="phr">Respirez.</span><span class="ch">1:59</span><span style="font-size:14px">Ensuite : série 2 sur 4</span></div>
+      <div class="c-phases"><div style="background:var(--prep-bg);color:var(--prep-fg)">Préparez-vous.</div><div style="background:var(--jaune);color:var(--jaune-texte)">Tenez bon.</div><div style="background:var(--repos-bg);color:var(--repos-fg)">Respirez.</div></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="da-etiq">04 · Composants coach (Studio)</div>
+  <h2>Le même jaune, sur lin chaud.</h2>
+  <div class="st">
+    <div class="st-ligne"><button class="st-b j" type="button">+ Nouvel exercice</button><button class="st-b" type="button">Nouvelle séance</button><button class="st-b e" type="button">Valider</button><button class="st-b d" type="button">Supprimer</button></div>
+    <div class="st-ligne">
+      <span class="st-p" style="background:var(--st-propose-fond);color:var(--st-propose)">À valider</span>
+      <span class="st-p" style="background:var(--st-ok-fond);color:var(--st-ok)">Validée</span>
+      <span class="st-p" style="background:var(--st-alerte-fond);color:var(--st-alerte)">Douleur</span>
+      <span class="st-p" style="background:var(--st-surface-2);color:#45484F">Check-in</span>
+    </div>
+    <div class="st-cartes" id="st-cartes"></div>
+    <div class="st-bloc" style="margin-top:12px"><h3>Ta journée</h3><p style="color:var(--st-doux)">Le coach est tutoyé (c'est Corentin qui lit) ; le client est vouvoyé.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="da-etiq">05 · L'app telle qu'elle est</div>
+  <h2>Captures réelles (390 px).</h2>
+  <div class="da-caps">
+    <figure><img src="captures/client-bienvenue-clair-390.jpg" alt="Bienvenue" loading="lazy"><figcaption>Bienvenue</figcaption></figure>
+    <figure><img src="captures/client-accueil-clair-390.jpg" alt="Accueil client" loading="lazy"><figcaption>Accueil · clair</figcaption></figure>
+    <figure><img src="captures/client-accueil-sombre-390.jpg" alt="Accueil client sombre" loading="lazy"><figcaption>Accueil · sombre</figcaption></figure>
+    <figure><img src="captures/client-programme-clair-390.jpg" alt="Programme" loading="lazy"><figcaption>Programme</figcaption></figure>
+    <figure><img src="captures/client-workout-clair-390.jpg" alt="Workout" loading="lazy"><figcaption>Workout</figcaption></figure>
+    <figure><img src="captures/client-seance-clair-390.jpg" alt="Séance" loading="lazy"><figcaption>Séance</figcaption></figure>
+    <figure><img src="captures/client-repos-clair-390.jpg" alt="Repos" loading="lazy"><figcaption>Repos · clair</figcaption></figure>
+    <figure><img src="captures/client-repos-sombre-390.jpg" alt="Repos sombre" loading="lazy"><figcaption>Repos · sombre</figcaption></figure>
+    <figure><img src="captures/client-profil-clair-390.jpg" alt="Profil" loading="lazy"><figcaption>Profil</figcaption></figure>
+    <figure><img src="captures/coach-aujourdhui-clair-390.jpg" alt="Studio Aujourd'hui" loading="lazy"><figcaption>Studio · Aujourd'hui</figcaption></figure>
+    <figure><img src="captures/coach-exercices-clair-390.jpg" alt="Studio Exercices" loading="lazy"><figcaption>Studio · Exercices</figcaption></figure>
+    <figure><img src="captures/coach-panneau-exercice-clair-390.jpg" alt="Studio panneau exercice" loading="lazy"><figcaption>Studio · feuille d'exercice</figcaption></figure>
+  </div>
+  <h3 style="margin-top:24px">Studio sur ordinateur (1366 px)</h3>
+  <div class="da-caps large">
+    <figure><img src="captures/coach-aujourdhui-clair-1366.jpg" alt="Studio Aujourd'hui ordinateur" loading="lazy"><figcaption>Aujourd'hui</figcaption></figure>
+    <figure><img src="captures/coach-exercices-clair-1366.jpg" alt="Studio Exercices ordinateur" loading="lazy"><figcaption>Exercices</figcaption></figure>
+    <figure><img src="captures/coach-panneau-exercice-clair-1366.jpg" alt="Panneau exercice ordinateur" loading="lazy"><figcaption>Panneau d'exercice à côté</figcaption></figure>
+    <figure><img src="captures/coach-clients-clair-1366.jpg" alt="Clients ordinateur" loading="lazy"><figcaption>Clients</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <div class="da-etiq">06 · Mouvement</div>
+  <h2>Servi tout de suite, posé en douceur.</h2>
+  <p class="da-doux" style="margin-bottom:12px">Touchez une piste : même distance, courbes différentes. Appuyez sur les boutons plus haut pour sentir le ressort.</p>
+  <div class="da-mvt" id="mvt"></div>
+</section>
+
+<section>
+  <div class="da-etiq">07 · Règles</div>
+  <h2>À faire, à ne pas faire.</h2>
+  <div class="da-regles">
+    <div class="da-carte"><h3>À faire</h3><ul class="da-oui">
+      <li>Jaune en aplat, texte #26230A dessus (12 : 1)</li><li>Un seul héros jaune par écran ou visuel</li><li>Titres Syne 400-500, serrés</li>
+      <li>Anthracite au lieu du noir</li><li>Rayons 20-28, espacements 4-8-12-16-20-24-32-40</li><li>Client vouvoyé, coach tutoyé</li><li>Couleur + texte (muscle écrit à côté de sa teinte)</li></ul></div>
+    <div class="da-carte"><h3>À ne pas faire</h3><ul class="da-non">
+      <li>Jaune en texte sur clair (1,04 : 1)</li><li>Syne en gras, titres en capitales</li><li>Noir pur, coins carrés, bordures épaisses</li>
+      <li>Fondu jaune ↔ encre (kaki) ; texte qui entre sous .9 d'opacité</li><li>Texte sous 12 px</li><li>Banque d'images « fitness » générique, emoji</li></ul></div>
+  </div>
+</section>
+
+<section>
+  <div class="da-etiq">08 · Gabarits</div>
+  <h2>Prêts à remplir.</h2>
+  <div class="da-gab">
+    <a href="gabarits/reseaux-carre.html"><img src="captures/gabarit-reseaux-carre.jpg" alt="Gabarit visuel carré" loading="lazy"><p><b>Visuel réseaux</b> · 1080 × 1080</p></a>
+    <a href="gabarits/carte-seance.html"><img src="captures/gabarit-carte-seance.jpg" alt="Gabarit carte de séance" loading="lazy"><p><b>Carte de séance</b> · 1080 × 1350</p></a>
+    <a href="gabarits/document-client.html"><img src="captures/gabarit-document-client.jpg" alt="Gabarit document client" loading="lazy"><p><b>Document client</b> · A4 → PDF</p></a>
+  </div>
+</section>
+
+<script>
+  // Nuancier : valeurs lues en direct dans tokens.css, contraste WCAG calculé dans l'ambiance affichée.
+  const css = (v, el = document.documentElement) => getComputedStyle(el).getPropertyValue(v).trim()
+  const sonde = document.createElement('i'); document.body.append(sonde)
+  const rgb = (c) => { sonde.style.color = ''; sonde.style.color = c; const m = getComputedStyle(sonde).color.match(/[\d.]+/g).map(Number); return m[0] <= 1 && /color\(/.test(getComputedStyle(sonde).color) ? m.slice(0, 3).map((x) => x * 255) : m.slice(0, 3) }
+  const lum = (c) => { const [r, g, b] = rgb(c).map((v) => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4 }); return .2126 * r + .7152 * g + .0722 * b }
+  const ratio = (a, b) => { const x = lum(a), y = lum(b); return ((Math.max(x, y) + .05) / (Math.min(x, y) + .05)).toFixed(1).replace('.', ',') }
+  const CLIENT = [
+    ['--jaune', '--jaune-texte', 'Jaune · accent', 'Aplat seulement'], ['--encre', '--creme', 'Encre', 'Carte Coaching'], ['--ok', '--ok-texte', 'Validé', 'Série faite'],
+    ['--fond', '--texte', 'Fond', 'Perle / graphite / bleu'], ['--surface', '--texte', 'Surface', 'Cartes'], ['--surface-2', '--texte-doux', 'Surface 2', 'Puces · texte doux'],
+    ['--texte', '--fond', 'Texte', 'Principal'], ['--texte-doux', '--surface', 'Texte doux', 'Méta'],
+    ['--repos-bg', '--repos-fg', 'Repos', 'Phase de séance'], ['--prep-bg', '--prep-fg', 'Préparation', 'Phase de séance']
+  ]
+  const STUDIO = [
+    ['--st-fond', '--st-encre', 'Lin', 'Fond coach'], ['--st-surface-2', '--st-texte', 'Surface 2', 'Encarts'], ['--st-encre', '#FFFFFF', 'Encre', 'Bouton plein'],
+    ['--st-propose-fond', '--st-propose', 'Proposé', 'Par Claude'], ['--st-ok-fond', '--st-ok', 'Validé', ''], ['--st-alerte-fond', '--st-alerte', 'Alerte', 'Douleur'],
+    ...['jambes', 'dos', 'pecs', 'epaules', 'bras', 'gainage', 'mobilite', 'cardio'].map((m) => [`--m-${m}`, `--m-${m}-i`, m[0].toUpperCase() + m.slice(1), 'Groupe musculaire'])
+  ]
+  const val = (v) => v.startsWith('--') ? css(v) : v
+  function nuancier(id, liste) {
+    document.getElementById(id).innerHTML = liste.map(([f, t, nom, usage]) => {
+      const F = val(f), T = val(t)
+      return `<div class="da-nuance"><div style="background:${F};color:${T}"><span>${nom}</span><span class="da-ratio">${ratio(F, T)} : 1</span></div><p>${usage}<br><code>${f} ${F.toUpperCase()}</code></p></div>`
+    }).join('')
+  }
+  function tout() { nuancier('nuancier', CLIENT); nuancier('nuancier-studio', STUDIO) }
+  document.querySelectorAll('[data-amb]').forEach((b) => b.addEventListener('click', () => {
+    document.documentElement.dataset.ambiance = b.dataset.amb
+    document.querySelectorAll('[data-amb]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)))
+    tout()
+  }))
+  tout()
+  // Cartes d'exercice Studio (teinte du muscle)
+  const fig = '<svg width="48" height="64" viewBox="0 0 48 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"><circle cx="24" cy="10" r="7" fill="currentColor" stroke="none"/><path d="M24 18v22M24 40l-9 20M24 40l9 20M24 24l-12 10M24 24l12 10"/></svg>'
+  document.getElementById('st-cartes').innerHTML = [['jambes', 'Chaise murale', 'Jambes'], ['dos', 'Rowing haltère', 'Dos'], ['mobilite', 'Chien tête en bas', 'Mobilité'], ['epaules', 'Élévations latérales', 'Épaules']]
+    .map(([m, n, l]) => `<div class="st-ex" style="--mc:var(--m-${m});--mi:var(--m-${m}-i)"><div class="m">${fig}</div><div class="t"><b>${n}</b><small>● ${l}</small></div></div>`).join('')
+  // Pistes de mouvement
+  const MVT = [['--ressort', '320 ms', 'Relâche d\'un bouton (ressort)', 320], ['--ease-sortie', '500 ms', 'Entrée, cercle de repos (expo.out)', 500], ['--ease-vaul', '500 ms', 'Feuille, panneau, élément partagé (Vaul)', 500], ['--st-sortie', '240 ms', 'Page Studio qui entre', 240]]
+  const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches
+  document.getElementById('mvt').innerHTML = MVT.map(([c, d, nom, ms]) => `<button type="button" class="da-piste" data-ms="${ms}" style="--c:var(${c})"><span style="transition:transform ${reduit ? 0 : ms}ms var(${c})"></span><em>${nom} · ${d} · <code>${c}</code></em></button>`).join('')
+  document.querySelectorAll('.da-piste').forEach((p) => p.addEventListener('click', () => p.classList.toggle('go')))
+</script>
+</body>
+</html>
