@@ -16,7 +16,7 @@ Tests navigateur : playwright-cli (ou Chrome headless piloté par CDP en secours
   `localStorage` ni Supabase directement.
 - Dates : jours en `AAAA-MM-JJ` heure locale (Europe/Paris), semaine du **lundi au dimanche**, poids stockés en kg.
 - Textes de l'interface en français, nombres au format FR (`12,5 kg`, `18 h 30`).
-- **Lots UI** : avant de coder, **lire `design/RECOMMANDATION.md` et le `DESIGN.md` de la maquette retenue**
+- **Lots UI** : avant de coder, **lire `archives/maquettes/design-v1/RECOMMANDATION.md` et le `DESIGN.md` de la maquette retenue**
   (et appliquer : `DESIGN.md` > skill `impeccable` > `animate`/`mobile-native` > `gsap-*`). Aucun choix
   esthétique n'est figé dans ce plan : il décrit le comportement, la maquette décrit l'apparence.
 - Animations : `transform`/`opacity` uniquement, 60 fps sur téléphone ; `prefers-reduced-motion` = fondus courts
@@ -122,7 +122,7 @@ Tests navigateur : playwright-cli (ou Chrome headless piloté par CDP en secours
 
 ## Lot 2 — Séance en cours (priorité absolue de qualité) `[DESIGN]`
 **Objectif** : la séance complète sur téléphone, irréprochable, y compris circuits et fin de séance.
-**Dépendances** : lot 1 + maquette retenue. Lire `design/RECOMMANDATION.md` et le `DESIGN.md` de la maquette retenue.
+**Dépendances** : lot 1 + maquette retenue. Lire `archives/maquettes/design-v1/RECOMMANDATION.md` et le `DESIGN.md` de la maquette retenue.
 
 ### Tâches
 - [x] **2.1 Fondations UI** : tokens CSS du `DESIGN.md` dans `src/styles/tokens.css` (couleurs, typo, espacements, rayons, durées,
@@ -156,7 +156,7 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 ---
 
 ## Lot 3 — Page Workout `[DESIGN]`
-**Dépendances** : lot 2. Lire `design/RECOMMANDATION.md` et le `DESIGN.md` retenu.
+**Dépendances** : lot 2. Lire `archives/maquettes/design-v1/RECOMMANDATION.md` et le `DESIGN.md` retenu.
 - [x] Overview qui défile : blocs, exercices (nom, vidéo, séries × reps/poids — valeurs pré-remplies du client si elles existent —, repos),
   circuits (format + durée), consignes du coach ; bouton **Démarrer** toujours visible (collant) → transition vers la séance.
 - [x] Workout déjà fait aujourd'hui → mention « Fait aujourd'hui » et bouton « Refaire ». Séance en cours non terminée → bouton « Reprendre ».

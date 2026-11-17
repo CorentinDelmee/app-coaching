@@ -5,7 +5,7 @@ dist/
 !.env.example
 *.log
 .playwright-cli/
-design/**/*.webm
+archives/maquettes/design-v1/**/*.webm
 captures/
 netlify-maquettes/
 docs/**/*.webm

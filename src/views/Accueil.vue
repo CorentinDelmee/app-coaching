@@ -1,5 +1,5 @@
 <script setup>
-// Tableau de bord (accueil client) — aligné sur la maquette M5 « Profondeur » (design/m5 : index.html #e-dash, ecrans.js PAGES['e-dash']).
+// Tableau de bord (accueil client) — aligné sur la maquette M5 « Profondeur » (archives/maquettes/design-v1/m5 : index.html #e-dash, ecrans.js PAGES['e-dash']).
 // Tout tient sans défiler à 390×844 : décor (grand chiffre du jour + halos), en-tête (menu à gauche), message d'accueil, cinq cartes
 // sur trois couches de profondeur. Chaque carte se soulève puis ouvre sa page (« élément partagé », carte -> page), une copie du
 // tableau de bord restant visible derrière et reculant (scale .92). Parallaxe à la souris (jamais au toucher). Texte du message : V2.

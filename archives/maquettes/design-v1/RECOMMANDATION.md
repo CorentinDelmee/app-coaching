@@ -1,8 +1,8 @@
 # Recommandation design (provisoire, mode absent)
 
 > 2026-10-20. Corentin choisira à son retour. En attendant, le développeur applique **M1 « Atelier »**
-> selon `design/DESIGN.md`. Les quatre autres maquettes sont conservées telles quelles.
-> Comparer : `design/index.html` (double-clic, le tout fonctionne sans serveur).
+> selon `archives/maquettes/design-v1/DESIGN.md`. Les quatre autres maquettes sont conservées telles quelles.
+> Comparer : `archives/maquettes/design-v1/index.html` (double-clic, le tout fonctionne sans serveur).
 
 ## Classement
 

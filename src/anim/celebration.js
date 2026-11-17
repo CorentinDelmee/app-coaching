@@ -1,4 +1,4 @@
-// Petite célébration de fin (confettis qui jaillissent puis retombent). Porté de design/m1/assets/vues.js.
+// Petite célébration de fin (confettis qui jaillissent puis retombent). Porté de archives/maquettes/design-v1/m1/assets/vues.js.
 // Mouvement réduit : rien (la fin reste lisible sans). Les confettis se retirent tout seuls du DOM.
 import { gsap } from 'gsap'
 import { mouvementReduit } from './transitions.js'

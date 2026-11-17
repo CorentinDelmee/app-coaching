@@ -1,7 +1,7 @@
 # ÉTAT — app-coaching
 
 - **Mode** : absent (Corentin parti jusqu'au soir du 2026-10-20) — décisions appliquées en provisoire, listées dans `suivi.json` et `archives/A-VALIDER.md`.
-- **Phase** : lot 1 VALIDÉ ; lot 2 (séance en cours) FAIT, à tester par le testeur ; maquette M1 « Atelier » appliquée en provisoire (design/RECOMMANDATION.md).
+- **Phase** : lot 1 VALIDÉ ; lot 2 (séance en cours) FAIT, à tester par le testeur ; maquette M1 « Atelier » appliquée en provisoire (archives/maquettes/design-v1/RECOMMANDATION.md).
 - **Référence** : CAHIER-DES-CHARGES.md
 
 ## Corrections de l'audit de sécurité — FAITES (2026-10-20)

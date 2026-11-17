@@ -5,7 +5,7 @@ note chaque décision en une ligne dans ton rapport final (REX la reporte dans `
 Lis d'abord `CLAUDE.md`, `ETAT.md`, puis en extraits `DECISIONS.md`, `archives/RETOURS-MAQUETTES-V1.md`.
 
 ## Demande de Corentin (3 chantiers, menés en parallèle par 3 agents)
-A. **Alignement exact sur la maquette M5** (`design/m5/` : `index.html`, `assets/style.css`, `assets/app.js`,
+A. **Alignement exact sur la maquette M5** (`archives/maquettes/design-v1/m5/` : `index.html`, `assets/style.css`, `assets/app.js`,
    `assets/ecrans.js`, `DESIGN.md`) : homepage et toutes ses interactions, menu (structure, icônes,
    comportement), **le même jaune** (valeur exacte du code M5), la couleur de surbrillance en fond.
    Tokens de design M5 extraits dans un fichier unique appliqué partout ; captures avant/après.

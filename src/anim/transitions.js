@@ -1,4 +1,4 @@
-// Transitions de la direction M1 « Atelier », portées de design/m1/assets/anim.js.
+// Transitions de la direction M1 « Atelier », portées de archives/maquettes/design-v1/m1/assets/anim.js.
 // Signature : la RÉVÉLATION PAR CLIP-PATH depuis l'élément touché. Chaque fonction reçoit la couche à animer
 // (élément DOM) et l'élément source ; elle gère la couche via gsap (timeline stockée dans couche._tl).
 // Anime seulement transform / opacity / clip-path (+ le tracé d'un anneau SVG). Mouvement réduit : fondus courts.

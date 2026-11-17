@@ -1,6 +1,6 @@
 # Écarts entre l'app et la maquette M5 — alignement du 26/10/2026
 
-Demande de Corentin : l'app doit être **exactement comme M5** (`design/m5/`) sur la page d'accueil (et ses interactions),
+Demande de Corentin : l'app doit être **exactement comme M5** (`archives/maquettes/design-v1/m5/`) sur la page d'accueil (et ses interactions),
 le menu, le jaune, la couleur de surbrillance et les tokens. En cas de doute entre V2 et M5 sur ces points : **M5 gagne**.
 Ce qui n'est pas concerné (et reste V2) : séance page par page, chronos, circuits, 3 ambiances, Grand affichage (`archives/RETOURS-MAQUETTES-V1.md`).
 
@@ -11,7 +11,7 @@ Captures : `docs/captures/m5/` (`m5/` = maquette, `avant/` = app avant, `apres/`
 
 | Token | Valeur M5 | Source |
 |---|---|---|
-| Jaune (accent) | `#F2E27A` | `design/m5/assets/app.js` (ACCENTS, « Jaune pâle ») + `DESIGN.md` |
+| Jaune (accent) | `#F2E27A` | `archives/maquettes/design-v1/m5/assets/app.js` (ACCENTS, « Jaune pâle ») + `DESIGN.md` |
 | Texte sur le jaune | `#26230A` | idem (`t`) |
 | Surbrillance (fond mis en avant) | `color-mix(in srgb, var(--accent) 22%, var(--surface))` + trait `inset 0 0 0 2px var(--accent)` | `style.css` `.wli.auj` (`--accent-doux`) |
 | … calculée | clair `#FCF9E2` · sombre `#575641` · bleu `#4D5257` | mesuré dans le navigateur : identique M5 / app |

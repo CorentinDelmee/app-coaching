@@ -18,7 +18,7 @@
       "statut": "fait",
       "avancement": 100,
       "qui": "frontend-senior + designers",
-      "note": "design/index.html — 5 maquettes cliquables, captures + vidéos ; M1 recommandée"
+      "note": "archives/maquettes/design-v1/index.html — 5 maquettes cliquables, captures + vidéos ; M1 recommandée"
     },
     {
       "id": "P",
@@ -463,27 +463,27 @@
         {
           "nom": "M1 Atelier",
           "resume": "Anthracite chaud + framboise, Unbounded/Onest ; tout s ouvre en découpe depuis l élément touché (ta transition préférée du site, généralisée)",
-          "lien": "design/m1/index.html"
+          "lien": "archives/maquettes/design-v1/m1/index.html"
         },
         {
           "nom": "M4 Ressort",
           "resume": "Objets tirés au doigt, îlot flottant qui devient le chrono ; le plus « app native », plus long à porter",
-          "lien": "design/m4/index.html"
+          "lien": "archives/maquettes/design-v1/m4/index.html"
         },
         {
           "nom": "M5 Profondeur",
           "resume": "3D CSS, paquet de cartes ; le plus spectaculaire, risque de ramer sur Android moyen",
-          "lien": "design/m5/index.html"
+          "lien": "archives/maquettes/design-v1/m5/index.html"
         },
         {
           "nom": "M2 Carnet ou M3 Tableau",
           "resume": "M2 éditorial papier (Fraunces) ; M3 brut ardoise/jaune lisible de loin",
-          "lien": "design/index.html"
+          "lien": "archives/maquettes/design-v1/index.html"
         }
       ],
       "recommandation": "M1 Atelier",
       "pourquoi": "Héritière de la transition que tu adores, la plus lisible au pouce et la plus sûre à construire ce soir.",
-      "si_pas_de_reponse": "L app est construite sur M1 ; les autres restent dans design/.",
+      "si_pas_de_reponse": "L app est construite sur M1 ; les autres restent dans archives/maquettes/design-v1/.",
       "echeance": "",
       "statut": "tranchee",
       "reponse": "M5 comme base (RETOURS-MAQUETTES-V1 : « Base : M5 », confirmé par Corentin le 26/10 : app exactement comme M5 sur accueil, menu, jaune, surbrillance)",
@@ -824,7 +824,7 @@
     },
     {
       "date": "2026-10-20",
-      "texte": "5 maquettes de l app client, chacune avec sa propre identité, comparables dans design/index.html ; M1 « Atelier » retenue en provisoire."
+      "texte": "5 maquettes de l app client, chacune avec sa propre identité, comparables dans archives/maquettes/design-v1/index.html ; M1 « Atelier » retenue en provisoire."
     },
     {
       "date": "2026-10-20",
@@ -959,7 +959,7 @@
     },
     {
       "texte": "Comparer les maquettes",
-      "href": "design/index.html"
+      "href": "archives/maquettes/design-v1/index.html"
     },
     {
       "texte": "Mise en route",
@@ -967,7 +967,7 @@
     },
     {
       "texte": "Vidéo du parcours final",
-      "href": "design/app-finale/parcours.webm"
+      "href": "archives/maquettes/design-v1/app-finale/parcours.webm"
     },
     {
       "texte": "Maquette V2 consolidée",

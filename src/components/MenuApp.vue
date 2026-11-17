@@ -2,7 +2,7 @@
 // Menu de l'app « push back » (M5, maquette V2) : 6 rubriques. La page courante (le « plan ») recule en 3D vers la droite et laisse voir
 // le menu posé derrière elle ; les rubriques arrivent depuis la profondeur. Choisir une rubrique : le plan s'envole à droite, la nouvelle
 // page revient de la profondeur. Clavier : Entrée/Espace ouvrent, Échap ferme, Tab circule. Mouvement réduit : fondus et glissements courts.
-// Aligné sur M5 (design/m5/assets/app.js ouvrirMenu / fermerMenu / allerRubrique) : sur le tableau de bord, le bouton est DANS la page
+// Aligné sur M5 (archives/maquettes/design-v1/m5/assets/app.js ouvrirMenu / fermerMenu / allerRubrique) : sur le tableau de bord, le bouton est DANS la page
 // (en haut à gauche, il recule avec elle) et demande l'ouverture par src/lib/menu.js ; ailleurs, un bouton flottant du même dessin.
 // La croix est faite en CSS (html.menu-ouvert .burger, 0,45 s courbe vaul), comme la maquette.
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'

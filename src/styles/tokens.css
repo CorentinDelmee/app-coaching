@@ -3,7 +3,7 @@
    data-ambiance = clair (défaut) | sombre | bleu · data-grand = oui | non · data-chrono = barlow | inter | azeret · data-aplat = fonce | blanc.
    Accent jaune : TOUJOURS du texte foncé posé dessus ; jamais de jaune en texte sur fond clair (→ --accent-lisible).
    Alignement M5 (26/10/2026) : le jaune, la surbrillance, l'échelle typo, les rayons, ombres, durées et courbes viennent de
-   design/m5/assets/style.css + app.js ; ce fichier est la SOURCE UNIQUE des tokens. */
+   archives/maquettes/design-v1/m5/assets/style.css + app.js ; ce fichier est la SOURCE UNIQUE des tokens. */
 
 /* Polices auto-hébergées (latin) : précachées par le service worker, donc disponibles hors connexion. */
 @font-face { font-family: 'Syne'; font-style: normal; font-weight: 400 800; font-display: swap; src: url('../assets/fonts/syne-latin-wght-normal.woff2') format('woff2-variations'); }
@@ -37,7 +37,7 @@
   --e-chrono: 1;
   --cible: calc(var(--e) * 48px);   /* zone à toucher minimale (≥ 48 px) */
 
-  /* ===== Accent : le jaune EXACT de la maquette M5 (« Jaune pâle », design/m5/assets/app.js) + son texte ===== */
+  /* ===== Accent : le jaune EXACT de la maquette M5 (« Jaune pâle », archives/maquettes/design-v1/m5/assets/app.js) + son texte ===== */
   --jaune: #F2E27A;
   --jaune-texte: #26230A;             /* texte posé sur le jaune (M5) : 12 : 1 */
   --encre: #1A1B1E;                   /* encre des surfaces « encre » (V2 : en-tête du Workout) */
@@ -78,7 +78,7 @@
   --scrim: rgba(0, 0, 0, .5);
 }
 
-/* Ambiances : valeurs M5 (design/m5/assets/style.css). Seul écart : --texte-doux du clair foncé (#565B62 au lieu de #6A6F76)
+/* Ambiances : valeurs M5 (archives/maquettes/design-v1/m5/assets/style.css). Seul écart : --texte-doux du clair foncé (#565B62 au lieu de #6A6F76)
    pour tenir 4,5 : 1 sur le fond perle (M5 : 4,0 : 1). */
 /* Ambiance 1 : clair (défaut) */
 :root, html[data-ambiance="clair"] {

@@ -1,4 +1,4 @@
-// Petits effets de la direction M1 portés de design/m1/assets/anim.js : titres « mots qui montent » et anneau SVG.
+// Petits effets de la direction M1 portés de archives/maquettes/design-v1/m1/assets/anim.js : titres « mots qui montent » et anneau SVG.
 import { gsap } from 'gsap'
 import { mouvementReduit } from './transitions.js'
 

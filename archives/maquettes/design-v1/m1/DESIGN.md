@@ -1,6 +1,6 @@
 # M1 « Atelier » — l'héritière de M3
 **Idée** : l'esprit « lourd, net, chaleureux » du site, transposé en app : tout s'ouvre en **clip-path depuis l'élément touché**.
-**3 mots** : lourd · net · chaleureux. Lancer : `node` serveur statique sur `design/m1/` (port 4101) ou ouvrir `index.html`.
+**3 mots** : lourd · net · chaleureux. Lancer : `node` serveur statique sur `archives/maquettes/design-v1/m1/` (port 4101) ou ouvrir `index.html`.
 
 ## Polices et échelle (Google Fonts, graisses 300-500 pour les titres)
 Titres/chiffres **Unbounded 400** (jamais 700) · texte **Onest 400-600** · chronos en **Onest tabulaire** (Unbounded n'a pas de chiffres tabulaires fiables).

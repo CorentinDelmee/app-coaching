@@ -1,9 +1,9 @@
 # DESIGN.md : app client « Corentin Delmée Coaching » (direction M1 « Atelier », provisoire)
 
 > Source de vérité du style pour le développeur. La référence vivante est le prototype
-> `design/m1/` : `assets/anim.js` contient toutes les transitions, `assets/style.css` les tokens,
+> `archives/maquettes/design-v1/m1/` : `assets/anim.js` contient toutes les transitions, `assets/style.css` les tokens,
 > `assets/seance.js` la séance. **Porter ces fonctions telles quelles, sans réinventer.**
-> Recommandation et limites : `design/RECOMMANDATION.md`. Inspiration : `design/inspiration/NOTE.md`.
+> Recommandation et limites : `archives/maquettes/design-v1/RECOMMANDATION.md`. Inspiration : `archives/maquettes/design-v1/inspiration/NOTE.md`.
 
 ## 1. Direction
 **Lourd, net, chaleureux.** Tout part de l'élément touché : une carte devient une page, un bouton

@@ -5,7 +5,7 @@
 
 ## À lire d'abord (ciblé)
 1. `CAHIER-DES-CHARGES.md` §4 (app client) et §7 (design) : la référence.
-2. `design/inspiration/NOTE.md` : ce qu'on reprend des références.
+2. `archives/maquettes/design-v1/inspiration/NOTE.md` : ce qu'on reprend des références.
 3. La transition fétiche de Corentin : `Projets/coaching-domicile/design-v2/m3/assets/index.js`,
    lignes 92-145 (fonction `objectifs()`). La carte touchée s'ouvre en plein écran par
    `clip-path: inset()`, en partant de son rectangle. **Esprit à retrouver, pas à copier.**
@@ -29,7 +29,7 @@ Archivo, Figtree, Bricolage Grotesque, Instrument Sans, Public Sans, Schibsted G
 Les polices d'une autre maquette ne sont pas interdites, mais **utilise celles de ta consigne**.
 
 ## Livrable : un prototype cliquable mobile (390×844), dans TON dossier uniquement
-- `design/mN/index.html` + `design/mN/assets/` (CSS, JS). HTML/CSS/JS autonomes, sans build.
+- `archives/maquettes/design-v1/mN/index.html` + `archives/maquettes/design-v1/mN/assets/` (CSS, JS). HTML/CSS/JS autonomes, sans build.
 - GSAP depuis cdnjs, **version épinglée 3.13.0** :
   `https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js` (et `Flip.min.js`,
   `Draggable.min.js`, `InertiaPlugin.min.js`, `SplitText.min.js`, `CustomEase.min.js`… si besoin).
@@ -111,9 +111,9 @@ Les polices d'une autre maquette ne sont pas interdites, mais **utilise celles d
 - Questionnaire : check-in du jour (sommeil, énergie, humeur, douleur, hydratation).
 
 ## Règles impératives
-- Tu n'écris **que dans ton dossier** `design/mN/` (et ton sous-dossier du scratchpad).
+- Tu n'écris **que dans ton dossier** `archives/maquettes/design-v1/mN/` (et ton sous-dossier du scratchpad).
   Aucun `git commit` (REX commite). Ne touche ni à `src/`, ni à `package.json`, ni aux autres
-  dossiers `design/` : un développeur et d'autres designers travaillent en parallèle.
+  dossiers `archives/maquettes/design-v1/` : un développeur et d'autres designers travaillent en parallèle.
 - **Un port de serveur par agent** (m1 → 4101, m2 → 4102, m3 → 4103, m4 → 4104, m5 → 4105).
   Arrête ton serveur **par son PID uniquement**. JAMAIS `taskkill /im node.exe` ni rien qui tue
   tous les processus node.
@@ -126,7 +126,7 @@ Les polices d'une autre maquette ne sont pas interdites, mais **utilise celles d
 ## Vérification avant de rendre
 1. Ouvre le prototype en 390×844 (playwright-cli ; si ça plante : Chrome headless) : 0 erreur
    console, pas de débordement horizontal, tout le parcours cliquable de bout en bout.
-2. **Captures** PNG 390×844 dans `design/mN/captures/` : `01-dashboard.png`, `02-menu.png`,
+2. **Captures** PNG 390×844 dans `archives/maquettes/design-v1/mN/captures/` : `01-dashboard.png`, `02-menu.png`,
    `03-coaching.png`, `04-programme-semaine.png`, `05-programme-mois.png`, `06-workout.png`,
    `07-exercice.png`, `08-serie-ouverte.png`, `09-selecteur.png`, `10-repos.png`,
    `11-amrap-explication.png`, `12-amrap-chrono.png`, `13-fin.png`, `14-questionnaire.png`,
@@ -134,7 +134,7 @@ Les polices d'une autre maquette ne sont pas interdites, mais **utilise celles d
    (`parcours.webm`, 20-40 s) du parcours dashboard → workout → séance → série → sélecteur → repos.
 3. **Revue `review-animations`** sur ton propre code : corrige tout ce qui bloquerait. Mets le
    tableau des constats restants dans ton `DESIGN.md`.
-4. `design/mN/DESIGN.md` (court, 60 lignes max) : nom, idée en une phrase, 3 mots, polices,
+4. `archives/maquettes/design-v1/mN/DESIGN.md` (court, 60 lignes max) : nom, idée en une phrase, 3 mots, polices,
    palette (variables), échelle typo, **principes de mouvement** (durées, courbes, ce qui bouge et
    pourquoi), liste des transitions avec le nom de leur fonction JS, limites connues.
 5. Rapport final (10 lignes) : ce qui est fait, ce qui manque, les points faibles honnêtes.
