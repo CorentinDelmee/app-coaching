@@ -6,7 +6,7 @@
 > Contrôle : `node DA/outils/concordance.mjs` (tokens.json ↔ feuilles de l'app). Écarts relevés : `DA/ECARTS.md`.
 
 ## 1. Personnalité en 5 phrases
-1. **Un jaune pâle et lumineux, posé en aplat, jamais en texte** : c'est la signature ; il désigne la chose à faire maintenant (la séance du jour, le bouton principal).
+1. **Un jaune pâle et lumineux, posé en aplat, jamais en texte sur fond clair** (en sombre et bleu, il peut servir de texte d'accent, 12 : 1) : c'est la signature ; il désigne la chose à faire maintenant (la séance du jour, le bouton principal).
 2. **De grands titres légers** (Syne 400-500, serrés) sur un texte calme et très lisible (Albert Sans) : présents sans crier.
 3. **Des cartes douces et généreuses** (rayons 20-28 px) sur un fond neutre — **perle froide côté client, lin chaud côté coach** — avec de la profondeur (ombres longues, pages qui reculent).
 4. **Anthracite, jamais noir pur** ; un seul accent, des couleurs d'état sobres, des pastels uniquement pour classer (groupes musculaires).
