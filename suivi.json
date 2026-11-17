@@ -3,7 +3,7 @@
   "phase": "V2 + mission 26/10 + 2e vague : 436 tests verts, audits sécurité et accessibilité corrigés — à toi : secrets et Google, valider les vidéos, essai sur téléphone",
   "objectif": "Remplacer **My PT Hub (52 €/mois)** par ma propre app de coaching, **0 €/mois**, mobile d'abord, très animée.",
   "date_cible": "2026-10-20",
-  "mis_a_jour": "2026-11-12",
+  "mis_a_jour": "2026-11-17",
   "lots": [
     {
       "id": "0",
@@ -807,6 +807,73 @@
       "si_pas_de_reponse": "Rien ne change.",
       "statut": "ouverte",
       "provisoire": false
+    },
+    {
+      "id": "D16",
+      "categorie": "Direction artistique",
+      "question": "Logo : un seul signe pour l'app client, le Studio et l'icône du téléphone ?",
+      "contexte": "Il y a 3 signes pour une seule marque : l'icône de l'app est encore le « CD » framboise sur brun (maquette M1), le Studio a un rond jaune sur carré encre. Voir DA/ECARTS.md.",
+      "options": [
+        {
+          "nom": "Rond jaune sur carré encre partout",
+          "resume": "Le signe du Studio devient l'icône de l'app"
+        },
+        {
+          "nom": "Faire 2-3 propositions de logo",
+          "resume": "Un directeur artistique propose des pistes, tu choisis"
+        },
+        {
+          "nom": "Laisser tel quel",
+          "resume": "L'icône reste le CD framboise"
+        }
+      ],
+      "recommandation": "Rond jaune sur carré encre partout",
+      "pourquoi": "C'est déjà dans les couleurs de l'app, et une seule marque se reconnaît mieux.",
+      "si_pas_de_reponse": "Rien ne change.",
+      "statut": "ouverte",
+      "provisoire": false
+    },
+    {
+      "id": "D17",
+      "categorie": "Direction artistique",
+      "question": "Fonds : perle froide côté client et lin chaud côté coach, ou lin partout ?",
+      "contexte": "La DA (DA/README.md) décrit aujourd'hui deux fonds : perle (#E3E5E8) pour ce que voit le client, lin (#F4F1EC) pour le Studio du coach.",
+      "options": [
+        {
+          "nom": "Garder les deux fonds",
+          "resume": "Le client et le coach savent où ils sont"
+        },
+        {
+          "nom": "Lin partout",
+          "resume": "Marque plus chaude, une seule ambiance claire"
+        }
+      ],
+      "recommandation": "Garder les deux fonds",
+      "pourquoi": "C'est le rendu actuel, testé ; changer touche tous les écrans client.",
+      "si_pas_de_reponse": "Les deux fonds restent la règle.",
+      "statut": "ouverte",
+      "provisoire": false
+    },
+    {
+      "id": "D18",
+      "categorie": "Ménage",
+      "question": "Appliquer les 11 points de docs/MENAGE-A-TRANCHER.md ?",
+      "contexte": "Après le rangement du 17/11 : vieil audit Supabase à archiver, ETAT.md à alléger, tâches qui citent des guides périmés, RGPD-CHECKLIST à mettre à jour pour le VPS, code Supabase restant (store.js, 2 tests).",
+      "options": [
+        {
+          "nom": "Appliquer les recommandations",
+          "resume": "REX fait le tri comme recommandé dans le fichier"
+        },
+        {
+          "nom": "Je relis point par point",
+          "resume": "Tu réponds sur chaque point"
+        }
+      ],
+      "recommandation": "Appliquer les recommandations",
+      "pourquoi": "Ce ne sont que des documents et du code mort, sans effet sur l’app en ligne.",
+      "si_pas_de_reponse": "Rien ne change.",
+      "statut": "ouverte",
+      "provisoire": false
     }
   ],
   "avancees": [
@@ -917,6 +984,10 @@
     {
       "date": "2026-11-12",
       "texte": "Synchro Google Agenda prête (coachings passés sur la fiche client, à venir chez le client) ; en attente de ré-autorisation Google et de déploiement."
+    },
+    {
+      "date": "2026-11-17",
+      "texte": "Dossier rangé (757 fichiers déplacés vers archives/ et docs/<thème>/, build identique, 876 tests verts) et direction artistique créée dans DA/ (tokens, planche visuelle, gabarits, contre-testée)."
     }
   ],
   "prochaines_etapes": [
