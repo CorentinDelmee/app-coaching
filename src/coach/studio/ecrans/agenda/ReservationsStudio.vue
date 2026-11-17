@@ -2,6 +2,7 @@
 // Réservations (Studio) : onglets À venir / Passées / Annulées, blocages, règles de prise de rendez-vous.
 // Reliées à Google Agenda côté serveur : l'annulation prévient le client tout de suite (confirmation en deux temps, dans la page).
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { mouvementReduit } from '../../../../anim/transitions.js'
 import data, { attente, lectureRapide } from '../../../../data/index.js'
 import {
   LIB_SYNCHRO, JOURS_SEMAINE, formulaireRegles, grouperParJour, libelleBlocage, libelleHeure, lienCarte, lienTel, validerBlocage, validerRegles
@@ -26,6 +27,8 @@ const reglesBase = ref({})
 const erreursRegles = ref([])
 const nouvelleFermeture = ref('')
 const boutons = ref([])
+const rangee = ref(null)
+const aChangeOnglet = ref(false) // l'entrée d'onglet ne se joue pas au premier affichage (la page entre déjà)
 
 const msgErreur = (e) => (e?.status === 502 || /502|indisponible/.test(String(e?.message || '')) ? 'Le service de réservation ne répond pas.' : 'Impossible de joindre le service de réservation. Réessayez dans un instant.')
 
@@ -56,7 +59,20 @@ async function charger({ discret = false } = {}) {
   }
 }
 onMounted(() => charger())
-watch(onglet, () => charger())
+watch(onglet, () => {
+  aChangeOnglet.value = true
+  charger()
+  centrerOnglet()
+})
+
+// Rangée d'onglets : l'onglet actif glisse doucement vers le centre au lieu de sauter.
+function centrerOnglet() {
+  const r = rangee.value
+  const b = boutons.value[ONGLETS.findIndex(([k]) => k === onglet.value)]
+  if (!r || !b) return
+  const left = b.offsetLeft - (r.clientWidth - b.offsetWidth) / 2
+  r.scrollTo({ left: Math.max(0, left), behavior: mouvementReduit() ? 'auto' : 'smooth' })
+}
 
 function toucheOnglet(ev, i) {
   const pas = ev.key === 'ArrowRight' ? 1 : ev.key === 'ArrowLeft' ? -1 : 0
@@ -145,7 +161,7 @@ async function enregistrer() {
       </div>
     </header>
 
-    <div class="st-ag-onglets" role="tablist" aria-label="Réservations">
+    <div ref="rangee" class="st-ag-onglets" role="tablist" aria-label="Réservations">
       <button
         v-for="([k, l], i) in ONGLETS" :id="`rs-onglet-${k}`" :key="k" :ref="(el) => (boutons[i] = el)" class="st-ag-onglet" type="button" role="tab"
         :aria-selected="onglet === k" :aria-controls="'rs-panneau'" :tabindex="onglet === k ? 0 : -1" @click="onglet = k" @keydown="toucheOnglet($event, i)"
@@ -154,7 +170,7 @@ async function enregistrer() {
 
     <p v-if="erreur" class="st-ag-msg st-ag-msg--err" role="alert">{{ erreur }}<button class="st-btn" type="button" @click="charger()">Réessayer</button></p>
 
-    <div id="rs-panneau" role="tabpanel" :aria-labelledby="`rs-onglet-${onglet}`">
+    <div id="rs-panneau" :key="onglet" :class="{ 'st-ag-panneau--onglet': aChangeOnglet }" role="tabpanel" :aria-labelledby="`rs-onglet-${onglet}`">
       <div v-if="chargement" aria-hidden="true">
         <template v-if="LISTES.includes(onglet)"><div class="st-ag-sq st-ag-sq--carte" style="margin-bottom: 10px" /><div class="st-ag-sq st-ag-sq--carte" /></template>
         <div v-else-if="onglet === 'blocages'" class="st-ag-sq st-ag-sq--form" />
