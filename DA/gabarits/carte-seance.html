@@ -1,0 +1,56 @@
+<!doctype html>
+<!-- Gabarit : carte de partage d'une séance terminée, 1080 × 1350 (format portrait Instagram / message au client).
+     Ambiance : ?ambiance=sombre ou ?ambiance=bleu. Données factices, à remplacer (« À REMPLACER »). -->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Carte de séance — gabarit DA</title>
+<link rel="stylesheet" href="../tokens.css">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1080px; height: 1350px; }
+  body { background: var(--fond); color: var(--texte); font-family: var(--font-texte); padding: 72px; display: flex; flex-direction: column; gap: 32px; overflow: hidden; }
+  .cs-etiq { font-size: 24px; font-weight: 500; letter-spacing: var(--ls-etiq); text-transform: uppercase; color: var(--texte-doux); }
+  .cs-titre { font-family: var(--font-titre); font-weight: 400; font-size: 132px; line-height: .98; letter-spacing: -.045em; margin-top: 16px; }
+  .cs-fait { display: inline-flex; align-items: center; gap: 14px; background: var(--ok); color: var(--ok-texte); border-radius: 999px; padding: 14px 30px 14px 18px; font-size: 32px; font-weight: 600; margin-top: 28px; }
+  .cs-fait svg { width: 40px; height: 40px; }
+  .cs-grille { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 24px; }
+  .cs-tuile { background: var(--surface); border-radius: 56px; padding: 44px; display: flex; flex-direction: column; justify-content: space-between; }
+  .cs-tuile.is-jaune { background: var(--jaune); color: var(--jaune-texte); grid-row: span 2; }
+  .cs-tuile.is-jaune .cs-etiq { color: var(--jaune-texte); opacity: .8; }
+  .cs-tuile.is-encre { background: var(--encre); color: var(--creme); }
+  .cs-tuile.is-encre .cs-etiq { color: var(--encre-doux); }
+  .cs-chiffre { font-family: var(--font-chiffres); font-weight: 500; font-size: 120px; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+  .cs-chiffre small { font-size: .38em; letter-spacing: -.01em; margin-left: 6px; }
+  .cs-anneau { width: 300px; height: 300px; align-self: center; }
+  .cs-bas { display: flex; justify-content: space-between; align-items: center; font-size: 28px; color: var(--texte-doux); }
+  .cs-marque { display: flex; align-items: center; gap: 14px; font-family: var(--font-titre); font-weight: 500; font-size: 28px; color: var(--texte); letter-spacing: -.02em; }
+  .cs-marque i { width: 52px; height: 52px; border-radius: 16px; background: var(--encre); display: grid; place-items: center; }
+  [data-ambiance="sombre"] .cs-marque i, [data-ambiance="bleu"] .cs-marque i { background: var(--surface-2); } /* encre invisible sur fond sombre */
+  .cs-marque i::after { content: ''; width: 20px; height: 20px; border-radius: 50%; background: var(--jaune); }
+</style>
+</head>
+<body>
+  <header>
+    <div class="cs-etiq">Mardi 17 novembre · Semaine 4</div><!-- À REMPLACER -->
+    <h1 class="cs-titre">Bravo,<br>Prénom.</h1><!-- À REMPLACER -->
+    <div class="cs-fait"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Workout 2 · Haut du corps</div><!-- À REMPLACER -->
+  </header>
+  <section class="cs-grille">
+    <div class="cs-tuile is-jaune">
+      <div class="cs-etiq">Cette semaine</div>
+      <svg class="cs-anneau" viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(38,35,10,.14)" stroke-width="12"/>
+        <circle cx="60" cy="60" r="50" fill="none" style="stroke: var(--jaune-texte)" stroke-width="12" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="105" transform="rotate(-90 60 60)"/><!-- À REMPLACER : dashoffset = 314 × (1 − part faite) -->
+      </svg>
+      <div class="cs-chiffre">2<small>/ 3 séances</small></div><!-- À REMPLACER -->
+    </div>
+    <div class="cs-tuile"><div class="cs-etiq">Durée</div><div class="cs-chiffre">42<small>min</small></div></div><!-- À REMPLACER -->
+    <div class="cs-tuile is-encre"><div class="cs-etiq">Volume</div><div class="cs-chiffre">3,2<small>t</small></div></div><!-- À REMPLACER -->
+  </section>
+  <footer class="cs-bas"><div class="cs-marque"><i></i>Corentin Delmée Coaching</div><span>18 séries · 0 douleur</span></footer><!-- À REMPLACER -->
+<script>
+  const a = new URLSearchParams(location.search).get('ambiance'); if (a) document.documentElement.dataset.ambiance = a
+</script>
+</body>
+</html>

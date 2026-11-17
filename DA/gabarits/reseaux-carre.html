@@ -1,0 +1,49 @@
+<!doctype html>
+<!-- Gabarit : visuel carré réseaux 1080 × 1080 (Instagram, Facebook). Textes à remplacer dans les balises marquées « À REMPLACER ».
+     Ambiance : ajouter ?ambiance=sombre ou ?ambiance=bleu à l'adresse. Export : capture 1080 × 1080 (playwright-cli ou Chrome). -->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Visuel carré — gabarit DA</title>
+<link rel="stylesheet" href="../tokens.css">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1080px; height: 1080px; }
+  body { background: var(--fond); color: var(--texte); font-family: var(--font-texte); padding: 72px; display: flex; flex-direction: column; gap: 32px; overflow: hidden; }
+  .rs-haut { display: flex; justify-content: space-between; align-items: center; }
+  .rs-marque { display: flex; align-items: center; gap: 16px; font-family: var(--font-titre); font-weight: 500; font-size: 30px; letter-spacing: -.02em; }
+  .rs-marque i { width: 60px; height: 60px; border-radius: 18px; background: var(--encre); display: grid; place-items: center; }
+  [data-ambiance="sombre"] .rs-marque i, [data-ambiance="bleu"] .rs-marque i { background: var(--surface-2); }
+  .rs-marque i::after { content: ''; width: 24px; height: 24px; border-radius: 50%; background: var(--jaune); }
+  .rs-etiq { font-size: 24px; font-weight: 500; letter-spacing: var(--ls-etiq); text-transform: uppercase; color: var(--texte-doux); }
+  .rs-heros { flex: 1; position: relative; overflow: hidden; background: var(--jaune); color: var(--jaune-texte); border-radius: 56px; padding: 64px; display: flex; flex-direction: column; justify-content: space-between; }
+  .rs-heros .rs-etiq { color: var(--jaune-texte); opacity: .8; }
+  .rs-titre { font-family: var(--font-titre); font-weight: 500; font-size: 104px; line-height: .98; letter-spacing: -.045em; max-width: 8.5em; }
+  .rs-sous { font-size: 40px; line-height: 1.25; max-width: 18em; margin-top: 24px; }
+  .rs-puces { display: flex; gap: 16px; flex-wrap: wrap; }
+  .rs-puces span { background: rgba(38, 35, 10, .12); border-radius: 999px; padding: 14px 28px; font-size: 30px; font-weight: 600; }
+  .rs-decor { position: absolute; right: -40px; top: 40px; font-family: var(--font-titre); font-size: 420px; line-height: 1; letter-spacing: -.06em; color: transparent; -webkit-text-stroke: 3px rgba(38, 35, 10, .28); pointer-events: none; }
+  .rs-bas { display: flex; justify-content: space-between; align-items: center; font-size: 28px; color: var(--texte-doux); }
+  .rs-bas b { color: var(--texte); font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="rs-haut">
+    <div class="rs-marque"><i></i>Corentin Delmée Coaching</div>
+    <div class="rs-etiq">Conseil n° 12</div><!-- À REMPLACER -->
+  </div>
+  <section class="rs-heros">
+    <div class="rs-decor" aria-hidden="true">12</div><!-- À REMPLACER : numéro ou lettre en décor -->
+    <div>
+      <div class="rs-etiq">Mobilité</div><!-- À REMPLACER -->
+      <h1 class="rs-titre">5 minutes avant de vous asseoir.</h1><!-- À REMPLACER (≤ 6 mots) -->
+      <p class="rs-sous">Trois mouvements pour garder un dos souple quand on travaille assis.</p><!-- À REMPLACER -->
+    </div>
+    <div class="rs-puces"><span>≈ 5 min</span><span>Sans matériel</span><span>Tous niveaux</span></div><!-- À REMPLACER -->
+  </section>
+  <div class="rs-bas"><span><b>Coaching à domicile</b> · Rambouillet</span><span>delmeecorentin.fr</span></div>
+<script>
+  const a = new URLSearchParams(location.search).get('ambiance'); if (a) document.documentElement.dataset.ambiance = a
+</script>
+</body>
+</html>

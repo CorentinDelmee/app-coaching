@@ -1,0 +1,67 @@
+<!doctype html>
+<!-- Gabarit : document client A4 (programme, bilan, compte rendu). Imprimer → « Enregistrer en PDF » (marges : aucune, graphiques d'arrière-plan : oui).
+     Textes à remplacer : balises marquées « À REMPLACER ». Données factices. -->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Document client — gabarit DA</title>
+<link rel="stylesheet" href="../tokens.css">
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--fond-profond); font-family: var(--font-texte); color: var(--texte); font-size: 11pt; line-height: 1.45; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .doc-page { width: 210mm; min-height: 297mm; margin: 24px auto; background: var(--surface); display: flex; flex-direction: column; }
+  @media print { body { background: none; } .doc-page { margin: 0; } }
+  .doc-entete { background: var(--fond); padding: 16mm 16mm 10mm; border-radius: 0 0 10mm 10mm; }
+  .doc-ligne { display: flex; justify-content: space-between; align-items: center; }
+  .doc-marque { display: flex; align-items: center; gap: 10px; font-family: var(--font-titre); font-weight: 500; font-size: 13pt; letter-spacing: -.02em; }
+  .doc-marque i { width: 30px; height: 30px; border-radius: 9px; background: var(--encre); display: grid; place-items: center; }
+  .doc-marque i::after { content: ''; width: 12px; height: 12px; border-radius: 50%; background: var(--jaune); }
+  .doc-etiq { font-size: 8.5pt; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--texte-doux); }
+  .doc-titre { font-family: var(--font-titre); font-weight: 500; font-size: 32pt; line-height: 1.02; letter-spacing: -.035em; margin-top: 12mm; }
+  .doc-sous { color: var(--texte-doux); font-size: 12pt; margin-top: 3mm; }
+  .doc-puces { display: flex; gap: 6px; margin-top: 6mm; flex-wrap: wrap; }
+  .doc-puces span { background: var(--surface); border-radius: 999px; padding: 4px 12px; font-size: 9.5pt; font-weight: 600; }
+  .doc-puces .is-jaune { background: var(--jaune); color: var(--jaune-texte); }
+  .doc-corps { padding: 10mm 16mm; flex: 1; display: flex; flex-direction: column; gap: 8mm; }
+  h2 { font-family: var(--font-titre); font-weight: 500; font-size: 16pt; letter-spacing: -.02em; margin-bottom: 3mm; }
+  .doc-bloc { border-radius: 6mm; background: var(--surface-2); padding: 6mm; }
+  table { width: 100%; border-collapse: collapse; font-size: 10.5pt; }
+  th { text-align: left; font-size: 8.5pt; letter-spacing: .12em; text-transform: uppercase; color: var(--texte-doux); font-weight: 600; padding: 0 0 2mm; }
+  td { padding: 2.5mm 0; border-top: 1px solid var(--filet); }
+  td.chiffre { font-family: var(--font-chiffres); font-variant-numeric: tabular-nums; }
+  .doc-note { border-left: 3px solid var(--texte); padding-left: 4mm; color: var(--texte-doux); }
+  .doc-pied { padding: 6mm 16mm 10mm; display: flex; justify-content: space-between; font-size: 8.5pt; color: var(--texte-doux); border-top: 1px solid var(--filet); }
+</style>
+</head>
+<body>
+  <article class="doc-page">
+    <header class="doc-entete">
+      <div class="doc-ligne"><div class="doc-marque"><i></i>Corentin Delmée Coaching</div><div class="doc-etiq">Programme · novembre 2026</div></div><!-- À REMPLACER -->
+      <h1 class="doc-titre">Programme de Prénom Nom</h1><!-- À REMPLACER -->
+      <p class="doc-sous">4 semaines · 3 séances par semaine · objectif : renforcement du dos</p><!-- À REMPLACER -->
+      <div class="doc-puces"><span class="is-jaune">Semaine 1 à 4</span><span>≈ 40 min</span><span>À domicile</span></div>
+    </header>
+    <div class="doc-corps">
+      <section>
+        <h2>Workout 1 · Haut du corps</h2><!-- À REMPLACER -->
+        <div class="doc-bloc">
+          <table>
+            <thead><tr><th>Exercice</th><th>Séries × reps</th><th>Charge</th><th>Repos</th></tr></thead>
+            <tbody>
+              <tr><td>Développé couché</td><td class="chiffre">4 × 8</td><td class="chiffre">55 kg</td><td class="chiffre">120 s</td></tr>
+              <tr><td>Rowing haltère un bras</td><td class="chiffre">3 × 10</td><td class="chiffre">18 kg</td><td class="chiffre">90 s</td></tr>
+              <tr><td>Gainage planche</td><td class="chiffre">3 × 40 s</td><td class="chiffre">—</td><td class="chiffre">60 s</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section>
+        <h2>Consignes</h2>
+        <p class="doc-note">Gardez 2 répétitions en réserve sur chaque série. Si une douleur dépasse 3/10, arrêtez l'exercice et notez-le dans l'app.</p><!-- À REMPLACER -->
+      </section>
+    </div>
+    <footer class="doc-pied"><span>Corentin Delmée · coach sportif</span><span>Page 1</span></footer>
+  </article>
+</body>
+</html>
