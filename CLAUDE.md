@@ -24,7 +24,7 @@ Numéro WhatsApp du coach : variable `VITE_COACH_WHATSAPP` (format international
 - `serveur/` API REST + serveur MCP (service unique, magasin fichier JSON ou SQLite) · `serveur/tests/` e2e · `serveur/README.md`
 - `DA/` direction artistique de référence · `deploiement/` VPS · `programmes/` programmes clients (import MCP) · `scripts/` outils de build (icônes : `scripts/sources-icones/`)
 - `docs/` : `contrats/` (VPS, outils coach, exercices, agenda, FORMAT-JSON) · `audits/` (sécurité, revues) · `rgpd/` (lus par l'app : confidentialité, consentement) · `briefs/` · `captures/<thème>/` (planches avant/après) · `import-depart/`
-- `archives/` historique, ne plus suivre : `maquettes/` (design-v1, design-v2, design-coach), `supabase/` (remplacé par `serveur/schema.sql`), `livraison-26-10/`, anciens ETAT, retours et guides Supabase
+- `archives/` historique, ne plus suivre : `archives/maquettes/` (design-v1, design-v2, design-coach), `archives/supabase/` (remplacé par `serveur/schema.sql`), `archives/livraison-26-10/`, anciens ETAT, retours et guides Supabase
 - Racine : `suivi.json`, `DECISIONS.html`, `TABLEAU-DE-BORD.html` restent ici (générés par `outils/suivi/generer.mjs` de REX)
 
 ## Conventions

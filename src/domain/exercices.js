@@ -1,5 +1,5 @@
 // Exercices enrichis (fiche Studio) : logique pure partagée par le serveur (serveur/src/exercices.js) et l'adaptateur local.
-// Contrat : docs/CONTRAT-EXERCICES-STUDIO.md.
+// Contrat : docs/contrats/CONTRAT-EXERCICES-STUDIO.md.
 
 export const NIVEAUX = ['debutant', 'intermediaire', 'confirme']
 /** Champs calculés ou gérés par le serveur : jamais acceptés en écriture. */

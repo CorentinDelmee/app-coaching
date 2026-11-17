@@ -279,7 +279,7 @@
       "echeance": "",
       "duree": "2 h 15",
       "statut": "a_faire",
-      "comment": "Détail dans docs/RGPD-CHECKLIST.md."
+      "comment": "Détail dans docs/rgpd/RGPD-CHECKLIST.md."
     },
     {
       "titre": "Sécurité : activer la double authentification (Supabase, Netlify, e-mail, GitHub)",
@@ -358,7 +358,7 @@
       "echeance": "",
       "duree": "10 min",
       "statut": "abandonnee",
-      "comment": "Trois valeurs aléatoires, toutes différentes. APP_ORIGIN = URL de l'app. Guide : docs/GOOGLE-AGENDA.md. Aucune valeur dans le code ni dans Git. — Abandonnée : remplacée par le VPS le 2026-11-02."
+      "comment": "Trois valeurs aléatoires, toutes différentes. APP_ORIGIN = URL de l'app. Guide : archives/GOOGLE-AGENDA-supabase.md. Aucune valeur dans le code ni dans Git. — Abandonnée : remplacée par le VPS le 2026-11-02."
     },
     {
       "titre": "Créer ta clé de chiffrement des sauvegardes (age) sur ton Mac",
@@ -639,7 +639,7 @@
       "id": "D8",
       "categorie": "Design M5",
       "question": "Garder les écarts avec la maquette M5 listés, ou tout aligner ?",
-      "contexte": "8 écarts assumés (ex. jaune en texte sur fond clair, texte doux plus foncé, bouton du menu). Tableau : docs/ECARTS-M5.md.",
+      "contexte": "8 écarts assumés (ex. jaune en texte sur fond clair, texte doux plus foncé, bouton du menu). Tableau : docs/briefs/ECARTS-M5.md.",
       "options": [
         {
           "nom": "Garder les écarts",

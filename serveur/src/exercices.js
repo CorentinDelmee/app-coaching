@@ -1,5 +1,5 @@
 // Exercices enrichis (refonte coach « Studio ») : validation zod, champs calculés, filtres, vue client.
-// Contrat : docs/CONTRAT-EXERCICES-STUDIO.md. Partagé par les routes /api/app/exercices et les outils coach.
+// Contrat : docs/contrats/CONTRAT-EXERCICES-STUDIO.md. Partagé par les routes /api/app/exercices et les outils coach.
 import { z } from 'zod'
 import { idYoutube } from '../../src/domain/video.js'
 import { CHAMPS_CALCULES, CHAMPS_COACH, NIVEAUX, appliquerPatch, filtrerExercices, indexUsage, presenterExercice } from '../../src/domain/exercices.js'

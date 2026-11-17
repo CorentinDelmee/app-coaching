@@ -1,5 +1,5 @@
 // Écran Exercices (Studio) : logique pure, testée (tests/unit/studio-exercices.test.js).
-// Forme d'un exercice : docs/CONTRAT-EXERCICES-STUDIO.md. Aucune dépendance à Vue ni au DOM.
+// Forme d'un exercice : docs/contrats/CONTRAT-EXERCICES-STUDIO.md. Aucune dépendance à Vue ni au DOM.
 import { idYoutube } from '../../../../domain/video.js'
 import { teinteDe, statutVideo, TEINTES_STUDIO } from '../../medias.js'
 

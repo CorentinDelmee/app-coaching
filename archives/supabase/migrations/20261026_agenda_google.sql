@@ -1,5 +1,5 @@
 -- Migration : synchronisation Google Agenda -> séances de coaching.
--- À exécuter UNE fois (SQL Editor de Supabase) après schema.sql. Voir docs/GOOGLE-AGENDA.md.
+-- À exécuter UNE fois (SQL Editor de Supabase) après schema.sql. Voir archives/GOOGLE-AGENDA-supabase.md.
 -- Le jeton OAuth Google est CHIFFRÉ dans le Vault Supabase (extension supabase_vault) ; seules deux fonctions SQL réservées à la clé « service »
 -- (lire/ecrire_refresh_token_google) y accèdent. Les autres données serveur vivent dans des tables en RLS SANS aucune policy.
 
