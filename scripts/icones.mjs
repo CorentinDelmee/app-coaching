@@ -1,9 +1,9 @@
-// Génère les icônes de l'app (PNG) depuis sources-icones/monogramme.svg : npm run icones
+// Génère les icônes de l'app (PNG) depuis scripts/sources-icones/monogramme.svg : npm run icones
 // 192 et 512 (« any »), 512 maskable (monogramme réduit dans la zone sûre), 180 pour l'écran d'accueil iOS, favicon SVG.
 import sharp from 'sharp'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 
-const svg = await readFile('sources-icones/monogramme.svg', 'utf8')
+const svg = await readFile('scripts/sources-icones/monogramme.svg', 'utf8')
 await mkdir('public/icons', { recursive: true })
 
 // Maskable : le fond couvre tout, le monogramme est réduit à 62 % (le système peut rogner jusqu'à 20 % de chaque bord).

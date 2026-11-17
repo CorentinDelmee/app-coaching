@@ -13,7 +13,7 @@ export const CLE_STOCKAGE = 'cdc-coaching/1'
 const CLE_SESSION = `${CLE_STOCKAGE}:session`
 const CLE_FILE = `${CLE_STOCKAGE}:file`
 const CLE_AGENDA = `${CLE_STOCKAGE}:agenda`
-// Démo seulement : latence simulée (ms) pour reproduire une base lente (tests de chargement, docs/loader). Absente = aucune attente.
+// Démo seulement : latence simulée (ms) pour reproduire une base lente (tests de chargement, docs/captures/loader). Absente = aucune attente.
 const CLE_LATENCE = `${CLE_STOCKAGE}:latence`
 
 /** Stockage en mémoire (tests, ou navigateur sans localStorage). */

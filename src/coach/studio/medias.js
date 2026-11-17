@@ -1,5 +1,5 @@
 // Médias d'un exercice pour le Studio : teinte (groupe musculaire), miniature YouTube, photo, figure animée. Fonctions pures, testées.
-// Accepte la forme d'exercice de docs/CONTRAT-EXERCICES-STUDIO.md (musclesPrincipaux, photo {id,url}, video {statut,duree…})
+// Accepte la forme d'exercice de docs/contrats/CONTRAT-EXERCICES-STUDIO.md (musclesPrincipaux, photo {id,url}, video {statut,duree…})
 // ET l'ancienne forme (categories[], lienVideo, photo en chaîne).
 import { idYoutube, urlIntegration } from '../../domain/video.js'
 

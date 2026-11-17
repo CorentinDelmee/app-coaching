@@ -1,4 +1,4 @@
-// Outils coach du lot « bibliotheque » : exercices de l'app + vidéos de démonstration (voir docs/CONTRAT-OUTILS-COACH.md).
+// Outils coach du lot « bibliotheque » : exercices de l'app + vidéos de démonstration (voir docs/contrats/CONTRAT-OUTILS-COACH.md).
 // Mêmes données et mêmes validations que l'app (creerApi) ; la bibliothèque de vidéos est celle de ctx.biblio.
 import { z } from 'zod'
 import { creerApi } from '../../../src/data/commun.js'

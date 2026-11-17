@@ -1,7 +1,7 @@
 # Maquette V2 consolidée — système de design (app client)
 
 Source de vérité du style pour la mise à jour de l'app Vue. Décisions et justifications : `NOTES.md`.
-Base **M5 « Profondeur »** enrichie de M1, M2 et M4 selon `RETOURS-MAQUETTES-V1.md`.
+Base **M5 « Profondeur »** enrichie de M1, M2 et M4 selon `archives/RETOURS-MAQUETTES-V1.md`.
 
 **Direction en 3 mots** : profondeur · net · énergique.
 **Références retenues** : uniquement les maquettes V1 (le brief les impose) — M5 (style, menu, pages),

@@ -1,5 +1,5 @@
--- Corentin Delmée Coaching — schéma SQLite du serveur (VPS). Traduction de supabase/schema.sql
--- (+ tables agenda de supabase/migrations/20261026_agenda_google.sql, + table `comptes`).
+-- Corentin Delmée Coaching — schéma SQLite du serveur (VPS). Traduction de archives/supabase/schema.sql
+-- (+ tables agenda de archives/supabase/migrations/20261026_agenda_google.sql, + table `comptes`).
 -- Mêmes colonnes ; uuid -> TEXT, jsonb -> TEXT (JSON), boolean -> INTEGER 0/1.
 -- Les règles d'accès (policies RLS) sont appliquées par le serveur : serveur/src/acces.js.
 -- Appliqué par serveur/src/magasin-sqlite.js (migration n° 1, PRAGMA user_version).

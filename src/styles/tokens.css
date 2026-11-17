@@ -1,4 +1,4 @@
-/* Design tokens — maquette M5 « Profondeur » + choix V2 (design-v2/DESIGN.md, base M5 « Profondeur »). SEUL fichier où les couleurs sont écrites en dur.
+/* Design tokens — maquette M5 « Profondeur » + choix V2 (archives/maquettes/design-v2/DESIGN.md, base M5 « Profondeur »). SEUL fichier où les couleurs sont écrites en dur.
    Les composants n'utilisent que des variables. Réglages posés sur <html> par src/lib/apparence.js :
    data-ambiance = clair (défaut) | sombre | bleu · data-grand = oui | non · data-chrono = barlow | inter | azeret · data-aplat = fonce | blanc.
    Accent jaune : TOUJOURS du texte foncé posé dessus ; jamais de jaune en texte sur fond clair (→ --accent-lisible).

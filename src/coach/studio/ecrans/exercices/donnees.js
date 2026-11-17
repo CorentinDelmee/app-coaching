@@ -1,4 +1,4 @@
-// Accès aux exercices pour l'écran Studio : UNIQUEMENT data.exercices.* (docs/CONTRAT-EXERCICES-STUDIO.md).
+// Accès aux exercices pour l'écran Studio : UNIQUEMENT data.exercices.* (docs/contrats/CONTRAT-EXERCICES-STUDIO.md).
 import data from '../../../../data/index.js'
 import { tailleReduite } from './logique.js'
 

@@ -1,4 +1,4 @@
-// Consentement explicite aux données de santé (texte : docs/texte-consentement.md, version ci-dessous).
+// Consentement explicite aux données de santé (texte : docs/rgpd/texte-consentement.md, version ci-dessous).
 // Enregistré dans le profil : `consentementLe` (date) + `preferences.consentement = { version, sante }`.
 // sante:false = « je préfère ne pas partager » : programme et séances oui, douleurs / poids / nutrition / questionnaires non.
 

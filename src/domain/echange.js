@@ -1,4 +1,4 @@
-// Import / export JSON « cdc-coaching/1 » (voir docs/FORMAT-JSON.md).
+// Import / export JSON « cdc-coaching/1 » (voir docs/contrats/FORMAT-JSON.md).
 import { validerExercice, validerWorkout, validerProgramme } from './modele.js'
 
 export const FORMAT = 'cdc-coaching/1'

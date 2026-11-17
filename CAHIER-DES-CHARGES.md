@@ -162,7 +162,7 @@ champ : **modifiable par le client** oui/non.
   d'animation), transitions réelles, panneau accent/ambiance, page index comparative, captures et
   vidéos mobiles, revue des animations avant présentation. Une recommandée en provisoire.
 
-### 7.1 Direction V2 (retours de Corentin du 21/10/2026 — référence : `RETOURS-MAQUETTES-V1.md`)
+### 7.1 Direction V2 (retours de Corentin du 21/10/2026 — référence : `archives/RETOURS-MAQUETTES-V1.md`)
 - **Base M5** (style, polices, mise en page, **menu et ses animations pour toute l'app**, page Coaching,
   Programme), enrichie de M1, M2, M4. **M3 abandonnée.**
 - **Accent jaune** ; texte toujours foncé sur le jaune, jamais de jaune en texte sur fond clair (contraste vérifié partout).
@@ -191,10 +191,10 @@ place), notifications push, publication sur les stores, nom de domaine.
 3. Tableau de bord coach fonctionnel en local.
 4. Tests unitaires (logique métier pure) + tests navigateur mobile (playwright) verts ; audit
    sécurité (droits RLS) ; revue finale des animations.
-5. `supabase/schema.sql` + `MISE-EN-ROUTE.md` (Supabase, clés, Netlify) ; `lancer.cmd`.
+5. `archives/supabase/schema.sql` + `archives/MISE-EN-ROUTE.md` (Supabase, clés, Netlify) ; `lancer.cmd`.
 6. Tout commité ; ETAT.md et suivi à jour.
 
 ## 10. Journal
-- 2026-10-21 — Retours de Corentin sur les 5 maquettes V1 (`RETOURS-MAQUETTES-V1.md`) : base M5 + M1/M2/M4,
+- 2026-10-21 — Retours de Corentin sur les 5 maquettes V1 (`archives/RETOURS-MAQUETTES-V1.md`) : base M5 + M1/M2/M4,
   M3 abandonnée, accent jaune, 3 ambiances au choix, mode « Grand affichage » (→ §7.1). Bug signalé :
   récap de la semaine du Programme qui ouvre toujours le workout du jour.

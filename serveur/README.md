@@ -2,7 +2,7 @@
 
 Donne une séance à Claude (« voici la séance de Fabien pour jeudi : … ») : Claude retrouve le client, crée la séance
 (séries, reps, repos, tempo, charge, circuits AMRAP/EMOM/For time, supersets) et rattache une vidéo à chaque exercice.
-La séance utilise **le format existant de l'app** (`docs/FORMAT-JSON.md`) : elle s'affiche telle quelle côté client.
+La séance utilise **le format existant de l'app** (`docs/contrats/FORMAT-JSON.md`) : elle s'affiche telle quelle côté client.
 
 ```
 Claude (MCP stdio) ─┐
@@ -19,7 +19,7 @@ API REST (HTTP) ────┘        validation = celle de l'app (src/data/com
 2. `npm run serveur` lance l'API sur `http://127.0.0.1:5405` (127.0.0.1 uniquement). Les données démo sont créées dans `serveur/data/` (ignoré par Git).
 3. App reliée au serveur : dans `.env` de l'app, `VITE_API_URL=http://127.0.0.1:5405` (et `VITE_API_KEY=<même clé>` pour l'écran coach « Vidéos »), puis `npm run dev`.
    Connecte-toi en tant que Fabien : la séance créée par Claude apparaît dans son programme (l'app recopie l'état du serveur, `src/data/synchro-api.js`).
-4. Test de bout en bout : `node serveur/tests/e2e-seance.mjs` (MCP + API) ou `… --navigateur` (+ app sur 5406 et captures `tmp/captures-mcp/`, ignoré par Git ; `--captures-doc` pour mettre à jour `docs/captures-mcp/`).
+4. Test de bout en bout : `node serveur/tests/e2e-seance.mjs` (MCP + API) ou `… --navigateur` (+ app sur 5406 et captures `tmp/captures-mcp/`, ignoré par Git ; `--captures-doc` pour mettre à jour `docs/captures/mcp/`).
    Ports modifiables : variables `E2E_PORT_API`, `E2E_PORT_APP`, `E2E_PORT_CHROME` (défauts 5405, 5406, 5407).
    Tests unitaires : `npx vitest run`.
 
@@ -47,7 +47,7 @@ API REST (HTTP) ────┘        validation = celle de l'app (src/data/com
 
 Plafonds par client : 5000 lignes, 64 Ko par ligne (coach compris), 200 fichiers et 200 Mo → 413 `quota`. Connexion : seuls les échecs comptent (IP+compte 5, compte 50, IP 30 / 15 min), journalisés avec une empreinte de l'identifiant. Cookie `__Host-sid` en production.
 
-**Synchro Google Agenda** (`src/agenda-synchro.js`, docs/CONTRAT-AGENDA-GOOGLE.md partie B) : lancée par `api.mjs` 5 s après le démarrage puis toutes les 15 min
+**Synchro Google Agenda** (`src/agenda-synchro.js`, docs/contrats/CONTRAT-AGENDA-GOOGLE.md partie B) : lancée par `api.mjs` 5 s après le démarrage puis toutes les 15 min
 (jamais par le serveur MCP), et par le bouton « Synchroniser » de l'écran Agenda. Lit `GET {RESA_API_URL}/api/resa/admin/evenements` du 2026-01-01
 (au plus 400 j en arrière) à aujourd'hui + 90 j, en appels ≤ 400 jours. Chaque « Coaching … » attribué devient une séance de coaching
 (`google:<id>:<client>`, faite si passée) ; les titres non reconnus vont dans « À attribuer » (alias retenus dans la table `agenda_alias`, migration 4).
@@ -129,7 +129,7 @@ Recherche automatique (`chercher_video_exercice`, et à la création de séance 
 (durée, chaîne reconnue, vues, titre pertinent) avec justification ; repli sur la bibliothèque locale sinon.
 **Règle des vidéos courtes** : > 30 s refusée, ≤ 20 s favorisée, intégrable et publique seulement ; requête en français puis anglais en repli (2 recherches au plus par exercice, ≈ 202 unités de quota sur 10 000/jour). Outils : `lister_exercices`, `creer_exercice` (recherche auto d'une vidéo « proposée »), `modifier_exercice`, `supprimer_exercice` (2 temps), `valider_video`. `creer_exercice`, `modifier_exercice` et `lister_exercices` gèrent aussi la fiche Studio (catégorie, muscles, matériel, niveau, consignes, variantes, tempo, repos, notes privées).
 
-**Exercices enrichis (app)** : `GET|POST /api/app/exercices`, `GET|PATCH /api/app/exercices/:id`, `POST|DELETE /api/app/exercices/:id/photo` (JPG/PNG/WebP, 3 Mo, coach seulement ; fichiers dans `FICHIERS_DIR/_exercices/` (migré automatiquement depuis `exercices/`), lus par `/api/app/fichiers?chemin=_exercices/<id>.<ext>`). Formes JSON : `docs/CONTRAT-EXERCICES-STUDIO.md`.
+**Exercices enrichis (app)** : `GET|POST /api/app/exercices`, `GET|PATCH /api/app/exercices/:id`, `POST|DELETE /api/app/exercices/:id/photo` (JPG/PNG/WebP, 3 Mo, coach seulement ; fichiers dans `FICHIERS_DIR/_exercices/` (migré automatiquement depuis `exercices/`), lus par `/api/app/fichiers?chemin=_exercices/<id>.<ext>`). Formes JSON : `docs/contrats/CONTRAT-EXERCICES-STUDIO.md`.
 
 ## Sécurité
 - Clé API en `Authorization: Bearer`, lue dans l'environnement, comparée à temps constant (empreintes SHA-256) ; refus par défaut.
@@ -141,7 +141,7 @@ Recherche automatique (`chercher_video_exercice`, et à la création de séance 
   Cible production (à faire, non implémenté) : l'écran « Vidéos » appelle une Edge Function Supabase avec le JWT de la session du coach ; la fonction vérifie `role = 'coach'` (comme `sync-google-agenda`) puis agit avec la clé service côté serveur, sans jamais exposer de clé.
 
 ## Passage en production (Supabase)
-1. Appliquer `supabase/schema.sql` (tables de l'app).
+1. Appliquer `archives/supabase/schema.sql` (tables de l'app).
 2. Sur le serveur uniquement : `SUPABASE_URL` + `SUPABASE_SERVICE_KEY` (clé « service_role », jamais dans l'app ni dans Git). Le serveur utilise alors le même format de lignes que l'adaptateur de l'app (**non testé sans projet Supabase réel**).
 3. Ne pas définir `DEMO_SYNC` ; l'app utilise son adaptateur Supabase (les séances créées par le serveur sont lues normalement, avec les règles RLS).
 4. La bibliothèque vidéos reste en fichier JSON (`DATA_DIR`) ; à migrer vers une table si le serveur est hébergé sans disque persistant.

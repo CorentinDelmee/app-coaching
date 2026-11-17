@@ -1,4 +1,4 @@
-// Outils coach du lot « suivi » (voir docs/CONTRAT-OUTILS-COACH.md). Renvoie { nom_outil: def(...) }.
+// Outils coach du lot « suivi » (voir docs/contrats/CONTRAT-OUTILS-COACH.md). Renvoie { nom_outil: def(...) }.
 // ctx = { service, backend, biblio, config, now, fetchFn } (voir assembler.js).
 // Mêmes entités, validations et règles que l'app (creerApi, alertesClient, accesSante) : l'app et Claude produisent les mêmes données.
 import { z } from 'zod'

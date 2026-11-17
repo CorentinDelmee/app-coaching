@@ -10,7 +10,7 @@ Légende : [FAIT] constaté dans le dépôt · [EST.] estimation · [HYP.] hypot
 - 4 problèmes importants (à corriger avant les vrais clients), 8 mineurs.
 - Dépendances : `npm audit --omit=dev` = 0 vulnérabilité [FAIT]. Aucun secret dans le dépôt, l’historique Git ni `dist/` [FAIT].
 
-## 1. Point n°1 — un client ne voit que ses données (revue de `supabase/schema.sql`)
+## 1. Point n°1 — un client ne voit que ses données (revue de `archives/supabase/schema.sql`)
 
 | Contrôle | Résultat |
 |---|---|
@@ -36,7 +36,7 @@ Il obtient la clé anon (visible dans le bundle, normal), appelle `signUp` et re
 
 Conclusion : le compromis documenté (MISE-EN-ROUTE §3.2) est acceptable pour la confidentialité des données, à condition de traiter I2 et M7.
 
-## 2. Edge Function `reinitialiser-code` (`supabase/functions/reinitialiser-code/index.ts`)
+## 2. Edge Function `reinitialiser-code` (`archives/supabase/functions/reinitialiser-code/index.ts`)
 
 OK dans l’ensemble : jeton obligatoire (l.22-23), vérifié par `admin.auth.getUser` (l.28), rôle `coach` non archivé relu en base avec la clé service (l.32-33), cible forcée à `role = client` (l.45 : le coach ne peut pas être réinitialisé par cette voie), code 6-72 caractères (l.41), clé service lue dans l’environnement serveur (l.21), jamais renvoyée. « Verify JWT » à laisser activé. Réserves : pas de journal ni de limitation d’appels (M5) ; CORS `*` sans incidence (le jeton est la barrière).
 
@@ -96,7 +96,7 @@ Aucun.
 - **M5. Edge Function sans limitation ni journal** — `index.ts`. Un coach compromis peut réinitialiser tous les codes sans trace. Ajouter une table de journal (qui, quand, quel client).
 - **M6. Données de santé en clair dans le navigateur** — `localStorage` : session Supabase (jeton), file d’attente hors connexion avec les séances non envoyées (`supabase.js:10,139-147`) et séance en cours (`seanceEnCours.js`). Risque : appareil partagé/volé non verrouillé, ou XSS (I4). Chiffrer en local est peu utile (la clé serait dans la même page). Recommandation proportionnée : (a) CSP (I4) ; (b) vider la file à la déconnexion : aujourd’hui `deconnecter()` (`Profil.vue:106-111`) n’efface que la séance en cours, **pas** `cdc-coaching/1:file` ; (c) ne jamais mettre douleurs/mesures/nutrition dans la file locale (seules les séances y sont [FAIT]) ; (d) consigne aux clients : verrouiller leur téléphone. Le service worker ne met en cache que les fichiers statiques (`vite.config.js:33-37`), aucune réponse d’API : [FAIT] bon point.
 - **M7. Photos : fonctionnalité pas encore codée** — [FAIT] aucun `upload`, `createSignedUrl` ni traitement d’image dans `src/` ; seuls le bucket privé et ses policies existent. À respecter au développement : (a) bucket avec `file_size_limit` (ex. 2 Mo) et `allowed_mime_types` (jpeg/png/webp) ; (b) redimensionner/recompresser via `canvas` avant envoi, ce qui **retire l’EXIF** (GPS, modèle de téléphone) ; (c) nom de fichier aléatoire `<uid>/<uuid>.jpg` ; (d) affichage par URL signée courte (`createSignedUrl`, 60-300 s), jamais `getPublicUrl` ; (e) suppression des photos avec « Supprimer mes données » et à la suppression du client (aujourd’hui `supprimerMesDonneesSante` ne touche que 4 tables, `commun.js:178`). Tant que (a) manque, un inconnu inscrit (§1) peut remplir le Go gratuit de stockage dans son propre dossier.
-- **M8. RGPD de base** — Collecté : nom, identifiant, tarif, lieu, séances, douleurs, mesures, nutrition, photos, réponses, préférences ; stocké chez Supabase (UE à choisir) et en `localStorage`. Consentement explicite recueilli (`consentement.js`) mais **non vérifié côté serveur** : la RLS ne teste ni `consentement_le` ni `modules` (un client peut écrire des données de santé sans consentement ni module activé). Export client complet [FAIT `Profil.vue:93`, `commun.js:158`] ; effacement partiel : seulement douleurs, mesures, nutrition, réponses ; pas d’effacement du compte ni des photos, pas de « supprimer définitivement un client » côté coach [FAIT : absent]. À faire avant le 1er vrai client (déjà dans `docs/RGPD-CHECKLIST.md`) : DPA Supabase/Netlify, registre, durée de conservation, procédure de violation 72 h, relecture de `page-confidentialite.md` (vérifier que les marqueurs `[À COMPLÉTER]` sont remplis). Option : `check (pg_column_size(data) < 100000)` sur les tables `data jsonb` pour borner les abus d’écriture.
+- **M8. RGPD de base** — Collecté : nom, identifiant, tarif, lieu, séances, douleurs, mesures, nutrition, photos, réponses, préférences ; stocké chez Supabase (UE à choisir) et en `localStorage`. Consentement explicite recueilli (`consentement.js`) mais **non vérifié côté serveur** : la RLS ne teste ni `consentement_le` ni `modules` (un client peut écrire des données de santé sans consentement ni module activé). Export client complet [FAIT `Profil.vue:93`, `commun.js:158`] ; effacement partiel : seulement douleurs, mesures, nutrition, réponses ; pas d’effacement du compte ni des photos, pas de « supprimer définitivement un client » côté coach [FAIT : absent]. À faire avant le 1er vrai client (déjà dans `docs/rgpd/RGPD-CHECKLIST.md`) : DPA Supabase/Netlify, registre, durée de conservation, procédure de violation 72 h, relecture de `page-confidentialite.md` (vérifier que les marqueurs `[À COMPLÉTER]` sont remplis). Option : `check (pg_column_size(data) < 100000)` sur les tables `data jsonb` pour borner les abus d’écriture.
 
 ## Autres vérifications demandées
 
@@ -129,5 +129,5 @@ Décision pour Corentin : garder les inscriptions publiques (plus simple ; CAPTC
 | M5 journal de la fonction | Reste | Non traité. |
 | M6 données locales | Corrigé | File vidée à la déconnexion, avertissement si séances non envoyées. |
 | M7 photos | Reste | Consignes notées dans PLAN.md (lot 7), à appliquer au codage. |
-| M8 RGPD | Reste | Voir `docs/RGPD-CHECKLIST.md`. |
+| M8 RGPD | Reste | Voir `docs/rgpd/RGPD-CHECKLIST.md`. |
 | Mode local en production | Corrigé | Écran « Configuration manquante » sauf `VITE_MODE_DEMO=1`. |

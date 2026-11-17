@@ -68,7 +68,7 @@ Tests navigateur : playwright-cli (ou Chrome headless piloté par CDP en secours
   Création de client par le coach via un 2e client Supabase **sans persistance de session** (`signUp`) puis insertion du profil.
   - *Acceptation* : aucun import de Supabase n'est exécuté en mode local (test) ; l'adaptateur expose exactement les mêmes
     méthodes que le local (test de comparaison des clés) ; aucune clé dans le code.
-- [x] **1.6 `supabase/schema.sql`** : tables du modèle, `profiles.role`, **RLS activée sur toutes les tables** :
+- [x] **1.6 `archives/supabase/schema.sql`** : tables du modèle, `profiles.role`, **RLS activée sur toutes les tables** :
   un client ne lit/écrit que les lignes où `client_id = auth.uid()` (et ne lit pas les autres profils) ; le coach lit/écrit
   les lignes de ses clients ; bibliothèque d'exercices lisible par tous les connectés, modifiable par le coach seul ;
   le client ne peut pas modifier son tarif, son rôle ni ses modules. Bucket Storage privé pour les photos, mêmes règles.
@@ -111,7 +111,7 @@ Tests navigateur : playwright-cli (ou Chrome headless piloté par CDP en secours
 - [x] **1.13 Identifiants** (`src/domain/identifiants.js`) : `prenom.nom` sans accents ni espaces, suffixe `-2` si déjà pris ;
   code de **6 caractères lisibles** (sans 0/O/1/I/L), aléatoire via `crypto.getRandomValues`.
   - *Acceptation* : « Fabien Vincent » → `fabien.vincent`, « Élodie D'Arc » → `elodie.darc` ; 1000 codes générés : longueur 6, alphabet respecté.
-- [x] **1.14 Import / export JSON** (`src/domain/echange.js` + `docs/FORMAT-JSON.md`) : `{ "format": "cdc-coaching/1", "exporteLe", "exercices", "workouts", "programmes" }`
+- [x] **1.14 Import / export JSON** (`src/domain/echange.js` + `docs/contrats/FORMAT-JSON.md`) : `{ "format": "cdc-coaching/1", "exporteLe", "exercices", "workouts", "programmes" }`
   (+ export « mes données » côté client). Import : validation complète avant écriture, rapport « 12 exercices ajoutés, 3 mis à jour, 1 rejeté (raison) ».
   - *Acceptation* : export puis import = données identiques (test aller-retour) ; format absent ou `cdc-coaching/2` → refus avec message
     « Format non reconnu (attendu cdc-coaching/1) » ; document de format avec un exemple complet.
@@ -231,7 +231,7 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 
 > **Archive : remplacé par le VPS le 2026-11-02** (Supabase/Netlify abandonnés ; mise en route = `deploiement/LISEZMOI.md`).
 **Dépendances** : lot 11.
-- [ ] `MISE-EN-ROUTE.md` : créer le projet Supabase (région UE), exécuter `schema.sql`, désactiver la confirmation e-mail, créer le compte coach,
+- [ ] `archives/MISE-EN-ROUTE.md` : créer le projet Supabase (région UE), exécuter `schema.sql`, désactiver la confirmation e-mail, créer le compte coach,
   remplir `.env`, build, Netlify Drop (`dist/`), variables d'environnement ; `lancer.cmd` vérifié ; tâches humaines ajoutées au suivi.
 - *Acceptation* : un lecteur qui suit le document pas à pas n'a besoin d'aucune autre information (relu par `relecteur`).
 
@@ -241,9 +241,9 @@ temps ; For Time affiche un chrono qui monte et le temps final exclut les 10 s d
 - Bouton « réinitialiser la démo » visible dans le profil en mode local (utile pour les tests et les démonstrations à un prospect).
 - Rappel visuel sur le dashboard le jour d'une séance de coaching (« C'est aujourd'hui, 18 h 30 »).
 
-## V2 — application de la maquette `design-v2/` (mode absent, 2026-10-21)
-- [x] **V2.3a** socle + écrans hors séance : tokens V2 et polices, choix ouverts (`src/config/apparence.js`), préférences client (ambiance, Grand affichage), menu M5, dashboard à aplat jaune, Coaching, Programme, overview Workout en sections, Profil. Captures `docs/captures-v2/`.
-- [x] **V2.3b** séance en cours, circuits, check-in au style V2 : pages entières avec repères de bloc et temps total, chronos à phrase + chiffres en roulette + balayage de couleur, section de circuit (« Découvrir le circuit »), option facultative (`facultatif` : moteur, démo, éditeur coach), check-in M2, ouverture depuis l'overview, retour en un geste. Captures `docs/captures-v2/seance/`.
+## V2 — application de la maquette `archives/maquettes/design-v2/` (mode absent, 2026-10-21)
+- [x] **V2.3a** socle + écrans hors séance : tokens V2 et polices, choix ouverts (`src/config/apparence.js`), préférences client (ambiance, Grand affichage), menu M5, dashboard à aplat jaune, Coaching, Programme, overview Workout en sections, Profil. Captures `docs/captures/v2/`.
+- [x] **V2.3b** séance en cours, circuits, check-in au style V2 : pages entières avec repères de bloc et temps total, chronos à phrase + chiffres en roulette + balayage de couleur, section de circuit (« Découvrir le circuit »), option facultative (`facultatif` : moteur, démo, éditeur coach), check-in M2, ouverture depuis l'overview, retour en un geste. Captures `docs/captures/v2/seance/`.
 - [ ] **V2.4** tests navigateur (anciens scripts `tests/e2e/lot5-*` à adapter) + revue des animations.
 
 ## Import MyPTHub (2026-11-05)

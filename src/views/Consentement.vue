@@ -1,6 +1,6 @@
 <script setup>
 // Consentement explicite (1er lancement, ou depuis Profil) : deux cases NON pré-cochées ; « Continuer » reste inactif tant qu'elles
-// ne sont pas cochées. Refus = programme et séances sans données de santé. Texte : src/domain/consentement.js (docs/texte-consentement.md).
+// ne sont pas cochées. Refus = programme et séances sans données de santé. Texte : src/domain/consentement.js (docs/rgpd/texte-consentement.md).
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { data } from '../data/index.js'

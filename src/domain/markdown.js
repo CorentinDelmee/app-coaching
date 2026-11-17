@@ -1,4 +1,4 @@
-// Mini convertisseur Markdown -> HTML, juste ce qu'il faut pour docs/page-confidentialite.md (titres, paragraphes, listes,
+// Mini convertisseur Markdown -> HTML, juste ce qu'il faut pour docs/rgpd/page-confidentialite.md (titres, paragraphes, listes,
 // tableaux, gras, liens, citations). Tout le texte est échappé avant la mise en forme : pas d'HTML injectable.
 const echapper = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 

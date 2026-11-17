@@ -6,7 +6,7 @@
 //
 // Usage (serveur déjà lancé : npx vite --port 5251 --strictPort) :
 //   node tests/e2e/mouvement/micro-sauts.mjs --etiquette=avant [--base=http://localhost:5251] [--parcours=client-accueil]
-//        [--variantes=lent-vide,lent-plein,rapide-vide,rapide-plein] [--planches=3] [--sortie=docs/captures-micro-sauts]
+//        [--variantes=lent-vide,lent-plein,rapide-vide,rapide-plein] [--planches=3] [--sortie=docs/captures/micro-sauts]
 // Écrit <sortie>/<etiquette>.json, <sortie>/planches/<etiquette>/*.jpg, puis régénère <sortie>/index.html (avant / après).
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
@@ -23,7 +23,7 @@ const ETIQ = arg('etiquette', 'mesure')
 const FILTRE = arg('parcours', '')
 const VARIANTES = arg('variantes', 'lent-vide,lent-plein,rapide-vide,rapide-plein').split(',')
 const MAX_PLANCHES = +arg('planches', '3')
-const SORTIE = resolve(RACINE, arg('sortie', 'docs/captures-micro-sauts'))
+const SORTIE = resolve(RACINE, arg('sortie', 'docs/captures/micro-sauts'))
 const VP = { width: 390, height: 844 }
 const FILM = process.argv.includes('--film') // planche de toute l'étape (16 images), même sans saut
 const BRUT = process.argv.includes('--brut') // enregistrements bruts (débogage du détecteur)

@@ -1,4 +1,4 @@
-// Outils coach du lot « clients » (voir docs/CONTRAT-OUTILS-COACH.md). Renvoie { nom_outil: def(...) }.
+// Outils coach du lot « clients » (voir docs/contrats/CONTRAT-OUTILS-COACH.md). Renvoie { nom_outil: def(...) }.
 // ctx = { service, backend, biblio, config, now, fetchFn } (voir assembler.js).
 // Mêmes règles que l'app : profil + compte de connexion (scrypt « sel:hash »), consentement santé lu dans le profil.
 import { randomUUID } from 'node:crypto'

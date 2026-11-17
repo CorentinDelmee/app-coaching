@@ -1,4 +1,4 @@
-// Choix d'apparence encore ouverts (maquette V2, design-v2/NOTES.md §3) : UN SEUL endroit.
+// Choix d'apparence encore ouverts (maquette V2, archives/maquettes/design-v2/NOTES.md §3) : UN SEUL endroit.
 // Valeurs retenues en PROVISOIRE (recommandation de la maquette) ; changer une valeur ici suffit, rien d'autre à toucher.
 // Voir aussi DECISIONS.md. Les réglages du client (ambiance, Grand affichage) ne sont pas ici : ils sont dans son Profil.
 
@@ -12,11 +12,11 @@ export const CHOIX = {
   /** Adresse des petites phrases du chrono : 'vous' (« Respirez. ») | 'tu' (« Respire. »). L'app entière vouvoie : défaut 'vous'. */
   adresse: 'vous',
   /** Chargeur affiché quand une page attend la base (> 250 ms) : 'pastille' (logo qui « fait une répétition ») | 'tempo'
-   *  (trois points 2-2-2) | 'anneau' (anneau d'assiduité qui tourne). Démo : docs/loader/index.html. */
+   *  (trois points 2-2-2) | 'anneau' (anneau d'assiduité qui tourne). Démo : docs/captures/loader/index.html. */
   chargeur: 'pastille'
 }
 
-/** Petites phrases posées au-dessus des chiffres des chronos (design-v2/assets/config.js). */
+/** Petites phrases posées au-dessus des chiffres des chronos (archives/maquettes/design-v2/assets/config.js). */
 export const PHRASES = {
   vous: { prep: 'Préparez-vous.', travail: 'Tenez bon.', repos: 'Respirez.', reposFin: 'On y retourne.', fin: 'Temps !' },
   tu: { prep: 'Prépare-toi.', travail: 'Tiens bon.', repos: 'Respire.', reposFin: 'On y retourne.', fin: 'Temps !' }

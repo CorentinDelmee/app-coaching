@@ -1,4 +1,4 @@
-// Adaptateur API : l'app parle au serveur app-coaching du VPS (docs/CONTRAT-VPS.md), en same-origin.
+// Adaptateur API : l'app parle au serveur app-coaching du VPS (docs/contrats/CONTRAT-VPS.md), en same-origin.
 // Actif avec VITE_BACKEND=api. Session = cookie HttpOnly posé par le serveur (rien n'est stocké côté navigateur).
 // Les droits sont appliqués par le serveur (équivalent des anciennes règles RLS), pas par ce fichier.
 import { creerApi } from '../commun.js'
@@ -150,7 +150,7 @@ export function creerAdapterApi({ fetchFn = (...a) => globalThis.fetch(...a), st
         for (const c of chemins) await appel('DELETE', `/fichiers?chemin=${enc(c)}`)
       }
     },
-    // Exercices enrichis : routes dédiées (docs/CONTRAT-EXERCICES-STUDIO.md). Les droits sont appliqués par le serveur.
+    // Exercices enrichis : routes dédiées (docs/contrats/CONTRAT-EXERCICES-STUDIO.md). Les droits sont appliqués par le serveur.
     exercices: {
       async recherche(filtre = {}) {
         const qs = new URLSearchParams(Object.entries(filtre).filter(([, v]) => v !== undefined && v !== null && v !== '').map(([k, v]) => [k, String(v)])).toString()

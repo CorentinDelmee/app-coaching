@@ -2,10 +2,10 @@
 
 Demande de Corentin : l'app doit être **exactement comme M5** (`design/m5/`) sur la page d'accueil (et ses interactions),
 le menu, le jaune, la couleur de surbrillance et les tokens. En cas de doute entre V2 et M5 sur ces points : **M5 gagne**.
-Ce qui n'est pas concerné (et reste V2) : séance page par page, chronos, circuits, 3 ambiances, Grand affichage (`RETOURS-MAQUETTES-V1.md`).
+Ce qui n'est pas concerné (et reste V2) : séance page par page, chronos, circuits, 3 ambiances, Grand affichage (`archives/RETOURS-MAQUETTES-V1.md`).
 
-Captures : `docs/captures-m5/` (`m5/` = maquette, `avant/` = app avant, `apres/` = app après) ; comparaison côte à côte :
-`docs/captures-m5/comparaison.html`. M5 capturée avec l'accent « Jaune pâle » et l'ambiance correspondante.
+Captures : `docs/captures/m5/` (`m5/` = maquette, `avant/` = app avant, `apres/` = app après) ; comparaison côte à côte :
+`docs/captures/m5/comparaison.html`. M5 capturée avec l'accent « Jaune pâle » et l'ambiance correspondante.
 
 ## Valeurs de référence (relevées dans le code de M5)
 
@@ -47,7 +47,7 @@ Tous ces tokens sont désormais dans **`src/styles/tokens.css`** (source unique)
    et Corentin a demandé « jamais de jaune en texte sur fond clair ». Gardé : numéro sur pastille jaune (clair seulement).
 2. **`--texte-doux` en clair** : `#565B62` (V2) au lieu de `#6A6F76` (M5, 4,0 : 1 sur le fond perle, sous le minimum 4,5 : 1).
 3. **Message d'accueil** : texte V2 (« Prêt, / Fabien ? », « Bien joué, / Fabien. », « Semaine / bouclée ! ») posé dans la
-   structure M5 (petite ligne au-dessus, grand titre) ; « Bonjour Fabien » avait été refusé (`RETOURS-MAQUETTES-V1.md`).
+   structure M5 (petite ligne au-dessus, grand titre) ; « Bonjour Fabien » avait été refusé (`archives/RETOURS-MAQUETTES-V1.md`).
    Au-delà de 7 signes, le titre prend toute la largeur et la date passe dessous (aucun mot coupé).
 4. **Bouton du menu sur les autres rubriques** : à droite (flottant), car leur en-tête V2 porte le bouton retour à gauche.
    Dans M5, une rubrique ouverte par le menu montre le menu à gauche à la place du retour. Hors périmètre (en-têtes V2).

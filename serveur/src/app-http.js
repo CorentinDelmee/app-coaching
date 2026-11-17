@@ -1,5 +1,5 @@
-// API de l'app (navigateur) : /api/app/*. Session par cookie signé, règles d'accès = policies RLS de supabase/schema.sql.
-// Contrat : docs/CONTRAT-VPS.md (« Formes JSON exactes » fait foi). Magasin : SQLite (magasin-sqlite.js).
+// API de l'app (navigateur) : /api/app/*. Session par cookie signé, règles d'accès = policies RLS de archives/supabase/schema.sql.
+// Contrat : docs/contrats/CONTRAT-VPS.md (« Formes JSON exactes » fait foi). Magasin : SQLite (magasin-sqlite.js).
 import { createHash, createHmac, randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
 import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, rmdirSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, posix, sep } from 'node:path'
@@ -365,7 +365,7 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
     throw new Erreur(405, 'methode')
   }
 
-  // ---------- Exercices enrichis (contrat : docs/CONTRAT-EXERCICES-STUDIO.md) ----------
+  // ---------- Exercices enrichis (contrat : docs/contrats/CONTRAT-EXERCICES-STUDIO.md) ----------
   const dossierPhotos = () => join(config.fichiersDir, DOSSIER_PHOTOS)
   let verrouPhotos = Promise.resolve() // une photo à la fois : pas de fichier orphelin quand deux envois se croisent (audit M3)
   const enSerie = (fn) => { const suite = verrouPhotos.then(fn, fn); verrouPhotos = suite.catch(() => {}); return suite }
@@ -586,7 +586,7 @@ export function creerAppHttp({ db, store, config, journal = null, biblio = null,
     throw new Erreur(405, 'methode')
   }
 
-  // ---------- Agenda Google (rempli par la synchro : serveur/src/agenda-synchro.js, docs/CONTRAT-AGENDA-GOOGLE.md) ----------
+  // ---------- Agenda Google (rempli par la synchro : serveur/src/agenda-synchro.js, docs/contrats/CONTRAT-AGENDA-GOOGLE.md) ----------
   async function agenda(req, res, u, quoi) {
     const coach = u.role === 'coach'
     if (req.method === 'GET' && quoi === 'evenements') {

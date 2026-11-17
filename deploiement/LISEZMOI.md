@@ -1,7 +1,7 @@
 # Mettre en ligne l'app-coaching sur le VPS (guide de Corentin)
 
 ✋ = c'est toi qui le fais · 🤖 = c'est le script qui le fait · Durée ≈ 25 min (hors attente DNS).
-Contrat technique : `docs/CONTRAT-VPS.md`. L'app sera sur `https://app.delmeecorentin.fr` (même VPS que le site vitrine et pc-seniors).
+Contrat technique : `docs/contrats/CONTRAT-VPS.md`. L'app sera sur `https://app.delmeecorentin.fr` (même VPS que le site vitrine et pc-seniors).
 
 | Fichier | Rôle |
 |---|---|

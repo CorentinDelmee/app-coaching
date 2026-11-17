@@ -1,7 +1,7 @@
 <script setup>
 // Démo des composants Studio (dev seulement : /coach/studio-demo). Montre la vignette (grille / liste), le panneau,
 // l'élément partagé, les filtres, la sauvegarde auto et le toast — c'est le modèle de câblage pour les lots d'écrans.
-// Données : exemples à la forme du contrat docs/CONTRAT-EXERCICES-STUDIO.md (aucun appel data).
+// Données : exemples à la forme du contrat docs/contrats/CONTRAT-EXERCICES-STUDIO.md (aucun appel data).
 import { computed, nextTick, ref } from 'vue'
 import VignetteExercice from './VignetteExercice.vue'
 import PanneauLateral from './PanneauLateral.vue'

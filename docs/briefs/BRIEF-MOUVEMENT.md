@@ -37,7 +37,7 @@ renvoie la collection entière).
    (clé stable `:key="x.id"`, animation d'entrée seulement au premier affichage, pas sur un rafraîchissement) ; une `<Transition>` Vue OU GSAP
    par élément, jamais les deux ; GSAP nettoyé au démontage ; `mouvementReduit()` respecté ; jamais rejouer un tap dans la page d'arrivée.
 6. **Mesure après** (même script) + planche avant / après. Copie 1 planche avant + 1 après (JPEG ≤ 150 Ko chacune) dans
-   `docs/captures-mouvement/<ton-ecran>/` (`avant-<scenario>.jpg`, `apres-<scenario>.jpg`) et un `mesures.json` (avant/après par scénario :
+   `docs/captures/mouvement/<ton-ecran>/` (`avant-<scenario>.jpg`, `apres-<scenario>.jpg`) et un `mesures.json` (avant/après par scénario :
    perdues, pire image, longues tâches, sauts, fin DOM).
 
 ## Interdits

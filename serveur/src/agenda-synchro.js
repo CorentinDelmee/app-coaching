@@ -1,4 +1,4 @@
-// Synchro Google Agenda -> app (docs/CONTRAT-AGENDA-GOOGLE.md, partie B).
+// Synchro Google Agenda -> app (docs/contrats/CONTRAT-AGENDA-GOOGLE.md, partie B).
 // Lit les événements par l'API réservation (GET /api/resa/admin/evenements), retient les « Coaching … »,
 // reconnaît le ou les clients (src/domain/agendaGoogle.js) et tient à jour :
 //   - seances_agenda : un événement « Coaching » par ligne (écran Agenda du coach, liste « à attribuer») ;

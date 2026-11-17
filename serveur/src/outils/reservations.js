@@ -1,5 +1,5 @@
-// Outils coach du lot « reservations » (voir docs/CONTRAT-OUTILS-COACH.md). Renvoie { nom_outil: def(...) }.
-// Passent par l'API réservation (même clé et mêmes formes JSON que le relais /api/app/reservations/*, voir docs/CONTRAT-VPS.md) :
+// Outils coach du lot « reservations » (voir docs/contrats/CONTRAT-OUTILS-COACH.md). Renvoie { nom_outil: def(...) }.
+// Passent par l'API réservation (même clé et mêmes formes JSON que le relais /api/app/reservations/*, voir docs/contrats/CONTRAT-VPS.md) :
 // config.resaUrl (RESA_API_URL) + config.resaCle (RESA_ADMIN_KEY), appel via ctx.fetchFn (injectable en test).
 import { z } from 'zod'
 import { jour, jourValide } from './dates.js'

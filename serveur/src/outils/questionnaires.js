@@ -1,4 +1,4 @@
-// Outils coach du lot « questionnaires » (voir docs/CONTRAT-OUTILS-COACH.md). Renvoie { nom_outil: def(...) }.
+// Outils coach du lot « questionnaires » (voir docs/contrats/CONTRAT-OUTILS-COACH.md). Renvoie { nom_outil: def(...) }.
 // ctx = { service, backend, biblio, config, now, fetchFn } (voir assembler.js).
 // Mêmes données et mêmes validations que l'app : on passe par creerApi (src/data/commun.js), comme le service.
 import { randomBytes } from 'node:crypto'

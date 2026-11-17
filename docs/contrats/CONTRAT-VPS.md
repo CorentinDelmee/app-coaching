@@ -19,11 +19,11 @@ API réservation ──(OAuth Google, compte du coach)──> Google Agenda (occ
 
 ## Serveur app-coaching (`serveur/`)
 - Magasin SQLite à côté du magasin fichier JSON (qui reste pour les tests/démo) : `serveur/src/magasin-sqlite.js`,
-  schéma `serveur/schema.sql` = traduction de `supabase/schema.sql` (14 tables, mêmes colonnes, `id` texte UUID,
+  schéma `serveur/schema.sql` = traduction de `archives/supabase/schema.sql` (14 tables, mêmes colonnes, `id` texte UUID,
   JSON en TEXT). Migration au démarrage (`CREATE TABLE IF NOT EXISTS` + `user_version`).
 - Table `comptes` (identifiant unique minuscule, hash scrypt, role `coach`|`client`, `profil_id`, `sv` version de session,
   `archive`). Création du 1er coach : `npm run coach:creer <identifiant>` (saisie masquée, comme passwd.js de pc-seniors).
-- **Règles d'accès = les policies RLS de `supabase/schema.sql`**, appliquées côté serveur : le coach lit/écrit tout ;
+- **Règles d'accès = les policies RLS de `archives/supabase/schema.sql`**, appliquées côté serveur : le coach lit/écrit tout ;
   un client ne lit/écrit que ses lignes (`client_id` = son profil) ; un client ne peut changer ni son rôle, ni son tarif,
   ni ses modules ; entités inconnues refusées (liste blanche).
 - Endpoints (JSON, `Cache-Control: no-store`, CSRF : `Origin` = `APP_ORIGIN` exigé sur toute requête non-GET) :
@@ -34,7 +34,7 @@ API réservation ──(OAuth Google, compte du coach)──> Google Agenda (occ
     · `DELETE /api/app/e/:entite/:id`. Codes : 400 invalide, 401, 403, 404.
   - Fichiers : `POST /api/app/fichiers?chemin=…` (corps binaire, ≤ 5 Mo, types image/jpeg|png|webp|pdf),
     `GET /api/app/fichiers?chemin=…` (contrôle d'accès identique à l'entité propriétaire), `DELETE`. Stockage `/var/lib/app-coaching/fichiers/`, chemins normalisés (pas de `..`).
-  - Agenda Google (synchro serveur, docs/CONTRAT-AGENDA-GOOGLE.md partie B) : `GET /api/app/agenda/evenements` (coach : tout ;
+  - Agenda Google (synchro serveur, docs/contrats/CONTRAT-AGENDA-GOOGLE.md partie B) : `GET /api/app/agenda/evenements` (coach : tout ;
     client : ses événements attribués, sans titre), `GET /api/app/agenda/derniere-synchro` ; coach seulement :
     `POST /api/app/agenda/synchroniser` (synchrone), `GET /api/app/agenda/a-attribuer`, `POST /api/app/agenda/attribuer`.
   - Réservations (**coach uniquement**, relais vers l'API réservation, aucune donnée gardée ici) :
@@ -53,7 +53,7 @@ API réservation ──(OAuth Google, compte du coach)──> Google Agenda (occ
   connecter, deconnecter, utilisateurCourant, changerCode, creerCompte, reinitialiserCode, fichiers.*, agenda.*,
   et le reste de l'objet supabase), `fetch` same-origin `credentials: 'same-origin'`.
 - `src/data/index.js` : `VITE_BACKEND=api` → adaptateur api ; sinon adaptateur local (démo) ; Supabase **retiré**
-  (adaptateur, dépendance `@supabase/supabase-js`, mentions dans l'UI de config). `supabase/` reste comme archive.
+  (adaptateur, dépendance `@supabase/supabase-js`, mentions dans l'UI de config). `archives/supabase/` reste comme archive.
 - `src/data/index.js` expose aussi `data.reservations` : `{ liste(statut), annuler(id), blocages(), bloquer(debut, fin, motif),
   debloquer(id), regles(), ecrireRegles(r) }` — en démo locale, données factices en mémoire.
 - Écran coach **« Réservations »** (`src/coach/`, route ajoutée dans `src/coach/routes.js`) : onglets À venir / Passées / Annulées

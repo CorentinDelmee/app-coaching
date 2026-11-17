@@ -1,5 +1,5 @@
 // Point d'entrée UNIQUE des données : les vues importent `data` d'ici, jamais localStorage ni fetch directement.
-// VITE_BACKEND=api : serveur app-coaching du VPS (docs/CONTRAT-VPS.md). Sinon : adaptateur local (données factices).
+// VITE_BACKEND=api : serveur app-coaching du VPS (docs/contrats/CONTRAT-VPS.md). Sinon : adaptateur local (données factices).
 import { creerAdapterLocal } from './adapters/local.js'
 import { creerAdapterApi } from './adapters/api.js'
 import { avecSynchroApi } from './synchro-api.js'

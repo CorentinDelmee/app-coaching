@@ -19,7 +19,7 @@ Goûts connus (memoire) : rejette « trop sage, pas de waouh », noir pur, titre
 Inspiration : `C:\Users\coren\Documents\REXV2\bibliotheque\design-md\` (lire 2-3 systèmes pertinents, ex. Linear, Stripe, Apple, Notion,
 Airbnb ; s'inspirer sans copier les marques). Skills : impeccable, animate, mobile-native.
 
-## À livrer (chaque direction, dans SON dossier `design-coach/<dX>/`)
+## À livrer (chaque direction, dans SON dossier `archives/maquettes/design-coach/<dX>/`)
 Une maquette HTML **statique et cliquable** (`index.html` + `assets/`, aucune dépendance réseau sauf polices auto-hébergées copiées depuis
 `src/assets/fonts/` ; GSAP autorisé en copie locale si utile), avec **données factices inventées** (jamais de vrais clients) :
 1. **Exercices** (écran prioritaire) : liste/grille avec vignette (image de la vidéo YouTube ou photo), recherche, filtres (muscles,
@@ -43,6 +43,6 @@ d'exercices et le panneau (Échap ferme, flèches haut/bas changent d'exercice) 
 (captures) et corriger ce qui ne va pas avant de rendre.
 
 ## Règles
-Travailler UNIQUEMENT dans ton dossier `design-coach/<dX>/` (ne touche pas à `src/`, ni aux autres dossiers). Pas de Git (REX commite).
+Travailler UNIQUEMENT dans ton dossier `archives/maquettes/design-coach/<dX>/` (ne touche pas à `src/`, ni aux autres dossiers). Pas de Git (REX commite).
 Port local : 5481 (d1), 5482 (d2), 5483 (d3) ; arrête tes processus (PID vérifiés) avant ton rapport. Préfixe CSS propre.
 **Échéance : rendu à 23 h 50.** Rapport ≤ 8 lignes : idée, écrans faits, contrôles, limites.

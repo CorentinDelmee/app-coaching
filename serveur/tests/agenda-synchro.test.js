@@ -1,4 +1,4 @@
-// Synchro Google Agenda -> séances de coaching (docs/CONTRAT-AGENDA-GOOGLE.md, partie B). L'API réservation est simulée.
+// Synchro Google Agenda -> séances de coaching (docs/contrats/CONTRAT-AGENDA-GOOGLE.md, partie B). L'API réservation est simulée.
 import { beforeEach, describe, expect, it } from 'vitest'
 import { creerSynchroAgenda, decouper, fenetre } from '../src/agenda-synchro.js'
 import { creerStoreSqlite, ouvrirBase } from '../src/magasin-sqlite.js'

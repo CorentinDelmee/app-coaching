@@ -1,5 +1,5 @@
 <script setup>
-// Carte d'exercice du Studio (grille 4:3 ou ligne compacte). Accepte la forme du contrat docs/CONTRAT-EXERCICES-STUDIO.md
+// Carte d'exercice du Studio (grille 4:3 ou ligne compacte). Accepte la forme du contrat docs/contrats/CONTRAT-EXERCICES-STUDIO.md
 // (musclesPrincipaux, materiel[], niveau, photo {url}, video {statut, duree}) et l'ancienne forme (categories, lienVideo).
 // Usage :
 //   <VignetteExercice :exercice="e" :actif="ouvert === e.id" @ouvrir="(e, elMedia) => ouvrir(e, elMedia)" />

@@ -26,7 +26,7 @@ node tests/e2e/mouvement/micro-sauts.mjs --base=http://localhost:5251 --etiquett
 
 Options : `--parcours=client-accueil,coach-onglets` (filtre sur le nom), `--variantes=rapide-vide,lent-plein`,
 `--planches=2` (par étape, 0 = aucune), `--film` (planche de 16 images de chaque étape, même sans saut),
-`--sortie=<dossier>` (défaut `docs/captures-micro-sauts`), `--fichier=<module.mjs>` (parcours en plus : `export const PARCOURS = [...]`, même forme, `RETOUR` et `ouvrirSession` importables depuis `parcours.mjs`), `--brut` (enregistrements bruts, débogage), `--index` (régénère seulement la page).
+`--sortie=<dossier>` (défaut `docs/captures/micro-sauts`), `--fichier=<module.mjs>` (parcours en plus : `export const PARCOURS = [...]`, même forme, `RETOUR` et `ouvrirSession` importables depuis `parcours.mjs`), `--brut` (enregistrements bruts, débogage), `--index` (régénère seulement la page).
 
 Sortie : `<sortie>/<etiquette>.json`, `<sortie>/planches/<etiquette>/*.jpg`, `<sortie>/index.html` (tableau avant / après par étape).
 

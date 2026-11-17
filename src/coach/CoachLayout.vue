@@ -1,5 +1,5 @@
 <script setup>
-// Cadre Studio du tableau de bord coach (maquette design-coach/d3) : barre latérale (ordinateur, > 900 px),
+// Cadre Studio du tableau de bord coach (maquette archives/maquettes/design-coach/d3) : barre latérale (ordinateur, > 900 px),
 // barre d'onglets flottante + feuille « Plus » (téléphone). Une seule liste de navigation : studio/navigation.js.
 // PONT : une route sans `meta: { studio: true }` (ancienne vue pas encore refaite) est rendue dans <div class="coach c-pont">,
 // avec les anciens tokens sombres de coach.css : elle reste utilisable telle quelle.

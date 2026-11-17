@@ -1,5 +1,5 @@
 // Synchronisation Google Agenda -> séances de coaching : règles pures (aucun réseau, aucune horloge, aucun Vue).
-// Partagé par l'adaptateur local (démo) et aussi par le serveur (archive : supabase/functions/sync-google-agenda).
+// Partagé par l'adaptateur local (démo) et aussi par le serveur (archive : archives/supabase/functions/sync-google-agenda).
 // Un événement « Coaching Fabien Vincent » (ou « Coaching - Vincent Fabien #fv2 ») est attribué au client correspondant.
 
 export const FUSEAU_COACH = 'Europe/Paris'
@@ -189,7 +189,7 @@ export function seancesPourClient(evenementsEvalues, clientId, tarif, now) {
     }))
 }
 
-// --- Reconnaissance des clients dans un titre (synchro serveur, docs/CONTRAT-AGENDA-GOOGLE.md partie B) ------------
+// --- Reconnaissance des clients dans un titre (synchro serveur, docs/contrats/CONTRAT-AGENDA-GOOGLE.md partie B) ------------
 
 /** Le titre est-il un coaching ? « Coaching … » au début, insensible à la casse et aux accents. */
 export const estCoaching = (titre) => /^coaching(?![a-z0-9])/.test(normaliser(titre))

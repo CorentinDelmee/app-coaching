@@ -1,4 +1,4 @@
-// Outils coach du lot « programmes » (voir docs/CONTRAT-OUTILS-COACH.md). Renvoie { nom_outil: def(...) }.
+// Outils coach du lot « programmes » (voir docs/contrats/CONTRAT-OUTILS-COACH.md). Renvoie { nom_outil: def(...) }.
 // Même forme de données que l'écran coach (validerProgramme) : { id, clientId, nom, mode, debut, semaines | workouts, joursFixes, notes }.
 // Les séances sont créées par service.creerSeance (mêmes blocs, mêmes vidéos que creer_seance), puis placées ici.
 import { randomBytes } from 'node:crypto'

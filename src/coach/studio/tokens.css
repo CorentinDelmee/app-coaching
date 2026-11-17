@@ -1,4 +1,4 @@
-/* Studio (refonte coach, maquette design-coach/d3) — tokens + briques communes.
+/* Studio (refonte coach, maquette archives/maquettes/design-coach/d3) — tokens + briques communes.
    Tout est limité à .st-app (racine de CoachLayout) : l'app client ne change pas.
    Polices Syne / Albert Sans : déjà déclarées (auto-hébergées) dans src/styles/tokens.css. Préfixe CSS : st- */
 .st-app {

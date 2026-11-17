@@ -34,7 +34,7 @@
       "statut": "fait",
       "avancement": 100,
       "qui": "juriste-admin",
-      "note": "docs/RGPD-CHECKLIST.md (13 tâches humaines, 15 points dans l app) — rien n est déclaré conforme"
+      "note": "docs/rgpd/RGPD-CHECKLIST.md (13 tâches humaines, 15 points dans l app) — rien n est déclaré conforme"
     },
     {
       "id": "1",
@@ -122,11 +122,11 @@
     },
     {
       "id": "12",
-      "titre": "MISE-EN-ROUTE.md (Supabase, Netlify)",
+      "titre": "archives/MISE-EN-ROUTE.md (Supabase, Netlify)",
       "statut": "fait",
       "avancement": 100,
       "qui": "developpeur",
-      "note": "MISE-EN-ROUTE.md (12 étapes), import des 80 exercices, fonction de réinitialisation de code"
+      "note": "archives/MISE-EN-ROUTE.md (12 étapes), import des 80 exercices, fonction de réinitialisation de code"
     },
     {
       "id": "V2.1",
@@ -142,7 +142,7 @@
       "statut": "fait",
       "avancement": 100,
       "qui": "frontend-senior",
-      "note": "design-v2/index.html — panneau : ambiance, aplat, police chrono, accueil, Grand affichage"
+      "note": "archives/maquettes/design-v2/index.html — panneau : ambiance, aplat, police chrono, accueil, Grand affichage"
     },
     {
       "id": "V2.3",
@@ -166,7 +166,7 @@
       "statut": "fait",
       "avancement": 100,
       "qui": "developpeur + testeur",
-      "note": "Écarts assumés listés : docs/ECARTS-M5.md"
+      "note": "Écarts assumés listés : docs/briefs/ECARTS-M5.md"
     },
     {
       "id": "A",
@@ -239,7 +239,7 @@
       "echeance": "",
       "duree": "1 h",
       "statut": "abandonnee",
-      "comment": "MISE-EN-ROUTE.md étapes 1 à 8. — Abandonnée : remplacée par le VPS le 2026-11-02."
+      "comment": "archives/MISE-EN-ROUTE.md étapes 1 à 8. — Abandonnée : remplacée par le VPS le 2026-11-02."
     },
     {
       "titre": "Mise en ligne Netlify Drop + installation sur ton téléphone",
@@ -247,7 +247,7 @@
       "echeance": "",
       "duree": "25 min",
       "statut": "abandonnee",
-      "comment": "MISE-EN-ROUTE.md étapes 9-10. Action publique : à faire par toi. Ne pas définir VITE_API_KEY pour la mise en ligne : le build de production est refusé. — Abandonnée : remplacée par le VPS le 2026-11-02."
+      "comment": "archives/MISE-EN-ROUTE.md étapes 9-10. Action publique : à faire par toi. Ne pas définir VITE_API_KEY pour la mise en ligne : le build de production est refusé. — Abandonnée : remplacée par le VPS le 2026-11-02."
     },
     {
       "titre": "Déployer les 2 fonctions serveur (création de client, nouveau code) et désactiver les inscriptions publiques",
@@ -255,7 +255,7 @@
       "echeance": "",
       "duree": "25 min",
       "statut": "abandonnee",
-      "comment": "MISE-EN-ROUTE.md. Indispensable avant de créer un vrai client. — Abandonnée : remplacée par le VPS le 2026-11-02."
+      "comment": "archives/MISE-EN-ROUTE.md. Indispensable avant de créer un vrai client. — Abandonnée : remplacée par le VPS le 2026-11-02."
     },
     {
       "titre": "Recette en ligne avec 2 comptes (isolation, hors connexion) AVANT tout vrai client",
@@ -263,7 +263,7 @@
       "echeance": "",
       "duree": "40 min",
       "statut": "a_faire",
-      "comment": "MISE-EN-ROUTE.md étape 12. Aucun vrai client avant cette recette et les tâches RGPD."
+      "comment": "archives/MISE-EN-ROUTE.md étape 12. Aucun vrai client avant cette recette et les tâches RGPD."
     },
     {
       "titre": "RGPD : compléter la page Confidentialité (SIRET, adresse, e-mail, région Supabase)",
@@ -271,7 +271,7 @@
       "echeance": "",
       "duree": "30 min",
       "statut": "a_faire",
-      "comment": "docs/page-confidentialite.md, chercher [À COMPLÉTER]."
+      "comment": "docs/rgpd/page-confidentialite.md, chercher [À COMPLÉTER]."
     },
     {
       "titre": "RGPD : archiver les DPA Supabase et Netlify, remplir le registre des traitements (modèle CNIL), procédure violation de données",
@@ -342,7 +342,7 @@
       "echeance": "",
       "duree": "1 h (estimation)",
       "statut": "a_faire",
-      "comment": "Écran coach « Vidéos ». Liste : livraison-26-10/bibliotheque-videos.md. Vidéos non visionnées par REX ; chaînes peu connues à regarder en premier."
+      "comment": "Écran coach « Vidéos ». Liste : archives/livraison-26-10/bibliotheque-videos.md. Vidéos non visionnées par REX ; chaînes peu connues à regarder en premier."
     },
     {
       "titre": "Essayer l'accueil M5 et la séance créée par Claude sur ton téléphone",
@@ -543,7 +543,7 @@
       "id": "D4",
       "categorie": "Design V2",
       "question": "Police des chiffres du chrono ?",
-      "contexte": "Comparer dans design-v2/index.html (panneau de réglages).",
+      "contexte": "Comparer dans archives/maquettes/design-v2/index.html (panneau de réglages).",
       "options": [
         {
           "nom": "Barlow Semi Condensed",
@@ -644,12 +644,12 @@
         {
           "nom": "Garder les écarts",
           "resume": "Lisibilité et refus déjà donnés préservés",
-          "lien": "docs/ECARTS-M5.md"
+          "lien": "docs/briefs/ECARTS-M5.md"
         },
         {
           "nom": "Tout aligner sur M5",
           "resume": "Jaune en texte sur fond clair (1,1:1), gris plus pâle (4,0:1)",
-          "lien": "docs/captures-m5/comparaison.html"
+          "lien": "docs/captures/m5/comparaison.html"
         }
       ],
       "recommandation": "Garder les écarts",
@@ -864,7 +864,7 @@
     },
     {
       "date": "2026-10-21",
-      "texte": "Maquette V2 consolidée prête : design-v2/index.html (panneau de réglages pour comparer)."
+      "texte": "Maquette V2 consolidée prête : archives/maquettes/design-v2/index.html (panneau de réglages pour comparer)."
     },
     {
       "date": "2026-10-21",
@@ -876,7 +876,7 @@
     },
     {
       "date": "2026-10-21",
-      "texte": "V2 testée (validée, aucun bug bloquant), animations revues, 8 petits défauts corrigés. Captures : docs/captures-v2/final/."
+      "texte": "V2 testée (validée, aucun bug bloquant), animations revues, 8 petits défauts corrigés. Captures : docs/captures/v2/final/."
     },
     {
       "date": "2026-10-26",
@@ -921,10 +921,10 @@
   ],
   "prochaines_etapes": [
     "Valider ou remplacer les 51 vidéos (écran coach « Vidéos »)",
-    "Configurer Google Cloud (docs/GOOGLE-AGENDA.md, encadré jour J) et saisir les secrets dans Supabase, pas dans le chat",
+    "Configurer Google Cloud (archives/GOOGLE-AGENDA-supabase.md, encadré jour J) et saisir les secrets dans Supabase, pas dans le chat",
     "Créer COACH_API_KEY (32 caractères min.) dans serveur/.env et .mcp.json",
     "Essai sur ton téléphone : accueil M5 et V2",
-    "Mise en route Supabase puis Netlify (MISE-EN-ROUTE.md)"
+    "Mise en route Supabase puis Netlify (archives/MISE-EN-ROUTE.md)"
   ],
   "risques": [
     {
@@ -963,7 +963,7 @@
     },
     {
       "texte": "Mise en route",
-      "href": "MISE-EN-ROUTE.md"
+      "href": "archives/MISE-EN-ROUTE.md"
     },
     {
       "texte": "Vidéo du parcours final",
@@ -971,23 +971,23 @@
     },
     {
       "texte": "Maquette V2 consolidée",
-      "href": "design-v2/index.html"
+      "href": "archives/maquettes/design-v2/index.html"
     },
     {
       "texte": "Captures finales V2",
-      "href": "docs/captures-v2/final/"
+      "href": "docs/captures/v2/final/"
     },
     {
       "texte": "Livraison 26/10 (synthèse)",
-      "href": "livraison-26-10/README.md"
+      "href": "archives/livraison-26-10/README.md"
     },
     {
       "texte": "Comparaison M5 avant / après",
-      "href": "docs/captures-m5/comparaison.html"
+      "href": "docs/captures/m5/comparaison.html"
     },
     {
       "texte": "Google Agenda (jour J)",
-      "href": "docs/GOOGLE-AGENDA.md"
+      "href": "archives/GOOGLE-AGENDA-supabase.md"
     },
     {
       "texte": "Serveur coach et MCP",
@@ -995,7 +995,7 @@
     },
     {
       "texte": "Bibliothèque vidéos",
-      "href": "livraison-26-10/bibliotheque-videos.md"
+      "href": "archives/livraison-26-10/bibliotheque-videos.md"
     }
   ]
 }

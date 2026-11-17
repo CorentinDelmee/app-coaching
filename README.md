@@ -10,7 +10,7 @@ Sans fichier `.env`, l'app tourne en **mode local** avec des données de démo (
 
 Comptes de démo : client `fabien.vincent` / `DEMO2024` ; coach `corentin` / `COACH2026` (espace coach : `/coach`).
 Pour revoir le consentement ou repartir de zéro : vider les données du site dans le navigateur.
-Back-end : sur le VPS, voir `docs/CONTRAT-VPS.md` (`VITE_BACKEND=api` dans `.env`).
+Back-end : sur le VPS, voir `docs/contrats/CONTRAT-VPS.md` (`VITE_BACKEND=api` dans `.env`).
 
 ## Maquettes
 `design/index.html` (5 maquettes, M1 « Atelier » retenue en provisoire), vidéo du parcours final : `design/app-finale/`.
@@ -20,4 +20,4 @@ Back-end : sur le VPS, voir `docs/CONTRAT-VPS.md` (`VITE_BACKEND=api` dans `.env
 - `npm run build` : build de production dans `dist/`.
 
 ## Format d'échange
-Import / export JSON versionné `cdc-coaching/1` : voir `docs/FORMAT-JSON.md`.
+Import / export JSON versionné `cdc-coaching/1` : voir `docs/contrats/FORMAT-JSON.md`.

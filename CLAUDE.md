@@ -4,7 +4,7 @@ Référence : `CAHIER-DES-CHARGES.md`. Plan : `PLAN.md`. Passation : `ETAT.md`. 
 
 ## Stack
 Vue 3 + Vite + vue-router + vite-plugin-pwa + Vitest, GSAP, graphiques SVG maison. Plus de Supabase (retiré 2026-11-02).
-Sans `.env` → adaptateur **local** (données factices, localStorage). `VITE_BACKEND=api` → adaptateur **api** (`src/data/adapters/api.js`) : serveur du VPS en same-origin, cookie de session, voir `docs/CONTRAT-VPS.md`.
+Sans `.env` → adaptateur **local** (données factices, localStorage). `VITE_BACKEND=api` → adaptateur **api** (`src/data/adapters/api.js`) : serveur du VPS en same-origin, cookie de session, voir `docs/contrats/CONTRAT-VPS.md`.
 `data.reservations` (coach) : api -> `/api/app/reservations/*` ; local -> données factices (`src/data/reservations-demo.js`).
 
 Numéro WhatsApp du coach : variable `VITE_COACH_WHATSAPP` (format international sans « + », ex. 33612345678) dans `.env` ; absent -> WhatsApp laisse choisir le contact. (À ajouter aussi dans `.env.example`, que REX ne peut pas modifier.)
@@ -20,7 +20,7 @@ Numéro WhatsApp du coach : variable `VITE_COACH_WHATSAPP` (format international
 ## Structure
 - `src/domain/` règles métier pures · `src/engine/` moteurs séance/circuits (horloge injectée) · `src/data/` interface + adaptateurs
 - `src/views/` écrans · `src/styles/tokens.css` design tokens · `src/assets/fonts/` polices auto-hébergées
-- `supabase/` archive (remplacé par `serveur/schema.sql`) · `tests/unit/` Vitest · `tests/e2e/` scripts navigateur · `design/` maquettes (ne pas modifier hors tâche design)
+- `archives/supabase/` archive (remplacé par `serveur/schema.sql`) · `tests/unit/` Vitest · `tests/e2e/` scripts navigateur · `design/` maquettes (ne pas modifier hors tâche design)
 - `serveur/` API REST + serveur MCP (service unique, magasin fichier JSON ou SQLite) · `serveur/tests/` e2e · `serveur/README.md`
 
 ## Conventions

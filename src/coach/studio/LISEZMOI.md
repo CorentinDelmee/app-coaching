@@ -28,13 +28,13 @@ Pièges déjà rencontrés :
 - **Texte dans un bouton fantôme aligné sur une étiquette** : un bouton sans fond garde son padding ; c'est le conteneur qui aligne.
 - Rangée qui défile horizontalement (filtres, onglets) : premier élément aligné sur la gouttière, la rangée peut déborder jusqu'au bord.
 
-Contrôle : captures 390 / 360 / 1366 et mesures (planche `docs/captures-espacements/index.html`) ; le banc `tests/e2e/studio/banc.mjs` vérifie les cibles 44 px.
+Contrôle : captures 390 / 360 / 1366 et mesures (planche `docs/captures/espacements/index.html`) ; le banc `tests/e2e/studio/banc.mjs` vérifie les cibles 44 px.
 
 
 ## Mouvement et chargement (règles communes, 2026-11-15) — à lire avant toute animation ou tout chargement
 
 **Principe** : le doigt est servi tout de suite (≤ 100 ms), la page arrive en une fois à sa forme finale, rien ne saute après.
-Mesures, causes et avant / après : `docs/captures-mouvement/index.html`. Brief des correctifs : `docs/BRIEF-MOUVEMENT.md`.
+Mesures, causes et avant / après : `docs/captures/mouvement/index.html`. Brief des correctifs : `docs/briefs/BRIEF-MOUVEMENT.md`.
 
 | Quoi | Durée | Courbe (token) | Règle |
 |---|---|---|---|
@@ -117,7 +117,7 @@ Si `recharger` remet l'état de l'écran, pense à remettre aussi la copie « de
 l'onglet redevient visible ou que la fenêtre reprend le focus (au plus une fois toutes les 2 s), **jamais** si `s.occupe()`.
 `charger()` doit rappeler `s.suivreVersion(...)`.
 
-Maquette de référence : `design-coach/d3/` (DESIGN.md = règles de couleur, typo, mouvement). Préfixe CSS : `st-`.
+Maquette de référence : `archives/maquettes/design-coach/d3/` (DESIGN.md = règles de couleur, typo, mouvement). Préfixe CSS : `st-`.
 Tout est limité à `.st-app` (racine de `CoachLayout`) : l'app client ne change pas.
 
 ## Pour un lot d'écran (Aujourd'hui, Exercices, Clients, Programmes, Questionnaires, Agenda…)
@@ -180,7 +180,7 @@ le média vers le bas > 140 px (ou vite) ferme. Téléporté dans `#st-calques`.
 - Fermeture : appelle `sauvegarde.maintenant()` **sans l'attendre** puis passe `ouvert` à false (le panneau se ferme tout de suite, l'écriture finit en arrière-plan ; mets l'id de l'élément dans la valeur planifiée : `s.planifier({ id, patch })`).
 
 ### `VignetteExercice.vue` — carte d'exercice
-- Props : `exercice` (forme du contrat `docs/CONTRAT-EXERCICES-STUDIO.md`, ou ancienne forme) · `actif` (ouvert dans le panneau → `aria-current`) · `affichage` (`'grille'` 4:3 | `'liste'` ligne compacte).
+- Props : `exercice` (forme du contrat `docs/contrats/CONTRAT-EXERCICES-STUDIO.md`, ou ancienne forme) · `actif` (ouvert dans le panneau → `aria-current`) · `affichage` (`'grille'` 4:3 | `'liste'` ligne compacte).
 - Événement : `ouvrir(exercice, elMedia)` — `elMedia` = `.st-carte-media`, à passer à `volerVers`.
 - Affiche : photo (`photo.url`) > miniature YouTube (`lienVideo`) > `FigureMouvement` ; puce « À valider » si `video.statut === 'propose'`,
   « Sans vidéo » sinon sans média ; durée `video.duree` ; nom (2 lignes) ; « muscle · 1er matériel » ; en liste : niveau.

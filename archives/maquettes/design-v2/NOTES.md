@@ -1,12 +1,12 @@
 # Maquette V2 — notes, choix provisoires et passation
 
-**Ouvrir** : `design-v2/index.html` (servi en HTTP de préférence, ex. `npx http-server design-v2` ; polices Google et GSAP 3.13 par CDN).
+**Ouvrir** : `archives/maquettes/design-v2/index.html` (servi en HTTP de préférence, ex. `npx http-server design-v2` ; polices Google et GSAP 3.13 par CDN).
 Sur ordinateur : téléphone 390 × 844 au centre, panneau de comparaison à gauche (roue dentée) et bouton ×10 pour accélérer les chronos.
 Sur téléphone : deux petits onglets discrets au bord gauche. Réglages aussi pilotables par l'URL : `?ambiance=sombre&chrono=inter&accueil=jour&aplat=blanc&grand=1`.
 Mode absent : tous les choix ci-dessous sont **provisoires** (recommandation pré-sélectionnée), Corentin tranche.
 
 ## 1. Retours V1 → V2, point par point
-| Retour (RETOURS-MAQUETTES-V1.md) | Où le voir |
+| Retour (archives/RETOURS-MAQUETTES-V1.md) | Où le voir |
 |---|---|
 | Base M5 : style, polices (Syne / Albert Sans), mise en page | partout |
 | Menu M5 et ses animations, pour toute l'app | bouton menu (plan qui recule en 3D, rubriques depuis la profondeur) |
@@ -115,4 +115,4 @@ séance : démarrage, échauffement, série, sélecteur, tiroir, « exercice sui
 circuit : page, ouverture, découvrir, exercices, préparation, passage au jaune, AMRAP, bilan, fermeture, résultat ; option EMOM (page, exercices, annonce de minute) ;
 fin de séance, dashboard après ; check-in (5 écrans + merci) ; profil (réglages, changement d'ambiance, bleu) ; 3 polices de chrono ;
 Grand affichage (dashboard, séance, chrono, check-in sombre) ; vue ordinateur avec le panneau.
-Vidéos locales (exclues de Git par `design-v2/.gitignore`) : `video-1-…workout`, `video-2-seance-selecteur-repos-circuit`, `video-3-checkin-sombre`.
+Vidéos locales (exclues de Git par `archives/maquettes/design-v2/.gitignore`) : `video-1-…workout`, `video-2-seance-selecteur-repos-circuit`, `video-3-checkin-sombre`.

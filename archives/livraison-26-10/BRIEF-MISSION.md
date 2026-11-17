@@ -2,7 +2,7 @@
 
 **Lire en entier avant de commencer.** Corentin est absent : aucune question, décide raisonnablement,
 note chaque décision en une ligne dans ton rapport final (REX la reporte dans `DECISIONS.md`).
-Lis d'abord `CLAUDE.md`, `ETAT.md`, puis en extraits `DECISIONS.md`, `RETOURS-MAQUETTES-V1.md`.
+Lis d'abord `CLAUDE.md`, `ETAT.md`, puis en extraits `DECISIONS.md`, `archives/RETOURS-MAQUETTES-V1.md`.
 
 ## Demande de Corentin (3 chantiers, menés en parallèle par 3 agents)
 A. **Alignement exact sur la maquette M5** (`design/m5/` : `index.html`, `assets/style.css`, `assets/app.js`,

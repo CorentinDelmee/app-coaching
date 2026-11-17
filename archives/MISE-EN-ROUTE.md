@@ -1,8 +1,8 @@
-> **Archive : remplacé par le VPS le 2026-11-02** (voir `docs/CONTRAT-VPS.md` et `deploiement/LISEZMOI.md`). Conservé pour mémoire, ne plus suivre.
+> **Archive : remplacé par le VPS le 2026-11-02** (voir `docs/contrats/CONTRAT-VPS.md` et `deploiement/LISEZMOI.md`). Conservé pour mémoire, ne plus suivre.
 
 # Mise en route — Corentin Delmée Coaching (PWA)
 
-> **Obsolète (2026-11-02) : Supabase est remplacé par un back-end sur le VPS, voir `docs/CONTRAT-VPS.md`.** Les étapes Supabase ci-dessous sont gardées pour archive.
+> **Obsolète (2026-11-02) : Supabase est remplacé par un back-end sur le VPS, voir `docs/contrats/CONTRAT-VPS.md`.** Les étapes Supabase ci-dessous sont gardées pour archive.
 
 > Document écrit pour Corentin, à suivre dans l'ordre. Durée totale : environ 2 h 30 la première fois (voir le récapitulatif à la fin).
 > Rien n'a été créé, publié ou payé à ta place : tous les comptes et toutes les mises en ligne sont à toi.
@@ -22,7 +22,7 @@ Ton PC ──► npm run build ──► dossier dist/ ──► Netlify Drop �
 - Sans fichier `.env`, l'app tourne en **mode local** (données factices dans le navigateur). Avec `.env`, elle parle à Supabase.
 - Les clients se connectent avec un **identifiant** (ex. `fabien.vincent`) et un **code** de 8 caractères. En coulisses l'app les transforme en e-mail technique `fabien.vincent@clients.cdc-coaching.invalid` + mot de passe. Le client n'a jamais d'e-mail à gérer. [FAIT : `src/domain/identifiants.js`]
 
-Prérequis : Node.js installé (c'est le cas, LTS installé le 17/10/2026), une adresse e-mail, ~2 h 30. Pas de carte bancaire nécessaire (offres gratuites). Pense à activer la double authentification sur chaque compte créé (voir `docs/RGPD-CHECKLIST.md`, tâche 7).
+Prérequis : Node.js installé (c'est le cas, LTS installé le 17/10/2026), une adresse e-mail, ~2 h 30. Pas de carte bancaire nécessaire (offres gratuites). Pense à activer la double authentification sur chaque compte créé (voir `docs/rgpd/RGPD-CHECKLIST.md`, tâche 7).
 
 ---
 
@@ -220,7 +220,7 @@ Déjà branché : `reinitialiserCode` et `creerCompte` (dans `src/data/adapters/
 | Création d'un client en erreur « Function not found » / « Failed to send a request » | `creer-client` non déployée | `npx.cmd supabase functions deploy creer-client` (les inscriptions publiques restent désactivées) |
 | Client créé mais ne peut pas se connecter, « Email not confirmed » | Confirmation e-mail encore active | Désactive **Confirm email** (étape 3.1) ; `creer-client` confirme déjà les nouveaux comptes ; pour un compte créé à la main : Users → ⋯ → **Confirm user** si proposé |
 | `schema.sql` : erreur `already exists` | Script déjà lancé en partie | Ne relance pas à moitié. Sur un projet **sans donnée utile** : Settings → Database → supprime/recrée le projet, ou demande à REX un script de remise à zéro. |
-| Un client voit des données qui ne sont pas les siennes | Règles RLS cassées | Coupe l'accès (change le code du client / mets le site hors ligne : Netlify → **Deploys → Stop auto publishing** ou supprime le site), note l'incident (procédure violation : `docs/RGPD-CHECKLIST.md` §9, **72 h** pour la CNIL), prévient REX |
+| Un client voit des données qui ne sont pas les siennes | Règles RLS cassées | Coupe l'accès (change le code du client / mets le site hors ligne : Netlify → **Deploys → Stop auto publishing** ou supprime le site), note l'incident (procédure violation : `docs/rgpd/RGPD-CHECKLIST.md` §9, **72 h** pour la CNIL), prévient REX |
 | Page blanche après une mise à jour | Ancienne version en cache (service worker) | Recharge fort (Ctrl+Maj+R) ; sur téléphone : ferme complètement l'app et rouvre, sinon supprime l'icône et réinstalle |
 | `npm` bloqué dans PowerShell | Stratégie d'exécution Windows | Utilise `npm.cmd`, ou `lancer.cmd` |
 | `npm.cmd` introuvable | Node pas dans le PATH de ce terminal | Ferme et rouvre le terminal ; sinon réinstalle Node LTS |
@@ -251,7 +251,7 @@ Déjà branché : `reinitialiserCode` et `creerCompte` (dans `src/data/adapters/
 | 12 | (supprimée : le branchement front est fait) | 0 | — |
 | 13 | Recette en ligne : isolation de 2 comptes, hors connexion, installation | 40 min | Étape 11 |
 | 14 | Mettre un rappel mensuel et faire la première sauvegarde | 15 min puis 15 min/mois | Étape 12 |
-| 15 | Tâches RGPD déjà listées : DPA Supabase/Netlify, registre, relecture juridique, politique mineurs (`docs/RGPD-CHECKLIST.md` §A) | 3 à 5 h | Avant le premier vrai client |
+| 15 | Tâches RGPD déjà listées : DPA Supabase/Netlify, registre, relecture juridique, politique mineurs (`docs/rgpd/RGPD-CHECKLIST.md` §A) | 3 à 5 h | Avant le premier vrai client |
 
 Total mise en ligne (tâches 1 à 14) : environ 2 h 30. **Ne donne aucun accès à un vrai client avant la tâche 13 (test d'isolation) et la tâche 15 (RGPD, au minimum consentement validé et page Confidentialité complétée).**
 

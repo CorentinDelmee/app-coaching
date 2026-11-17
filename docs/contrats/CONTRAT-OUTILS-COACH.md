@@ -10,7 +10,7 @@ directement ; suppressions/archivages toujours en 2 temps** (`src/outils/confirm
 - **Un fichier par lot**, déjà branché : `serveur/src/outils/<lot>.js` exporte `outils<Lot>(ctx)` → `{ nom_outil: def(...) }`.
   `ctx = { service, backend, biblio, config, now, fetchFn }` (voir `serveur/src/assembler.js`). Avec SQLite : `backend.db` et les méthodes du magasin
   (`serveur/src/magasin-sqlite.js`) — **réutiliser les mêmes fonctions et règles que les routes coach de l'app** (`serveur/src/app-http.js`,
-  `/api/app/*`), pour que l'app et Claude produisent exactement les mêmes données (formes dans `docs/CONTRAT-VPS.md`).
+  `/api/app/*`), pour que l'app et Claude produisent exactement les mêmes données (formes dans `docs/contrats/CONTRAT-VPS.md`).
 - Aucune table nouvelle sans nécessité ; si une migration est indispensable : fonction `migrer<Lot>(db)` idempotente appelée depuis TON module.
 - Désigner un client : `client` = nom, identifiant ou id (résolution comme `service.chercherClient` ; homonymes → erreur code `AMBIGU` qui liste les choix).
 - Réponses : objets JSON simples ; toute création renvoie l'`id` ; listes bornées (`limite`, défaut 50, max 200) ; dates `AAAA-MM-JJ`, heures `HH:MM` Europe/Paris.

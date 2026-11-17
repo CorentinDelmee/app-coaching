@@ -1,4 +1,4 @@
-// Tests des correctifs de l'audit du 26/10 (docs/AUDIT-SECURITE-26-10.md) : démo publique, corps trop gros, journal, clé.
+// Tests des correctifs de l'audit du 26/10 (docs/audits/AUDIT-SECURITE-26-10.md) : démo publique, corps trop gros, journal, clé.
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { request } from 'node:http'
 import { tmpdir } from 'node:os'

@@ -1,4 +1,4 @@
-// Routes /api/app/exercices (contrat docs/CONTRAT-EXERCICES-STUDIO.md) : droits, validation, photo, vue client.
+// Routes /api/app/exercices (contrat docs/contrats/CONTRAT-EXERCICES-STUDIO.md) : droits, validation, photo, vue client.
 import { existsSync, mkdtempSync, readdirSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'

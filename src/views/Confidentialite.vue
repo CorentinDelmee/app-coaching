@@ -1,9 +1,9 @@
 <script setup>
-// Page Confidentialité (publique) : le texte vient de docs/page-confidentialite.md (une seule source, à faire relire et compléter).
+// Page Confidentialité (publique) : le texte vient de docs/rgpd/page-confidentialite.md (une seule source, à faire relire et compléter).
 import { nextTick, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Icone from '../components/Icone.vue'
-import texte from '../../docs/page-confidentialite.md?raw'
+import texte from '../../docs/rgpd/page-confidentialite.md?raw'
 import { markdownVersHtml } from '../domain/markdown.js'
 import { installerRessort } from '../anim/transitions.js'
 import { usePageAnimee } from '../composables/usePageAnimee.js'

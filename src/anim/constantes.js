@@ -19,7 +19,7 @@ export const E = {
 }
 export const PLEIN = 'inset(0px 0px 0px 0px round 0px)'
 
-// --- Maquette V2 (design-v2/assets/noyau.js) ---
+// --- Maquette V2 (archives/maquettes/design-v2/assets/noyau.js) ---
 // Menu « push back » : part de la largeur où la page reculée reste visible, échelle et rotation Y de cette page.
 export const MENU = { x: 0.7, scale: 0.82, rot: -14 }
 // Rebonds M4 « avec mesure » (jamais elastic sur l'interface courante) : ressort des cartes/boutons, pastilles et pop d'apparition.

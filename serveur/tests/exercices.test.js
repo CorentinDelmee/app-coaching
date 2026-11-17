@@ -1,4 +1,4 @@
-// Module exercices.js : validation, patch, usage, vue client, filtres (contrat docs/CONTRAT-EXERCICES-STUDIO.md).
+// Module exercices.js : validation, patch, usage, vue client, filtres (contrat docs/contrats/CONTRAT-EXERCICES-STUDIO.md).
 import { describe, expect, it } from 'vitest'
 import { appliquerPatch, filtrer, indexUsage, nettoyerPut, presenter, schemaCreation, schemaPatch, videoDe } from '../src/exercices.js'
 

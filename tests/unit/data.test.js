@@ -335,8 +335,8 @@ describe("file d'attente hors connexion", () => {
 })
 
 // ------------------------------------------------------------------------------------------ schema.sql
-describe('supabase/schema.sql', () => {
-  const sql = readFileSync('supabase/schema.sql', 'utf8')
+describe('archives/supabase/schema.sql', () => {
+  const sql = readFileSync('archives/supabase/schema.sql', 'utf8')
   const tables = [...sql.matchAll(/create table (\w+)/g)].map((m) => m[1])
 
   it('contient toutes les tables du modèle', () => {

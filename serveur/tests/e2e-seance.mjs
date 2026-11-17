@@ -1,5 +1,5 @@
 // Test de bout en bout : « Claude » reçoit une séance en texte, appelle le VRAI serveur MCP (client MCP SDK, transport stdio),
-// puis on vérifie que la séance apparaît côté client (API REST, puis navigateur : captures dans tmp/captures-mcp/, ignoré par Git ; --captures-doc : dans docs/captures-mcp/).
+// puis on vérifie que la séance apparaît côté client (API REST, puis navigateur : captures dans tmp/captures-mcp/, ignoré par Git ; --captures-doc : dans docs/captures/mcp/).
 //
 // Lancer (depuis la racine du projet) :
 //   node serveur/tests/e2e-seance.mjs              -> MCP + API (rapide, sans navigateur)
@@ -17,7 +17,7 @@ const RACINE = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const NAVIGATEUR = process.argv.includes('--navigateur')
 // Par défaut les captures vont dans tmp/ (ignoré par Git) ; --captures-doc met à jour les PNG suivis de docs/
 const CAPTURES_DOC = process.argv.includes('--captures-doc')
-const DOSSIER_CAPTURES_REL = CAPTURES_DOC ? 'docs/captures-mcp' : 'tmp/captures-mcp'
+const DOSSIER_CAPTURES_REL = CAPTURES_DOC ? 'docs/captures/mcp' : 'tmp/captures-mcp'
 const CLE = 'cle-e2e-0123456789abcdef-0123456789abcdef'
 const PORT_API = process.env.E2E_PORT_API || '5405'
 const PORT_APP = process.env.E2E_PORT_APP || '5406'

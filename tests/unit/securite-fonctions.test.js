@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { aleatoire, champsStockes, corsPour, defiPkce, egalConstant, hmacHex } from '../../supabase/functions/_shared/securite.js'
+import { aleatoire, champsStockes, corsPour, defiPkce, egalConstant, hmacHex } from '../../archives/supabase/functions/_shared/securite.js'
 
 describe('securite des Edge Functions', () => {
   it('egalConstant : vrai seulement pour deux chaînes identiques non vides, quelles que soient les longueurs', async () => {

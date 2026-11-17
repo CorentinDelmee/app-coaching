@@ -29,7 +29,7 @@ export function lireConfig(env = process.env) {
     syncDemo: env.DEMO_SYNC === '1', // expose /demo/etat (sans clé) pour que l'app en mode local lise les séances
     journalJours: Number(env.JOURNAL_RETENTION_DAYS || 90), // purge du journal au démarrage
     limiteParMinute: Number(env.RATE_LIMIT_PER_MIN || 120),
-    // API de l'app (/api/app/*, docs/CONTRAT-VPS.md) : active seulement avec DB_FILE (SQLite).
+    // API de l'app (/api/app/*, docs/contrats/CONTRAT-VPS.md) : active seulement avec DB_FILE (SQLite).
     production: env.NODE_ENV === 'production',
     dbFile: env.DB_FILE || '',
     fichiersDir: resolve(env.FICHIERS_DIR || join(RACINE_SERVEUR, 'data', 'fichiers')),

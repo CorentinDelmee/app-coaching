@@ -1,6 +1,6 @@
 # Bibliothèque d'exercices et vidéos de démonstration (26/10/2026)
 
-51 exercices, tous du catalogue de l'app (`docs/import-depart.json`), chacun avec une vidéo YouTube principale et 0 à 1 alternative.
+51 exercices, tous du catalogue de l'app (`docs/import-depart/import-depart.json`), chacun avec une vidéo YouTube principale et 0 à 1 alternative.
 Données : `bibliotheque-videos.json` (statut `propose` : à valider par Corentin avant diffusion aux clients).
 
 ## Méthode de sélection

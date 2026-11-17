@@ -1,5 +1,5 @@
 /* Chargeur (attente de la base) : 3 variantes, uniquement transform / opacity en CSS -> tourne sur le compositeur,
-   reste fluide même quand la page qui arrive occupe le fil principal. Lu aussi par docs/loader/index.html.
+   reste fluide même quand la page qui arrive occupe le fil principal. Lu aussi par docs/captures/loader/index.html.
    Couleurs : --chg-encre (anthracite) et --chg-accent (jaune), posées par l'app (Studio ou client). */
 .chg {
   --chg-encre: #23252B; --chg-accent: #F2E27A; --chg-clair: rgba(255, 255, 255, .22);

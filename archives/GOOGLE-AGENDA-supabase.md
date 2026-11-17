@@ -39,15 +39,15 @@ Ce qui ne marche pas est visible dans **Coach > Agenda Google > À corriger** ; 
 `npm run dev`, puis **/coach** (compte coach de démo) > **Agenda Google** : un faux agenda montre tous les cas (normaux, ordre inversé,
 inconnu, homonymes, identifiant court). **Synchroniser maintenant** applique ensuite des changements (heure modifiée, annulation, titre corrigé, nouvel événement).
 Côté client, connectez-vous en `fabien.vincent` ou `thomas.bernard` : la case Coaching de l'accueil et la page Coaching montrent les séances.
-Réinitialiser la démo remet le faux agenda à zéro. Captures : `docs/captures-agenda/`.
+Réinitialiser la démo remet le faux agenda à zéro. Captures : `docs/captures/agenda/`.
 
 ## Mise en route avec le vrai Google Agenda
 
-Prérequis : projet Supabase en place (`supabase/schema.sql` déjà exécuté), [CLI Supabase](https://supabase.com/docs/guides/cli) connectée au projet.
+Prérequis : projet Supabase en place (`archives/supabase/schema.sql` déjà exécuté), [CLI Supabase](https://supabase.com/docs/guides/cli) connectée au projet.
 Dans tout ce qui suit, `<...>` est à remplacer ; **aucune valeur réelle ne va dans Git**.
 
 ### 1. Base de données
-Exécutez dans le SQL Editor `supabase/migrations/20261026_agenda_google.sql` : tables `seances_agenda`, `agenda_alias`, `agenda_synchro`,
+Exécutez dans le SQL Editor `archives/supabase/migrations/20261026_agenda_google.sql` : tables `seances_agenda`, `agenda_alias`, `agenda_synchro`,
 `google_agenda_secret`, `google_agenda_oauth` avec règles RLS (un client ne lit que ses séances attribuées ; les tables serveur ne sont lisibles par personne via l'API). Le jeton Google est **chiffré dans le Vault Supabase** (extension `supabase_vault`, activée par la migration ; si elle est refusée, l'activer dans Database > Extensions puis relancer). Seul l'événement minimal est stocké (titre, début, fin, lieu) : ni description ni invités.
 
 ### 2. Projet Google Cloud et API Calendar
@@ -84,8 +84,8 @@ supabase functions deploy sync-google-agenda --no-verify-jwt
 supabase functions deploy google-agenda-connexion --no-verify-jwt
 ```
 `--no-verify-jwt` : Google et pg_cron n'envoient pas de jeton Supabase ; `sync-google-agenda` vérifie elle-même le secret ou la session du coach.
-`sync-google-agenda` importe `supabase/functions/_shared/agendaGoogle.js`, **copie exacte** de `src/domain/agendaGoogle.js` (le bundler Supabase ne sort pas de `supabase/`).
-Un test Vitest échoue si les deux fichiers diffèrent : après toute modification des règles, `cp src/domain/agendaGoogle.js supabase/functions/_shared/agendaGoogle.js`.
+`sync-google-agenda` importe `archives/supabase/functions/_shared/agendaGoogle.js`, **copie exacte** de `src/domain/agendaGoogle.js` (le bundler Supabase ne sort pas de `archives/supabase/`).
+Un test Vitest échoue si les deux fichiers diffèrent : après toute modification des règles, `cp src/domain/agendaGoogle.js archives/supabase/functions/_shared/agendaGoogle.js`.
 
 ### 7. Connecter votre compte Google (une seule fois)
 Le secret ne passe jamais dans une adresse web, seulement dans un en-tête. Demandez l'adresse de consentement :
@@ -97,7 +97,7 @@ choisissez votre compte, acceptez l'accès **en lecture seule**. Le message « G
 est rangé, chiffré, dans le Vault Supabase (serveur uniquement).
 
 ### 8. Planification toutes les 15 minutes (pg_cron)
-Activez les extensions `pg_cron` et `pg_net` (Database > Extensions), puis exécutez le modèle `supabase/agenda-google-planification.sql.modele`
+Activez les extensions `pg_cron` et `pg_net` (Database > Extensions), puis exécutez le modèle `archives/supabase/agenda-google-planification.sql.modele`
 après y avoir mis votre `<PROJECT_REF>` et votre `<CRON_SECRET>` (celui-là seulement) (ne pas committer la version remplie). Le secret part dans l'en-tête `x-cron-secret`.
 
 ### 9. Option : notifications push (quasi instantané)
@@ -119,14 +119,14 @@ c'est pourquoi la planification (étape 8) reste le mécanisme de base, le push 
 - Pour tout effacer : `truncate seances_agenda;`.
 
 ## Comment ça marche (technique)
-- `src/domain/agendaGoogle.js` (copie dans `supabase/functions/_shared/`) : règles pures et testées (`tests/unit/agenda-google.test.js`) : titre, attribution, fusion création/modif/suppression
+- `src/domain/agendaGoogle.js` (copie dans `archives/supabase/functions/_shared/`) : règles pures et testées (`tests/unit/agenda-google.test.js`) : titre, attribution, fusion création/modif/suppression
   (identifiant d'événement + `etag`/`updated`), boucle `syncToken` avec reprise complète sur **410 Gone**.
 - L'attribution est recalculée à la lecture : renommer un client ou ajouter un identifiant court corrige les alertes sans attendre.
 - Local : `src/data/demo/agendaGoogle.js` (faux Google) ; Supabase : table `seances_agenda` remplie par l'Edge Function.
 - Côté client, `data.seancesCoaching.lister` ajoute les séances Google futures (`source: 'google'`) à celles de l'appli : aucune vue client modifiée. Une séance native et une séance Google du même client à ±15 min ne comptent qu'une fois (la native est gardée, `googleId` ajouté). Un événement « toute la journée » s'affiche « journée », sans heure.
 
-## Sécurité (audit du 26/10, `docs/AUDIT-SECURITE-26-10.md`)
-- **3 secrets distincts** : `CRON_SECRET` (cron -> sync), `WEBHOOK_SECRET` (notifications Google), `STATE_SECRET` (connexion OAuth). Toutes les comparaisons de secrets sont en temps constant (`supabase/functions/_shared/securite.js`).
+## Sécurité (audit du 26/10, `docs/audits/AUDIT-SECURITE-26-10.md`)
+- **3 secrets distincts** : `CRON_SECRET` (cron -> sync), `WEBHOOK_SECRET` (notifications Google), `STATE_SECRET` (connexion OAuth). Toutes les comparaisons de secrets sont en temps constant (`archives/supabase/functions/_shared/securite.js`).
 - **Connexion OAuth** : `state` = nonce aléatoire stocké en base et consommé au retour (rejeu impossible) + signature HMAC + PKCE S256.
 - **Erreurs** : les réponses des fonctions sont génériques ; le détail (réponse de Google) n'est que dans les journaux Supabase.
 - **CORS** : limité à `APP_ORIGIN`. Les appels du cron et de Google n'ont pas d'origine web et ne sont pas concernés.

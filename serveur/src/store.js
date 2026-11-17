@@ -45,7 +45,7 @@ export function creerStoreFichier(fichier, now = () => Date.now()) {
   }
 }
 
-/** Production : mêmes tables que l'app (supabase/schema.sql), accès par clé service. Non testé sans projet Supabase réel. */
+/** Production : mêmes tables que l'app (archives/supabase/schema.sql), accès par clé service. Non testé sans projet Supabase réel. */
 export async function creerStoreSupabase({ url, cleService }) {
   const { createClient } = await import('@supabase/supabase-js')
   const { depuisLigne, versLigne } = await import('../../src/data/adapters/supabase.js')

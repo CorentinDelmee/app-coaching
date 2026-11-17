@@ -1,4 +1,4 @@
-// Reconnaissance des clients dans les vrais titres de l'agenda de Corentin (docs/CONTRAT-AGENDA-GOOGLE.md, partie B).
+// Reconnaissance des clients dans les vrais titres de l'agenda de Corentin (docs/contrats/CONTRAT-AGENDA-GOOGLE.md, partie B).
 import { describe, expect, it } from 'vitest'
 import { cleTitre, estCoaching, reconnaitreClients } from '../../src/domain/agendaGoogle.js'
 

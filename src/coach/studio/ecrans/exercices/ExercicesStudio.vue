@@ -1,5 +1,5 @@
 <script setup>
-// Écran Exercices du Studio (design-coach/d3) : grille de vignettes teintées, filtres instantanés, panneau d'édition
+// Écran Exercices du Studio (archives/maquettes/design-coach/d3) : grille de vignettes teintées, filtres instantanés, panneau d'édition
 // à côté (feuille sur téléphone) où la vignette « s'envole » (élément partagé), sauvegarde automatique.
 // Remplace aussi la bibliothèque vidéo (/coach/bibliotheque -> filtre « À valider »).
 // Données : uniquement data.exercices.* (via ./donnees.js). Préfixe CSS : st-exo-.

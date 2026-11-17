@@ -94,7 +94,7 @@ export function creerService({ backend, biblio, config = {}, now = () => Date.no
     return { url: ex.lienVideo, statut: entree?.statut ?? 'propose' }
   }
 
-  // --- Construction des blocs (format de l'app, voir docs/FORMAT-JSON.md) ---------------------------
+  // --- Construction des blocs (format de l'app, voir docs/contrats/FORMAT-JSON.md) ---------------------------
   const MODIFIABLES = { poids: true, reps: true }
   function seriesEtChamps(e) {
     const base = []
